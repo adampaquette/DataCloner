@@ -10,8 +10,8 @@ namespace ConsoleApplication1
     {
         static void Main(string[] args)
         {
-            var ti = new Class.TableIdentifier();
-            var ci = new Class.ColumnIdentifier();
+            Interface.ITableIdentifier ti = new Class.TableIdentifier();
+            Interface.IColumnIdentifier ci = new Class.ColumnIdentifier();
 
             ci.ServerName = "127.0.0.1";
             ci.DatabaseName = "db";
@@ -24,6 +24,14 @@ namespace ConsoleApplication1
             Console.WriteLine(SerizlizeXML(ci));
             Console.WriteLine();
             Console.WriteLine(SerizlizeXML(ti));
+
+
+
+            Interface.IStaticTableDictionnary a = new Class.StaticTableDictionnary();
+            a.Add(ti, "aaaa");
+        
+
+
 
             Console.ReadKey();
         }

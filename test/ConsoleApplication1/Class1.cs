@@ -18,6 +18,10 @@ namespace Interface
     {
         string ColumnName { get; set; }
     }
+
+    public interface IStaticTableDictionnary : IDictionary<Interface.ITableIdentifier, object>
+    {
+    }
 }
 
 namespace Class
@@ -42,8 +46,15 @@ namespace Class
         public string ColumnName { get; set; }
     }
 
+    public class StaticTableDictionnary : Dictionary<Interface.ITableIdentifier, object>
+    {
+
+    }
 
     /// ///////////////////////////////////////////////////////////////////////////
+
+
+
 
 
     public class MultiDictionary<K1, K2, V>
@@ -66,15 +77,6 @@ namespace Class
                 }
                 dict[key1][key2] = value;
             }
-        }
-    }
-
-    public class MultiDimDictList<K, T> : Dictionary<K, List<T>>
-    {
-        public void Add(K key, T addObject)
-        {
-            if (!ContainsKey(key)) Add(key, new List<T>());
-            base[key].Add(addObject);
         }
     }
 
