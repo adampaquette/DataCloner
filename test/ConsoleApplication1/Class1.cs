@@ -18,13 +18,13 @@ namespace Serialisation
    public class StaticTable
    {
       [XmlAttribute]
-      public string ServerName { get; set; }
+      public Int16 ConnStringID { get; set; }
       [XmlAttribute]
-      public string DatabaseName { get; set; }
+      public string Database { get; set; }
       [XmlAttribute]
-      public string SchemaName { get; set; }
+      public string Schema { get; set; }
       [XmlAttribute]
-      public string TableName { get; set; }
+      public string Table { get; set; }
       [XmlAttribute]
       public bool Active { get; set; }
    }
@@ -34,7 +34,7 @@ namespace Interface
 {
    public interface ITableIdentifier
    {
-      string ServerName { get; set; }
+      Int16 ConnStringID { get; set; }
       string DatabaseName { get; set; }
       string SchemaName { get; set; }
       string TableName { get; set; }
@@ -54,15 +54,36 @@ namespace Class
 {
    public class TableIdentifier : ITableIdentifier
    {
-      public string ServerName { get; set; }
+      public Int16 ConnStringID { get; set; }
       public string DatabaseName { get; set; }
       public string SchemaName { get; set; }
       public string TableName { get; set; }
 
       public override string ToString()
       {
-         return ServerName + "." + DatabaseName + "." + SchemaName + "." + TableName;
+         //TODO : EST UTILISÉ PAR GETHASHCODE??
+         return ConnStringID + "." + DatabaseName + "." + SchemaName + "." + TableName;
       }
+   }
+
+   public class EqualityComparerITableIdentifier : IEqualityComparer<ITableIdentifier>
+   {
+      #region IEqualityComparer<TableIdentifier> Membres
+
+      bool IEqualityComparer<ITableIdentifier>.Equals(ITableIdentifier x, ITableIdentifier y)
+      {
+         return x.ConnStringID.Equals(y.ConnStringID) &&
+                x.DatabaseName.Equals(y.DatabaseName) &&
+                x.SchemaName.Equals(y.SchemaName) &&
+                x.TableName.Equals(y.TableName);
+      }
+
+      int IEqualityComparer<ITableIdentifier>.GetHashCode(ITableIdentifier obj)
+      {
+         return (obj.ConnStringID.ToString() + obj.DatabaseName + obj.SchemaName + obj.TableName).GetHashCode();
+      }
+
+      #endregion
    }
 
    public class ColumnIdentifier : TableIdentifier, IColumnIdentifier
@@ -70,9 +91,30 @@ namespace Class
       public string ColumnName { get; set; }
    }
 
+   public class EqualityComparerIColumnIdentifier : IEqualityComparer<IColumnIdentifier>
+   {
+      #region IEqualityComparer<TableIdentifier> Membres
+
+      bool IEqualityComparer<IColumnIdentifier>.Equals(IColumnIdentifier x, IColumnIdentifier y)
+      {
+         return x.ConnStringID.Equals(y.ConnStringID) &&
+                x.DatabaseName.Equals(y.DatabaseName) &&
+                x.SchemaName.Equals(y.SchemaName) &&
+                x.TableName.Equals(y.TableName) &&
+                x.ColumnName.Equals(y.ColumnName);
+      }
+
+      int IEqualityComparer<IColumnIdentifier>.GetHashCode(IColumnIdentifier obj)
+      {
+         return (obj.ConnStringID + obj.DatabaseName + obj.SchemaName + obj.TableName + obj.ColumnName).GetHashCode();
+      }
+
+      #endregion
+   }
+
    public class StaticTableDictionnary : IStaticTableDictionnary
    {
-      private IDictionary<ITableIdentifier, bool> _dic = new Dictionary<ITableIdentifier, bool>();
+      private IDictionary<ITableIdentifier, bool> _dic = new Dictionary<ITableIdentifier, bool>(new EqualityComparerITableIdentifier());
 
       #region IDictionary<ITableIdentifier,bool> Membres
 

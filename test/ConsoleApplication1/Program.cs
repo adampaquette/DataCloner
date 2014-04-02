@@ -18,35 +18,33 @@ namespace ConsoleApplication1
          Interface.ITableIdentifier ti = new Class.TableIdentifier();
          Interface.ITableIdentifier ti2 = new Class.TableIdentifier();
 
-         ci.ServerName = "127.0.0.1";
+         ci.ConnStringID = 0;
          ci.DatabaseName = "db";
          ci.SchemaName = "dbo";
          ci.TableName = "table";
-         //ci.ColumnName = "tbl";
+         ci.ColumnName = "tbl";
 
-         ti.ServerName = "127.0.0.1";
+         ti.ConnStringID = 2;
          ti.DatabaseName = "db";
          ti.SchemaName = "dbo";
          ti.TableName = "table";
 
-         ti2.ServerName = "localhost";
-         ti2.DatabaseName = "myDB";
+         ti2.ConnStringID = 1;
+         ti2.DatabaseName = "db";
          ti2.SchemaName = "dbo";
-         ti2.TableName = "profil";
-
-         //ti = ci;
+         ti2.TableName = "table";
 
          Interface.IStaticTableDictionnary std = new Class.StaticTableDictionnary();
          std.Add(ti, true);
-         //std.Add(ti2, true);
-         std.Add(ci, true);
+         std.Add(ti2, true);
+         std.Add(ci, false);
 
          var tables = std.Select(kv => new StaticTable()
          {
-            ServerName = kv.Key.ServerName,
-            DatabaseName = kv.Key.DatabaseName,
-            SchemaName = kv.Key.SchemaName,
-            TableName = kv.Key.TableName,
+            ConnStringID = kv.Key.ConnStringID,
+            Database = kv.Key.DatabaseName,
+            Schema = kv.Key.SchemaName,
+            Table = kv.Key.TableName,
             Active = kv.Value
          }).ToList();
 
@@ -54,6 +52,11 @@ namespace ConsoleApplication1
          staticTables.StaticTables = tables;
          Console.WriteLine(SerizlizeXML(staticTables));
          Console.WriteLine();
+
+
+         var c = new System.Data.SqlClient.SqlConnection();
+
+
 
 
          Console.ReadKey();
