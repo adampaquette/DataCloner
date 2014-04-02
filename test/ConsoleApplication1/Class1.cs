@@ -3,282 +3,262 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Xml.Serialization;
+using Interface;
+
+namespace Serialisation
+{
+   [Serializable]
+   public class Config
+   {
+      [XmlArrayItem("Table")]
+      public List<StaticTable> StaticTables { get; set; }
+   }
+
+   [Serializable]
+   public class StaticTable
+   {
+      [XmlAttribute]
+      public string ServerName { get; set; }
+      [XmlAttribute]
+      public string DatabaseName { get; set; }
+      [XmlAttribute]
+      public string SchemaName { get; set; }
+      [XmlAttribute]
+      public string TableName { get; set; }
+      [XmlAttribute]
+      public bool Active { get; set; }
+   }
+}
 
 namespace Interface
 {
-    public interface ITableIdentifier
-    {
-        string ServerName { get; set; }
-        string DatabaseName { get; set; }
-        string SchemaName { get; set; }
-        string TableName { get; set; }
-    }
+   public interface ITableIdentifier
+   {
+      string ServerName { get; set; }
+      string DatabaseName { get; set; }
+      string SchemaName { get; set; }
+      string TableName { get; set; }
+   }
 
-    public interface IColumnIdentifier : ITableIdentifier
-    {
-        string ColumnName { get; set; }
-    }
+   public interface IColumnIdentifier : ITableIdentifier
+   {
+      string ColumnName { get; set; }
+   }
 
-    public interface IStaticTableDictionnary : IDictionary<Interface.ITableIdentifier, object>
-    {
-    }
+   public interface IStaticTableDictionnary : IDictionary<ITableIdentifier, bool>
+   {
+   }
 }
 
 namespace Class
 {
-    [Serializable]
-    public class TableIdentifier : Interface.ITableIdentifier
-    {
-        [XmlAttribute]
-        public string ServerName { get; set; }
-        [XmlAttribute]
-        public string DatabaseName { get; set; }
-        [XmlAttribute]
-        public string SchemaName { get; set; }
-        [XmlAttribute]
-        public string TableName { get; set; }
-    }
+   public class TableIdentifier : ITableIdentifier
+   {
+      public string ServerName { get; set; }
+      public string DatabaseName { get; set; }
+      public string SchemaName { get; set; }
+      public string TableName { get; set; }
 
-    [Serializable]
-    public class ColumnIdentifier : TableIdentifier, Interface.IColumnIdentifier
-    {
-        [XmlAttribute]
-        public string ColumnName { get; set; }
-    }
+      public override string ToString()
+      {
+         return ServerName + "." + DatabaseName + "." + SchemaName + "." + TableName;
+      }
+   }
 
-    public class StaticTableDictionnary : Dictionary<Interface.ITableIdentifier, object>
-    {
+   public class ColumnIdentifier : TableIdentifier, IColumnIdentifier
+   {
+      public string ColumnName { get; set; }
+   }
 
-    }
+   public class StaticTableDictionnary : IStaticTableDictionnary
+   {
+      private IDictionary<ITableIdentifier, bool> _dic = new Dictionary<ITableIdentifier, bool>();
 
-    /// ///////////////////////////////////////////////////////////////////////////
+      #region IDictionary<ITableIdentifier,bool> Membres
+
+      void IDictionary<ITableIdentifier, bool>.Add(ITableIdentifier key, bool value)
+      {
+         _dic.Add(key, value);
+      }
+
+      bool IDictionary<ITableIdentifier, bool>.ContainsKey(ITableIdentifier key)
+      {
+         return _dic.ContainsKey(key);
+      }
+
+      ICollection<ITableIdentifier> IDictionary<ITableIdentifier, bool>.Keys
+      {
+         get { return _dic.Keys; }
+      }
+
+      bool IDictionary<ITableIdentifier, bool>.Remove(ITableIdentifier key)
+      {
+         return _dic.Remove(key);
+      }
+
+      bool IDictionary<ITableIdentifier, bool>.TryGetValue(ITableIdentifier key, out bool value)
+      {
+         return _dic.TryGetValue(key, out value);
+      }
+
+      ICollection<bool> IDictionary<ITableIdentifier, bool>.Values
+      {
+         get { return _dic.Values; }
+      }
+
+      bool IDictionary<ITableIdentifier, bool>.this[ITableIdentifier key]
+      {
+         get
+         {
+            return _dic[key];
+         }
+         set
+         {
+            _dic[key] = value;
+         }
+      }
+
+      #endregion
+
+      #region ICollection<KeyValuePair<ITableIdentifier,bool>> Membres
+
+      void ICollection<KeyValuePair<ITableIdentifier, bool>>.Add(KeyValuePair<ITableIdentifier, bool> item)
+      {
+         _dic.Add(item);
+      }
+
+      void ICollection<KeyValuePair<ITableIdentifier, bool>>.Clear()
+      {
+         _dic.Clear();
+      }
+
+      bool ICollection<KeyValuePair<ITableIdentifier, bool>>.Contains(KeyValuePair<ITableIdentifier, bool> item)
+      {
+         return _dic.Contains(item);
+      }
+
+      void ICollection<KeyValuePair<ITableIdentifier, bool>>.CopyTo(KeyValuePair<ITableIdentifier, bool>[] array, int arrayIndex)
+      {
+         _dic.CopyTo(array, arrayIndex);
+      }
+
+      int ICollection<KeyValuePair<ITableIdentifier, bool>>.Count
+      {
+         get { return _dic.Count; }
+      }
+
+      bool ICollection<KeyValuePair<ITableIdentifier, bool>>.IsReadOnly
+      {
+         get { return _dic.IsReadOnly; }
+      }
+
+      bool ICollection<KeyValuePair<ITableIdentifier, bool>>.Remove(KeyValuePair<ITableIdentifier, bool> item)
+      {
+         return _dic.Remove(item);
+      }
+
+      #endregion
+
+      #region IEnumerable<KeyValuePair<ITableIdentifier,bool>> Membres
+
+      IEnumerator<KeyValuePair<ITableIdentifier, bool>> IEnumerable<KeyValuePair<ITableIdentifier, bool>>.GetEnumerator()
+      {
+         return _dic.GetEnumerator();
+      }
+
+      #endregion
+
+      #region IEnumerable Membres
+
+      System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+      {
+         return ((System.Collections.IEnumerable)_dic).GetEnumerator();
+      }
+
+      #endregion
+   }
+
+   /// ///////////////////////////////////////////////////////////////////////////
 
 
 
 
 
-    public class MultiDictionary<K1, K2, V>
-    {
-        private Dictionary<K1, Dictionary<K2, V>> dict =
-            new Dictionary<K1, Dictionary<K2, V>>();
+   public class MultiDictionary<K1, K2, V>
+   {
+      private Dictionary<K1, Dictionary<K2, V>> dict =
+          new Dictionary<K1, Dictionary<K2, V>>();
 
-        public V this[K1 key1, K2 key2]
-        {
-            get
+      public V this[K1 key1, K2 key2]
+      {
+         get
+         {
+            return dict[key1][key2];
+         }
+
+         set
+         {
+            if (!dict.ContainsKey(key1))
             {
-                return dict[key1][key2];
+               dict[key1] = new Dictionary<K2, V>();
             }
+            dict[key1][key2] = value;
+         }
+      }
+   }
 
-            set
-            {
-                if (!dict.ContainsKey(key1))
-                {
-                    dict[key1] = new Dictionary<K2, V>();
-                }
-                dict[key1][key2] = value;
-            }
-        }
-    }
+   public class MultiKeyDictionary<T1, T2, T3> : Dictionary<T1, Dictionary<T2, T3>>
+   {
+      new public Dictionary<T2, T3> this[T1 key]
+      {
+         get
+         {
+            if (!ContainsKey(key))
+               Add(key, new Dictionary<T2, T3>());
 
-    public class MultiKeyDictionary<T1, T2, T3> : Dictionary<T1, Dictionary<T2, T3>>
-    {
-        new public Dictionary<T2, T3> this[T1 key]
-        {
-            get
-            {
-                if (!ContainsKey(key))
-                    Add(key, new Dictionary<T2, T3>());
+            Dictionary<T2, T3> returnObj;
+            TryGetValue(key, out returnObj);
 
-                Dictionary<T2, T3> returnObj;
-                TryGetValue(key, out returnObj);
+            return returnObj;
+         }
+      }
+   }
 
-                return returnObj;
-            }
-        }
-    }
+   //public class MultiKeyDictionary<K1, K2, V> : Dictionary<K1, Dictionary<K2, V>>  {
 
-    //public class MultiKeyDictionary<K1, K2, V> : Dictionary<K1, Dictionary<K2, V>>  {
+   //    public V this[K1 key1, K2 key2] {
+   //        get {
+   //            if (!ContainsKey(key1) || !this[key1].ContainsKey(key2))
+   //                throw new ArgumentOutOfRangeException();
+   //            return base[key1][key2];
+   //        }
+   //        set {
+   //            if (!ContainsKey(key1))
+   //                this[key1] = new Dictionary<K2, V>();
+   //            this[key1][key2] = value;
+   //        }
+   //    }
 
-    //    public V this[K1 key1, K2 key2] {
-    //        get {
-    //            if (!ContainsKey(key1) || !this[key1].ContainsKey(key2))
-    //                throw new ArgumentOutOfRangeException();
-    //            return base[key1][key2];
-    //        }
-    //        set {
-    //            if (!ContainsKey(key1))
-    //                this[key1] = new Dictionary<K2, V>();
-    //            this[key1][key2] = value;
-    //        }
-    //    }
+   //    public void Add(K1 key1, K2 key2, V value) {
+   //            if (!ContainsKey(key1))
+   //                this[key1] = new Dictionary<K2, V>();
+   //            this[key1][key2] = value;
+   //    }
 
-    //    public void Add(K1 key1, K2 key2, V value) {
-    //            if (!ContainsKey(key1))
-    //                this[key1] = new Dictionary<K2, V>();
-    //            this[key1][key2] = value;
-    //    }
+   //    public bool ContainsKey(K1 key1, K2 key2) {
+   //        return base.ContainsKey(key1) && this[key1].ContainsKey(key2);
+   //    }
 
-    //    public bool ContainsKey(K1 key1, K2 key2) {
-    //        return base.ContainsKey(key1) && this[key1].ContainsKey(key2);
-    //    }
+   //    public new IEnumerable<V> Values {
+   //        get {
+   //            return from baseDict in base.Values
+   //                   from baseKey in baseDict.Keys
+   //                   select baseDict[baseKey];
+   //        }
+   //    } 
 
-    //    public new IEnumerable<V> Values {
-    //        get {
-    //            return from baseDict in base.Values
-    //                   from baseKey in baseDict.Keys
-    //                   select baseDict[baseKey];
-    //        }
-    //    } 
+   //}
 
-    //}
-
-
-    //public class MultiKeyDictionary<K1, K2, K3, V> : Dictionary<K1, MultiKeyDictionary<K2, K3, V>> {
-    //    public V this[K1 key1, K2 key2, K3 key3] {
-    //        get {
-    //            return ContainsKey(key1) ? this[key1][key2, key3] : default(V);
-    //        }
-    //        set {
-    //            if (!ContainsKey(key1))
-    //                this[key1] = new MultiKeyDictionary<K2, K3, V>();
-    //            this[key1][key2, key3] = value;
-    //        }
-    //    }
-
-    //    public bool ContainsKey(K1 key1, K2 key2, K3 key3) {
-    //        return base.ContainsKey(key1) && this[key1].ContainsKey(key2, key3);
-    //    }
-    //}
-
-    //public class MultiKeyDictionary<K1, K2, K3, K4, V> : Dictionary<K1, MultiKeyDictionary<K2, K3, K4, V>> {
-    //    public V this[K1 key1, K2 key2, K3 key3, K4 key4] {
-    //        get {
-    //            return ContainsKey(key1) ? this[key1][key2, key3, key4] : default(V);
-    //        }
-    //        set {
-    //            if (!ContainsKey(key1))
-    //                this[key1] = new MultiKeyDictionary<K2, K3, K4, V>();
-    //            this[key1][key2, key3, key4] = value;
-    //        }
-    //    }
-
-    //    public bool ContainsKey(K1 key1, K2 key2, K3 key3, K4 key4) {
-    //        return base.ContainsKey(key1) && this[key1].ContainsKey(key2, key3, key4);
-    //    }
-    //}
-
-    //public class MultiKeyDictionary<K1, K2, K3, K4, K5, V> : Dictionary<K1, MultiKeyDictionary<K2, K3, K4, K5, V>> {
-    //    public V this[K1 key1, K2 key2, K3 key3, K4 key4, K5 key5] {
-    //        get {
-    //            return ContainsKey(key1) ? this[key1][key2, key3, key4, key5] : default(V);
-    //        }
-    //        set {
-    //            if (!ContainsKey(key1))
-    //                this[key1] = new MultiKeyDictionary<K2, K3, K4, K5, V>();
-    //            this[key1][key2, key3, key4, key5] = value;
-    //        }
-    //    }
-
-    //    public bool ContainsKey(K1 key1, K2 key2, K3 key3, K4 key4, K5 key5) {
-    //        return base.ContainsKey(key1) && this[key1].ContainsKey(key2, key3, key4, key5);
-    //    }
-    //}
-
-    //public class MultiKeyDictionary<K1, K2, K3, K4, K5, K6, V> : Dictionary<K1, MultiKeyDictionary<K2, K3, K4, K5, K6, V>> {
-    //    public V this[K1 key1, K2 key2, K3 key3, K4 key4, K5 key5, K6 key6] {
-    //        get {
-    //            return ContainsKey(key1) ? this[key1][key2, key3, key4, key5, key6] : default(V);
-    //        }
-    //        set {
-    //            if (!ContainsKey(key1))
-    //                this[key1] = new MultiKeyDictionary<K2, K3, K4, K5, K6, V>();
-    //            this[key1][key2, key3, key4, key5, key6] = value;
-    //        }
-    //    }
-    //    public bool ContainsKey(K1 key1, K2 key2, K3 key3, K4 key4, K5 key5, K6 key6) {
-    //        return base.ContainsKey(key1) && this[key1].ContainsKey(key2, key3, key4, key5, key6);
-    //    }
-    //}
-
-    //public class MultiKeyDictionary<K1, K2, K3, K4, K5, K6, K7, V> : Dictionary<K1, MultiKeyDictionary<K2, K3, K4, K5, K6, K7, V>> {
-    //    public V this[K1 key1, K2 key2, K3 key3, K4 key4, K5 key5, K6 key6, K7 key7] {
-    //        get {
-    //            return ContainsKey(key1) ? this[key1][key2, key3, key4, key5, key6, key7] : default(V);
-    //        }
-    //        set {
-    //            if (!ContainsKey(key1))
-    //                this[key1] = new MultiKeyDictionary<K2, K3, K4, K5, K6, K7, V>();
-    //            this[key1][key2, key3, key4, key5, key6, key7] = value;
-    //        }
-    //    }
-    //    public bool ContainsKey(K1 key1, K2 key2, K3 key3, K4 key4, K5 key5, K6 key6, K7 key7) {
-    //        return base.ContainsKey(key1) && this[key1].ContainsKey(key2, key3, key4, key5, key6, key7);
-    //    }
-    //}
-
-    //public class MultiKeyDictionary<K1, K2, K3, K4, K5, K6, K7, K8, V> : Dictionary<K1, MultiKeyDictionary<K2, K3, K4, K5, K6, K7, K8, V>> {
-    //    public V this[K1 key1, K2 key2, K3 key3, K4 key4, K5 key5, K6 key6, K7 key7, K8 key8] {
-    //        get {
-    //            return ContainsKey(key1) ? this[key1][key2, key3, key4, key5, key6, key7, key8] : default(V);
-    //        }
-    //        set {
-    //            if (!ContainsKey(key1))
-    //                this[key1] = new MultiKeyDictionary<K2, K3, K4, K5, K6, K7, K8, V>();
-    //            this[key1][key2, key3, key4, key5, key6, key7, key8] = value;
-    //        }
-    //    }
-    //    public bool ContainsKey(K1 key1, K2 key2, K3 key3, K4 key4, K5 key5, K6 key6, K7 key7, K8 key8) {
-    //        return base.ContainsKey(key1) && this[key1].ContainsKey(key2, key3, key4, key5, key6, key7, key8);
-    //    }
-    //}
-
-    //public class MultiKeyDictionary<K1, K2, K3, K4, K5, K6, K7, K8, K9, V> : Dictionary<K1, MultiKeyDictionary<K2, K3, K4, K5, K6, K7, K8, K9, V>> {
-    //    public V this[K1 key1, K2 key2, K3 key3, K4 key4, K5 key5, K6 key6, K7 key7, K8 key8, K9 key9] {
-    //        get {
-    //            return ContainsKey(key1) ? this[key1][key2, key3, key4, key5, key6, key7, key8, key9] : default(V);
-    //        }
-    //        set {
-    //            if (!ContainsKey(key1))
-    //                this[key1] = new MultiKeyDictionary<K2, K3, K4, K5, K6, K7, K8, K9, V>();
-    //            this[key1][key2, key3, key4, key5, key6, key7, key8, key9] = value;
-    //        }
-    //    }
-    //    public bool ContainsKey(K1 key1, K2 key2, K3 key3, K4 key4, K5 key5, K6 key6, K7 key7, K8 key8, K9 key9) {
-    //        return base.ContainsKey(key1) && this[key1].ContainsKey(key2, key3, key4, key5, key6, key7, key8, key9);
-    //    }
-    //}
-
-    //public class MultiKeyDictionary<K1, K2, K3, K4, K5, K6, K7, K8, K9, K10, V> : Dictionary<K1, MultiKeyDictionary<K2, K3, K4, K5, K6, K7, K8, K9, K10, V>> {
-    //    public V this[K1 key1, K2 key2, K3 key3, K4 key4, K5 key5, K6 key6, K7 key7, K8 key8, K9 key9, K10 key10] {
-    //        get {
-    //            return ContainsKey(key1) ? this[key1][key2, key3, key4, key5, key6, key7, key8, key9, key10] : default(V);
-    //        }
-    //        set {
-    //            if (!ContainsKey(key1))
-    //                this[key1] = new MultiKeyDictionary<K2, K3, K4, K5, K6, K7, K8, K9, K10, V>();
-    //            this[key1][key2, key3, key4, key5, key6, key7, key8, key9, key10] = value;
-    //        }
-    //    }
-    //    public bool ContainsKey(K1 key1, K2 key2, K3 key3, K4 key4, K5 key5, K6 key6, K7 key7, K8 key8, K9 key9, K10 key10) {
-    //        return base.ContainsKey(key1) && this[key1].ContainsKey(key2, key3, key4, key5, key6, key7, key8, key9, key10);
-    //    }
-    //}
-
-    //public class MultiKeyDictionary<K1, K2, K3, K4, K5, K6, K7, K8, K9, K10, K11, V> : Dictionary<K1, MultiKeyDictionary<K2, K3, K4, K5, K6, K7, K8, K9, K10, K11, V>> {
-    //    public V this[K1 key1, K2 key2, K3 key3, K4 key4, K5 key5, K6 key6, K7 key7, K8 key8, K9 key9, K10 key10, K11 key11] {
-    //        get {
-    //            return ContainsKey(key1) ? this[key1][key2, key3, key4, key5, key6, key7, key8, key9, key10, key11] : default(V);
-    //        }
-    //        set {
-    //            if (!ContainsKey(key1))
-    //                this[key1] = new MultiKeyDictionary<K2, K3, K4, K5, K6, K7, K8, K9, K10, K11, V>();
-    //            this[key1][key2, key3, key4, key5, key6, key7, key8, key9, key10, key11] = value;
-    //        }
-    //    }
-    //    public bool ContainsKey(K1 key1, K2 key2, K3 key3, K4 key4, K5 key5, K6 key6, K7 key7, K8 key8, K9 key9, K10 key10, K11 key11) {
-    //        return base.ContainsKey(key1) && this[key1].ContainsKey(key2, key3, key4, key5, key6, key7, key8, key9, key10, key11);
-    //    }
-    //}
 
 
 }
