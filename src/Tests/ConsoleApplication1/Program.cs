@@ -89,18 +89,18 @@ namespace ConsoleApplication1
          Interface.ITableIdentifier ti = new Class.TableIdentifier();
          Interface.ITableIdentifier ti2 = new Class.TableIdentifier();
 
-         ci.ConnStringID = 0;
+         ci.ServerID = 0;
          ci.DatabaseName = "db";
          ci.SchemaName = "dbo";
          ci.TableName = "table";
          ci.ColumnName = "tbl";
 
-         ti.ConnStringID = 2;
+         ti.ServerID = 2;
          ti.DatabaseName = "db";
          ti.SchemaName = "dbo";
          ti.TableName = "table";
 
-         ti2.ConnStringID = 1;
+         ti2.ServerID = 1;
          ti2.DatabaseName = "db";
          ti2.SchemaName = "dbo";
          ti2.TableName = "table";
@@ -112,7 +112,7 @@ namespace ConsoleApplication1
 
          var tables = std.Select(kv => new StaticTable()
          {
-            ConnStringID = kv.Key.ConnStringID,
+            ServerId = kv.Key.ServerID,
             Database = kv.Key.DatabaseName,
             Schema = kv.Key.SchemaName,
             Table = kv.Key.TableName,

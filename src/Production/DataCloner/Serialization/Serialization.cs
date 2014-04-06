@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Xml.Serialization;
 
-namespace DataCloner.Serialization
+namespace Serialization
 {
    [Serializable]
    public class Config
@@ -17,7 +17,7 @@ namespace DataCloner.Serialization
    public class StaticTable
    {
       [XmlAttribute]
-      public Int16 ConnStringID { get; set; }
+      public Int16 ServerID { get; set; }
       [XmlAttribute]
       public string Database { get; set; }
       [XmlAttribute]

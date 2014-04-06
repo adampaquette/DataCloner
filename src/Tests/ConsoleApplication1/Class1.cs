@@ -18,7 +18,7 @@ namespace Serialisation
    public class StaticTable
    {
       [XmlAttribute]
-      public Int16 ConnStringID { get; set; }
+      public Int16 ServerId { get; set; }
       [XmlAttribute]
       public string Database { get; set; }
       [XmlAttribute]
@@ -34,7 +34,7 @@ namespace Interface
 {
    public interface ITableIdentifier
    {
-      Int16 ConnStringID { get; set; }
+      Int16 ServerID { get; set; }
       string DatabaseName { get; set; }
       string SchemaName { get; set; }
       string TableName { get; set; }
@@ -54,7 +54,7 @@ namespace Class
 {
    public class TableIdentifier : ITableIdentifier
    {
-      public Int16 ConnStringID { get; set; }
+      public Int16 ServerID { get; set; }
       public string DatabaseName { get; set; }
       public string SchemaName { get; set; }
       public string TableName { get; set; }
@@ -62,7 +62,7 @@ namespace Class
       public override string ToString()
       {
          //TODO : EST UTILISÉ PAR GETHASHCODE??
-         return ConnStringID + "." + DatabaseName + "." + SchemaName + "." + TableName;
+         return ServerID + "." + DatabaseName + "." + SchemaName + "." + TableName;
       }
    }
 
@@ -72,7 +72,7 @@ namespace Class
 
       bool IEqualityComparer<ITableIdentifier>.Equals(ITableIdentifier x, ITableIdentifier y)
       {
-         return x.ConnStringID.Equals(y.ConnStringID) &&
+         return x.ServerID.Equals(y.ServerID) &&
                 x.DatabaseName.Equals(y.DatabaseName) &&
                 x.SchemaName.Equals(y.SchemaName) &&
                 x.TableName.Equals(y.TableName);
@@ -80,7 +80,7 @@ namespace Class
 
       int IEqualityComparer<ITableIdentifier>.GetHashCode(ITableIdentifier obj)
       {
-         return (obj.ConnStringID.ToString() + obj.DatabaseName + obj.SchemaName + obj.TableName).GetHashCode();
+         return (obj.ServerID.ToString() + obj.DatabaseName + obj.SchemaName + obj.TableName).GetHashCode();
       }
 
       #endregion
@@ -97,7 +97,7 @@ namespace Class
 
       bool IEqualityComparer<IColumnIdentifier>.Equals(IColumnIdentifier x, IColumnIdentifier y)
       {
-         return x.ConnStringID.Equals(y.ConnStringID) &&
+         return x.ServerID.Equals(y.ServerID) &&
                 x.DatabaseName.Equals(y.DatabaseName) &&
                 x.SchemaName.Equals(y.SchemaName) &&
                 x.TableName.Equals(y.TableName) &&
@@ -106,7 +106,7 @@ namespace Class
 
       int IEqualityComparer<IColumnIdentifier>.GetHashCode(IColumnIdentifier obj)
       {
-         return (obj.ConnStringID + obj.DatabaseName + obj.SchemaName + obj.TableName + obj.ColumnName).GetHashCode();
+         return (obj.ServerID + obj.DatabaseName + obj.SchemaName + obj.TableName + obj.ColumnName).GetHashCode();
       }
 
       #endregion
