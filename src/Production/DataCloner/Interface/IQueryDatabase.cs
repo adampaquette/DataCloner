@@ -3,15 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Data;
-using Interface;
-using System.Data;
 
-namespace DataCloner.Interface
+namespace DataCloner
 {
-    public interface IQueryDatabase : IDbConnection
+    public interface IQueryDatabase  : IDisposable
     {
+        IDbConnection Connection { get; }
         bool IsReadOnly { get; }
-        DataTable GetFK();
+        DataTable GetFK(ITableIdentifier ti);
         object GetLastInsertedPK();
         DataTable Select(IRowIdentifier ri);
         bool Insert(ITableIdentifier ti, DataRow[] rows);

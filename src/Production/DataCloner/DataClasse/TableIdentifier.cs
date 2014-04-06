@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Interface;
 
-namespace DataClasse
+namespace DataCloner.DataClasse
 {
     public class TableIdentifier : ITableIdentifier
     {

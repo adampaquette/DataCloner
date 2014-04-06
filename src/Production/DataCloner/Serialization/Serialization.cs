@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Xml.Serialization;
 
-namespace Serialization
+namespace DataCloner.Serialization
 {
    [Serializable]
    public class Config

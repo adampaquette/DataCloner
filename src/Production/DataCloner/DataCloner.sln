@@ -5,6 +5,8 @@ VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataCloner", "DataCloner.csproj", "{3459DC7A-21BA-435C-882B-D84A333AEFD0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApplication1", "..\..\Tests\ConsoleApplication1\ConsoleApplication1.csproj", "{DF1CA01F-E3F4-4DBC-88C0-5F18A573E7AA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{3459DC7A-21BA-435C-882B-D84A333AEFD0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3459DC7A-21BA-435C-882B-D84A333AEFD0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3459DC7A-21BA-435C-882B-D84A333AEFD0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DF1CA01F-E3F4-4DBC-88C0-5F18A573E7AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF1CA01F-E3F4-4DBC-88C0-5F18A573E7AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF1CA01F-E3F4-4DBC-88C0-5F18A573E7AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF1CA01F-E3F4-4DBC-88C0-5F18A573E7AA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

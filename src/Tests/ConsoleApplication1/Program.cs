@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Interface;
 using Class;
 using System.Xml.Serialization;
-using Serialisation;
+using DataCloner;
 
-using System.Data.SQLite;
+//using System.Data.SQLite;
 
 
 namespace ConsoleApplication1
@@ -16,34 +15,44 @@ namespace ConsoleApplication1
    {
       static void Main(string[] args)
       {
-         var conn = new SQLiteConnection(@"Data Source=C:\datacloner.db;Version=3;");
-         conn.Open();
+          var ti = new DataCloner.DataClasse.TableIdentifier();
+          ti.DatabaseName = "botnet";
+          ti.SchemaName = "botnet";
+          ti.TableName = "link";
+
+          var m = new DataCloner.DataAccess.QueryDatabaseMySQL("server=localhost;user id=root; password=cdxsza; database=mysql; pooling=false");
+          var dt = m.GetFK(ti);
 
 
-         using (SQLiteTransaction mytransaction = conn.BeginTransaction())
-         {
-            using (SQLiteCommand mycommand = new SQLiteCommand(conn))
-            {
-               SQLiteParameter myparam = new SQLiteParameter();
-               int n;
 
-               mycommand.CommandText = "DROP TABLE MyTable";
-               mycommand.ExecuteNonQuery();
-               mycommand.CommandText = "CREATE TABLE MyTable (Id INTEGER PRIMARY KEY ASC)";
-               mycommand.ExecuteNonQuery();
+         //var conn = new SQLiteConnection(@"Data Source=C:\datacloner.db;Version=3;");
+         //conn.Open();
 
-               mycommand.CommandText = "INSERT INTO [MyTable] ([Id]) VALUES(?)";
-               mycommand.Parameters.Add(myparam);
 
-               for (n = 0; n < 100; n++)
-               {
-                  myparam.Value = n + 1;
-                  mycommand.ExecuteNonQuery();
-               }
-            }
-            mytransaction.Commit();
-         }
-         conn.Close();
+         //using (SQLiteTransaction mytransaction = conn.BeginTransaction())
+         //{
+         //   using (SQLiteCommand mycommand = new SQLiteCommand(conn))
+         //   {
+         //      SQLiteParameter myparam = new SQLiteParameter();
+         //      int n;
+
+         //      mycommand.CommandText = "DROP TABLE MyTable";
+         //      mycommand.ExecuteNonQuery();
+         //      mycommand.CommandText = "CREATE TABLE MyTable (Id INTEGER PRIMARY KEY ASC)";
+         //      mycommand.ExecuteNonQuery();
+
+         //      mycommand.CommandText = "INSERT INTO [MyTable] ([Id]) VALUES(?)";
+         //      mycommand.Parameters.Add(myparam);
+
+         //      for (n = 0; n < 100; n++)
+         //      {
+         //         myparam.Value = n + 1;
+         //         mycommand.ExecuteNonQuery();
+         //      }
+         //   }
+         //   mytransaction.Commit();
+         //}
+         //conn.Close();
 /*
 #define SQLITE_OK           0   // Successful result 
 #define SQLITE_ERROR        1   // SQL error or missing database 
@@ -83,47 +92,47 @@ namespace ConsoleApplication1
       }
 
 
-      public void serial()
-      {
-         Interface.IColumnIdentifier ci = new Class.ColumnIdentifier();
-         Interface.ITableIdentifier ti = new Class.TableIdentifier();
-         Interface.ITableIdentifier ti2 = new Class.TableIdentifier();
+      //public void serial()
+      //{
+      //   Interface.IColumnIdentifier ci = new Class.ColumnIdentifier();
+      //   Interface.ITableIdentifier ti = new Class.TableIdentifier();
+      //   Interface.ITableIdentifier ti2 = new Class.TableIdentifier();
 
-         ci.ServerID = 0;
-         ci.DatabaseName = "db";
-         ci.SchemaName = "dbo";
-         ci.TableName = "table";
-         ci.ColumnName = "tbl";
+      //   ci.ServerID = 0;
+      //   ci.DatabaseName = "db";
+      //   ci.SchemaName = "dbo";
+      //   ci.TableName = "table";
+      //   ci.ColumnName = "tbl";
 
-         ti.ServerID = 2;
-         ti.DatabaseName = "db";
-         ti.SchemaName = "dbo";
-         ti.TableName = "table";
+      //   ti.ServerID = 2;
+      //   ti.DatabaseName = "db";
+      //   ti.SchemaName = "dbo";
+      //   ti.TableName = "table";
 
-         ti2.ServerID = 1;
-         ti2.DatabaseName = "db";
-         ti2.SchemaName = "dbo";
-         ti2.TableName = "table";
+      //   ti2.ServerID = 1;
+      //   ti2.DatabaseName = "db";
+      //   ti2.SchemaName = "dbo";
+      //   ti2.TableName = "table";
 
-         Interface.IStaticTableDictionnary std = new Class.StaticTableDictionnary();
-         std.Add(ti, true);
-         std.Add(ti2, true);
-         std.Add(ci, false);
+      //   Interface.IStaticTableDictionnary std = new Class.StaticTableDictionnary();
+      //   std.Add(ti, true);
+      //   std.Add(ti2, true);
+      //   std.Add(ci, false);
 
-         var tables = std.Select(kv => new StaticTable()
-         {
-            ServerId = kv.Key.ServerID,
-            Database = kv.Key.DatabaseName,
-            Schema = kv.Key.SchemaName,
-            Table = kv.Key.TableName,
-            Active = kv.Value
-         }).ToList();
+      //   var tables = std.Select(kv => new StaticTable()
+      //   {
+      //      ServerId = kv.Key.ServerID,
+      //      Database = kv.Key.DatabaseName,
+      //      Schema = kv.Key.SchemaName,
+      //      Table = kv.Key.TableName,
+      //      Active = kv.Value
+      //   }).ToList();
 
-         var staticTables = new Config();
-         staticTables.StaticTables = tables;
-         Console.WriteLine(SerizlizeXML(staticTables));
-         Console.WriteLine();
-      }
+      //   var staticTables = new Config();
+      //   staticTables.StaticTables = tables;
+      //   Console.WriteLine(SerizlizeXML(staticTables));
+      //   Console.WriteLine();
+      //}
 
 
       public static string SerizlizeXML<T>(T obj)
