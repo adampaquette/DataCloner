@@ -13,8 +13,8 @@ namespace DataCloner
         DataTable GetFK(ITableIdentifier ti);
         Int64 GetLastInsertedPK();
         DataTable Select(IRowIdentifier ri);
-        bool Insert(ITableIdentifier ti, DataRow[] rows);
-        bool Update(IRowIdentifier ri, DataRow[] rows);
-        bool Delete(IRowIdentifier ri);
+        void Insert(ITableIdentifier ti, DataRow[] rows);
+        void Update(IRowIdentifier ri, DataRow[] rows);
+        void Delete(IRowIdentifier ri);
     }
 }

@@ -54,17 +54,17 @@ namespace DataCloner.DataAccess
             throw new NotImplementedException();
         }
 
-        bool IQueryDatabase.Insert(ITableIdentifier ti, System.Data.DataRow[] rows)
+        void IQueryDatabase.Insert(ITableIdentifier ti, System.Data.DataRow[] rows)
         {
             throw new NotImplementedException();
         }
 
-        bool IQueryDatabase.Update(IRowIdentifier ri, System.Data.DataRow[] rows)
+        void IQueryDatabase.Update(IRowIdentifier ri, System.Data.DataRow[] rows)
         {
             throw new NotImplementedException();
         }
 
-        bool IQueryDatabase.Delete(IRowIdentifier ri)
+        void IQueryDatabase.Delete(IRowIdentifier ri)
         {
             throw new NotImplementedException();
         }
