@@ -18,11 +18,13 @@ namespace DataCloner
         string ColumnName { get; set; }
     }
 
-    public interface IRowIdentifier : IDictionary<IColumnIdentifier, object>
-    {         
+    public interface IRowIdentifier
+    {
+        ITableIdentifier TableIdentifier { get; set; }
+        IDictionary<string, object> Columns { get; set; }
     }
 
     public interface IStaticTableDictionnary : IDictionary<ITableIdentifier, bool>
-    {       
+    {
     }
 }

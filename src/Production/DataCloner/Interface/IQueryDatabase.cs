@@ -11,7 +11,7 @@ namespace DataCloner
         IDbConnection Connection { get; }
         bool IsReadOnly { get; }
         DataTable GetFK(ITableIdentifier ti);
-        object GetLastInsertedPK();
+        Int64 GetLastInsertedPK();
         DataTable Select(IRowIdentifier ri);
         bool Insert(ITableIdentifier ti, DataRow[] rows);
         bool Update(IRowIdentifier ri, DataRow[] rows);

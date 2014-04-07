@@ -15,13 +15,7 @@ namespace ConsoleApplication1
    {
       static void Main(string[] args)
       {
-          var ti = new DataCloner.DataClasse.TableIdentifier();
-          ti.DatabaseName = "botnet";
-          ti.SchemaName = "botnet";
-          ti.TableName = "link";
-
-          var m = new DataCloner.DataAccess.QueryDatabaseMySQL("server=localhost;user id=root; password=cdxsza; database=mysql; pooling=false");
-          var dt = m.GetFK(ti);
+          
 
 
 

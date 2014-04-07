@@ -42,10 +42,10 @@ namespace DataCloner.DataAccess
 
         public DataTable GetFK(ITableIdentifier ti)
         {
-            DataTable dtReturn = new DataTable();
+            var dtReturn = new DataTable();
             
             //TODO SELECT DATABASE
-            string SQL =
+            string sql =
                 "SELECT " +
                 "	TC.TABLE_SCHEMA," +
                 "	TC.TABLE_NAME," +
@@ -59,7 +59,7 @@ namespace DataCloner.DataAccess
                 "AND TC.TABLE_SCHEMA = @shema " +
                 "AND TC.TABLE_NAME = @table";
 
-            MySqlCommand cmd = new MySqlCommand(SQL, _conn);
+            var cmd = new MySqlCommand(sql, _conn);
             cmd.Parameters.AddWithValue("@shema", ti.SchemaName);
             cmd.Parameters.AddWithValue("@table", ti.TableName);
 
@@ -68,19 +68,72 @@ namespace DataCloner.DataAccess
             return dtReturn;
         }
 
-        public object GetLastInsertedPK()
+        public Int64 GetLastInsertedPK()
         {
-            throw new NotImplementedException();
+            var cmd = new MySqlCommand("SELECT LAST_INSERT_ID();", _conn);
+            return (Int64)cmd.ExecuteScalar();
         }
 
         public DataTable Select(IRowIdentifier ri)
         {
-            throw new NotImplementedException();
+            var dtReturn = new DataTable();
+            var cmd = new MySqlCommand();
+            var sql = new StringBuilder("SELECT * FROM ");
+            sql.Append(ri.TableIdentifier.DatabaseName)
+               .Append(".")
+               .Append(ri.TableIdentifier.TableName);
+
+            if(ri.Columns.Count>1)
+                sql.Append(" WHERE 1=1");
+
+            foreach (var kv in ri.Columns)
+            {
+                sql.Append(" AND ")
+                   .Append(kv.Key)
+                   .Append(" = @")
+                   .Append(kv.Key);
+
+                cmd.Parameters.AddWithValue("@" + kv.Key, kv.Value);
+            }
+
+            cmd.CommandText = sql.ToString();
+            cmd.Connection = _conn;
+
+            new MySqlDataAdapter(cmd).Fill(dtReturn);
+
+            return dtReturn;
         }
 
-        public bool Insert(ITableIdentifier ti, System.Data.DataRow[] rows)
-        {
-            throw new NotImplementedException();
+        public bool Insert(ITableIdentifier ti, DataRow[] rows)
+        {           
+            var cmd = new MySqlCommand();
+            var sql = new StringBuilder("INSERT INTO  ");
+            sql.Append(ti.DatabaseName)
+               .Append(".")
+               .Append(ti.TableName)
+               .Append(" VALUES(");
+                
+            /*TODO : RÉCUPÉRER LE SHÉMA DE LA TABLE
+             * Pour chaque colonne qui n'est pas une PK autoincrement, 
+             * construire la requête
+
+            */
+/*            foreach (var row in rows)
+            {
+                sql.Append(" AND ")
+                   .Append(kv.Key)
+                   .Append(" = @")
+                   .Append(kv.Key);
+
+                cmd.Parameters.AddWithValue("@" + kv.Key, kv.Value);
+            }
+
+            cmd.CommandText = sql.ToString();
+            cmd.Connection = _conn;
+
+            new MySqlDataAdapter(cmd).*/
+
+            return true;
         }
 
         public bool Update(IRowIdentifier ri, System.Data.DataRow[] rows)

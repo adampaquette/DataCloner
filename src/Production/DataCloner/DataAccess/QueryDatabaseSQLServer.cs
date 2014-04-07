@@ -44,7 +44,7 @@ namespace DataCloner.DataAccess
             throw new NotImplementedException();
         }
 
-        object IQueryDatabase.GetLastInsertedPK()
+        Int64 IQueryDatabase.GetLastInsertedPK()
         {
             throw new NotImplementedException();
         }
