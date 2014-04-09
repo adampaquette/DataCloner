@@ -29,9 +29,13 @@ namespace Class
          conn.Open();
          if (conn.Database != "PGISCBL")
             conn.ChangeDatabase("PGISCBL");
-         var dt = conn.GetSchema("Columns");
-
+         //var dt = conn.GetSchema("Columns");
          conn.Close();
+
+         var ss = new System.Data.SqlClient.SqlDataAdapter();
+
+
+
 
          return 0;
       }

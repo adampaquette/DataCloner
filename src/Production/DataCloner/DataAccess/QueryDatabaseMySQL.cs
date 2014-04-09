@@ -214,6 +214,9 @@ namespace DataCloner.DataAccess
       //    }
       //}
 
-
+      public void Init()
+      {
+         throw new NotImplementedException();
+      }
    }
 }

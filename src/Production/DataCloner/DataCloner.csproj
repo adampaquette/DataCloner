@@ -80,8 +80,12 @@
     <Compile Include="DataAccess\QueryDatabaseMySQL.cs" />
     <Compile Include="DataAccess\QueryDatabaseSQLServer.cs" />
     <Compile Include="DataClasse\ColumnIdentifier.cs" />
+    <Compile Include="DataClasse\InfoShemaColumn.cs" />
+    <Compile Include="DataClasse\InfoShemaTable.cs" />
     <Compile Include="DataClasse\RowIdentifier.cs" />
     <Compile Include="DataClasse\StaticTableDictionnary.cs" />
+    <Compile Include="DataClasse\TableCache.cs" />
+    <Compile Include="DataClasse\TableCacheDictionnary.cs" />
     <Compile Include="DataClasse\TableIdentifier.cs" />
     <Compile Include="Interface\Interfaces.cs" />
     <Compile Include="Interface\IQueryDatabase.cs" />
