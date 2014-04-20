@@ -3,61 +3,65 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Data;
+using DataCloner.Serialization;
 
 namespace DataCloner.DataAccess
 {
     class QueryDispatcher : IQueryDispatcher
     {
-        private List<IQueryDatabase> _conns;
+        private readonly Configuration _config;
+        private Dictionary<Int16, IQueryProvider> _conns;
 
-        public IDbConnection Connection
+        public QueryDispatcher(Configuration config)
         {
-            get { throw new NotImplementedException(); }
-        }
+            _config = config;
 
-        public void Init()
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool IsReadOnly
-        {
-            get { throw new NotImplementedException(); }
+            //Récupération des providers qui seront utilisés pour effectuer les requêtes
+            foreach (var conn in _config.ConnectionStrings)
+            {
+                var t = Type.GetType(conn.ProviderName);
+                IQueryProvider provider = Activator.CreateInstance(t, new object[] { conn.ConnectionString }) as IQueryProvider;
+                _conns.Add(conn.Id, provider);
+            }
         }
 
         public DataTable GetFK(ITableIdentifier ti)
         {
-            throw new NotImplementedException();
+            return _conns[ti.ServerID].GetFK(ti);
         }
 
-        public long GetLastInsertedPK()
+        public long GetLastInsertedPK(Int16 serverId)
         {
-            throw new NotImplementedException();
+            return _conns[serverId].GetLastInsertedPK();
         }
 
         public DataTable Select(IRowIdentifier ri)
         {
-            throw new NotImplementedException();
+            return _conns[ri.TableIdentifier.ServerID].Select(ri);
         }
 
         public void Insert(ITableIdentifier ti, DataRow[] rows)
         {
-            throw new NotImplementedException();
+            _conns[ti.ServerID].Insert(ti, rows);
         }
 
         public void Update(IRowIdentifier ri, DataRow[] rows)
         {
-            throw new NotImplementedException();
+            _conns[ri.TableIdentifier.ServerID].Update(ri, rows);
         }
 
         public void Delete(IRowIdentifier ri)
         {
-            throw new NotImplementedException();
+            _conns[ri.TableIdentifier.ServerID].Delete(ri);
         }
 
         public void Dispose()
         {
-            throw new NotImplementedException();
+            //TODO : IDISPOSABLE
+            foreach (var conn in _conns)
+            {
+                conn.Value.Dispose();
+            }
         }
     }
 }

@@ -25,19 +25,44 @@ namespace Class
             //m.Select(ri);
 
 
-            var conn = new System.Data.SqlClient.SqlConnection("Data Source=une_sql_pgis;Initial Catalog=PGISCBL;Integrated Security=SSPI;");
-            conn.Open();
-            if (conn.Database != "PGISCBL")
-                conn.ChangeDatabase("PGISCBL");
-            //var dt = conn.GetSchema("Columns");
-            conn.Close();
+            //var conn = new System.Data.SqlClient.SqlConnection("Data Source=une_sql_pgis;Initial Catalog=PGISCBL;Integrated Security=SSPI;");
+            //conn.Open();
+            //if (conn.Database != "PGISCBL")
+            //    conn.ChangeDatabase("PGISCBL");
+            ////var dt = conn.GetSchema("Columns");
+            //conn.Close();
 
-            var ss = new System.Data.SqlClient.SqlDataAdapter();
+            configTest();
 
-
+            var a = new DataCloner.DataCloner();
+            a.SQLTraveler(null, true, true);
 
 
             return 0;
+        }
+
+        public static void configTest()
+        {
+            var c = new DataCloner.Serialization.Configuration();
+            var cs = new DataCloner.Serialization.Connection(1, "sql1", "DataCloner.DataAccess.QueryDatabaseMySQL", "server=localhost;user id=root; password=cdxsza; database=mysql; pooling=false");
+            c.ConnectionStrings.Add(cs);
+
+            string serialized = SerizlizeXML(c);
+            c.Save();
+
+            DataCloner.Serialization.Configuration config;
+            config = DataCloner.Serialization.Configuration.Load();
+        }
+
+        public static string SerizlizeXML<T>(T obj)
+        {
+            var xs = new System.Xml.Serialization.XmlSerializer(obj.GetType());
+            var sw = new System.IO.StringWriter();
+            var ns = new System.Xml.Serialization.XmlSerializerNamespaces();
+            ns.Add("", "");
+
+            xs.Serialize(sw, obj, ns);
+            return sw.ToString();
         }
     }
 }

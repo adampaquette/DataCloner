@@ -7,10 +7,45 @@ using System.Xml.Serialization;
 namespace DataCloner.Serialization
 {
     [Serializable]
-    public class Config
+    public class Configuration
     {
+        public static readonly string FileName = "dc.config";
+
         [XmlArrayItem("Table")]
         public List<StaticTable> StaticTables { get; set; }
+        [XmlArrayItem("add")]
+        public List<Connection> ConnectionStrings { get; set; }
+
+        public Configuration()
+        {
+            StaticTables = new List<StaticTable>();
+            ConnectionStrings = new List<Connection>();
+        }
+
+        public void Save()
+        {
+            var xs = new System.Xml.Serialization.XmlSerializer(this.GetType());
+            var fs = new System.IO.FileStream(FileName, System.IO.FileMode.Create);
+            var ns = new System.Xml.Serialization.XmlSerializerNamespaces();
+            ns.Add("", "");
+
+            xs.Serialize(fs, this, ns);
+            fs.Close();
+        }
+
+        public static Configuration Load()
+        {
+            var xs = new System.Xml.Serialization.XmlSerializer(typeof(Configuration));
+            if (System.IO.File.Exists(FileName))
+            {
+
+                var fs = new System.IO.FileStream(FileName, System.IO.FileMode.Open);
+                var cReturn = (Configuration)xs.Deserialize(fs);
+                fs.Close();
+                return cReturn;
+            }
+            return new Configuration();            
+        }
     }
 
     [Serializable]
@@ -26,5 +61,27 @@ namespace DataCloner.Serialization
         public string Table { get; set; }
         [XmlAttribute]
         public bool Active { get; set; }
+    }
+
+    [Serializable]
+    public class Connection
+    {
+        [XmlAttribute]
+        public Int16 Id { get; set; }
+        [XmlAttribute]
+        public string Name { get; set; }
+        [XmlAttribute]
+        public string ProviderName { get; set; }
+        [XmlAttribute]
+        public string ConnectionString { get; set; }
+
+        public Connection() {}
+        public Connection(Int16 id, string name, string providerName, string connectionString)
+        {
+            Id = id;
+            Name = name;
+            ProviderName = providerName;
+            ConnectionString = connectionString;
+        }
     }
 }

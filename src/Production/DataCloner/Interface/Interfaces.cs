@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Data;
 
 namespace DataCloner
 {
@@ -51,7 +52,13 @@ namespace DataCloner
         byte DataType { get; set; }
     }
 
-    public interface IQueryDispatcher : IQueryDatabase
-    {
+    public interface IQueryDispatcher
+    {        
+        DataTable GetFK(ITableIdentifier ti);
+        Int64 GetLastInsertedPK(Int16 serverId);
+        DataTable Select(IRowIdentifier ri);
+        void Insert(ITableIdentifier ti, DataRow[] rows);
+        void Update(IRowIdentifier ri, DataRow[] rows);
+        void Delete(IRowIdentifier ri);
     }
 }

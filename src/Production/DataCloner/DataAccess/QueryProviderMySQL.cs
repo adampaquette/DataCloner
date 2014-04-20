@@ -8,24 +8,24 @@ using MySql.Data.MySqlClient;
 
 namespace DataCloner.DataAccess
 {
-    public class QueryDatabaseMySQL : IQueryDatabase
+    public class QueryProviderMySQL : IQueryProvider
     {
         private MySqlConnection _conn;
         private bool _isReadOnly;
 
-        public QueryDatabaseMySQL(string connectionString)
+        public QueryProviderMySQL(string connectionString)
         {
             _conn = new MySqlConnection(connectionString);
             _conn.Open();
         }
 
-        public QueryDatabaseMySQL(string connectionString, bool readOnly)
+        public QueryProviderMySQL(string connectionString, bool readOnly)
             : this(connectionString)
         {
             _isReadOnly = readOnly;
         }
 
-        ~QueryDatabaseMySQL()
+        ~QueryProviderMySQL()
         {
             Dispose(false);
         }

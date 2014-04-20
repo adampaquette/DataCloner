@@ -8,24 +8,24 @@ using DataCloner.DataClasse;
 
 namespace DataCloner.DataAccess
 {
-    public class QueryDatabaseSQLServer : IQueryDatabase
+    public class QueryProviderSQLServer : IQueryProvider
     {
         private SqlConnection _conn;
         private bool _isReadOnly;
-        private ITableCacheDictionnary _cache = new TableCacheDictionnary();
+        //private ITableCacheDictionnary _cache = new TableCacheDictionnary();
 
-        public QueryDatabaseSQLServer(string connectionString)
+        public QueryProviderSQLServer(string connectionString)
         {
             _conn = new SqlConnection(connectionString);
         }
 
-        public QueryDatabaseSQLServer(string connectionString, bool readOnly)
+        public QueryProviderSQLServer(string connectionString, bool readOnly)
             : this(connectionString)
         {
             _isReadOnly = readOnly;
         }
 
-        ~QueryDatabaseSQLServer()
+        ~QueryProviderSQLServer()
         {
             Dispose(false);
         }
@@ -123,7 +123,7 @@ namespace DataCloner.DataAccess
             while (reader.Read())
             {
                 var ti = new TableIdentifier();
-                var tc = new TableCache();
+                //var tc = new TableCache();
 
             }
 
