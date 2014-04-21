@@ -21,8 +21,7 @@ namespace DataCloner
         {
             RowIdentifier riReturn = null;
             var dispatcher = new QueryDispatcher(_config);
-
-            
+            var linesSource = dispatcher.Select(riSource);
 
 
 

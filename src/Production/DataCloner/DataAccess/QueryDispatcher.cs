@@ -15,6 +15,7 @@ namespace DataCloner.DataAccess
         public QueryDispatcher(Configuration config)
         {
             _config = config;
+            _conns = new Dictionary<Int16, IQueryProvider>();
 
             //Récupération des providers qui seront utilisés pour effectuer les requêtes
             foreach (var conn in _config.ConnectionStrings)

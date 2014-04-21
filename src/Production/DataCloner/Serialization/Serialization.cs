@@ -48,20 +48,86 @@ namespace DataCloner.Serialization
         }
     }
 
+    //[Serializable]
+    //public class StaticTable
+    //{
+    //    [XmlAttribute]
+    //    public Int16 ServerID { get; set; }
+    //    [XmlAttribute]
+    //    public string Database { get; set; }
+    //    [XmlAttribute]
+    //    public string Schema { get; set; }
+    //    [XmlAttribute]
+    //    public string Table { get; set; }
+    //    [XmlAttribute]
+    //    public bool Active { get; set; }
+
+    //    public StaticTable() { }
+    //    public StaticTable(Int16 serverId, string databaseName, string schemaName, string tableName, bool active)
+    //    {
+    //        ServerID = serverId;
+    //        Database = databaseName;
+    //        Schema = schemaName;
+    //        Table = tableName;
+    //        Active = active;
+    //    }
+    //}
+
     [Serializable]
     public class StaticTable
     {
-        [XmlAttribute]
-        public Int16 ServerID { get; set; }
-        [XmlAttribute]
-        public string Database { get; set; }
-        [XmlAttribute]
-        public string Schema { get; set; }
-        [XmlAttribute]
-        public string Table { get; set; }
-        [XmlAttribute]
-        public bool Active { get; set; }
+        public List<ServerXML> Server { get; set; }
+
+        public StaticTable()
+        {
+            Server = new List<ServerXML>();
+        }
+
+        public class ServerXML
+        { 
+            [XmlAttribute]
+            public Int16 Id { get; set; }
+            public List<DatabaseXML> Database { get; set; }
+
+            public ServerXML()
+            {
+                Database = new List<DatabaseXML>();
+            }
+
+            public class DatabaseXML
+            {
+                [XmlAttribute]
+                public string Name { get; set; }
+                public List<SchemaXML> Schema { get; set; }
+
+                public DatabaseXML()
+                {
+                    Schema = new List<SchemaXML>();
+                }
+
+                public class SchemaXML
+                {
+                    [XmlAttribute]
+                    public string Name { get; set; }
+                    public List<TableXML> Table { get; set; }
+
+                    public SchemaXML()
+                    {
+                        Table = new List<TableXML>();
+                    }
+
+                    public class TableXML
+                    {
+                        [XmlAttribute]
+                        public string Name { get; set; }
+                        [XmlAttribute]
+                        public bool Active { get; set; }
+                    }
+                }
+            }
+        }
     }
+
 
     [Serializable]
     public class Connection

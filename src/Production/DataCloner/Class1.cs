@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Xml.Serialization;
+using DataCloner.Serialization;
 
 namespace Class
 {
@@ -34,8 +35,8 @@ namespace Class
 
             configTest();
 
-            var a = new DataCloner.DataCloner();
-            a.SQLTraveler(null, true, true);
+            //var a = new DataCloner.DataCloner();
+            //a.SQLTraveler(null, true, true);
 
 
             return 0;
@@ -43,15 +44,25 @@ namespace Class
 
         public static void configTest()
         {
-            var c = new DataCloner.Serialization.Configuration();
-            var cs = new DataCloner.Serialization.Connection(1, "sql1", "DataCloner.DataAccess.QueryDatabaseMySQL", "server=localhost;user id=root; password=cdxsza; database=mysql; pooling=false");
-            c.ConnectionStrings.Add(cs);
+            var config = new Configuration();
+            var cs = new Connection(1, "sql1", "DataCloner.DataAccess.QueryProviderMySQL", "server=localhost;user id=root; password=cdxsza; database=mysql; pooling=false");
+            config.ConnectionStrings.Add(cs);
 
-            string serialized = SerizlizeXML(c);
-            c.Save();
+            //config.StaticTables.Add(new StaticTable(1, "root", "dbo", "table1", true));
+            //config.StaticTables.Add(new StaticTable(1, "root", "dbo", "table2", true));
 
-            DataCloner.Serialization.Configuration config;
-            config = DataCloner.Serialization.Configuration.Load();
+
+            //StaticTable a = new StaticTable();
+            //StaticTable.ServerXML.DatabaseXML.SchemaXML.TableXML()
+            //a.Server.Add(new s
+
+
+            //Save / load from file
+            string serialized = SerizlizeXML(config);
+            config.Save();
+
+            Configuration configLoaded;
+            configLoaded = Configuration.Load();
         }
 
         public static string SerizlizeXML<T>(T obj)
