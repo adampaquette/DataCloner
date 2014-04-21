@@ -11,7 +11,7 @@ namespace DataCloner.Serialization
     {
         public static readonly string FileName = "dc.config";
 
-        [XmlArrayItem("Table")]
+        [XmlElement]
         public List<StaticTable> StaticTables { get; set; }
         [XmlArrayItem("add")]
         public List<Connection> ConnectionStrings { get; set; }
@@ -48,34 +48,10 @@ namespace DataCloner.Serialization
         }
     }
 
-    //[Serializable]
-    //public class StaticTable
-    //{
-    //    [XmlAttribute]
-    //    public Int16 ServerID { get; set; }
-    //    [XmlAttribute]
-    //    public string Database { get; set; }
-    //    [XmlAttribute]
-    //    public string Schema { get; set; }
-    //    [XmlAttribute]
-    //    public string Table { get; set; }
-    //    [XmlAttribute]
-    //    public bool Active { get; set; }
-
-    //    public StaticTable() { }
-    //    public StaticTable(Int16 serverId, string databaseName, string schemaName, string tableName, bool active)
-    //    {
-    //        ServerID = serverId;
-    //        Database = databaseName;
-    //        Schema = schemaName;
-    //        Table = tableName;
-    //        Active = active;
-    //    }
-    //}
-
     [Serializable]
     public class StaticTable
     {
+        [XmlElement]
         public List<ServerXML> Server { get; set; }
 
         public StaticTable()
@@ -83,10 +59,16 @@ namespace DataCloner.Serialization
             Server = new List<ServerXML>();
         }
 
+        public StaticTable(List<ServerXML> server)
+        {
+            Server = server;
+        }
+
         public class ServerXML
         { 
             [XmlAttribute]
             public Int16 Id { get; set; }
+            [XmlElement]
             public List<DatabaseXML> Database { get; set; }
 
             public ServerXML()
@@ -94,40 +76,66 @@ namespace DataCloner.Serialization
                 Database = new List<DatabaseXML>();
             }
 
-            public class DatabaseXML
+            public ServerXML(List<DatabaseXML> databases, Int16 id)
             {
-                [XmlAttribute]
-                public string Name { get; set; }
-                public List<SchemaXML> Schema { get; set; }
+                Database = databases;
+                Id = id;
+            }
+        }
 
-                public DatabaseXML()
-                {
-                    Schema = new List<SchemaXML>();
-                }
+        public class DatabaseXML
+        {
+            [XmlAttribute]
+            public string Name { get; set; }
+            [XmlElement]
+            public List<SchemaXML> Schema { get; set; }
 
-                public class SchemaXML
-                {
-                    [XmlAttribute]
-                    public string Name { get; set; }
-                    public List<TableXML> Table { get; set; }
+            public DatabaseXML()
+            {
+                Schema = new List<SchemaXML>();
+            }
 
-                    public SchemaXML()
-                    {
-                        Table = new List<TableXML>();
-                    }
+            public DatabaseXML(List<SchemaXML> schemas, string name)
+            {
+                Schema = schemas;
+                Name = name;
+            }
+        }
 
-                    public class TableXML
-                    {
-                        [XmlAttribute]
-                        public string Name { get; set; }
-                        [XmlAttribute]
-                        public bool Active { get; set; }
-                    }
-                }
+        public class SchemaXML
+        {
+            [XmlAttribute]
+            public string Name { get; set; }
+            [XmlElement]
+            public List<TableXML> Table { get; set; }
+
+            public SchemaXML()
+            {
+                Table = new List<TableXML>();
+            }
+
+            public SchemaXML(List<TableXML> tables, string name)
+            {
+                Table = tables;
+                Name = name;
+            }
+        }
+
+        public class TableXML
+        {
+            [XmlAttribute]
+            public string Name { get; set; }
+            [XmlAttribute]
+            public bool Active { get; set; }
+
+            public TableXML() { }
+            public TableXML(string name, bool active)
+            {
+                Name = name;
+                Active = active;
             }
         }
     }
-
 
     [Serializable]
     public class Connection

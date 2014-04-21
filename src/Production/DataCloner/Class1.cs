@@ -45,17 +45,30 @@ namespace Class
         public static void configTest()
         {
             var config = new Configuration();
+
+            //ConnectionStrings
             var cs = new Connection(1, "sql1", "DataCloner.DataAccess.QueryProviderMySQL", "server=localhost;user id=root; password=cdxsza; database=mysql; pooling=false");
             config.ConnectionStrings.Add(cs);
 
-            //config.StaticTables.Add(new StaticTable(1, "root", "dbo", "table1", true));
-            //config.StaticTables.Add(new StaticTable(1, "root", "dbo", "table2", true));
+            //Static tables   
+            var schema2 = new StaticTable.SchemaXML();
+            schema2.Name = "master";
+            schema2.Table.Add(new StaticTable.TableXML("person", true));
+            schema2.Table.Add(new StaticTable.TableXML("house", true));
+            
+            var schema1 = new StaticTable.SchemaXML();
+            schema1.Name = "dbo";
+            schema1.Table.Add(new StaticTable.TableXML("table1", true));
+            schema1.Table.Add(new StaticTable.TableXML("table2", true));
 
+            var listSchema = new List<StaticTable.SchemaXML>();
+            listSchema.Add(schema1);
+            listSchema.Add(schema2);
 
-            //StaticTable a = new StaticTable();
-            //StaticTable.ServerXML.DatabaseXML.SchemaXML.TableXML()
-            //a.Server.Add(new s
-
+            var database = new StaticTable.DatabaseXML(listSchema, "db");
+            var server = new StaticTable.ServerXML(new List<StaticTable.DatabaseXML>() {database }, 1);
+            var staticTable = new StaticTable(new List<StaticTable.ServerXML>() { server });
+            config.StaticTables.Add(staticTable);
 
             //Save / load from file
             string serialized = SerizlizeXML(config);
