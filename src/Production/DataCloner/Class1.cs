@@ -70,6 +70,21 @@ namespace Class
             var staticTable = new StaticTable(new List<StaticTable.ServerXML>() { server });
             config.StaticTables.Add(staticTable);
 
+            //manyToManyRelationshipsTable
+            var schemaManyToMany = new manyToManyRelationshipsTable.SchemaXML();
+            schemaManyToMany.Name = "dbo";
+            schemaManyToMany.Table.Add(new manyToManyRelationshipsTable.TableXML("table1", true));
+            schemaManyToMany.Table.Add(new manyToManyRelationshipsTable.TableXML("table2", true));
+
+            var listSchemaManyToMany = new List<manyToManyRelationshipsTable.SchemaXML>();
+            listSchemaManyToMany.Add(schemaManyToMany);
+
+
+            var databaseManyToMany = new manyToManyRelationshipsTable.DatabaseXML(listSchemaManyToMany, "db");
+            var serverManyToMany = new manyToManyRelationshipsTable.ServerXML(new List<manyToManyRelationshipsTable.DatabaseXML>() { databaseManyToMany }, 1);
+            var manyToManyRelationshipsTable = new manyToManyRelationshipsTable(new List<manyToManyRelationshipsTable.ServerXML>() { serverManyToMany });
+            config.ManyToManyRelationshipsTable.Add(manyToManyRelationshipsTable);
+
             //Save / load from file
             string serialized = SerizlizeXML(config);
             config.Save();
