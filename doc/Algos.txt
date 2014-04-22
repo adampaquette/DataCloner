@@ -1,0 +1,64 @@
+==================================================================================================
+SQLTraveler(byval riSource as rowIdentifier, 
+			byval getDerivatives as bool, 
+			byval shouldReturnFK as bool) as rowIdentifier
+==================================================================================================
+	Initialiser une variable riRetour à null
+	Construire requête SELECT pour la riSource
+	Récupérer les lignes riSourceLines
+	Obtenir de la cache les FK de la table
+	
+	Récupérer l'accès de la table aux tables dérivées (derivateTableAccess) currentTableAccess
+	Si currentTableAccess == denied
+		getDerivatives = false;
+	Sinon si currentTableAccess == forced
+		getDerivatives = true;
+		
+	Si shouldReturnFK == true && lignes.count > 1
+		throw new exception();
+		
+	Pour chaque ligne
+		Si la PK de la ligne est dans keyRelationshipDictionnary
+			Si shouldReturnFK == true
+				Retourner la PK destination 
+			else
+				next ligne
+		Sinon		
+			Dupliquer la ligne pour l'enregistrement de destination dans une variable lineDestination
+			Pour chaque contrainte de type FK			
+				Si la FK est dans keyRelationshipDictionnary
+					Utiliser la clef depuis keyRelationshipDictionnary			
+				Sinon
+					Si la table de destination de la FK est statique
+						Construire requête SELECT pour la ligne table destination
+						Récupérer la ligne
+						Si une ligne existe				
+							Affecter la valeur des colonnes à celles de lineDestination
+						Sinon
+							Créer une rowIdentifier avec la valeur des colonnes de la contrainte
+							Appeler SQLTraveler(ri, false, true)
+							Affecter la valeur des colonnes à celles de lineDestination
+					Sinon
+						Créer une rowIdentifier avec la valeur des colonnes de la contrainte
+						Appeler SQLTraveler(ri, false, true)
+						Affecter la valeur des colonnes à celles de lineDestination
+
+			Créer la requête d'INSERT avec les valeurs de lineDestination
+			Enregistrer la ligne dans la table destination
+			Récupérer la PK nouvellement créée
+			Enregistrer la PK dans keyRelationshipDictionnary
+			Affecter riRetour avec la valeur des colonnes de la PK
+			
+			Si getDerivatives == true
+				Obtenir de la cache les tables dérivées de riSource (contraintes FK qui pointent vers la PK de la table riSource)
+				Supprimer les tables qui sont dans derivateTableAccess avec l'access denied
+				Pour chaque table
+					Créer une rowIdentifier avec la valeur des colonnes de la contrainte (PK)
+						Appeler SQLTraveler(ri, getDerivatives, false)
+
+=========================================================================	
+BuildCache()
+=========================================================================
+	Création des FK par table
+		Obtenir le schéma des tables avec leur FK
+		Supprimer les FK reliées à des tables statiques
