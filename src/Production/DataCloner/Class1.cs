@@ -71,19 +71,32 @@ namespace Class
             config.StaticTables.Add(staticTable);
 
             //manyToManyRelationshipsTable
-            var schemaManyToMany = new manyToManyRelationshipsTable.SchemaXML();
+            var schemaManyToMany = new ManyToManyRelationshipsTable.SchemaXML();
             schemaManyToMany.Name = "dbo";
-            schemaManyToMany.Table.Add(new manyToManyRelationshipsTable.TableXML("table1", true));
-            schemaManyToMany.Table.Add(new manyToManyRelationshipsTable.TableXML("table2", true));
+            schemaManyToMany.Table.Add(new ManyToManyRelationshipsTable.TableXML("table1", true));
+            schemaManyToMany.Table.Add(new ManyToManyRelationshipsTable.TableXML("table2", true));
 
-            var listSchemaManyToMany = new List<manyToManyRelationshipsTable.SchemaXML>();
+            var listSchemaManyToMany = new List<ManyToManyRelationshipsTable.SchemaXML>();
             listSchemaManyToMany.Add(schemaManyToMany);
 
-
-            var databaseManyToMany = new manyToManyRelationshipsTable.DatabaseXML(listSchemaManyToMany, "db");
-            var serverManyToMany = new manyToManyRelationshipsTable.ServerXML(new List<manyToManyRelationshipsTable.DatabaseXML>() { databaseManyToMany }, 1);
-            var manyToManyRelationshipsTable = new manyToManyRelationshipsTable(new List<manyToManyRelationshipsTable.ServerXML>() { serverManyToMany });
+            var databaseManyToMany = new ManyToManyRelationshipsTable.DatabaseXML(listSchemaManyToMany, "db");
+            var serverManyToMany = new ManyToManyRelationshipsTable.ServerXML(new List<ManyToManyRelationshipsTable.DatabaseXML>() { databaseManyToMany }, 1);
+            var manyToManyRelationshipsTable = new ManyToManyRelationshipsTable(new List<ManyToManyRelationshipsTable.ServerXML>() { serverManyToMany });
             config.ManyToManyRelationshipsTable.Add(manyToManyRelationshipsTable);
+
+            //DerivativeTableAccess
+            var schemaDerivativeTableAccess = new DerivativeTableAccess.SchemaXML();
+            schemaDerivativeTableAccess.Name = "dbo";
+            schemaDerivativeTableAccess.Table.Add(new DerivativeTableAccess.TableXML("table1", DerivativeTableAccess.AccessXML.Denied, true));
+            schemaDerivativeTableAccess.Table.Add(new DerivativeTableAccess.TableXML("table2", DerivativeTableAccess.AccessXML.Forced, true));
+
+            var listSchemaDerivativeTableAccess = new List<DerivativeTableAccess.SchemaXML>();
+            listSchemaDerivativeTableAccess.Add(schemaDerivativeTableAccess);
+
+            var databaseDerivativeTableAccess = new DerivativeTableAccess.DatabaseXML(listSchemaDerivativeTableAccess, "db");
+            var serverDerivativeTableAccess = new DerivativeTableAccess.ServerXML(new List<DerivativeTableAccess.DatabaseXML>() { databaseDerivativeTableAccess }, 1);
+            var derivativeTableAccess = new DerivativeTableAccess(new List<DerivativeTableAccess.ServerXML>() { serverDerivativeTableAccess });
+            config.DerivativeTableAccess.Add(derivativeTableAccess);
 
             //Save / load from file
             string serialized = SerizlizeXML(config);

@@ -16,14 +16,17 @@ namespace DataCloner.Serialization
         [XmlElement]
         public List<StaticTable> StaticTables { get; set; }
         [XmlElement]
-        public List<manyToManyRelationshipsTable> ManyToManyRelationshipsTable { get; set; }
+        public List<ManyToManyRelationshipsTable> ManyToManyRelationshipsTable { get; set; }
+        [XmlElement]
+        public List<DerivativeTableAccess> DerivativeTableAccess { get; set; }
 
         public Configuration()
         {
             
             ConnectionStrings = new List<Connection>();
             StaticTables = new List<StaticTable>();
-            ManyToManyRelationshipsTable = new List<manyToManyRelationshipsTable>();
+            ManyToManyRelationshipsTable = new List<ManyToManyRelationshipsTable>();
+            DerivativeTableAccess = new List<DerivativeTableAccess>();
         }
 
         public void Save()
@@ -53,6 +56,30 @@ namespace DataCloner.Serialization
     }
 
     [Serializable]
+    public class Connection
+    {
+        [XmlAttribute]
+        public Int16 Id { get; set; }
+        [XmlAttribute]
+        public string Name { get; set; }
+        [XmlAttribute]
+        public string ProviderName { get; set; }
+        [XmlAttribute]
+        public string ConnectionString { get; set; }
+
+        public Connection() { }
+        public Connection(Int16 id, string name, string providerName, string connectionString)
+        {
+            Id = id;
+            Name = name;
+            ProviderName = providerName;
+            ConnectionString = connectionString;
+        }
+    }
+
+    [Serializable]
+    [XmlRoot(Namespace = "urn:StaticTable")]
+    [XmlType(Namespace = "urn:StaticTable")]
     public class StaticTable
     {
         [XmlElement]
@@ -140,19 +167,21 @@ namespace DataCloner.Serialization
             }
         }
     }
-
+    
     [Serializable]
-    public class manyToManyRelationshipsTable
+    [XmlRoot(Namespace = "urn:ManyToMany")]
+    [XmlType(Namespace = "urn:ManyToMany")]
+    public class ManyToManyRelationshipsTable
     {
         [XmlElement]
         public List<ServerXML> Server { get; set; }
 
-        public manyToManyRelationshipsTable()
+        public ManyToManyRelationshipsTable()
         {
             Server = new List<ServerXML>();
         }
 
-        public manyToManyRelationshipsTable(List<ServerXML> server)
+        public ManyToManyRelationshipsTable(List<ServerXML> server)
         {
             Server = server;
         }
@@ -231,24 +260,103 @@ namespace DataCloner.Serialization
     }
 
     [Serializable]
-    public class Connection
+    [XmlRoot(Namespace = "urn:DerivativeTableAccess")]
+    [XmlType(Namespace = "urn:DerivativeTableAccess")]
+    public class DerivativeTableAccess
     {
-        [XmlAttribute]
-        public Int16 Id { get; set; }
-        [XmlAttribute]
-        public string Name { get; set; }
-        [XmlAttribute]
-        public string ProviderName { get; set; }
-        [XmlAttribute]
-        public string ConnectionString { get; set; }
+        [XmlElement]
+        public List<ServerXML> Server { get; set; }
 
-        public Connection() {}
-        public Connection(Int16 id, string name, string providerName, string connectionString)
+        public DerivativeTableAccess()
         {
-            Id = id;
-            Name = name;
-            ProviderName = providerName;
-            ConnectionString = connectionString;
+            Server = new List<ServerXML>();
         }
-    }
+
+        public DerivativeTableAccess(List<ServerXML> server)
+        {
+            Server = server;
+        }
+
+        public class ServerXML
+        {
+            [XmlAttribute]
+            public Int16 Id { get; set; }
+            [XmlElement]
+            public List<DatabaseXML> Database { get; set; }
+
+            public ServerXML()
+            {
+                Database = new List<DatabaseXML>();
+            }
+
+            public ServerXML(List<DatabaseXML> databases, Int16 id)
+            {
+                Database = databases;
+                Id = id;
+            }
+        }
+
+        public class DatabaseXML
+        {
+            [XmlAttribute]
+            public string Name { get; set; }
+            [XmlElement]
+            public List<SchemaXML> Schema { get; set; }
+
+            public DatabaseXML()
+            {
+                Schema = new List<SchemaXML>();
+            }
+
+            public DatabaseXML(List<SchemaXML> schemas, string name)
+            {
+                Schema = schemas;
+                Name = name;
+            }
+        }
+
+        public class SchemaXML
+        {
+            [XmlAttribute]
+            public string Name { get; set; }
+            [XmlElement]
+            public List<TableXML> Table { get; set; }
+
+            public SchemaXML()
+            {
+                Table = new List<TableXML>();
+            }
+
+            public SchemaXML(List<TableXML> tables, string name)
+            {
+                Table = tables;
+                Name = name;
+            }
+        }
+
+        public class TableXML
+        {
+            [XmlAttribute]
+            public string Name { get; set; }
+            [XmlAttribute]
+            public AccessXML Access { get; set; }
+            [XmlAttribute]
+            public bool Active { get; set; }
+
+            public TableXML() { }
+            public TableXML(string name, AccessXML access, bool active)
+            {
+                Name = name;
+                Access = access;
+                Active = active;
+            }
+        }
+
+        public enum AccessXML
+        { 
+            Denied,
+            Forced,
+            Inherited
+        }
+    }   
 }
