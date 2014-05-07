@@ -14,13 +14,18 @@ namespace DataCloner.Serialization
 
         [XmlArrayItem("add")]
         public List<ConnectionXML> ConnectionStrings { get; set; }
-        public StaticTable StaticTables { get; set; }
-        public ManyToManyRelationshipsTable ManyToManyRelationshipsTable { get; set; }
-        public DerivativeTableAccess DerivativeTableAccess { get; set; }
+        public StaticTableXML StaticTables { get; set; }
+        public ManyToManyRelationshipsTablesXML ManyToManyRelationshipsTables { get; set; }
+        public DerivativeTableAccessXML DerivativeTableAccess { get; set; }
+        public ForeignKeysXML ForeignKeys { get; set; }
 
         public ConfigurationXML()
         {
             ConnectionStrings = new List<ConnectionXML>();
+            StaticTables = new StaticTableXML();
+            ManyToManyRelationshipsTables = new ManyToManyRelationshipsTablesXML();
+            DerivativeTableAccess = new DerivativeTableAccessXML();
+            ForeignKeys = new ForeignKeysXML();
         }
 
         public void Save()

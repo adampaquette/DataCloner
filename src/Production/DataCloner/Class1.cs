@@ -46,64 +46,113 @@ namespace Class
         {
             var config = new ConfigurationXML();
 
-            //ConnectionStrings
+            //ConnectionXML
+            //=============
             var cs = new ConnectionXML(1, "sql1", "DataCloner.DataAccess.QueryProviderMySQL", "server=localhost;user id=root; password=cdxsza; database=mysql; pooling=false");
             config.ConnectionStrings.Add(cs);
 
-            //Static tables   
-            var schema2 = new StaticTable.SchemaXML();
-            schema2.Name = "master";
-            schema2.Tables.Add(new StaticTable.TableXML("person", true));
-            schema2.Tables.Add(new StaticTable.TableXML("house", true));
-            
-            var schema1 = new StaticTable.SchemaXML();
+            //StaticTableXML 
+            //==============            
+            var schema1 = new StaticTableXML.SchemaXML();
             schema1.Name = "dbo";
-            schema1.Tables.Add(new StaticTable.TableXML("table1", true));
-            schema1.Tables.Add(new StaticTable.TableXML("table2", true));
+            schema1.Tables.Add(new StaticTableXML.TableXML("table1", true));
+            schema1.Tables.Add(new StaticTableXML.TableXML("table2", true));
 
-            var listSchema = new List<StaticTable.SchemaXML>();
+            var schema2 = new StaticTableXML.SchemaXML();
+            schema2.Name = "master";
+            schema2.Tables.Add(new StaticTableXML.TableXML("person", true));
+            schema2.Tables.Add(new StaticTableXML.TableXML("house", true));
+
+            var listSchema = new List<StaticTableXML.SchemaXML>();
             listSchema.Add(schema1);
             listSchema.Add(schema2);
 
-            var database = new StaticTable.DatabaseXML(listSchema, "db");
-            var server = new StaticTable.ServerXML(new List<StaticTable.DatabaseXML>() { database }, 1);
-            var server2 = new StaticTable.ServerXML(new List<StaticTable.DatabaseXML>() {database }, 2);
-            var staticTable = new StaticTable(new List<StaticTable.ServerXML>() { server, server2 });
+            var database = new StaticTableXML.DatabaseXML(listSchema, "db");
+            var server = new StaticTableXML.ServerXML(new List<StaticTableXML.DatabaseXML>() { database }, 1);
+            var server2 = new StaticTableXML.ServerXML(new List<StaticTableXML.DatabaseXML>() {database }, 2);
+            var staticTable = new StaticTableXML(new List<StaticTableXML.ServerXML>() { server, server2 });
             config.StaticTables = staticTable;
 
-            //manyToManyRelationshipsTable
-            var schemaManyToMany = new ManyToManyRelationshipsTable.SchemaXML();
+            //ManyToManyRelationshipsTablesXML
+            //===============================
+            var schemaManyToMany = new ManyToManyRelationshipsTablesXML.SchemaXML();
             schemaManyToMany.Name = "dbo";
-            schemaManyToMany.Tables.Add(new ManyToManyRelationshipsTable.TableXML("table1", true));
-            schemaManyToMany.Tables.Add(new ManyToManyRelationshipsTable.TableXML("table2", true));
+            schemaManyToMany.Tables.Add(new ManyToManyRelationshipsTablesXML.TableXML("table1", true));
+            schemaManyToMany.Tables.Add(new ManyToManyRelationshipsTablesXML.TableXML("table2", true));
 
-            var listSchemaManyToMany = new List<ManyToManyRelationshipsTable.SchemaXML>();
+            var listSchemaManyToMany = new List<ManyToManyRelationshipsTablesXML.SchemaXML>();
             listSchemaManyToMany.Add(schemaManyToMany);
 
-            var databaseManyToMany = new ManyToManyRelationshipsTable.DatabaseXML(listSchemaManyToMany, "db");
-            var serverManyToMany = new ManyToManyRelationshipsTable.ServerXML(new List<ManyToManyRelationshipsTable.DatabaseXML>() { databaseManyToMany }, 1);
-            var manyToManyRelationshipsTable = new ManyToManyRelationshipsTable(new List<ManyToManyRelationshipsTable.ServerXML>() { serverManyToMany });
-            config.ManyToManyRelationshipsTable = manyToManyRelationshipsTable;
+            var databaseManyToMany = new ManyToManyRelationshipsTablesXML.DatabaseXML(listSchemaManyToMany, "db");
+            var serverManyToMany = new ManyToManyRelationshipsTablesXML.ServerXML(new List<ManyToManyRelationshipsTablesXML.DatabaseXML>() { databaseManyToMany }, 1);
+            var manyToManyRelationshipsTable = new ManyToManyRelationshipsTablesXML(new List<ManyToManyRelationshipsTablesXML.ServerXML>() { serverManyToMany });
+            config.ManyToManyRelationshipsTables = manyToManyRelationshipsTable;
 
             //DerivativeTableAccess
-            var schemaDerivativeTableAccess = new DerivativeTableAccess.SchemaXML();
+            //=====================
+            var schemaDerivativeTableAccess = new DerivativeTableAccessXML.SchemaXML();
             schemaDerivativeTableAccess.Name = "dbo";
-            schemaDerivativeTableAccess.Tables.Add(new DerivativeTableAccess.TableXML("table1", DerivativeTableAccess.AccessXML.Denied, true));
-            schemaDerivativeTableAccess.Tables.Add(new DerivativeTableAccess.TableXML("table2", DerivativeTableAccess.AccessXML.Forced, true));
+            schemaDerivativeTableAccess.Tables.Add(new DerivativeTableAccessXML.TableXML("table1", DerivativeTableAccessXML.AccessXML.Denied, true));
+            schemaDerivativeTableAccess.Tables.Add(new DerivativeTableAccessXML.TableXML("table2", DerivativeTableAccessXML.AccessXML.Forced, true));
 
-            var listSchemaDerivativeTableAccess = new List<DerivativeTableAccess.SchemaXML>();
+            var listSchemaDerivativeTableAccess = new List<DerivativeTableAccessXML.SchemaXML>();
             listSchemaDerivativeTableAccess.Add(schemaDerivativeTableAccess);
 
-            var databaseDerivativeTableAccess = new DerivativeTableAccess.DatabaseXML(listSchemaDerivativeTableAccess, "db");
-            var serverDerivativeTableAccess = new DerivativeTableAccess.ServerXML(new List<DerivativeTableAccess.DatabaseXML>() { databaseDerivativeTableAccess }, 1);
-            var derivativeTableAccess = new DerivativeTableAccess(new List<DerivativeTableAccess.ServerXML>() { serverDerivativeTableAccess });
+            var databaseDerivativeTableAccess = new DerivativeTableAccessXML.DatabaseXML(listSchemaDerivativeTableAccess, "db");
+            var serverDerivativeTableAccess = new DerivativeTableAccessXML.ServerXML(new List<DerivativeTableAccessXML.DatabaseXML>() { databaseDerivativeTableAccess }, 1);
+            var derivativeTableAccess = new DerivativeTableAccessXML(new List<DerivativeTableAccessXML.ServerXML>() { serverDerivativeTableAccess });
             config.DerivativeTableAccess = derivativeTableAccess;
 
-            //foreignkeys
-            var serverfk1 = new ForeignKeys.ServerXML();
+            //ForeignKeys
+            //===========
+            var serverfk1 = new ForeignKeysXML.ServerXML();
+            var dbfk1 = new ForeignKeysXML.DatabaseXML();
+            var schemafk1 = new ForeignKeysXML.SchemaXML();
+            var tablefk1 = new ForeignKeysXML.TableXML();
+            var AddForeignKeyXMLfk1 = new ForeignKeysXML.AddForeignKeyXML();
+            var RemoveForeignKeyXMLfk1 = new ForeignKeysXML.RemoveForeignKeyXML();
+            var RemoveForeignKeyXMLfk2 = new ForeignKeysXML.RemoveForeignKeyXML();
+            var CollumnNameXMLfk1 = new ForeignKeysXML.CollumnNameXML();
+            var CollumnXMLfk1 = new ForeignKeysXML.CollumnXML();
+            var CollumnXMLfk2 = new ForeignKeysXML.CollumnXML();
 
+            CollumnXMLfk1.ColNameDest = "col1";
+            CollumnXMLfk1.Name = "col1";
+
+            CollumnXMLfk2.ColNameDest = "col2";
+            CollumnXMLfk2.Name = "col2";
+
+            CollumnNameXMLfk1.Name = "col3";
+
+            AddForeignKeyXMLfk1.ServerIdDest = 1;
+            AddForeignKeyXMLfk1.DatabaseDest = "db1";
+            AddForeignKeyXMLfk1.SchemaDest = "dbo";
+            AddForeignKeyXMLfk1.TableDest = "table1";
+            AddForeignKeyXMLfk1.Collumns.Add(CollumnXMLfk1);
+            AddForeignKeyXMLfk1.Collumns.Add(CollumnXMLfk2);
+
+            RemoveForeignKeyXMLfk1.Name = "fk1";
+
+            RemoveForeignKeyXMLfk2.Collumns.Add(CollumnNameXMLfk1);
+
+            tablefk1.Name = "table1";
+            tablefk1.AddForeignKeys.Add(AddForeignKeyXMLfk1);
+            tablefk1.RemoveForeignKeys.Add(RemoveForeignKeyXMLfk1);
+            tablefk1.RemoveForeignKeys.Add(RemoveForeignKeyXMLfk2);
+
+            schemafk1.Name = "dbo";
+            schemafk1.Tables.Add(tablefk1);
+
+            dbfk1.Name = "db1";
+            dbfk1.Schemas.Add(schemafk1);
+
+            serverfk1.Id = 1;
+            serverfk1.Databases.Add(dbfk1);
+
+            config.ForeignKeys.Servers.Add(serverfk1);
 
             //Save / load from file
+            //=====================
             string serialized = SerizlizeXML(config);
             config.Save();
 

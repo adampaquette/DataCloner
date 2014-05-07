@@ -9,17 +9,17 @@ namespace DataCloner.Serialization
     [Serializable]
     [XmlRoot(Namespace = "urn:StaticTable")]
     [XmlType(Namespace = "urn:StaticTable")]
-    public class StaticTable
+    public class StaticTableXML
     {
         [XmlElement("Server")]
         public List<ServerXML> Servers { get; set; }
 
-        public StaticTable()
+        public StaticTableXML()
         {
             Servers = new List<ServerXML>();
         }
 
-        public StaticTable(List<ServerXML> servers)
+        public StaticTableXML(List<ServerXML> servers)
         {
             Servers = servers;
         }
@@ -88,7 +88,11 @@ namespace DataCloner.Serialization
             [XmlAttribute]
             public bool Active { get; set; }
 
-            public TableXML() { }
+            public TableXML() 
+            {
+                Active = true;
+            }
+
             public TableXML(string name, bool active)
             {
                 Name = name;

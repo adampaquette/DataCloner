@@ -9,17 +9,17 @@ namespace DataCloner.Serialization
     [Serializable]
     [XmlRoot(Namespace = "urn:ForeignKeys")]
     [XmlType(Namespace = "urn:ForeignKeys")]
-    public class ForeignKeys
+    public class ForeignKeysXML
     {
         [XmlElement("Server")]
         public List<ServerXML> Servers { get; set; }
 
-        public ForeignKeys()
+        public ForeignKeysXML()
         {
             Servers = new List<ServerXML>();
         }
 
-        public ForeignKeys(List<ServerXML> servers)
+        public ForeignKeysXML(List<ServerXML> servers)
         {
             Servers = servers;
         }
@@ -92,7 +92,13 @@ namespace DataCloner.Serialization
             [XmlElement("Remove")]
             public List<RemoveForeignKeyXML> RemoveForeignKeys { get; set; }
 
-            public TableXML(){}
+            public TableXML()
+            {
+                AddForeignKeys = new List<AddForeignKeyXML>();
+                ModifyForeignKeys = new List<ModifyForeignKeyXML>();
+                RemoveForeignKeys = new List<RemoveForeignKeyXML>();
+            }
+
             public TableXML(string name, 
                             List<AddForeignKeyXML> addForeignKey, 
                             List<ModifyForeignKeyXML> modifyForeignKeys, 
@@ -117,19 +123,24 @@ namespace DataCloner.Serialization
             public string TableDest { get; set; }
             [XmlElement("Collumn")]
             public List<CollumnXML> Collumns { get; set; }
+            [XmlAttribute]
+            public bool Active { get; set; }
 
             public AddForeignKeyXML()
             {
                 Collumns = new List<CollumnXML>();
+                Active = true;
             }
 
-            public AddForeignKeyXML(Int16 serverIdDest, string databaseDest, string schemaDest, string tableDest, List<CollumnXML> collumns)
+            public AddForeignKeyXML(Int16 serverIdDest, string databaseDest, string schemaDest, 
+                                    string tableDest, List<CollumnXML> collumns, bool active)
             {
                 Collumns = collumns;
                 ServerIdDest = serverIdDest;
                 DatabaseDest = databaseDest;
                 SchemaDest = schemaDest;
                 TableDest = tableDest;
+                Active = active;
             }
         }
 
@@ -147,13 +158,18 @@ namespace DataCloner.Serialization
             public string TableDest { get; set; }
             [XmlElement("Collumn")]
             public List<CollumnXML> Collumns { get; set; }
+            [XmlAttribute]
+            public bool Active { get; set; }
 
             public ModifyForeignKeyXML()
             {
                 Collumns = new List<CollumnXML>();
+                Active = true;
             }
 
-            public ModifyForeignKeyXML(string name, Int16 serverIdDest, string databaseDest, string schemaDest, string tableDest, List<CollumnXML> collumns)
+            public ModifyForeignKeyXML(string name, Int16 serverIdDest, string databaseDest, 
+                                       string schemaDest, string tableDest, List<CollumnXML> collumns,
+                                       bool active)
             {
                 Name = name;
                 ServerIdDest = serverIdDest;
@@ -161,6 +177,7 @@ namespace DataCloner.Serialization
                 SchemaDest = schemaDest;
                 TableDest = tableDest;
                 Collumns = collumns;
+                Active = active;
             }
         }
 
@@ -170,16 +187,20 @@ namespace DataCloner.Serialization
             public string Name { get; set; }
             [XmlElement("Collumn")]
             public List<CollumnNameXML> Collumns { get; set; }
+            [XmlAttribute]
+            public bool Active { get; set; }
 
             public RemoveForeignKeyXML()
             {
                 Collumns = new List<CollumnNameXML>();
+                Active = true;
             }
 
-            public RemoveForeignKeyXML(string name, List<CollumnNameXML> collumns)
+            public RemoveForeignKeyXML(string name, List<CollumnNameXML> collumns, bool active)
             {
                 Name = name;
                 Collumns = collumns;
+                Active = active;
             }
         }
 

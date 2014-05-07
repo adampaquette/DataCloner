@@ -9,17 +9,17 @@ namespace DataCloner.Serialization
     [Serializable]
     [XmlRoot(Namespace = "urn:ManyToMany")]
     [XmlType(Namespace = "urn:ManyToMany")]
-    public class ManyToManyRelationshipsTable
+    public class ManyToManyRelationshipsTablesXML
     {
         [XmlElement("Server")]
         public List<ServerXML> Servers { get; set; }
 
-        public ManyToManyRelationshipsTable()
+        public ManyToManyRelationshipsTablesXML()
         {
             Servers = new List<ServerXML>();
         }
 
-        public ManyToManyRelationshipsTable(List<ServerXML> servers)
+        public ManyToManyRelationshipsTablesXML(List<ServerXML> servers)
         {
             Servers = servers;
         }
@@ -88,7 +88,11 @@ namespace DataCloner.Serialization
             [XmlAttribute]
             public bool Active { get; set; }
 
-            public TableXML() { }
+            public TableXML() 
+            {
+                Active = true;
+            }
+
             public TableXML(string name, bool active)
             {
                 Name = name;

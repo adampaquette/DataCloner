@@ -9,17 +9,17 @@ namespace DataCloner.Serialization
     [Serializable]
     [XmlRoot(Namespace = "urn:DerivativeTableAccess")]
     [XmlType(Namespace = "urn:DerivativeTableAccess")]
-    public class DerivativeTableAccess
+    public class DerivativeTableAccessXML
     {
         [XmlElement("Server")]
         public List<ServerXML> Servers { get; set; }
 
-        public DerivativeTableAccess()
+        public DerivativeTableAccessXML()
         {
             Servers = new List<ServerXML>();
         }
 
-        public DerivativeTableAccess(List<ServerXML> servers)
+        public DerivativeTableAccessXML(List<ServerXML> servers)
         {
             Servers = servers;
         }
@@ -90,7 +90,11 @@ namespace DataCloner.Serialization
             [XmlAttribute]
             public bool Active { get; set; }
 
-            public TableXML() { }
+            public TableXML() 
+            {
+                Active = true;
+            }
+
             public TableXML(string name, AccessXML access, bool active)
             {
                 Name = name;
