@@ -44,10 +44,10 @@ namespace Class
 
         public static void configTest()
         {
-            var config = new Configuration();
+            var config = new ConfigurationXML();
 
             //ConnectionStrings
-            var cs = new Connection(1, "sql1", "DataCloner.DataAccess.QueryProviderMySQL", "server=localhost;user id=root; password=cdxsza; database=mysql; pooling=false");
+            var cs = new ConnectionXML(1, "sql1", "DataCloner.DataAccess.QueryProviderMySQL", "server=localhost;user id=root; password=cdxsza; database=mysql; pooling=false");
             config.ConnectionStrings.Add(cs);
 
             //Static tables   
@@ -99,12 +99,16 @@ namespace Class
             var derivativeTableAccess = new DerivativeTableAccess(new List<DerivativeTableAccess.ServerXML>() { serverDerivativeTableAccess });
             config.DerivativeTableAccess = derivativeTableAccess;
 
+            //foreignkeys
+            var serverfk1 = new ForeignKeys.ServerXML();
+
+
             //Save / load from file
             string serialized = SerizlizeXML(config);
             config.Save();
 
-            Configuration configLoaded;
-            configLoaded = Configuration.Load();
+            ConfigurationXML configLoaded;
+            configLoaded = ConfigurationXML.Load();
         }
 
         public static string SerizlizeXML<T>(T obj)

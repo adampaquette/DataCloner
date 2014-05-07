@@ -7,19 +7,20 @@ using System.Xml.Serialization;
 namespace DataCloner.Serialization
 {
     [Serializable]
-    public class Configuration
+    [XmlRoot("Configuration")]
+    public class ConfigurationXML
     {
         public static readonly string FileName = "dc.config";
 
         [XmlArrayItem("add")]
-        public List<Connection> ConnectionStrings { get; set; }
+        public List<ConnectionXML> ConnectionStrings { get; set; }
         public StaticTable StaticTables { get; set; }
         public ManyToManyRelationshipsTable ManyToManyRelationshipsTable { get; set; }
         public DerivativeTableAccess DerivativeTableAccess { get; set; }
 
-        public Configuration()
+        public ConfigurationXML()
         {
-            ConnectionStrings = new List<Connection>();            
+            ConnectionStrings = new List<ConnectionXML>();
         }
 
         public void Save()
@@ -33,17 +34,17 @@ namespace DataCloner.Serialization
             fs.Close();
         }
 
-        public static Configuration Load()
+        public static ConfigurationXML Load()
         {
-            var xs = new System.Xml.Serialization.XmlSerializer(typeof(Configuration));
+            var xs = new System.Xml.Serialization.XmlSerializer(typeof(ConfigurationXML));
             if (System.IO.File.Exists(FileName))
             {
                 var fs = new System.IO.FileStream(FileName, System.IO.FileMode.Open);
-                var cReturn = (Configuration)xs.Deserialize(fs);
+                var cReturn = (ConfigurationXML)xs.Deserialize(fs);
                 fs.Close();
                 return cReturn;
             }
-            return new Configuration();            
+            return new ConfigurationXML();
         }
     }
 }

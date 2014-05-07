@@ -7,7 +7,7 @@ using System.Xml.Serialization;
 namespace DataCloner.Serialization
 {
     [Serializable]
-    public class Connection
+    public class ConnectionXML
     {
         [XmlAttribute]
         public Int16 Id { get; set; }
@@ -18,8 +18,8 @@ namespace DataCloner.Serialization
         [XmlAttribute]
         public string ConnectionString { get; set; }
 
-        public Connection() { }
-        public Connection(Int16 id, string name, string providerName, string connectionString)
+        public ConnectionXML() { }
+        public ConnectionXML(Int16 id, string name, string providerName, string connectionString)
         {
             Id = id;
             Name = name;

@@ -10,11 +10,11 @@ namespace DataCloner
 {
     class DataCloner
     {
-        private readonly Configuration _config; //Pas de singleton pour la performance
+        private readonly ConfigurationXML _config; //Pas de singleton pour la performance
 
         public DataCloner()
         {
-            _config = Configuration.Load();
+            _config = ConfigurationXML.Load();
         }
 
         public IRowIdentifier SQLTraveler(IRowIdentifier riSource, bool getDerivatives, bool shouldReturnFK)

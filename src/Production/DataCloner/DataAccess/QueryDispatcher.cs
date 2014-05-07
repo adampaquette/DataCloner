@@ -9,10 +9,10 @@ namespace DataCloner.DataAccess
 {
     class QueryDispatcher : IQueryDispatcher
     {
-        private readonly Configuration _config;
+        private readonly ConfigurationXML _config;
         private Dictionary<Int16, IQueryProvider> _conns;
 
-        public QueryDispatcher(Configuration config)
+        public QueryDispatcher(ConfigurationXML config)
         {
             _config = config;
             _conns = new Dictionary<Int16, IQueryProvider>();

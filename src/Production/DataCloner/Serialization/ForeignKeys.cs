@@ -86,17 +86,17 @@ namespace DataCloner.Serialization
             [XmlAttribute]
             public string Name { get; set; }
             [XmlElement("Add")]
-            public List<AddForeignKey> AddForeignKeys { get; set; }
+            public List<AddForeignKeyXML> AddForeignKeys { get; set; }
             [XmlElement("Modify")]
-            public List<ModifyForeignKey> ModifyForeignKeys { get; set; }
+            public List<ModifyForeignKeyXML> ModifyForeignKeys { get; set; }
             [XmlElement("Remove")]
-            public List<RemoveForeignKey> RemoveForeignKeys { get; set; }
+            public List<RemoveForeignKeyXML> RemoveForeignKeys { get; set; }
 
             public TableXML(){}
             public TableXML(string name, 
-                            List<AddForeignKey> addForeignKey, 
-                            List<ModifyForeignKey> modifyForeignKeys, 
-                            List<RemoveForeignKey> removeForeignKeys)
+                            List<AddForeignKeyXML> addForeignKey, 
+                            List<ModifyForeignKeyXML> modifyForeignKeys, 
+                            List<RemoveForeignKeyXML> removeForeignKeys)
             {
                 Name = name;
                 AddForeignKeys = addForeignKey;
@@ -105,7 +105,7 @@ namespace DataCloner.Serialization
             }
         }
 
-        public class AddForeignKey
+        public class AddForeignKeyXML
         {
             [XmlAttribute]
             public Int16 ServerIdDest { get; set; }
@@ -116,14 +116,14 @@ namespace DataCloner.Serialization
             [XmlAttribute]
             public string TableDest { get; set; }
             [XmlElement("Collumn")]
-            public List<Collumn> Collumns { get; set; }
+            public List<CollumnXML> Collumns { get; set; }
 
-            public AddForeignKey()
+            public AddForeignKeyXML()
             {
-                Collumns = new List<Collumn>();
+                Collumns = new List<CollumnXML>();
             }
 
-            public AddForeignKey(Int16 serverIdDest, string databaseDest, string schemaDest, string tableDest, List<Collumn> collumns)
+            public AddForeignKeyXML(Int16 serverIdDest, string databaseDest, string schemaDest, string tableDest, List<CollumnXML> collumns)
             {
                 Collumns = collumns;
                 ServerIdDest = serverIdDest;
@@ -133,7 +133,7 @@ namespace DataCloner.Serialization
             }
         }
 
-        public class ModifyForeignKey
+        public class ModifyForeignKeyXML
         {
             [XmlAttribute]
             public string Name { get; set; }
@@ -146,14 +146,14 @@ namespace DataCloner.Serialization
             [XmlAttribute]
             public string TableDest { get; set; }
             [XmlElement("Collumn")]
-            public List<Collumn> Collumns { get; set; }
+            public List<CollumnXML> Collumns { get; set; }
 
-            public ModifyForeignKey()
+            public ModifyForeignKeyXML()
             {
-                Collumns = new List<Collumn>();
+                Collumns = new List<CollumnXML>();
             }
 
-            public ModifyForeignKey(string name, Int16 serverIdDest, string databaseDest, string schemaDest, string tableDest, List<Collumn> collumns)
+            public ModifyForeignKeyXML(string name, Int16 serverIdDest, string databaseDest, string schemaDest, string tableDest, List<CollumnXML> collumns)
             {
                 Name = name;
                 ServerIdDest = serverIdDest;
@@ -164,41 +164,40 @@ namespace DataCloner.Serialization
             }
         }
 
-        public class RemoveForeignKey
+        public class RemoveForeignKeyXML
         {
             [XmlAttribute]
             public string Name { get; set; }
             [XmlElement("Collumn")]
-            public List<CollumnName> Collumns { get; set; }
+            public List<CollumnNameXML> Collumns { get; set; }
 
-            public RemoveForeignKey()
+            public RemoveForeignKeyXML()
             {
-                Collumns = new List<CollumnName>();
+                Collumns = new List<CollumnNameXML>();
             }
 
-            public RemoveForeignKey(string name, List<CollumnName> collumns)
+            public RemoveForeignKeyXML(string name, List<CollumnNameXML> collumns)
             {
                 Name = name;
                 Collumns = collumns;
             }
         }
 
-        public class CollumnName
+        public class CollumnNameXML
         {
             [XmlAttribute]
             public string Name { get; set; }
-            public CollumnName() { }
+            public CollumnNameXML() { }
         }
 
-        public class Collumn
+        public class CollumnXML
         {
             [XmlAttribute]
             public string Name { get; set; }
             [XmlAttribute]
             public string ColNameDest { get; set; }
 
-            public Collumn() { }
+            public CollumnXML() { }
         }
-
     }
 }
