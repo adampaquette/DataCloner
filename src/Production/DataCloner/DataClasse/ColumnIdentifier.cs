@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
+using DataCloner.Interface;
 
 namespace DataCloner.DataClasse
 {
@@ -14,7 +12,7 @@ namespace DataCloner.DataClasse
     {
         bool IEqualityComparer<IColumnIdentifier>.Equals(IColumnIdentifier x, IColumnIdentifier y)
         {
-            return x.ServerID.Equals(y.ServerID) &&
+            return x.ServerId.Equals(y.ServerId) &&
                    x.DatabaseName.Equals(y.DatabaseName) &&
                    x.SchemaName.Equals(y.SchemaName) &&
                    x.TableName.Equals(y.TableName) &&
@@ -23,7 +21,7 @@ namespace DataCloner.DataClasse
 
         int IEqualityComparer<IColumnIdentifier>.GetHashCode(IColumnIdentifier obj)
         {
-            return (obj.ServerID + obj.DatabaseName + obj.SchemaName + obj.TableName + obj.ColumnName).GetHashCode();
+            return (obj.ServerId + obj.DatabaseName + obj.SchemaName + obj.TableName + obj.ColumnName).GetHashCode();
         }
     }
 }

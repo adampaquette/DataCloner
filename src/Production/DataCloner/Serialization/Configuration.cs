@@ -1,55 +1,51 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.IO;
 using System.Xml.Serialization;
 
 namespace DataCloner.Serialization
 {
     [Serializable]
     [XmlRoot("Configuration")]
-    public class ConfigurationXML
+    public class ConfigurationXml
     {
         public static readonly string FileName = "dc.config";
 
         [XmlArrayItem("add")]
-        public List<ConnectionXML> ConnectionStrings { get; set; }
-        public StaticTableXML StaticTables { get; set; }
-        public ManyToManyRelationshipsTablesXML ManyToManyRelationshipsTables { get; set; }
-        public DerivativeTableAccessXML DerivativeTableAccess { get; set; }
-        public ForeignKeysXML ForeignKeys { get; set; }
+        public List<ConnectionXml> ConnectionStrings { get; set; }
+        public StaticTableXml StaticTables { get; set; }
+        public ManyToManyRelationshipsTablesXml ManyToManyRelationshipsTables { get; set; }
+        public DerivativeTableAccessXml DerivativeTableAccess { get; set; }
+        public ForeignKeysXml ForeignKeys { get; set; }
 
-        public ConfigurationXML()
+        public ConfigurationXml()
         {
-            ConnectionStrings = new List<ConnectionXML>();
-            StaticTables = new StaticTableXML();
-            ManyToManyRelationshipsTables = new ManyToManyRelationshipsTablesXML();
-            DerivativeTableAccess = new DerivativeTableAccessXML();
-            ForeignKeys = new ForeignKeysXML();
+            ConnectionStrings = new List<ConnectionXml>();
+            StaticTables = new StaticTableXml();
+            ManyToManyRelationshipsTables = new ManyToManyRelationshipsTablesXml();
+            DerivativeTableAccess = new DerivativeTableAccessXml();
+            ForeignKeys = new ForeignKeysXml();
         }
 
         public void Save()
         {
-            var xs = new System.Xml.Serialization.XmlSerializer(this.GetType());
-            var fs = new System.IO.FileStream(FileName, System.IO.FileMode.Create);
-            var ns = new System.Xml.Serialization.XmlSerializerNamespaces();
+            var xs = new XmlSerializer(GetType());
+            var fs = new FileStream(FileName, FileMode.Create);
+            var ns = new XmlSerializerNamespaces();
             ns.Add("", "");
 
             xs.Serialize(fs, this, ns);
             fs.Close();
         }
 
-        public static ConfigurationXML Load()
+        public static ConfigurationXml Load()
         {
-            var xs = new System.Xml.Serialization.XmlSerializer(typeof(ConfigurationXML));
-            if (System.IO.File.Exists(FileName))
-            {
-                var fs = new System.IO.FileStream(FileName, System.IO.FileMode.Open);
-                var cReturn = (ConfigurationXML)xs.Deserialize(fs);
-                fs.Close();
-                return cReturn;
-            }
-            return new ConfigurationXML();
+            var xs = new XmlSerializer(typeof(ConfigurationXml));
+            if (!File.Exists(FileName)) return new ConfigurationXml();
+            var fs = new FileStream(FileName, FileMode.Open);
+            var cReturn = (ConfigurationXml)xs.Deserialize(fs);
+            fs.Close();
+            return cReturn;
         }
     }
 }

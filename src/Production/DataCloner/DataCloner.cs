@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using DataCloner.DataClasse;
+﻿using DataCloner.DataClasse;
+using DataCloner.Interface;
 using DataCloner.Serialization;
 using DataCloner.DataAccess;
 
@@ -10,14 +7,14 @@ namespace DataCloner
 {
     class DataCloner
     {
-        private readonly ConfigurationXML _config; //Pas de singleton pour la performance
+        private readonly ConfigurationXml _config; //Pas de singleton pour la performance
 
         public DataCloner()
         {
-            _config = ConfigurationXML.Load();
+            _config = ConfigurationXml.Load();
         }
 
-        public IRowIdentifier SQLTraveler(IRowIdentifier riSource, bool getDerivatives, bool shouldReturnFK)
+        public IRowIdentifier SqlTraveler(IRowIdentifier riSource, bool getDerivatives, bool shouldReturnFk)
         {
             RowIdentifier riReturn = null;
             var dispatcher = new QueryDispatcher(_config);

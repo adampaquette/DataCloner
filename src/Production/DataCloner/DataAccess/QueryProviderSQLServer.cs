@@ -1,31 +1,31 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Data;
 using System.Data.SqlClient;
 using DataCloner.DataClasse;
+using DataCloner.Interface;
+using IQueryProvider = DataCloner.Interface.IQueryProvider;
 
 namespace DataCloner.DataAccess
 {
-    public class QueryProviderSQLServer : IQueryProvider
+    public class QueryProviderSqlServer : IQueryProvider
     {
         private SqlConnection _conn;
-        private bool _isReadOnly;
+        private readonly bool _isReadOnly;
         //private ITableCacheDictionnary _cache = new TableCacheDictionnary();
 
-        public QueryProviderSQLServer(string connectionString)
+        public QueryProviderSqlServer(string connectionString)
         {
             _conn = new SqlConnection(connectionString);
         }
 
-        public QueryProviderSQLServer(string connectionString, bool readOnly)
+        public QueryProviderSqlServer(string connectionString, bool readOnly)
             : this(connectionString)
         {
             _isReadOnly = readOnly;
         }
 
-        ~QueryProviderSQLServer()
+        ~QueryProviderSqlServer()
         {
             Dispose(false);
         }
@@ -40,14 +40,14 @@ namespace DataCloner.DataAccess
             get { return _isReadOnly; }
         }
 
-        public DataTable GetFK(ITableIdentifier ti)
+        public DataTable GetFk(ITableIdentifier ti)
         {
-            string sql = "SELECT DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS";
+            var sql = "SELECT DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS";
 
             throw new NotImplementedException();
         }
 
-        public Int64 GetLastInsertedPK()
+        public Int64 GetLastInsertedPk()
         {
             throw new NotImplementedException();
         }
@@ -57,12 +57,12 @@ namespace DataCloner.DataAccess
             throw new NotImplementedException();
         }
 
-        public void Insert(ITableIdentifier ti, System.Data.DataRow[] rows)
+        public void Insert(ITableIdentifier ti, DataRow[] rows)
         {
             throw new NotImplementedException();
         }
 
-        public void Update(IRowIdentifier ri, System.Data.DataRow[] rows)
+        public void Update(IRowIdentifier ri, DataRow[] rows)
         {
             throw new NotImplementedException();
         }
@@ -99,7 +99,7 @@ namespace DataCloner.DataAccess
         /// </summary>
         public void Init()
         {
-            string sql = string.Format(
+            var sql = string.Format(
                "SELECT " +
                "	TABLE_SCHEMA," +
                "	TABLE_NAME," +

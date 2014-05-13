@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Data;
 
-namespace DataCloner
+namespace DataCloner.Interface
 {
     public interface ITableIdentifier
     {
-        Int16 ServerID { get; set; }
+        Int16 ServerId { get; set; }
         string DatabaseName { get; set; }
         string SchemaName { get; set; }
         string TableName { get; set; }
@@ -54,8 +52,8 @@ namespace DataCloner
 
     public interface IQueryDispatcher
     {        
-        DataTable GetFK(ITableIdentifier ti);
-        Int64 GetLastInsertedPK(Int16 serverId);
+        DataTable GetFk(ITableIdentifier ti);
+        Int64 GetLastInsertedPk(Int16 serverId);
         DataTable Select(IRowIdentifier ri);
         void Insert(ITableIdentifier ti, DataRow[] rows);
         void Update(IRowIdentifier ri, DataRow[] rows);

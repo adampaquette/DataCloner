@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Xml.Serialization;
 
 namespace DataCloner.Serialization
@@ -9,100 +7,100 @@ namespace DataCloner.Serialization
     [Serializable]
     [XmlRoot(Namespace = "urn:ForeignKeys")]
     [XmlType(Namespace = "urn:ForeignKeys")]
-    public class ForeignKeysXML
+    public class ForeignKeysXml
     {
         [XmlElement("Server")]
-        public List<ServerXML> Servers { get; set; }
+        public List<ServerXml> Servers { get; set; }
 
-        public ForeignKeysXML()
+        public ForeignKeysXml()
         {
-            Servers = new List<ServerXML>();
+            Servers = new List<ServerXml>();
         }
 
-        public ForeignKeysXML(List<ServerXML> servers)
+        public ForeignKeysXml(List<ServerXml> servers)
         {
             Servers = servers;
         }
 
-        public class ServerXML
+        public class ServerXml
         {
             [XmlAttribute]
             public Int16 Id { get; set; }
             [XmlElement("Database")]
-            public List<DatabaseXML> Databases { get; set; }
+            public List<DatabaseXml> Databases { get; set; }
 
-            public ServerXML()
+            public ServerXml()
             {
-                Databases = new List<DatabaseXML>();
+                Databases = new List<DatabaseXml>();
             }
 
-            public ServerXML(List<DatabaseXML> databases, Int16 id)
+            public ServerXml(List<DatabaseXml> databases, Int16 id)
             {
                 Databases = databases;
                 Id = id;
             }
         }
 
-        public class DatabaseXML
+        public class DatabaseXml
         {
             [XmlAttribute]
             public string Name { get; set; }
             [XmlElement("Schema")]
-            public List<SchemaXML> Schemas { get; set; }
+            public List<SchemaXml> Schemas { get; set; }
 
-            public DatabaseXML()
+            public DatabaseXml()
             {
-                Schemas = new List<SchemaXML>();
+                Schemas = new List<SchemaXml>();
             }
 
-            public DatabaseXML(List<SchemaXML> schemas, string name)
+            public DatabaseXml(List<SchemaXml> schemas, string name)
             {
                 Schemas = schemas;
                 Name = name;
             }
         }
 
-        public class SchemaXML
+        public class SchemaXml
         {
             [XmlAttribute]
             public string Name { get; set; }
             [XmlElement("Table")]
-            public List<TableXML> Tables { get; set; }
+            public List<TableXml> Tables { get; set; }
 
-            public SchemaXML()
+            public SchemaXml()
             {
-                Tables = new List<TableXML>();
+                Tables = new List<TableXml>();
             }
 
-            public SchemaXML(List<TableXML> tables, string name)
+            public SchemaXml(List<TableXml> tables, string name)
             {
                 Tables = tables;
                 Name = name;
             }
         }
 
-        public class TableXML
+        public class TableXml
         {
             [XmlAttribute]
             public string Name { get; set; }
             [XmlElement("Add")]
-            public List<AddForeignKeyXML> AddForeignKeys { get; set; }
+            public List<AddForeignKeyXml> AddForeignKeys { get; set; }
             [XmlElement("Modify")]
-            public List<ModifyForeignKeyXML> ModifyForeignKeys { get; set; }
+            public List<ModifyForeignKeyXml> ModifyForeignKeys { get; set; }
             [XmlElement("Remove")]
-            public List<RemoveForeignKeyXML> RemoveForeignKeys { get; set; }
+            public List<RemoveForeignKeyXml> RemoveForeignKeys { get; set; }
 
-            public TableXML()
+            public TableXml()
             {
-                AddForeignKeys = new List<AddForeignKeyXML>();
-                ModifyForeignKeys = new List<ModifyForeignKeyXML>();
-                RemoveForeignKeys = new List<RemoveForeignKeyXML>();
+                AddForeignKeys = new List<AddForeignKeyXml>();
+                ModifyForeignKeys = new List<ModifyForeignKeyXml>();
+                RemoveForeignKeys = new List<RemoveForeignKeyXml>();
             }
 
-            public TableXML(string name, 
-                            List<AddForeignKeyXML> addForeignKey, 
-                            List<ModifyForeignKeyXML> modifyForeignKeys, 
-                            List<RemoveForeignKeyXML> removeForeignKeys)
+            public TableXml(string name, 
+                            List<AddForeignKeyXml> addForeignKey, 
+                            List<ModifyForeignKeyXml> modifyForeignKeys, 
+                            List<RemoveForeignKeyXml> removeForeignKeys)
             {
                 Name = name;
                 AddForeignKeys = addForeignKey;
@@ -111,7 +109,7 @@ namespace DataCloner.Serialization
             }
         }
 
-        public class AddForeignKeyXML
+        public class AddForeignKeyXml
         {
             [XmlAttribute]
             public Int16 ServerIdDest { get; set; }
@@ -122,18 +120,18 @@ namespace DataCloner.Serialization
             [XmlAttribute]
             public string TableDest { get; set; }
             [XmlElement("Collumn")]
-            public List<CollumnXML> Collumns { get; set; }
+            public List<CollumnXml> Collumns { get; set; }
             [XmlAttribute]
             public bool Active { get; set; }
 
-            public AddForeignKeyXML()
+            public AddForeignKeyXml()
             {
-                Collumns = new List<CollumnXML>();
+                Collumns = new List<CollumnXml>();
                 Active = true;
             }
 
-            public AddForeignKeyXML(Int16 serverIdDest, string databaseDest, string schemaDest, 
-                                    string tableDest, List<CollumnXML> collumns, bool active)
+            public AddForeignKeyXml(Int16 serverIdDest, string databaseDest, string schemaDest, 
+                                    string tableDest, List<CollumnXml> collumns, bool active)
             {
                 Collumns = collumns;
                 ServerIdDest = serverIdDest;
@@ -144,7 +142,7 @@ namespace DataCloner.Serialization
             }
         }
 
-        public class ModifyForeignKeyXML
+        public class ModifyForeignKeyXml
         {
             [XmlAttribute]
             public string Name { get; set; }
@@ -157,18 +155,18 @@ namespace DataCloner.Serialization
             [XmlAttribute]
             public string TableDest { get; set; }
             [XmlElement("Collumn")]
-            public List<CollumnXML> Collumns { get; set; }
+            public List<CollumnXml> Collumns { get; set; }
             [XmlAttribute]
             public bool Active { get; set; }
 
-            public ModifyForeignKeyXML()
+            public ModifyForeignKeyXml()
             {
-                Collumns = new List<CollumnXML>();
+                Collumns = new List<CollumnXml>();
                 Active = true;
             }
 
-            public ModifyForeignKeyXML(string name, Int16 serverIdDest, string databaseDest, 
-                                       string schemaDest, string tableDest, List<CollumnXML> collumns,
+            public ModifyForeignKeyXml(string name, Int16 serverIdDest, string databaseDest, 
+                                       string schemaDest, string tableDest, List<CollumnXml> collumns,
                                        bool active)
             {
                 Name = name;
@@ -181,22 +179,22 @@ namespace DataCloner.Serialization
             }
         }
 
-        public class RemoveForeignKeyXML
+        public class RemoveForeignKeyXml
         {
             [XmlAttribute]
             public string Name { get; set; }
             [XmlElement("Collumn")]
-            public List<CollumnNameXML> Collumns { get; set; }
+            public List<CollumnNameXml> Collumns { get; set; }
             [XmlAttribute]
             public bool Active { get; set; }
 
-            public RemoveForeignKeyXML()
+            public RemoveForeignKeyXml()
             {
-                Collumns = new List<CollumnNameXML>();
+                Collumns = new List<CollumnNameXml>();
                 Active = true;
             }
 
-            public RemoveForeignKeyXML(string name, List<CollumnNameXML> collumns, bool active)
+            public RemoveForeignKeyXml(string name, List<CollumnNameXml> collumns, bool active)
             {
                 Name = name;
                 Collumns = collumns;
@@ -204,21 +202,18 @@ namespace DataCloner.Serialization
             }
         }
 
-        public class CollumnNameXML
+        public class CollumnNameXml
         {
             [XmlAttribute]
             public string Name { get; set; }
-            public CollumnNameXML() { }
         }
 
-        public class CollumnXML
+        public class CollumnXml
         {
             [XmlAttribute]
             public string Name { get; set; }
             [XmlAttribute]
             public string ColNameDest { get; set; }
-
-            public CollumnXML() { }
         }
     }
 }

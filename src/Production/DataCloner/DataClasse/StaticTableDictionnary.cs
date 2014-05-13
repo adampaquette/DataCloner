@@ -1,7 +1,6 @@
-﻿using System;
+﻿using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using DataCloner.Interface;
 
 namespace DataCloner.DataClasse
 {
@@ -105,9 +104,9 @@ namespace DataCloner.DataClasse
 
         #region IEnumerable Membres
 
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        IEnumerator IEnumerable.GetEnumerator()
         {
-            return ((System.Collections.IEnumerable)_dic).GetEnumerator();
+            return ((IEnumerable)_dic).GetEnumerator();
         }
 
         #endregion

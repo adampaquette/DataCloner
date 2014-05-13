@@ -1,31 +1,30 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Data;
-using MySql.Data;
+using DataCloner.Interface;
 using MySql.Data.MySqlClient;
+using IQueryProvider = DataCloner.Interface.IQueryProvider;
 
 namespace DataCloner.DataAccess
 {
-    public class QueryProviderMySQL : IQueryProvider
+    public class QueryProviderMySql : IQueryProvider
     {
         private MySqlConnection _conn;
-        private bool _isReadOnly;
+        private readonly bool _isReadOnly;
 
-        public QueryProviderMySQL(string connectionString)
+        public QueryProviderMySql(string connectionString)
         {
             _conn = new MySqlConnection(connectionString);
             _conn.Open();
         }
 
-        public QueryProviderMySQL(string connectionString, bool readOnly)
+        public QueryProviderMySql(string connectionString, bool readOnly)
             : this(connectionString)
         {
             _isReadOnly = readOnly;
         }
 
-        ~QueryProviderMySQL()
+        ~QueryProviderMySql()
         {
             Dispose(false);
         }
@@ -40,11 +39,11 @@ namespace DataCloner.DataAccess
             get { return _isReadOnly; }
         }
 
-        public DataTable GetFK(ITableIdentifier ti)
+        public DataTable GetFk(ITableIdentifier ti)
         {
             var dtReturn = new DataTable();
 
-            string sql =
+            var sql =
                 "SELECT " +
                 "	TC.TABLE_SCHEMA," +
                 "	TC.TABLE_NAME," +
@@ -67,7 +66,7 @@ namespace DataCloner.DataAccess
             return dtReturn;
         }
 
-        public Int64 GetLastInsertedPK()
+        public Int64 GetLastInsertedPk()
         {
             var cmd = new MySqlCommand("SELECT LAST_INSERT_ID();", _conn);
             return (Int64)cmd.ExecuteScalar();
@@ -136,7 +135,7 @@ namespace DataCloner.DataAccess
 
         }
 
-        public void Update(IRowIdentifier ri, System.Data.DataRow[] rows)
+        public void Update(IRowIdentifier ri, DataRow[] rows)
         {
             throw new NotImplementedException();
         }

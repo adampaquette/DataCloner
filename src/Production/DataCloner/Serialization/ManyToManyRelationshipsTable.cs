@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Xml.Serialization;
 
 namespace DataCloner.Serialization
@@ -9,91 +7,91 @@ namespace DataCloner.Serialization
     [Serializable]
     [XmlRoot(Namespace = "urn:ManyToMany")]
     [XmlType(Namespace = "urn:ManyToMany")]
-    public class ManyToManyRelationshipsTablesXML
+    public class ManyToManyRelationshipsTablesXml
     {
         [XmlElement("Server")]
-        public List<ServerXML> Servers { get; set; }
+        public List<ServerXml> Servers { get; set; }
 
-        public ManyToManyRelationshipsTablesXML()
+        public ManyToManyRelationshipsTablesXml()
         {
-            Servers = new List<ServerXML>();
+            Servers = new List<ServerXml>();
         }
 
-        public ManyToManyRelationshipsTablesXML(List<ServerXML> servers)
+        public ManyToManyRelationshipsTablesXml(List<ServerXml> servers)
         {
             Servers = servers;
         }
 
-        public class ServerXML
+        public class ServerXml
         {
             [XmlAttribute]
             public Int16 Id { get; set; }
             [XmlElement("Database")]
-            public List<DatabaseXML> Databases { get; set; }
+            public List<DatabaseXml> Databases { get; set; }
 
-            public ServerXML()
+            public ServerXml()
             {
-                Databases = new List<DatabaseXML>();
+                Databases = new List<DatabaseXml>();
             }
 
-            public ServerXML(List<DatabaseXML> databases, Int16 id)
+            public ServerXml(List<DatabaseXml> databases, Int16 id)
             {
                 Databases = databases;
                 Id = id;
             }
         }
 
-        public class DatabaseXML
+        public class DatabaseXml
         {
             [XmlAttribute]
             public string Name { get; set; }
             [XmlElement("Schema")]
-            public List<SchemaXML> Schemas { get; set; }
+            public List<SchemaXml> Schemas { get; set; }
 
-            public DatabaseXML()
+            public DatabaseXml()
             {
-                Schemas = new List<SchemaXML>();
+                Schemas = new List<SchemaXml>();
             }
 
-            public DatabaseXML(List<SchemaXML> schemas, string name)
+            public DatabaseXml(List<SchemaXml> schemas, string name)
             {
                 Schemas = schemas;
                 Name = name;
             }
         }
 
-        public class SchemaXML
+        public class SchemaXml
         {
             [XmlAttribute]
             public string Name { get; set; }
             [XmlElement("Table")]
-            public List<TableXML> Tables { get; set; }
+            public List<TableXml> Tables { get; set; }
 
-            public SchemaXML()
+            public SchemaXml()
             {
-                Tables = new List<TableXML>();
+                Tables = new List<TableXml>();
             }
 
-            public SchemaXML(List<TableXML> tables, string name)
+            public SchemaXml(List<TableXml> tables, string name)
             {
                 Tables = tables;
                 Name = name;
             }
         }
 
-        public class TableXML
+        public class TableXml
         {
             [XmlAttribute]
             public string Name { get; set; }
             [XmlAttribute]
             public bool Active { get; set; }
 
-            public TableXML() 
+            public TableXml() 
             {
                 Active = true;
             }
 
-            public TableXML(string name, bool active)
+            public TableXml(string name, bool active)
             {
                 Name = name;
                 Active = active;
