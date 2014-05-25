@@ -1,22 +1,16 @@
 ﻿using System;
 using System.Xml.Serialization;
 
-namespace DataCloner.Serialization
+namespace DataCloner.DataClasse
 {
-    [Serializable]
-    public class ConnectionXml
+    public class Connection
     {
-        [XmlAttribute]
         public Int16 Id { get; set; }
-        [XmlAttribute]
         public string Name { get; set; }
-        [XmlAttribute]
         public string ProviderName { get; set; }
-        [XmlAttribute]
         public string ConnectionString { get; set; }
 
-        public ConnectionXml() { }
-        public ConnectionXml(Int16 id, string name, string providerName, string connectionString)
+        public Connection(Int16 id, string name, string providerName, string connectionString)
         {
             Id = id;
             Name = name;
