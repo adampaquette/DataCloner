@@ -15,7 +15,7 @@ SQLTraveler(byval riSource as rowIdentifier,
 		getDerivatives = true;
 		
 	Si shouldReturnFK == true && lignes.count > 1
-		throw new exception();
+		throw new exception("La clef n'est pas unique!");
 		
 	Pour chaque ligne
 		Si la PK de la ligne est dans keyRelationshipDictionnary
