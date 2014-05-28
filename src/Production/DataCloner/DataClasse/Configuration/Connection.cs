@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Xml.Serialization;
 
-namespace DataCloner.DataClasse
+namespace DataCloner.DataClasse.Configuration
 {
     public class Connection
     {

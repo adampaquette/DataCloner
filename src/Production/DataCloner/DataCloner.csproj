@@ -83,6 +83,8 @@
     <Compile Include="DataClasse\ColumnIdentifier.cs" />
     <Compile Include="DataClasse\Configuration\Configuration.cs" />
     <Compile Include="DataClasse\Configuration\Connection.cs" />
+    <Compile Include="DataClasse\Configuration\StaticTable.cs" />
+    <Compile Include="DataClasse\MultikeyDictionnary.cs" />
     <Compile Include="DataClasse\RowIdentifier.cs" />
     <Compile Include="DataClasse\StaticTableDictionnary.cs" />
     <Compile Include="DataClasse\TableIdentifier.cs" />
