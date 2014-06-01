@@ -84,11 +84,11 @@
     <Compile Include="DataClasse\Configuration\Configuration.cs" />
     <Compile Include="DataClasse\Configuration\Connection.cs" />
     <Compile Include="DataClasse\Configuration\StaticTable.cs" />
-    <Compile Include="DataClasse\MultikeyDictionnary.cs" />
     <Compile Include="DataClasse\RowIdentifier.cs" />
     <Compile Include="DataClasse\StaticTableDictionnary.cs" />
     <Compile Include="DataClasse\TableIdentifier.cs" />
     <Compile Include="DataCloner.cs" />
+    <Compile Include="Framework\Extensions.cs" />
     <Compile Include="Interface\Interfaces.cs" />
     <Compile Include="Interface\IQueryProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

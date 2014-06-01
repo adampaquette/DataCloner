@@ -1,8 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Xml.Serialization;
+using System.Linq;
+
 using DataCloner.DataClasse;
 using DataCloner.Serialization;
+using DataCloner.Framework;
+using DataCloner.DataClasse.Configuration;
+
 
 namespace Class
 {
@@ -10,15 +16,17 @@ namespace Class
     {
         static int Main(string[] args)
         {
-            var ti = new TableIdentifier {DatabaseName = "botnet", SchemaName = "botnet", TableName = "link"};
-            var ri = new RowIdentifier {TableIdentifier = ti};
+            var ti = new TableIdentifier { DatabaseName = "botnet", SchemaName = "botnet", TableName = "link" };
+            var ri = new RowIdentifier { TableIdentifier = ti };
             ri.Columns.Add("fromPageHostId", 6);
             ri.Columns.Add("fromPageId", 4);
+            
+            //ConfigTest();
+            StaticTableTest();
 
             //var m = new DataCloner.DataAccess.QueryDatabaseMySQL("server=localhost;user id=root; password=cdxsza; database=mysql; pooling=false");
             //var dt = m.GetFK(ti);
             //m.Select(ri);
-
 
             //var conn = new System.Data.SqlClient.SqlConnection("Data Source=une_sql_pgis;Initial Catalog=PGISCBL;Integrated Security=SSPI;");
             //conn.Open();
@@ -27,14 +35,49 @@ namespace Class
             ////var dt = conn.GetSchema("Columns");
             //conn.Close();
 
-            ConfigTest();
-
             //var a = new DataCloner.DataCloner();
             //a.SQLTraveler(null, true, true);
 
 
             return 0;
         }
+
+        public static void StaticTableTest()
+        {
+            var values = new string[] { "table1", "table2", "table3", "table4" };
+            var st = new StaticTable();
+
+            st.Add(1, "database", "schema", "TABLE1");
+            st.Add(1, "dataBASE", "schema", "taBle1");
+            st.Add(1, "database", "schema", "table2");
+            st.Add(1, "database", "schema", "taBle3");
+            st.Add(1, "database", "schema", "table4");
+
+            st.Add(2, "database1", "schema", "table1");
+            st.Add(2, "database1", "schema", "table1");
+            st.Add(2, "database2", "schema", "table2");
+            st.Add(2, "database2", "schema", "table3");
+            st.Add(3, "database3", "schema", "table4");          
+
+            if (!st[1, "DATAbase", "sChema"].SequenceEqual(values))
+                throw new Exception("");
+
+            if (st[9, "DATAbase", "sChema"] != null)
+                throw new Exception("Devrait être null");
+
+            if(!st.Contains(3, "dATabase3", "sCHEMA", "table4"))
+                throw new Exception("");
+
+            if(!st.Remove(3, "dATabase3", "sCHEMA", "table4"))
+                throw new Exception("");
+
+            if(st.Contains(3, "dATabase3", "sCHEMA", "table4"))
+                throw new Exception("");
+
+            if(st[3, "dATabase3", "sCHEMA"] != null)
+                throw new Exception("");
+        }
+
 
         public static void ConfigTest()
         {
@@ -47,29 +90,29 @@ namespace Class
 
             //StaticTableXML 
             //==============            
-            var schema1 = new StaticTableXml.SchemaXml {Name = "dbo"};
+            var schema1 = new StaticTableXml.SchemaXml { Name = "dbo" };
             schema1.Tables.Add(new StaticTableXml.TableXml("table1", true));
             schema1.Tables.Add(new StaticTableXml.TableXml("table2", true));
 
-            var schema2 = new StaticTableXml.SchemaXml {Name = "master"};
+            var schema2 = new StaticTableXml.SchemaXml { Name = "master" };
             schema2.Tables.Add(new StaticTableXml.TableXml("person", true));
             schema2.Tables.Add(new StaticTableXml.TableXml("house", true));
 
-            var listSchema = new List<StaticTableXml.SchemaXml> {schema1, schema2};
+            var listSchema = new List<StaticTableXml.SchemaXml> { schema1, schema2 };
 
             var database = new StaticTableXml.DatabaseXml(listSchema, "db");
             var server = new StaticTableXml.ServerXml(new List<StaticTableXml.DatabaseXml> { database }, 1);
-            var server2 = new StaticTableXml.ServerXml(new List<StaticTableXml.DatabaseXml> {database }, 2);
+            var server2 = new StaticTableXml.ServerXml(new List<StaticTableXml.DatabaseXml> { database }, 2);
             var staticTable = new StaticTableXml(new List<StaticTableXml.ServerXml> { server, server2 });
             config.StaticTables = staticTable;
 
             //ManyToManyRelationshipsTablesXML
             //===============================
-            var schemaManyToMany = new ManyToManyRelationshipsTablesXml.SchemaXml {Name = "dbo"};
+            var schemaManyToMany = new ManyToManyRelationshipsTablesXml.SchemaXml { Name = "dbo" };
             schemaManyToMany.Tables.Add(new ManyToManyRelationshipsTablesXml.TableXml("table1", true));
             schemaManyToMany.Tables.Add(new ManyToManyRelationshipsTablesXml.TableXml("table2", true));
 
-            var listSchemaManyToMany = new List<ManyToManyRelationshipsTablesXml.SchemaXml> {schemaManyToMany};
+            var listSchemaManyToMany = new List<ManyToManyRelationshipsTablesXml.SchemaXml> { schemaManyToMany };
 
             var databaseManyToMany = new ManyToManyRelationshipsTablesXml.DatabaseXml(listSchemaManyToMany, "db");
             var serverManyToMany = new ManyToManyRelationshipsTablesXml.ServerXml(new List<ManyToManyRelationshipsTablesXml.DatabaseXml> { databaseManyToMany }, 1);
@@ -78,7 +121,7 @@ namespace Class
 
             //DerivativeTableAccess
             //=====================
-            var schemaDerivativeTableAccess = new DerivativeTableAccessXml.SchemaXml {Name = "dbo"};
+            var schemaDerivativeTableAccess = new DerivativeTableAccessXml.SchemaXml { Name = "dbo" };
             schemaDerivativeTableAccess.Tables.Add(new DerivativeTableAccessXml.TableXml("table1", DerivativeTableAccessXml.AccessXml.Denied, true));
             schemaDerivativeTableAccess.Tables.Add(new DerivativeTableAccessXml.TableXml("table2", DerivativeTableAccessXml.AccessXml.Forced, true));
 

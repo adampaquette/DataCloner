@@ -9,10 +9,10 @@ namespace DataCloner.DataClasse.Configuration
     {
         public List<Connection> ConnectionStrings { get; set; }
 
-        public void Configuration()
+        public Configuration()
         {
             StaticTable st = new StaticTable();
-            st.Add(
+           // st.Add()
         }
     }
 }
