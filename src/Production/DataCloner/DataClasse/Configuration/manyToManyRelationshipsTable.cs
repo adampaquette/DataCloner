@@ -7,10 +7,10 @@ using DataCloner.Framework;
 namespace DataCloner.DataClasse.Configuration
 {
     /// <summary>
-    /// Contient les tables statiques de la base de données
+    /// Contient les tables les tables qui sont le résultat des relations plusieurs à plusieurs.
     /// </summary>
     /// <remarks>Optimisé pour la lecture et non pour l'écriture!</remarks>
-    public class StaticTable
+    public class ManyToManyRelationshipsTable
     {
         private Dictionary<Int32, Dictionary<string, Dictionary<string, string[]>>> _dic = new Dictionary<Int32, Dictionary<string, Dictionary<string, string[]>>>();
 
