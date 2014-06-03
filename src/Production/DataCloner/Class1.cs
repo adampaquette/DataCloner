@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Xml.Serialization;
 using System.Linq;
 
 using DataCloner.DataClasse;
@@ -9,20 +8,20 @@ using DataCloner.Serialization;
 using DataCloner.Framework;
 using DataCloner.DataClasse.Configuration;
 
-
 namespace Class
 {
     public class main
     {
         static int Main(string[] args)
         {
+            ConfigTest();
+            StaticTableTest();
+            ExtensionsTest();
+            
             var ti = new TableIdentifier { DatabaseName = "botnet", SchemaName = "botnet", TableName = "link" };
             var ri = new RowIdentifier { TableIdentifier = ti };
             ri.Columns.Add("fromPageHostId", 6);
             ri.Columns.Add("fromPageId", 4);
-            
-            //ConfigTest();
-            StaticTableTest();
 
             //var m = new DataCloner.DataAccess.QueryDatabaseMySQL("server=localhost;user id=root; password=cdxsza; database=mysql; pooling=false");
             //var dt = m.GetFK(ti);
@@ -42,6 +41,30 @@ namespace Class
             return 0;
         }
 
+        public static void ExtensionsTest()
+        {
+            var t = new int[] { 1, 2, 3, 4 };
+
+            //RemoveAt
+            var m = t.RemoveAt(0);
+            if (!m.SequenceEqual(new int[] { 2, 3, 4 }))
+                throw new Exception("");
+
+            m = m.RemoveAt(2);
+            if (!m.SequenceEqual(new int[] { 2, 3 }))
+                throw new Exception("");
+
+            //Remove
+            var n = t.Remove(4);
+            if (!n.SequenceEqual(new int[] { 1, 2, 3 }))
+                throw new Exception("");
+
+            //Add
+            var l = t.Add(5).Add(1);
+            if (!l.SequenceEqual(new int[] { 1, 2, 3, 4, 5, 1 }))
+                throw new Exception("");
+        }
+
         public static void StaticTableTest()
         {
             var values = new string[] { "table1", "table2", "table3", "table4" };
@@ -57,7 +80,7 @@ namespace Class
             st.Add(2, "database1", "schema", "table1");
             st.Add(2, "database2", "schema", "table2");
             st.Add(2, "database2", "schema", "table3");
-            st.Add(3, "database3", "schema", "table4");          
+            st.Add(3, "database3", "schema", "table4");
 
             if (!st[1, "DATAbase", "sChema"].SequenceEqual(values))
                 throw new Exception("");
@@ -65,16 +88,16 @@ namespace Class
             if (st[9, "DATAbase", "sChema"] != null)
                 throw new Exception("Devrait être null");
 
-            if(!st.Contains(3, "dATabase3", "sCHEMA", "table4"))
+            if (!st.Contains(3, "dATabase3", "sCHEMA", "table4"))
                 throw new Exception("");
 
-            if(!st.Remove(3, "dATabase3", "sCHEMA", "table4"))
+            if (!st.Remove(3, "dATabase3", "sCHEMA", "table4"))
                 throw new Exception("");
 
-            if(st.Contains(3, "dATabase3", "sCHEMA", "table4"))
+            if (st.Contains(3, "dATabase3", "sCHEMA", "table4"))
                 throw new Exception("");
 
-            if(st[3, "dATabase3", "sCHEMA"] != null)
+            if (st[3, "dATabase3", "sCHEMA"] != null)
                 throw new Exception("");
         }
 
@@ -185,22 +208,11 @@ namespace Class
 
             //Save / load from file
             //=====================
-            var serialized = SerizlizeXml(config);
+            var serialized = config.SerializeXml();
             config.Save();
 
             ConfigurationXml configLoaded;
             configLoaded = ConfigurationXml.Load();
-        }
-
-        public static string SerizlizeXml<T>(T obj)
-        {
-            var xs = new XmlSerializer(obj.GetType());
-            var sw = new StringWriter();
-            var ns = new XmlSerializerNamespaces();
-            ns.Add("", "");
-
-            xs.Serialize(sw, obj, ns);
-            return sw.ToString();
         }
     }
 }
