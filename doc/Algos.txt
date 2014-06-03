@@ -35,11 +35,11 @@ SQLTraveler(byval riSource as rowIdentifier,
 						Si une ligne existe				
 							Affecter la valeur des colonnes à celles de lineDestination
 						Sinon
-							Créer une rowIdentifier avec la valeur des colonnes de la contrainte
+							Créer une rowIdentifier ri avec la valeur des colonnes de la contrainte
 							Appeler SQLTraveler(ri, false, true)
 							Affecter la valeur des colonnes à celles de lineDestination
 					Sinon
-						Créer une rowIdentifier avec la valeur des colonnes de la contrainte
+						Créer une rowIdentifier ri avec la valeur des colonnes de la contrainte
 						Appeler SQLTraveler(ri, false, true)
 						Affecter la valeur des colonnes à celles de lineDestination
 
@@ -49,12 +49,17 @@ SQLTraveler(byval riSource as rowIdentifier,
 			Enregistrer la PK dans keyRelationshipDictionnary
 			Affecter riRetour avec la valeur des colonnes de la PK
 			
-			Si getDerivatives == true
-				Obtenir de la cache les tables dérivées de riSource (contraintes FK qui pointent vers la PK de la table riSource)
-				Supprimer les tables qui sont dans derivateTableAccess avec l'access denied
-				Pour chaque table
-					Créer une rowIdentifier avec la valeur des colonnes de la contrainte (PK)
-						Appeler SQLTraveler(ri, getDerivatives, false)
+            Obtenir de la cache les tables dérivées de riSource (contraintes FK qui pointent vers la PK de la table riSource) derivativeTable
+            --Supprimer les tables qui sont dans derivativeTableAccess avec l'access denied --Fait lors de la création de la cache
+            Si getDerivatives == false
+                Filtrer derivativeTable avec seulement les tables qui ont l'accès Forced
+			--Sinon, toutes les tables de la cache suivront le processus normal   
+            
+            Pour chaque table
+                --Récupérer l'accès de la table aux dérivées AccessNextTables --TODO
+                --Si AccessNextTables n'est pas initialisée, on lui affecte getDerivatives
+                Créer une rowIdentifier ri avec la valeur des colonnes de la contrainte (PK)
+                    Appeler SQLTraveler(ri, AccessNextTables, false)
 
 =========================================================================	
 BuildCache()
