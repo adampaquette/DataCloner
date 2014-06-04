@@ -7,7 +7,7 @@ using DataCloner.Framework;
 namespace DataCloner.DataClasse.Configuration
 {
     /// <summary>
-    /// Contient les tables les tables qui sont le résultat des relations plusieurs à plusieurs.
+    /// Contient les tables qui sont le résultat des relations plusieurs à plusieurs.
     /// </summary>
     /// <remarks>Optimisé pour la lecture et non pour l'écriture!</remarks>
     public class ManyToManyRelationshipsTable

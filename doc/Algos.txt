@@ -7,24 +7,19 @@ SQLTraveler(byval riSource as rowIdentifier,
 	Construire requête SELECT pour la riSource
 	Récupérer les lignes riSourceLines
 	Obtenir de la cache les FK de la table
-	
-	Récupérer l'accès de la table aux tables dérivées (derivateTableAccess) currentTableAccess
-	Si currentTableAccess == denied
-		getDerivatives = false;
-	Sinon si currentTableAccess == forced
-		getDerivatives = true;
 		
 	Si shouldReturnFK == true && lignes.count > 1
 		throw new exception("La clef n'est pas unique!");
 		
 	Pour chaque ligne
+        //Si ligne déjà enregistrée
 		Si la PK de la ligne est dans keyRelationshipDictionnary
 			Si shouldReturnFK == true
 				Retourner la PK destination 
 			else
 				next ligne
 		Sinon		
-			Dupliquer la ligne pour l'enregistrement de destination dans une variable lineDestination
+			Dupliquer la ligne pour l'enregistrement dans destination dans une variable lineDestination
 			Pour chaque contrainte de type FK			
 				Si la FK est dans keyRelationshipDictionnary
 					Utiliser la clef depuis keyRelationshipDictionnary			
@@ -32,14 +27,14 @@ SQLTraveler(byval riSource as rowIdentifier,
 					Si la table de destination de la FK est statique
 						Construire requête SELECT pour la ligne table destination
 						Récupérer la ligne
-						Si une ligne existe				
-							Affecter la valeur des colonnes à celles de lineDestination
+						Si une ligne existe	dans destination			
+							Affecter la valeur des colonnes PK à celles de lineDestination (FK)
 						Sinon
-							Créer une rowIdentifier ri avec la valeur des colonnes de la contrainte
+							Créer une rowIdentifier ri avec la valeur des colonnes de la contrainte FK
 							Appeler SQLTraveler(ri, false, true)
 							Affecter la valeur des colonnes à celles de lineDestination
 					Sinon
-						Créer une rowIdentifier ri avec la valeur des colonnes de la contrainte
+						Créer une rowIdentifier ri avec la valeur des colonnes de la contrainte FK
 						Appeler SQLTraveler(ri, false, true)
 						Affecter la valeur des colonnes à celles de lineDestination
 
@@ -47,19 +42,21 @@ SQLTraveler(byval riSource as rowIdentifier,
 			Enregistrer la ligne dans la table destination
 			Récupérer la PK nouvellement créée
 			Enregistrer la PK dans keyRelationshipDictionnary
-			Affecter riRetour avec la valeur des colonnes de la PK
+            Si shouldReturnFK == true
+                Affecter riRetour avec la valeur des colonnes de la PK
 			
             Obtenir de la cache les tables dérivées de riSource (contraintes FK qui pointent vers la PK de la table riSource) derivativeTable
-            --Supprimer les tables qui sont dans derivativeTableAccess avec l'access denied --Fait lors de la création de la cache
+            //Supprimer les tables qui sont dans derivativeTableAccess avec l'access denied --Fait lors de la création de la cache
+            //Ajouter l'acces aux tables dérivées dans l'objet derivativeTable --Fait lors de la création de la cache
             Si getDerivatives == false
                 Filtrer derivativeTable avec seulement les tables qui ont l'accès Forced
-			--Sinon, toutes les tables de la cache suivront le processus normal   
+			//Sinon, toutes les tables de la cache suivront le processus normal   
             
-            Pour chaque table
-                --Récupérer l'accès de la table aux dérivées AccessNextTables --TODO
-                --Si AccessNextTables n'est pas initialisée, on lui affecte getDerivatives
+            Pour chaque table dans derivativeTable
+                Si table.Access == Forced et table.Cascade == true
+                    getDerivatives = true            
                 Créer une rowIdentifier ri avec la valeur des colonnes de la contrainte (PK)
-                    Appeler SQLTraveler(ri, AccessNextTables, false)
+                Appeler SQLTraveler(ri, getDerivatives, false)
 
 =========================================================================	
 BuildCache()
