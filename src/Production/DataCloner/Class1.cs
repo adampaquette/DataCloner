@@ -129,19 +129,6 @@ namespace Class
             var staticTable = new StaticTableXml(new List<StaticTableXml.ServerXml> { server, server2 });
             config.StaticTables = staticTable;
 
-            //ManyToManyRelationshipsTablesXML
-            //===============================
-            var schemaManyToMany = new ManyToManyRelationshipsTablesXml.SchemaXml { Name = "dbo" };
-            schemaManyToMany.Tables.Add(new ManyToManyRelationshipsTablesXml.TableXml("table1", true));
-            schemaManyToMany.Tables.Add(new ManyToManyRelationshipsTablesXml.TableXml("table2", true));
-
-            var listSchemaManyToMany = new List<ManyToManyRelationshipsTablesXml.SchemaXml> { schemaManyToMany };
-
-            var databaseManyToMany = new ManyToManyRelationshipsTablesXml.DatabaseXml(listSchemaManyToMany, "db");
-            var serverManyToMany = new ManyToManyRelationshipsTablesXml.ServerXml(new List<ManyToManyRelationshipsTablesXml.DatabaseXml> { databaseManyToMany }, 1);
-            var manyToManyRelationshipsTable = new ManyToManyRelationshipsTablesXml(new List<ManyToManyRelationshipsTablesXml.ServerXml> { serverManyToMany });
-            config.ManyToManyRelationshipsTables = manyToManyRelationshipsTable;
-
             //DerivativeTableAccess
             //=====================
             var schemaDerivativeTableAccess = new DerivativeTableAccessXml.SchemaXml { Name = "dbo" };

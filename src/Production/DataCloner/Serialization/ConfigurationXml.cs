@@ -14,7 +14,6 @@ namespace DataCloner.Serialization
         [XmlArrayItem("add")]
         public List<ConnectionXml> ConnectionStrings { get; set; }
         public StaticTableXml StaticTables { get; set; }
-        public ManyToManyRelationshipsTablesXml ManyToManyRelationshipsTables { get; set; }
         public DerivativeTableAccessXml DerivativeTableAccess { get; set; }
         public ForeignKeysXml ForeignKeys { get; set; }
 
@@ -22,7 +21,6 @@ namespace DataCloner.Serialization
         {
             ConnectionStrings = new List<ConnectionXml>();
             StaticTables = new StaticTableXml();
-            ManyToManyRelationshipsTables = new ManyToManyRelationshipsTablesXml();
             DerivativeTableAccess = new DerivativeTableAccessXml();
             ForeignKeys = new ForeignKeysXml();
         }

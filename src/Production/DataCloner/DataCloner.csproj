@@ -83,10 +83,8 @@
     <Compile Include="DataClasse\ColumnIdentifier.cs" />
     <Compile Include="DataClasse\Configuration\Configuration.cs" />
     <Compile Include="DataClasse\Configuration\Connection.cs" />
-    <Compile Include="DataClasse\Configuration\manyToManyRelationshipsTable.cs" />
     <Compile Include="DataClasse\Configuration\StaticTable.cs" />
     <Compile Include="DataClasse\RowIdentifier.cs" />
-    <Compile Include="DataClasse\StaticTableDictionnary.cs" />
     <Compile Include="DataClasse\TableIdentifier.cs" />
     <Compile Include="DataCloner.cs" />
     <Compile Include="Framework\Extensions.cs" />
@@ -97,7 +95,6 @@
     <Compile Include="Serialization\ConnectionXml.cs" />
     <Compile Include="Serialization\DerivativeTableAccessXml.cs" />
     <Compile Include="Serialization\ForeignKeysXml.cs" />
-    <Compile Include="Serialization\ManyToManyRelationshipsTableXml.cs" />
     <Compile Include="Serialization\StaticTableXml.cs" />
   </ItemGroup>
   <ItemGroup>

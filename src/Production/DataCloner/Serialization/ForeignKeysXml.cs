@@ -206,6 +206,7 @@ namespace DataCloner.Serialization
         {
             [XmlAttribute]
             public string Name { get; set; }
+            public CollumnNameXml() { }
         }
 
         public class CollumnXml
@@ -214,6 +215,7 @@ namespace DataCloner.Serialization
             public string Name { get; set; }
             [XmlAttribute]
             public string ColNameDest { get; set; }
+            public CollumnXml() { }
         }
     }
 }

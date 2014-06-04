@@ -15,6 +15,7 @@ namespace DataCloner.Serialization
         [XmlAttribute]
         public string ConnectionString { get; set; }
 
+        public ConnectionXml() { }
         public ConnectionXml(Int16 id, string name, string providerName, string connectionString)
         {
             Id = id;
