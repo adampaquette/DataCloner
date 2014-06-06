@@ -11,7 +11,7 @@ SQLTraveler(byval riSource as rowIdentifier,
 	Si shouldReturnFK == true && lignes.count > 1
 		throw new exception("La clef n'est pas unique!");
 		
-	Pour chaque ligne
+	Pour chaque ligne dans riSourceLines
         //Si ligne déjà enregistrée
 		Si la PK de la ligne est dans keyRelationshipDictionnary
 			Si shouldReturnFK == true
@@ -38,6 +38,11 @@ SQLTraveler(byval riSource as rowIdentifier,
 						Appeler SQLTraveler(ri, false, true)
 						Affecter la valeur des colonnes à celles de lineDestination
 
+            Récupérer les colonnes qui doivent être générées depuis la configuration dataBuilder 
+            Pour chaque colonne à générer
+                Appeler la fonction attachée à la colonne
+                Affecter la valeur de retour dans lineDestination
+                        
 			Créer la requête d'INSERT avec les valeurs de lineDestination
 			Enregistrer la ligne dans la table destination
 			Récupérer la PK nouvellement créée
