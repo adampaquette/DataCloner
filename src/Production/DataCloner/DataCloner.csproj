@@ -76,7 +76,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class1.cs" />
+    <Compile Include="rawTests.cs" />
     <Compile Include="DataAccess\QueryProviderMySQL.cs" />
     <Compile Include="DataAccess\QueryProviderSQLServer.cs" />
     <Compile Include="DataAccess\QueryDispatcher.cs" />
@@ -95,6 +95,7 @@
     <Compile Include="Serialization\ConnectionXml.cs" />
     <Compile Include="Serialization\DerivativeTableAccessXml.cs" />
     <Compile Include="Serialization\ForeignKeysXml.cs" />
+    <Compile Include="Serialization\DataBuilderXml.cs" />
     <Compile Include="Serialization\StaticTableXml.cs" />
   </ItemGroup>
   <ItemGroup>

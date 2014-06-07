@@ -111,7 +111,7 @@ namespace Class
             var cs = new ConnectionXml(1, "sql1", "DataCloner.DataAccess.QueryProviderMySQL", "server=localhost;user id=root; password=cdxsza; database=mysql; pooling=false");
             config.ConnectionStrings.Add(cs);
 
-            //StaticTableXML 
+            //StaticTableXml
             //==============            
             var schema1 = new StaticTableXml.SchemaXml { Name = "dbo" };
             schema1.Tables.Add(new StaticTableXml.TableXml("table1", true));
@@ -129,8 +129,23 @@ namespace Class
             var staticTable = new StaticTableXml(new List<StaticTableXml.ServerXml> { server, server2 });
             config.StaticTables = staticTable;
 
-            //DerivativeTableAccess
-            //=====================
+            //DataBuilderXml 
+            //==============  
+            var col1DB = new DataBuilderXml.ColumnXml("ID", "DataCloner.Builder.Generic", "CreateID", true);
+            var col2DB = new DataBuilderXml.ColumnXml("NAS", "Client.Builder.Builder1", "CreateNAS", true);
+
+            var schemaDB1 = new DataBuilderXml.SchemaXml { Name = "master" };
+            schemaDB1.Tables.Add(new DataBuilderXml.TableXml("person", new List<DataBuilderXml.ColumnXml>() { col1DB, col2DB }));
+
+            var listSchemaDB = new List<DataBuilderXml.SchemaXml> { schemaDB1 };
+
+            var databaseDB = new DataBuilderXml.DatabaseXml(listSchemaDB, "db");
+            var serverDB = new DataBuilderXml.ServerXml(new List<DataBuilderXml.DatabaseXml> { databaseDB }, 1);
+            var dataBuilders = new DataBuilderXml(new List<DataBuilderXml.ServerXml> { serverDB });
+            config.DataBuilders = dataBuilders;
+
+            //DerivativeTableAccessXml
+            //========================
             var schemaDerivativeTableAccess = new DerivativeTableAccessXml.SchemaXml { Name = "dbo" };
             schemaDerivativeTableAccess.Tables.Add(new DerivativeTableAccessXml.TableXml("table1", DerivativeTableAccessXml.AccessXml.Denied, true));
             schemaDerivativeTableAccess.Tables.Add(new DerivativeTableAccessXml.TableXml("table2", DerivativeTableAccessXml.AccessXml.Forced, true));
@@ -145,8 +160,8 @@ namespace Class
             var derivativeTableAccess = new DerivativeTableAccessXml(new List<DerivativeTableAccessXml.ServerXml> { serverDerivativeTableAccess });
             config.DerivativeTableAccess = derivativeTableAccess;
 
-            //ForeignKeys
-            //===========
+            //ForeignKeysXml
+            //==============
             var serverfk1 = new ForeignKeysXml.ServerXml();
             var dbfk1 = new ForeignKeysXml.DatabaseXml();
             var schemafk1 = new ForeignKeysXml.SchemaXml();

@@ -16,6 +16,7 @@ namespace DataCloner.Serialization
         public StaticTableXml StaticTables { get; set; }
         public DerivativeTableAccessXml DerivativeTableAccess { get; set; }
         public ForeignKeysXml ForeignKeys { get; set; }
+        public DataBuilderXml DataBuilders { get; set; }
 
         public ConfigurationXml()
         {
@@ -23,6 +24,7 @@ namespace DataCloner.Serialization
             StaticTables = new StaticTableXml();
             DerivativeTableAccess = new DerivativeTableAccessXml();
             ForeignKeys = new ForeignKeysXml();
+            DataBuilders = new DataBuilderXml();
         }
 
         public void Save()
