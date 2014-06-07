@@ -7,6 +7,7 @@ using DataCloner.DataClasse;
 using DataCloner.Serialization;
 using DataCloner.Framework;
 using DataCloner.DataClasse.Configuration;
+using DataCloner.Enum;
 
 namespace Class
 {
@@ -146,9 +147,12 @@ namespace Class
 
             //DerivativeTableAccessXml
             //========================
+            var toDTA = new DerivativeTableAccessXml.TableToXml("table1", AccessXml.Forced, true, true);
+            var lstToDTA = new List<DerivativeTableAccessXml.TableToXml>() { toDTA };
             var schemaDerivativeTableAccess = new DerivativeTableAccessXml.SchemaXml { Name = "dbo" };
-            schemaDerivativeTableAccess.Tables.Add(new DerivativeTableAccessXml.TableXml("table1", DerivativeTableAccessXml.AccessXml.Denied, true));
-            schemaDerivativeTableAccess.Tables.Add(new DerivativeTableAccessXml.TableXml("table2", DerivativeTableAccessXml.AccessXml.Forced, true));
+            schemaDerivativeTableAccess.Tables.Add(new DerivativeTableAccessXml.TableFromXml("table1", AccessXml.Denied, true, true, null ));
+            schemaDerivativeTableAccess.Tables.Add(new DerivativeTableAccessXml.TableFromXml("table2", AccessXml.Forced, true, false, null));
+            schemaDerivativeTableAccess.Tables.Add(new DerivativeTableAccessXml.TableFromXml("table3", AccessXml.NotSet, true, false, lstToDTA));
 
             var listSchemaDerivativeTableAccess = new List<DerivativeTableAccessXml.SchemaXml>
             {

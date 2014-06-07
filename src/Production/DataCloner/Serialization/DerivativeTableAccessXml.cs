@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Xml.Serialization;
+using DataCloner.Enum;
 
 namespace DataCloner.Serialization
 {
@@ -64,48 +65,73 @@ namespace DataCloner.Serialization
         {
             [XmlAttribute]
             public string Name { get; set; }
-            [XmlElement("Table")]
-            public List<TableXml> Tables { get; set; }
+            [XmlElement("TableFrom")]
+            public List<TableFromXml> Tables { get; set; }
 
             public SchemaXml()
             {
-                Tables = new List<TableXml>();
+                Tables = new List<TableFromXml>();
             }
 
-            public SchemaXml(List<TableXml> tables, string name)
+            public SchemaXml(List<TableFromXml> tables, string name)
             {
                 Tables = tables;
                 Name = name;
             }
         }
 
-        public class TableXml
+        public class TableFromXml
         {
             [XmlAttribute]
             public string Name { get; set; }
             [XmlAttribute]
             public AccessXml Access { get; set; }
             [XmlAttribute]
+            public bool Cascade { get; set; }
+            [XmlAttribute]
+            public bool Active { get; set; }
+            [XmlElement("To")]
+            public List<TableToXml> TablesTo { get; set; }
+
+            public TableFromXml() 
+            {
+                Active = true;
+                TablesTo = new List<TableToXml>();
+            }
+
+            public TableFromXml(string name, AccessXml access,bool cascade, bool active, List<TableToXml> tablesTo)
+            {
+                Name = name;
+                Access = access;
+                Cascade = cascade;
+                Active = active;
+                TablesTo = tablesTo;
+            }
+        }
+
+        public class TableToXml
+        {
+            [XmlAttribute]
+            public string Name { get; set; }
+            [XmlAttribute]
+            public AccessXml Access { get; set; }
+            [XmlAttribute]
+            public bool Cascade { get; set; }
+            [XmlAttribute]
             public bool Active { get; set; }
 
-            public TableXml() 
+            public TableToXml()
             {
                 Active = true;
             }
 
-            public TableXml(string name, AccessXml access, bool active)
+            public TableToXml(string name, AccessXml access, bool cascade, bool active)
             {
                 Name = name;
                 Access = access;
+                Cascade = cascade;
                 Active = active;
             }
-        }
-
-        public enum AccessXml
-        {
-            Denied,
-            Forced,
-            Inherited
         }
     }   
 }
