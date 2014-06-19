@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
 
 using DataCloner.Framework;
 using DataCloner.Enum;
@@ -14,7 +15,7 @@ namespace DataCloner.DataClasse.Configuration
     /// <remarks>Optimisé pour la lecture et non pour l'écriture!</remarks>
     public class DerivativeTable
     {
-        private Dictionary<Int32, Dictionary<string, Dictionary<string, TableTo[]>>> _dic = new Dictionary<Int32, Dictionary<string, Dictionary<string, TableTo[]>>>();
+        internal Dictionary<Int32, Dictionary<string, Dictionary<string, TableTo[]>>> _dic = new Dictionary<Int32, Dictionary<string, Dictionary<string, TableTo[]>>>();
 
         public bool Contains(Int32 server, string database, string schema, TableTo table)
         {
@@ -152,6 +153,83 @@ namespace DataCloner.DataClasse.Configuration
             {
                 return Table.GetHashCode();
             }
+        }
+
+        public void Serialize(Stream stream)
+        {
+            BinaryWriter bw = new BinaryWriter(stream);
+
+            bw.Write(_dic.Count);
+            foreach (var server in _dic)
+            {
+                bw.Write(server.Key);
+                bw.Write(server.Value.Count);
+                foreach (var database in server.Value)
+                {
+                    bw.Write(database.Key);
+                    bw.Write(database.Value.Count);
+                    foreach (var schema in database.Value)
+                    {
+                        bw.Write(schema.Key);
+                        bw.Write(schema.Value.Length);
+                        foreach (var table in schema.Value)
+                        {
+                            bw.Write(table.ServerId);
+                            bw.Write(table.Database);
+                            bw.Write(table.Schema);
+                            bw.Write(table.Table);
+                            bw.Write((int)table.Access);
+                            bw.Write(table.Cascade);
+                        }
+                    }
+                }
+            }
+
+            bw.Flush();
+        }
+
+        public static DerivativeTable Deserialize(Stream stream)
+        {
+            BinaryReader br = new BinaryReader(stream);
+            var newDic = new DerivativeTable();
+
+            int nbServers = br.ReadInt32();
+            for (int n = 0; n < nbServers; n++)
+            {
+                int serverId = br.ReadInt32();
+                newDic._dic.Add(serverId, new Dictionary<string, Dictionary<string, TableTo[]>>());
+
+                int nbDatabases = br.ReadInt32();
+                for (int j = 0; j < nbDatabases; j++)
+                {
+                    string database = br.ReadString();
+                    newDic._dic[serverId].Add(database, new Dictionary<string, TableTo[]>());
+
+                    int nbSchemas = br.ReadInt32();
+                    for (int k = 0; k < nbSchemas; k++)
+                    {
+                        string schema = br.ReadString();
+                        var lstTables = new List<TableTo>();
+
+                        int nbTables = br.ReadInt32();
+                        for(int l =0; l< nbTables; l++)
+                        {
+                            lstTables.Add(new TableTo()
+                            { 
+                                ServerId =  br.ReadInt32(),
+                                Database = br.ReadString(),
+                                Schema = br.ReadString(), 
+                                Table = br.ReadString(),
+                                Access = (AccessXml)br.ReadInt32(),
+                                Cascade = br.ReadBoolean()
+                            });
+                        }
+                        
+                        newDic._dic[serverId][database].Add(schema, lstTables.ToArray());
+                    }
+                }
+            }
+            return newDic;
         }
     }
 }
