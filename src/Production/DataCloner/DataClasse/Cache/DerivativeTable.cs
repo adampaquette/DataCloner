@@ -20,7 +20,9 @@ namespace DataCloner.DataClasse.Configuration
         {
             database = database.ToLower();
             schema = schema.ToLower();
-            table = table.ToLower();
+            table.Database = table.Database.ToLower();
+            table.Schema = table.Schema.ToLower();
+            table.Table = table.Table.ToLower();
 
             if (_dic.ContainsKey(server) &&
                 _dic[server].ContainsKey(database) &&
@@ -34,7 +36,9 @@ namespace DataCloner.DataClasse.Configuration
         {
             database = database.ToLower();
             schema = schema.ToLower();
-            table = table.ToLower();
+            table.Database = table.Database.ToLower();
+            table.Schema = table.Schema.ToLower();
+            table.Table = table.Table.ToLower();
 
             if (!_dic.ContainsKey(server))
                 _dic.Add(server, new Dictionary<string, Dictionary<string, TableTo[]>>());
@@ -57,7 +61,9 @@ namespace DataCloner.DataClasse.Configuration
         {
             database = database.ToLower();
             schema = schema.ToLower();
-            table = table.ToLower();
+            table.Database = table.Database.ToLower();
+            table.Schema = table.Schema.ToLower();
+            table.Table = table.Table.ToLower();
 
             if (_dic.ContainsKey(server) &&
                 _dic[server].ContainsKey(database) &&
@@ -102,7 +108,11 @@ namespace DataCloner.DataClasse.Configuration
                 database = database.ToLower();
                 schema = schema.ToLower();
                 for (Int32 i = 0; i < value.Length; i++)
-                    value[i] = value[i].ToLower();
+                {
+                    value[i].Database = value[i].Database.ToLower();
+                    value[i].Schema = value[i].Schema.ToLower();
+                    value[i].Table = value[i].Table.ToLower();
+                }
 
                 if (!_dic.ContainsKey(server))
                     _dic.Add(server, new Dictionary<string, Dictionary<string, TableTo[]>>());
@@ -119,7 +129,10 @@ namespace DataCloner.DataClasse.Configuration
 
         public class TableTo
         {
-            public string Name { get; set; }
+            public Int32 ServerId { get; set; }
+            public string Database { get; set; }
+            public string Schema { get; set; }
+            public string Table { get; set; }
             public AccessXml Access { get; set; }
             public bool Cascade { get; set; }
 
@@ -129,12 +142,15 @@ namespace DataCloner.DataClasse.Configuration
                 if (tableToObj == null)
                     return false;
                 else
-                    return Name.Equals(tableToObj.Name);
+                    return ServerId.Equals(tableToObj.ServerId) &&
+                        Database.Equals(tableToObj.Database) &&
+                        Schema.Equals(tableToObj.Schema) &&
+                        Table.Equals(tableToObj.Table);
             }
 
             public override int GetHashCode()
             {
-                return Name.GetHashCode();
+                return Table.GetHashCode();
             }
         }
     }
