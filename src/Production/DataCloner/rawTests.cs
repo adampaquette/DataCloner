@@ -24,6 +24,7 @@ namespace Class
             ri.Columns.Add("fromPageHostId", 6);
             ri.Columns.Add("fromPageId", 4);
 
+
             //var m = new DataCloner.DataAccess.QueryDatabaseMySQL("server=localhost;user id=root; password=cdxsza; database=mysql; pooling=false");
             //var dt = m.GetFK(ti);
             //m.Select(ri);
@@ -40,6 +41,12 @@ namespace Class
 
 
             return 0;
+        }
+
+        public static void DeriavativeTableTest()
+        {
+            var dt = new DerivativeTable();
+            dt.Add(1, "db", "dbo", );
         }
 
         public static void ExtensionsTest()
