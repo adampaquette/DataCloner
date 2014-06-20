@@ -10,6 +10,8 @@ namespace DataCloner.DataClasse.Configuration
     {
         public string ConfigFileHash { get; set; }
         public List<Connection> ConnectionStrings { get; set; }
+        public DerivativeTable DerivativeTables { get; set; }
+        public StaticTable StaticTables { get; set; }
 
         public Configuration()
         {
