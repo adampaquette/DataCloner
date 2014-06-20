@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
+
 using DataCloner.Framework;
 
 namespace DataCloner.DataClasse.Configuration
@@ -113,6 +115,67 @@ namespace DataCloner.DataClasse.Configuration
                 else
                     _dic[server][database][schema] = value;
             }
+        }
+
+        public void Serialize(Stream stream)
+        {
+            BinaryWriter bw = new BinaryWriter(stream);
+
+            bw.Write(_dic.Count);
+            foreach (var server in _dic)
+            {
+                bw.Write(server.Key);
+                bw.Write(server.Value.Count);
+                foreach (var database in server.Value)
+                {
+                    bw.Write(database.Key);
+                    bw.Write(database.Value.Count);
+                    foreach (var schema in database.Value)
+                    {
+                        bw.Write(schema.Key);
+                        bw.Write(schema.Value.Length);
+                        for (int i = 0; i < schema.Value.Length; i++)
+                        { 
+                            bw.Write(schema.Value[i]);                      
+                        }       
+                    }
+                }
+            }
+        }
+
+        public static StaticTable Deserialize(Stream stream)
+        {
+            BinaryReader br = new BinaryReader(stream);
+            var newDic = new StaticTable();
+
+            int nbServers = br.ReadInt32();
+            for (int n = 0; n < nbServers; n++)
+            {
+                int serverId = br.ReadInt32();
+                newDic._dic.Add(serverId, new Dictionary<string, Dictionary<string, String[]>>());
+
+                int nbDatabases = br.ReadInt32();
+                for (int j = 0; j < nbDatabases; j++)
+                {
+                    string database = br.ReadString();
+                    newDic._dic[serverId].Add(database, new Dictionary<string, String[]>());
+
+                    int nbSchemas = br.ReadInt32();
+                    for (int k = 0; k < nbSchemas; k++)
+                    {
+                        string schema = br.ReadString();               
+                        var lstTables = new List<string>();
+
+                        int nbTables = br.ReadInt32();
+                        for (int l = 0; l < nbTables; l++)
+                        {
+                            lstTables.Add(br.ReadString());
+                        }
+                        newDic._dic[serverId][database].Add(schema, lstTables.ToArray());
+                    }
+                }
+            }
+            return newDic;
         }
     }
 }

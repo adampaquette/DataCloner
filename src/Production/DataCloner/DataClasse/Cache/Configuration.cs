@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
 
 namespace DataCloner.DataClasse.Configuration
 {
@@ -30,6 +31,17 @@ namespace DataCloner.DataClasse.Configuration
                     Erreur
             */   
                 
+        }
+
+        public void Serialize(Stream stream)
+        {
+            BinaryWriter bw = new BinaryWriter(stream);
+        }
+
+        public static Connection Deserialize(Stream stream)
+        {
+            BinaryReader br = new BinaryReader(stream);
+            return null;
         }
     }
 }
