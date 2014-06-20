@@ -14,14 +14,17 @@ namespace DataCloner.Serialization
         public string ProviderName { get; set; }
         [XmlAttribute]
         public string ConnectionString { get; set; }
+        [XmlAttribute]
+        public Int16 SameConfigAsId { get; set; }
 
         public ConnectionXml() { }
-        public ConnectionXml(Int16 id, string name, string providerName, string connectionString)
+        public ConnectionXml(Int16 id, string name, string providerName, string connectionString, Int16 sameConfigAsId)
         {
             Id = id;
             Name = name;
             ProviderName = providerName;
             ConnectionString = connectionString;
+            SameConfigAsId = sameConfigAsId;
         }
     }
 }
