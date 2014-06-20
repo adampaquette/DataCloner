@@ -15,17 +15,22 @@ namespace Class
     {
         static int Main(string[] args)
         {
-            ConfigTest();
+            /*ConfigTest();
             StaticTableTest();
-            ExtensionsTest();
-            
+            ExtensionsTest();*/
+            DeriavativeTableTest();
+
+            return 0;
+        }
+
+        public void GeneralDBTest()
+        { 
             var ti = new TableIdentifier { DatabaseName = "botnet", SchemaName = "botnet", TableName = "link" };
             var ri = new RowIdentifier { TableIdentifier = ti };
             ri.Columns.Add("fromPageHostId", 6);
             ri.Columns.Add("fromPageId", 4);
 
-
-            //var m = new DataCloner.DataAccess.QueryDatabaseMySQL("server=localhost;user id=root; password=cdxsza; database=mysql; pooling=false");
+            //var m = new DataCloner.DataAccess.QueryProviderMySql("server=localhost;user id=root; password=cdxsza; database=mysql; pooling=false");
             //var dt = m.GetFK(ti);
             //m.Select(ri);
 
@@ -38,15 +43,45 @@ namespace Class
 
             //var a = new DataCloner.DataCloner();
             //a.SQLTraveler(null, true, true);
-
-
-            return 0;
         }
 
         public static void DeriavativeTableTest()
         {
             var dt = new DerivativeTable();
-            dt.Add(1, "db", "dbo", );
+            var tTo1 = new DerivativeTable.TableTo()
+            {
+                ServerId = 1,
+                Database = "db",
+                Schema = "dbo",
+                Table = "table2",
+                Access = AccessXml.Forced,
+                Cascade = true
+            };
+
+            var tTo2 = new DerivativeTable.TableTo()
+            {
+                ServerId = 1,
+                Database = "db",
+                Schema = "dbo",
+                Table = "table3",
+                Access = AccessXml.Denied,
+                Cascade = false
+            };
+
+            dt.Add(1, "db", "dbo", "table1",  tTo1);
+            dt.Add(1, "db", "dbo", "table1", tTo2);
+            dt.Add(1, "db", "dbo", "table2", tTo1);
+
+            var ms = new MemoryStream();
+            dt.Serialize(ms);
+
+            ms.Position = 0;
+            var dtDeserialize = DerivativeTable.Deserialize(ms);
+            var msDeserialize = new MemoryStream();
+            dtDeserialize.Serialize(msDeserialize);
+
+            if (!ms.ToArray().SequenceEqual(msDeserialize.ToArray()))
+                throw new Exception("");
         }
 
         public static void ExtensionsTest()

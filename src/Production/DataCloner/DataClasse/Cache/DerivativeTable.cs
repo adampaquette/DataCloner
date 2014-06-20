@@ -15,7 +15,7 @@ namespace DataCloner.DataClasse.Configuration
     /// <remarks>Optimisé pour la lecture et non pour l'écriture!</remarks>
     public class DerivativeTable
     {
-        internal Dictionary<Int32, Dictionary<string, Dictionary<string, Dictionary<string, TableTo[]>>>> _dic = new Dictionary<Int32, Dictionary<string, Dictionary<string, Dictionary<string, TableTo[]>>>>();
+        private Dictionary<Int32, Dictionary<string, Dictionary<string, Dictionary<string, TableTo[]>>>> _dic = new Dictionary<Int32, Dictionary<string, Dictionary<string, Dictionary<string, TableTo[]>>>>();
 
         public bool Contains(Int32 server, string database, string schema, string tableFrom, TableTo tableTo)
         {
