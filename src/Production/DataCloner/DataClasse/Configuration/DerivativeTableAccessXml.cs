@@ -85,7 +85,7 @@ namespace DataCloner.DataClasse.Configuration
             [XmlAttribute]
             public string Name { get; set; }
             [XmlAttribute]
-            public AccessXml Access { get; set; }
+            public DerivativeTableAccess Access { get; set; }
             [XmlAttribute]
             public bool Cascade { get; set; }
             [XmlAttribute]
@@ -99,7 +99,7 @@ namespace DataCloner.DataClasse.Configuration
                 TablesTo = new List<TableToXml>();
             }
 
-            public TableFromXml(string name, AccessXml access,bool cascade, bool active, List<TableToXml> tablesTo)
+            public TableFromXml(string name, DerivativeTableAccess access,bool cascade, bool active, List<TableToXml> tablesTo)
             {
                 Name = name;
                 Access = access;
@@ -114,7 +114,7 @@ namespace DataCloner.DataClasse.Configuration
             [XmlAttribute]
             public string Name { get; set; }
             [XmlAttribute]
-            public AccessXml Access { get; set; }
+            public DerivativeTableAccess Access { get; set; }
             [XmlAttribute]
             public bool Cascade { get; set; }
             [XmlAttribute]
@@ -125,7 +125,7 @@ namespace DataCloner.DataClasse.Configuration
                 Active = true;
             }
 
-            public TableToXml(string name, AccessXml access, bool cascade, bool active)
+            public TableToXml(string name, DerivativeTableAccess access, bool cascade, bool active)
             {
                 Name = name;
                 Access = access;

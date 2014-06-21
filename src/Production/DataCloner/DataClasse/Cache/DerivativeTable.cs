@@ -152,7 +152,7 @@ namespace DataCloner.DataClasse.Cache
             public string Database { get; set; }
             public string Schema { get; set; }
             public string Table { get; set; }
-            public AccessXml Access { get; set; }
+            public DerivativeTableAccess Access { get; set; }
             public bool Cascade { get; set; }
 
             public override bool Equals(object obj)
@@ -254,7 +254,7 @@ namespace DataCloner.DataClasse.Cache
                                     Database = stream.ReadString(),
                                     Schema = stream.ReadString(),
                                     Table = stream.ReadString(),
-                                    Access = (AccessXml)stream.ReadInt32(),
+                                    Access = (DerivativeTableAccess)stream.ReadInt32(),
                                     Cascade = stream.ReadBoolean()
                                 });
                             }

@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
+using System.Security.Cryptography;
 
 using DataCloner.DataClasse;
 using DataCloner.DataClasse.Cache;
@@ -9,22 +11,25 @@ using DataCloner.DataClasse.Configuration;
 using DataCloner.Framework;
 using DataCloner.Enum;
 
+using Murmur;
+
 namespace Class
 {
     public class main
     {
         static int Main(string[] args)
         {
-            /*ConfigTest();
-            StaticTableTest();
+            ConfigTest();
+            /*StaticTableTest();
             ExtensionsTest();*/
-            DeriavativeTableTest();
+            //DeriavativeTableTest();
+            CacheTest();
 
             return 0;
         }
 
         public void GeneralDBTest()
-        { 
+        {
             var ti = new TableIdentifier { DatabaseName = "botnet", SchemaName = "botnet", TableName = "link" };
             var ri = new RowIdentifier { TableIdentifier = ti };
             ri.Columns.Add("fromPageHostId", 6);
@@ -45,6 +50,27 @@ namespace Class
             //a.SQLTraveler(null, true, true);
         }
 
+        public static void CacheTest()
+        {
+            //Hash config file
+            HashAlgorithm murmur = MurmurHash.Create32(managed: false); 
+            byte[] configFile = File.ReadAllBytes(ConfigurationXml.FileName);           
+            string hashConfigFile = Encoding.Default.GetString(murmur.ComputeHash(configFile));
+
+            //Build new cache file
+            var fsOutputConfig = new FileStream(Configuration.FileName, FileMode.Create);
+            var config = new Configuration();
+            config.ConfigFileHash = hashConfigFile;
+            config.Serialize(fsOutputConfig);
+
+            fsOutputConfig.Close();
+
+            //Test reload of cache
+            config = new Configuration();
+            config.Initialize();
+
+        }
+
         public static void DeriavativeTableTest()
         {
             var dt = new DerivativeTable();
@@ -54,7 +80,7 @@ namespace Class
                 Database = "db",
                 Schema = "dbo",
                 Table = "table2",
-                Access = AccessXml.Forced,
+                Access = DerivativeTableAccess.Forced,
                 Cascade = true
             };
 
@@ -64,11 +90,11 @@ namespace Class
                 Database = "db",
                 Schema = "dbo",
                 Table = "table3",
-                Access = AccessXml.Denied,
+                Access = DerivativeTableAccess.Denied,
                 Cascade = false
             };
 
-            dt.Add(1, "db", "dbo", "table1",  tTo1);
+            dt.Add(1, "db", "dbo", "table1", tTo1);
             dt.Add(1, "db", "dbo", "table1", tTo2);
             dt.Add(1, "db", "dbo", "table2", tTo1);
 
@@ -189,12 +215,12 @@ namespace Class
 
             //DerivativeTableAccessXml
             //========================
-            var toDTA = new DerivativeTableAccessXml.TableToXml("table1", AccessXml.Forced, true, true);
+            var toDTA = new DerivativeTableAccessXml.TableToXml("table1", DerivativeTableAccess.Forced, true, true);
             var lstToDTA = new List<DerivativeTableAccessXml.TableToXml>() { toDTA };
             var schemaDerivativeTableAccess = new DerivativeTableAccessXml.SchemaXml { Name = "dbo" };
-            schemaDerivativeTableAccess.Tables.Add(new DerivativeTableAccessXml.TableFromXml("table1", AccessXml.Denied, true, true, null ));
-            schemaDerivativeTableAccess.Tables.Add(new DerivativeTableAccessXml.TableFromXml("table2", AccessXml.Forced, true, false, null));
-            schemaDerivativeTableAccess.Tables.Add(new DerivativeTableAccessXml.TableFromXml("table3", AccessXml.NotSet, true, false, lstToDTA));
+            schemaDerivativeTableAccess.Tables.Add(new DerivativeTableAccessXml.TableFromXml("table1", DerivativeTableAccess.Denied, true, true, null));
+            schemaDerivativeTableAccess.Tables.Add(new DerivativeTableAccessXml.TableFromXml("table2", DerivativeTableAccess.Forced, true, false, null));
+            schemaDerivativeTableAccess.Tables.Add(new DerivativeTableAccessXml.TableFromXml("table3", DerivativeTableAccess.NotSet, true, false, lstToDTA));
 
             var listSchemaDerivativeTableAccess = new List<DerivativeTableAccessXml.SchemaXml>
             {

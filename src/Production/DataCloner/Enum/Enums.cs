@@ -5,7 +5,7 @@ using System.Text;
 
 namespace DataCloner.Enum
 {
-    public enum AccessXml
+    public enum DerivativeTableAccess
     {
         NotSet,
         Denied,

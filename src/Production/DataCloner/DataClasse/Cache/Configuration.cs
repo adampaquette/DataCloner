@@ -22,7 +22,9 @@ namespace DataCloner.DataClasse.Cache
 
         public Configuration()
         {
-            StaticTable st = new StaticTable();
+            ConnectionStrings = new List<Connection>();
+            DerivativeTables = new DerivativeTable();
+            StaticTables = new StaticTable();
         }
 
         public void Initialize()
@@ -37,21 +39,72 @@ namespace DataCloner.DataClasse.Cache
                 Sinon
                     Erreur
             */
-            
-            HashAlgorithm murmur128 = MurmurHash.Create128(managed: false); 
-            byte[] file = File.ReadAllBytes(ConfigurationXml.FileName);           
-            byte[] hash = murmur128.ComputeHash(file);
+            var fsCache = new FileStream(FileName, FileMode.Open);
+            var brCache = new BinaryReader(fsCache);
+
+            //Check if cached file match with config file version
+            HashAlgorithm murmur = MurmurHash.Create32(managed: false); 
+            byte[] configFile = File.ReadAllBytes(ConfigurationXml.FileName);           
+            string hashConfigFile = Encoding.Default.GetString(murmur.ComputeHash(configFile));
+
+            ConfigFileHash = brCache.ReadString();
+
+            //If no match, reload cache
+            if (ConfigFileHash != hashConfigFile)
+            {
+                //RELOAD CACHE
+            }
+            else
+            { 
+                //Load cache
+                Configuration.DeserializeBody(brCache, this);
+            }
+            brCache.Close();
+            fsCache.Close();
         }
 
         public void Serialize(Stream stream)
         {
-            BinaryWriter bw = new BinaryWriter(stream);
+            Serialize(new BinaryWriter(stream));
         }
 
-        public static Connection Deserialize(Stream stream)
+        public static Configuration Deserialize(Stream stream)
         {
-            BinaryReader br = new BinaryReader(stream);
-            return null;
+            return Deserialize(new BinaryReader(stream));
+        }
+
+        public void Serialize(BinaryWriter stream)
+        {
+            stream.Write(ConfigFileHash);
+            stream.Write(ConnectionStrings.Count);
+            foreach (var cs in ConnectionStrings)
+                cs.Serialize(stream);
+            DerivativeTables.Serialize(stream);
+            StaticTables.Serialize(stream);
+            
+            stream.Flush();
+        }
+
+        public static Configuration Deserialize(BinaryReader stream)
+        {
+            var config = new Configuration();
+            config.ConfigFileHash = stream.ReadString();
+
+            Configuration.DeserializeBody(stream, config);
+
+            return config;
+        }
+
+        private static Configuration DeserializeBody(BinaryReader stream, Configuration config)
+        {
+            int nbConnection = stream.ReadInt32();
+            for (int i = 0; i < nbConnection; i++)
+                config.ConnectionStrings.Add(Connection.Deserialize(stream));
+
+            config.DerivativeTables = DerivativeTable.Deserialize(stream);
+            config.StaticTables = StaticTable.Deserialize(stream);
+
+            return config;
         }
     }
 }
