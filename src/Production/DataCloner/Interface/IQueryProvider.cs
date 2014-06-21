@@ -6,7 +6,6 @@ namespace DataCloner.Interface
     public interface IQueryProvider : IDisposable
     {
         IDbConnection Connection { get; }
-        void Init();
         bool IsReadOnly { get; }
         DataTable GetFk(ITableIdentifier ti);
         Int64 GetLastInsertedPk();

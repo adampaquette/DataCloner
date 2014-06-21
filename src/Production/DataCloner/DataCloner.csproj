@@ -80,6 +80,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataClasse\Cache\DerivativeTable.cs" />
+    <Compile Include="DataClasse\Helper\ConfigConverter.cs" />
     <Compile Include="Enum\Enums.cs" />
     <Compile Include="rawTests.cs" />
     <Compile Include="DataAccess\QueryProviderMySQL.cs" />

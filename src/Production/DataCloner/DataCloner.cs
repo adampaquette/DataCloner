@@ -1,29 +1,34 @@
-﻿using DataCloner.DataClasse;
-using DataCloner.Interface;
+﻿using DataCloner.DataAccess;
+using DataCloner.DataClasse;
+using DataCloner.DataClasse.Cache;
 using DataCloner.DataClasse.Configuration;
-using DataCloner.DataAccess;
+using DataCloner.Interface;
+
+using System.IO;
+using System.Text;
+using System.Security.Cryptography;
+
+using Murmur;
 
 namespace DataCloner
 {
     class DataCloner
-    {
-        private readonly ConfigurationXml _config; //Pas de singleton pour la performance
+    {        
+        private QueryDispatcher _dispatcher;
 
         public DataCloner()
         {
-            _config = ConfigurationXml.Load();
         }
 
         public IRowIdentifier SqlTraveler(IRowIdentifier riSource, bool getDerivatives, bool shouldReturnFk)
         {
-            RowIdentifier riReturn = null;
-            var dispatcher = new QueryDispatcher(_config);
-            var linesSource = dispatcher.Select(riSource);
+            //RowIdentifier riReturn = null;
+            //_dispatcher = new QueryDispatcher(_cache);
+            //var linesSource = _dispatcher.Select(riSource);
 
-
-
-
-            return riReturn;
+            return null;
         }
+
+
     }
 }

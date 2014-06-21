@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Security.Cryptography;
 
+using DataCloner.DataAccess;
 using DataCloner.DataClasse;
 using DataCloner.DataClasse.Cache;
 using DataCloner.DataClasse.Configuration;
@@ -52,13 +53,16 @@ namespace Class
 
         public static void CacheTest()
         {
+            string configFileName = "dc.config";
+            string cacheFileName = "dc.cache";
+
             //Hash config file
-            HashAlgorithm murmur = MurmurHash.Create32(managed: false); 
-            byte[] configFile = File.ReadAllBytes(ConfigurationXml.FileName);           
+            HashAlgorithm murmur = MurmurHash.Create32(managed: false);
+            byte[] configFile = File.ReadAllBytes(configFileName);           
             string hashConfigFile = Encoding.Default.GetString(murmur.ComputeHash(configFile));
 
             //Build new cache file
-            var fsOutputConfig = new FileStream(Configuration.FileName, FileMode.Create);
+            var fsOutputConfig = new FileStream(cacheFileName, FileMode.Create);
             var config = new Configuration();
             config.ConfigFileHash = hashConfigFile;
             config.Serialize(fsOutputConfig);
@@ -66,9 +70,8 @@ namespace Class
             fsOutputConfig.Close();
 
             //Test reload of cache
-            config = new Configuration();
-            config.Initialize();
-
+            var dispatcher = new QueryDispatcher();
+            dispatcher.Initialize();           
         }
 
         public static void DeriavativeTableTest()
@@ -170,14 +173,13 @@ namespace Class
                 throw new Exception("");
         }
 
-
         public static void ConfigTest()
         {
             var config = new ConfigurationXml();
 
             //ConnectionXML
             //=============
-            var cs = new ConnectionXml(1, "DataCloner.DataAccess.QueryProviderMySQL", "server=localhost;user id=root; password=cdxsza; database=mysql; pooling=false", 1);
+            var cs = new ConnectionXml(1, "DataCloner.DataAccess.QueryProviderMySql", "server=localhost;user id=root; password=cdxsza; database=mysql; pooling=false", 1);
             config.ConnectionStrings.Add(cs);
 
             //StaticTableXml
@@ -283,10 +285,10 @@ namespace Class
             //Save / load from file
             //=====================
             var serialized = config.SerializeXml();
-            config.Save();
+            config.Save("dc.config");
 
             ConfigurationXml configLoaded;
-            configLoaded = ConfigurationXml.Load();
+            configLoaded = ConfigurationXml.Load("dc.config");
         }
     }
 }

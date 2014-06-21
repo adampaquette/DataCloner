@@ -9,7 +9,8 @@ namespace DataCloner.DataClasse.Configuration
     [XmlRoot("Configuration")]
     public class ConfigurationXml
     {
-        public static readonly string FileName = "dc.config";
+        public const string ConfigName = "dc";
+        public const string Extension = ".config";
 
         [XmlArrayItem("add")]
         public List<ConnectionXml> ConnectionStrings { get; set; }
@@ -27,10 +28,10 @@ namespace DataCloner.DataClasse.Configuration
             DataBuilders = new DataBuilderXml();
         }
 
-        public void Save()
+        public void Save(string path)
         {
             var xs = new XmlSerializer(GetType());
-            var fs = new FileStream(FileName, FileMode.Create);
+            var fs = new FileStream(path, FileMode.Create);
             var ns = new XmlSerializerNamespaces();
             ns.Add("", "");
 
@@ -38,11 +39,11 @@ namespace DataCloner.DataClasse.Configuration
             fs.Close();
         }
 
-        public static ConfigurationXml Load()
+        public static ConfigurationXml Load(string path)
         {
             var xs = new XmlSerializer(typeof(ConfigurationXml));
-            if (!File.Exists(FileName)) return new ConfigurationXml();
-            var fs = new FileStream(FileName, FileMode.Open);
+            if (!File.Exists(path)) return new ConfigurationXml();
+            var fs = new FileStream(path, FileMode.Open);
             var cReturn = (ConfigurationXml)xs.Deserialize(fs);
             fs.Close();
             return cReturn;
