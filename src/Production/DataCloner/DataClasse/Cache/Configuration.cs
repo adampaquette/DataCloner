@@ -3,11 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using System.Security.Cryptography;
 
-namespace DataCloner.DataClasse.Configuration
+using DataCloner.DataClasse.Configuration;
+
+using Murmur;
+
+namespace DataCloner.DataClasse.Cache
 {
     class Configuration
     {
+        public static readonly string FileName = "db.cache";
+
         public string ConfigFileHash { get; set; }
         public List<Connection> ConnectionStrings { get; set; }
         public DerivativeTable DerivativeTables { get; set; }
@@ -15,9 +22,7 @@ namespace DataCloner.DataClasse.Configuration
 
         public Configuration()
         {
-
             StaticTable st = new StaticTable();
-           // st.Add()
         }
 
         public void Initialize()
@@ -31,8 +36,11 @@ namespace DataCloner.DataClasse.Configuration
                     Construire la cache
                 Sinon
                     Erreur
-            */   
-                
+            */
+            
+            HashAlgorithm murmur128 = MurmurHash.Create128(managed: false); 
+            byte[] file = File.ReadAllBytes(ConfigurationXml.FileName);           
+            byte[] hash = murmur128.ComputeHash(file);
         }
 
         public void Serialize(Stream stream)

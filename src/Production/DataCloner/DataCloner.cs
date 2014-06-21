@@ -1,6 +1,6 @@
 ﻿using DataCloner.DataClasse;
 using DataCloner.Interface;
-using DataCloner.Serialization;
+using DataCloner.DataClasse.Configuration;
 using DataCloner.DataAccess;
 
 namespace DataCloner

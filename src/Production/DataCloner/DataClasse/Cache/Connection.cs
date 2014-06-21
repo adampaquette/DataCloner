@@ -2,7 +2,7 @@
 using System.Xml.Serialization;
 using System.IO;
 
-namespace DataCloner.DataClasse.Configuration
+namespace DataCloner.DataClasse.Cache
 {
     public class Connection
     {
@@ -22,22 +22,30 @@ namespace DataCloner.DataClasse.Configuration
 
         public void Serialize(Stream stream)
         {
-            BinaryWriter bw = new BinaryWriter(stream);
-            bw.Write(Id);
-            bw.Write(ProviderName);
-            bw.Write(ConnectionString);
-            bw.Write(SameConfigAsId);
-        }
+            Serialize(new BinaryWriter(stream));
+        } 
 
         public static Connection Deserialize(Stream stream)
         {
-            BinaryReader br = new BinaryReader(stream);
+            return Deserialize(new BinaryReader(stream));
+        }
+
+        public void Serialize(BinaryWriter stream)
+        {
+            stream.Write(Id);
+            stream.Write(ProviderName);
+            stream.Write(ConnectionString);
+            stream.Write(SameConfigAsId);
+        }  
+
+        public static Connection Deserialize(BinaryReader stream)
+        {
             return new Connection()
             {
-                Id = br.ReadInt16(),
-                ProviderName = br.ReadString(),
-                ConnectionString = br.ReadString(),
-                SameConfigAsId = br.ReadInt16()
+                Id = stream.ReadInt16(),
+                ProviderName = stream.ReadString(),
+                ConnectionString = stream.ReadString(),
+                SameConfigAsId = stream.ReadInt16()
             };
         }
     }

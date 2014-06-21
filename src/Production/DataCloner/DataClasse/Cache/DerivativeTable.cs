@@ -7,7 +7,7 @@ using System.IO;
 using DataCloner.Framework;
 using DataCloner.Enum;
 
-namespace DataCloner.DataClasse.Configuration
+namespace DataCloner.DataClasse.Cache
 {
     /// <summary>
     /// Contient les tables statiques de la base de données
@@ -175,81 +175,87 @@ namespace DataCloner.DataClasse.Configuration
 
         public void Serialize(Stream stream)
         {
-            BinaryWriter bw = new BinaryWriter(stream);
+            Serialize(new BinaryWriter(stream));
+        }
 
-            bw.Write(_dic.Count);
+        public static DerivativeTable Deserialize(Stream stream)
+        {
+            return Deserialize(new BinaryReader(stream));
+        }
+
+        public void Serialize(BinaryWriter stream)
+        {
+            stream.Write(_dic.Count);
             foreach (var server in _dic)
             {
-                bw.Write(server.Key);
-                bw.Write(server.Value.Count);
+                stream.Write(server.Key);
+                stream.Write(server.Value.Count);
                 foreach (var database in server.Value)
                 {
-                    bw.Write(database.Key);
-                    bw.Write(database.Value.Count);
+                    stream.Write(database.Key);
+                    stream.Write(database.Value.Count);
                     foreach (var schema in database.Value)
                     {
-                        bw.Write(schema.Key);
-                        bw.Write(schema.Value.Count);
+                        stream.Write(schema.Key);
+                        stream.Write(schema.Value.Count);
                         foreach (var tableFrom in schema.Value)
                         {
-                            bw.Write(tableFrom.Key);
-                            bw.Write(tableFrom.Value.Length);
+                            stream.Write(tableFrom.Key);
+                            stream.Write(tableFrom.Value.Length);
                             foreach (var tableTo in tableFrom.Value)
                             {
-                                bw.Write(tableTo.ServerId);
-                                bw.Write(tableTo.Database);
-                                bw.Write(tableTo.Schema);
-                                bw.Write(tableTo.Table);
-                                bw.Write((int)tableTo.Access);
-                                bw.Write(tableTo.Cascade);
+                                stream.Write(tableTo.ServerId);
+                                stream.Write(tableTo.Database);
+                                stream.Write(tableTo.Schema);
+                                stream.Write(tableTo.Table);
+                                stream.Write((int)tableTo.Access);
+                                stream.Write(tableTo.Cascade);
                             }
                         }
                     }
                 }
             }
-            bw.Flush();
         }
 
-        public static DerivativeTable Deserialize(Stream stream)
+        public static DerivativeTable Deserialize(BinaryReader stream)
         {
-            BinaryReader br = new BinaryReader(stream);
             var newDic = new DerivativeTable();
 
-            int nbServers = br.ReadInt32();
+            int nbServers = stream.ReadInt32();
             for (int n = 0; n < nbServers; n++)
             {
-                int serverId = br.ReadInt32();
+                int serverId = stream.ReadInt32();
                 newDic._dic.Add(serverId, new Dictionary<string, Dictionary<string, Dictionary<string, TableTo[]>>>());
 
-                int nbDatabases = br.ReadInt32();
+                int nbDatabases = stream.ReadInt32();
                 for (int j = 0; j < nbDatabases; j++)
                 {
-                    string database = br.ReadString();
+                    string database = stream.ReadString();
                     newDic._dic[serverId].Add(database, new Dictionary<string, Dictionary<string, TableTo[]>>());
 
-                    int nbSchemas = br.ReadInt32();
+                    int nbSchemas = stream.ReadInt32();
                     for (int k = 0; k < nbSchemas; k++)
                     {
-                        string schema = br.ReadString();
+                        string schema = stream.ReadString();
                         newDic._dic[serverId][database].Add(schema, new Dictionary<string, TableTo[]>());
 
-                        int nbTablesFrom = br.ReadInt32();
+                        int nbTablesFrom = stream.ReadInt32();
                         for (int l = 0; l < nbTablesFrom; l++)
                         {
-                            string tableFrom = br.ReadString();
+                            string tableFrom = stream.ReadString();
                             var lstTables = new List<TableTo>();
 
-                            int nbTablesTo = br.ReadInt32();
+                            int nbTablesTo = stream.ReadInt32();
                             for (int m = 0; m < nbTablesTo; m++)
                             {
                                 lstTables.Add(new TableTo()
                                 {
-                                    ServerId = br.ReadInt32(),
-                                    Database = br.ReadString(),
-                                    Schema = br.ReadString(),
-                                    Table = br.ReadString(),
-                                    Access = (AccessXml)br.ReadInt32(),
-                                    Cascade = br.ReadBoolean()
+                                    ServerId = stream.ReadInt32(),
+                                    Database = stream.ReadString(),
+                                    Schema = stream.ReadString(),
+                                    Table = stream.ReadString(),
+                                    Access = (AccessXml)stream.ReadInt32(),
+                                    Cascade = stream.ReadBoolean()
                                 });
                             }
                             newDic._dic[serverId][database][schema].Add(tableFrom, lstTables.ToArray());

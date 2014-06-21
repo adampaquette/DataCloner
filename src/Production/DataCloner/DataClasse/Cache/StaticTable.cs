@@ -6,7 +6,7 @@ using System.IO;
 
 using DataCloner.Framework;
 
-namespace DataCloner.DataClasse.Configuration
+namespace DataCloner.DataClasse.Cache
 {
     /// <summary>
     /// Contient les tables statiques de la base de données
@@ -119,57 +119,64 @@ namespace DataCloner.DataClasse.Configuration
 
         public void Serialize(Stream stream)
         {
-            BinaryWriter bw = new BinaryWriter(stream);
+            Serialize(new BinaryWriter(stream));
+        }
 
-            bw.Write(_dic.Count);
+        public static StaticTable Deserialize(Stream stream)
+        {
+            return Deserialize(new BinaryReader(stream));
+        }
+
+        public void Serialize(BinaryWriter stream)
+        {
+            stream.Write(_dic.Count);
             foreach (var server in _dic)
             {
-                bw.Write(server.Key);
-                bw.Write(server.Value.Count);
+                stream.Write(server.Key);
+                stream.Write(server.Value.Count);
                 foreach (var database in server.Value)
                 {
-                    bw.Write(database.Key);
-                    bw.Write(database.Value.Count);
+                    stream.Write(database.Key);
+                    stream.Write(database.Value.Count);
                     foreach (var schema in database.Value)
                     {
-                        bw.Write(schema.Key);
-                        bw.Write(schema.Value.Length);
+                        stream.Write(schema.Key);
+                        stream.Write(schema.Value.Length);
                         for (int i = 0; i < schema.Value.Length; i++)
                         { 
-                            bw.Write(schema.Value[i]);                      
+                            stream.Write(schema.Value[i]);                      
                         }       
                     }
                 }
             }
         }
 
-        public static StaticTable Deserialize(Stream stream)
+        public static StaticTable Deserialize(BinaryReader stream)
         {
-            BinaryReader br = new BinaryReader(stream);
             var newDic = new StaticTable();
 
-            int nbServers = br.ReadInt32();
+            int nbServers = stream.ReadInt32();
             for (int n = 0; n < nbServers; n++)
             {
-                int serverId = br.ReadInt32();
+                int serverId = stream.ReadInt32();
                 newDic._dic.Add(serverId, new Dictionary<string, Dictionary<string, String[]>>());
 
-                int nbDatabases = br.ReadInt32();
+                int nbDatabases = stream.ReadInt32();
                 for (int j = 0; j < nbDatabases; j++)
                 {
-                    string database = br.ReadString();
+                    string database = stream.ReadString();
                     newDic._dic[serverId].Add(database, new Dictionary<string, String[]>());
 
-                    int nbSchemas = br.ReadInt32();
+                    int nbSchemas = stream.ReadInt32();
                     for (int k = 0; k < nbSchemas; k++)
                     {
-                        string schema = br.ReadString();               
+                        string schema = stream.ReadString();               
                         var lstTables = new List<string>();
 
-                        int nbTables = br.ReadInt32();
+                        int nbTables = stream.ReadInt32();
                         for (int l = 0; l < nbTables; l++)
                         {
-                            lstTables.Add(br.ReadString());
+                            lstTables.Add(stream.ReadString());
                         }
                         newDic._dic[serverId][database].Add(schema, lstTables.ToArray());
                     }

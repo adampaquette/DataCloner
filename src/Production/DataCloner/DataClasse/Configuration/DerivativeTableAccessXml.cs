@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Xml.Serialization;
 using DataCloner.Enum;
 
-namespace DataCloner.Serialization
+namespace DataCloner.DataClasse.Configuration
 {
     [Serializable]
     [XmlRoot(Namespace = "urn:DerivativeTableAccess")]

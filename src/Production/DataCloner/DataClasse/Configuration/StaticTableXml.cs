@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Xml.Serialization;
 
-namespace DataCloner.Serialization
+namespace DataCloner.DataClasse.Configuration
 {
     [Serializable]
     [XmlRoot(Namespace = "urn:StaticTable")]

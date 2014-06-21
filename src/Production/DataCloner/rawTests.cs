@@ -4,9 +4,9 @@ using System.IO;
 using System.Linq;
 
 using DataCloner.DataClasse;
-using DataCloner.Serialization;
-using DataCloner.Framework;
+using DataCloner.DataClasse.Cache;
 using DataCloner.DataClasse.Configuration;
+using DataCloner.Framework;
 using DataCloner.Enum;
 
 namespace Class
@@ -151,7 +151,7 @@ namespace Class
 
             //ConnectionXML
             //=============
-            var cs = new ConnectionXml(1, "sql1", "DataCloner.DataAccess.QueryProviderMySQL", "server=localhost;user id=root; password=cdxsza; database=mysql; pooling=false");
+            var cs = new ConnectionXml(1, "DataCloner.DataAccess.QueryProviderMySQL", "server=localhost;user id=root; password=cdxsza; database=mysql; pooling=false", 1);
             config.ConnectionStrings.Add(cs);
 
             //StaticTableXml

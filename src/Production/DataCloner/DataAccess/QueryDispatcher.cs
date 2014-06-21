@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using DataCloner.Interface;
-using DataCloner.Serialization;
+using DataCloner.DataClasse.Configuration;
 
 namespace DataCloner.DataAccess
 {
