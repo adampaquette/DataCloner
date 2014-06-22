@@ -17,7 +17,14 @@ namespace DataCloner.DataClasse.Cache
         public string InsertCommand { get; set; }
         public DerivativeTable[] DerivativeTables { get; set; }
         public ForeignKey[] ForeignKeys { get; set; }
-        public SchemaColumn[] ColumnsSchema { get; set; }
+        public SchemaColumn[] SchemaColumns { get; set; }
+
+        public TableDef()
+        {
+            DerivativeTables = new DerivativeTable[]{};
+            ForeignKeys = new ForeignKey[]{};
+            SchemaColumns = new SchemaColumn[]{};
+        }
 
         public override bool Equals(object obj)
         {
@@ -79,17 +86,17 @@ namespace DataCloner.DataClasse.Cache
                 }
             }
 
-            nbRows = ColumnsSchema.Length;
+            nbRows = SchemaColumns.Length;
             stream.Write(nbRows);
             for (int i = 0; i < nbRows; i++)
             {
-                stream.Write(ColumnsSchema[i].Name);
-                stream.Write(ColumnsSchema[i].Type);
-                stream.Write(ColumnsSchema[i].Order);
-                stream.Write(ColumnsSchema[i].IsPrimary);
-                stream.Write(ColumnsSchema[i].IsForeignKey);
-                stream.Write(ColumnsSchema[i].IsAutoIncrement);
-                stream.Write(ColumnsSchema[i].BuilderName);
+                stream.Write(SchemaColumns[i].Name);
+                stream.Write(SchemaColumns[i].Type);
+                stream.Write(SchemaColumns[i].Order);
+                stream.Write(SchemaColumns[i].IsPrimary);
+                stream.Write(SchemaColumns[i].IsForeignKey);
+                stream.Write(SchemaColumns[i].IsAutoIncrement);
+                stream.Write(SchemaColumns[i].BuilderName);
             }
         }
 
@@ -165,7 +172,7 @@ namespace DataCloner.DataClasse.Cache
 
             t.DerivativeTables = dtList.ToArray();
             t.ForeignKeys = fkList.ToArray();
-            t.ColumnsSchema = schemaColList.ToArray();
+            t.SchemaColumns = schemaColList.ToArray();
 
             return t;
         }
@@ -201,7 +208,7 @@ namespace DataCloner.DataClasse.Cache
 
     internal sealed class DerivativeTable
     {
-        public Int32 ServerId { get; set; }
+        public Int16 ServerId { get; set; }
         public string Database { get; set; }
         public string Schema { get; set; }
         public string Table { get; set; }

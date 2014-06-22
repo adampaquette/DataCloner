@@ -15,7 +15,7 @@ namespace DataCloner.DataClasse.Cache
     /// <remarks>Optimisé pour la lecture et non pour l'écriture!</remarks>
     internal sealed class CachedTables
     {
-        private Dictionary<Int32, Dictionary<string, Dictionary<string, TableDef[]>>> _dic = new Dictionary<Int32, Dictionary<string, Dictionary<string, TableDef[]>>>();
+        private Dictionary<Int16, Dictionary<string, Dictionary<string, TableDef[]>>> _dic = new Dictionary<Int16, Dictionary<string, Dictionary<string, TableDef[]>>>();
 
         //public bool Contains(Int32 server, string database, string schema, string tableFrom, DerivativeTable tableTo)
         //{
@@ -35,7 +35,7 @@ namespace DataCloner.DataClasse.Cache
         //    return false;
         //}
 
-        public void Add(Int32 server, string database, string schema, TableDef table)
+        public void Add(Int16 server, string database, string schema, TableDef table)
         {
             database = database.ToLower();
             schema = schema.ToLower();
@@ -55,7 +55,7 @@ namespace DataCloner.DataClasse.Cache
             }
         }
 
-        public bool Remove(Int32 server, string database, string schema, TableDef table)
+        public bool Remove(Int16 server, string database, string schema, TableDef table)
         {
             database = database.ToLower();
             schema = schema.ToLower();
@@ -84,7 +84,7 @@ namespace DataCloner.DataClasse.Cache
             return false;
         }
 
-        public TableDef[] this[Int32 server, string database, string schema]
+        public TableDef[] this[Int16 server, string database, string schema]
         {
             get
             {
@@ -108,14 +108,14 @@ namespace DataCloner.DataClasse.Cache
                     _dic.Add(server, new Dictionary<string, Dictionary<string, TableDef[]>>());
 
                 if (!_dic[server].ContainsKey(database))
-                    _dic[server].Add(database, new Dictionary<string,  TableDef[]>());
+                    _dic[server].Add(database, new Dictionary<string, TableDef[]>());
 
                 if (!_dic[server][database].ContainsKey(schema))
                     _dic[server][database].Add(schema, value);
                 else
                     _dic[server][database][schema] = value;
             }
-        }        
+        }
 
         public void Serialize(Stream stream)
         {
@@ -129,6 +129,7 @@ namespace DataCloner.DataClasse.Cache
 
         public void Serialize(BinaryWriter stream)
         {
+            int nbRows;
             stream.Write(_dic.Count);
             foreach (var server in _dic)
             {
@@ -140,22 +141,11 @@ namespace DataCloner.DataClasse.Cache
                     stream.Write(database.Value.Count);
                     foreach (var schema in database.Value)
                     {
+                        nbRows = schema.Value.Length;
                         stream.Write(schema.Key);
-                        stream.Write(schema.Value.Count);
-                        foreach (var tableFrom in schema.Value)
-                        {
-                            stream.Write(tableFrom.Key);
-                            stream.Write(tableFrom.Value.Length);
-                            foreach (var tableTo in tableFrom.Value)
-                            {
-                                stream.Write(tableTo.ServerId);
-                                stream.Write(tableTo.Database);
-                                stream.Write(tableTo.Schema);
-                                stream.Write(tableTo.Table);
-                                stream.Write((int)tableTo.Access);
-                                stream.Write(tableTo.Cascade);
-                            }
-                        }
+                        stream.Write(nbRows);
+                        for (int i = 0; i < nbRows; i++)
+                            schema.Value[i].Serialize(stream);
                     }
                 }
             }
@@ -163,51 +153,35 @@ namespace DataCloner.DataClasse.Cache
 
         public static CachedTables Deserialize(BinaryReader stream)
         {
-            var newDic = new CachedTables();
+            var cTables = new CachedTables();
 
             int nbServers = stream.ReadInt32();
             for (int n = 0; n < nbServers; n++)
             {
-                int serverId = stream.ReadInt32();
-                newDic._dic.Add(serverId, new Dictionary<string, Dictionary<string, Dictionary<string, DerivativeTable[]>>>());
+                Int16 serverId = stream.ReadInt16();
+                cTables._dic.Add(serverId, new Dictionary<string, Dictionary<string, TableDef[]>>());
 
                 int nbDatabases = stream.ReadInt32();
                 for (int j = 0; j < nbDatabases; j++)
                 {
                     string database = stream.ReadString();
-                    newDic._dic[serverId].Add(database, new Dictionary<string, Dictionary<string, DerivativeTable[]>>());
+                    cTables._dic[serverId].Add(database, new Dictionary<string, TableDef[]>());
 
                     int nbSchemas = stream.ReadInt32();
                     for (int k = 0; k < nbSchemas; k++)
                     {
-                        string schema = stream.ReadString();
-                        newDic._dic[serverId][database].Add(schema, new Dictionary<string, DerivativeTable[]>());
+                        var lstTables = new List<TableDef>();
+                        string schema = stream.ReadString();                        
 
                         int nbTablesFrom = stream.ReadInt32();
                         for (int l = 0; l < nbTablesFrom; l++)
-                        {
-                            string tableFrom = stream.ReadString();
-                            var lstTables = new List<DerivativeTable>();
+                            lstTables.Add(TableDef.Deserialize(stream));
 
-                            int nbTablesTo = stream.ReadInt32();
-                            for (int m = 0; m < nbTablesTo; m++)
-                            {
-                                lstTables.Add(new DerivativeTable()
-                                {
-                                    ServerId = stream.ReadInt32(),
-                                    Database = stream.ReadString(),
-                                    Schema = stream.ReadString(),
-                                    Table = stream.ReadString(),
-                                    Access = (DerivativeTableAccess)stream.ReadInt32(),
-                                    Cascade = stream.ReadBoolean()
-                                });
-                            }
-                            newDic._dic[serverId][database][schema].Add(tableFrom, lstTables.ToArray());
-                        }
+                        cTables._dic[serverId][database].Add(schema, lstTables.ToArray());
                     }
                 }
             }
-            return newDic;
+            return cTables;
         }
     }
 }

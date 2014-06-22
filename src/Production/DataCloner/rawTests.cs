@@ -21,6 +21,7 @@ namespace Class
     {
         static int Main(string[] args)
         {
+            //CachedTableTest();
             GeneralDBTest();
             //ConfigTest();
             /*StaticTableTest();
@@ -64,13 +65,6 @@ namespace Class
             }
         }
 
-        public class DataTable1
-        { 
-            
-        
-        }
-
-
         public static void GeneralDBTest()
         {
             var conn = new MySql.Data.MySqlClient.MySqlConnection("server=localhost;user id=root; password=cdxsza; database=mysql; pooling=false");
@@ -113,6 +107,92 @@ namespace Class
             //a.SQLTraveler(null, true, true);
         }
 
+        public static void CachedTableTest()
+        {
+            var ct = new CachedTables();
+            var table1 = new TableDef();
+
+            table1.Name = "table1";
+            table1.IsStatic = false;
+            table1.SelectCommand = "SELECT * FROM TABLE1";
+            table1.InsertCommand = "INSERT INTO TABLE1 VALUES(@COL1, @COL2)";
+
+            table1.SchemaColumns = table1.SchemaColumns.Add(new SchemaColumn()
+            {
+                Name = "COL1",
+                Type = "INT",
+                Order = 1,
+                IsPrimary = true,
+                IsForeignKey = false,
+                IsAutoIncrement = true,
+                BuilderName = ""
+            });
+            table1.SchemaColumns = table1.SchemaColumns.Add(new SchemaColumn()
+            {
+                Name = "COL2",
+                Type = "INT",
+                Order = 1,
+                IsPrimary = false,
+                IsForeignKey = false,
+                IsAutoIncrement = false,
+                BuilderName = "Builder.NASBuilder"
+            });
+
+            table1.DerivativeTables = table1.DerivativeTables.Add(new DerivativeTable()
+            {
+                ServerId = 1,
+                Database = "db",
+                Schema = "dbo",
+                Table = "table2",
+                Access = DerivativeTableAccess.Forced,
+                Cascade = true
+            });
+            table1.DerivativeTables = table1.DerivativeTables.Add(new DerivativeTable()
+            {
+                ServerId = 1,
+                Database = "db",
+                Schema = "dbo",
+                Table = "table3",
+                Access = DerivativeTableAccess.Denied,
+                Cascade = false
+            });
+
+            table1.ForeignKeys = table1.ForeignKeys.Add(new ForeignKey()
+            {
+                ServerIdTo = 2,
+                DatabaseTo = "db",
+                SchemaTo = "dbo",
+                TableTo = "TABLE2",
+                Columns = new ForeignKeyColumn[] { new ForeignKeyColumn() { NameFrom = "COL1", NameTo = "COL1" } }
+            });
+
+            ct.Add(1, "db", "dbo", table1);
+
+            MemoryStream ms1 = new MemoryStream();
+            MemoryStream ms2 = new MemoryStream();
+
+            //Test TableDef
+            table1.Serialize(ms1);
+            ms1.Position = 0;
+            var output = TableDef.Deserialize(ms1);
+            output.Serialize(ms2);
+
+            if(!ms1.ToArray().SequenceEqual(ms2.ToArray()))
+                throw new Exception("");
+
+            //Test cachedtables
+            ms1 = new MemoryStream();
+            ms2 = new MemoryStream();
+
+            ct.Serialize(ms1);
+            ms1.Position = 0;
+            var outputCT = CachedTables.Deserialize(ms1);
+            outputCT.Serialize(ms2);
+
+            if (!ms1.ToArray().SequenceEqual(ms2.ToArray()))
+                throw new Exception("");
+        }
+
         public static void CacheTest()
         {
             string configFileName = "dc.config";
@@ -120,7 +200,7 @@ namespace Class
 
             //Hash config file
             HashAlgorithm murmur = MurmurHash.Create32(managed: false);
-            byte[] configFile = File.ReadAllBytes(configFileName);           
+            byte[] configFile = File.ReadAllBytes(configFileName);
             string hashConfigFile = Encoding.Default.GetString(murmur.ComputeHash(configFile));
 
             //Build new cache file
@@ -133,46 +213,7 @@ namespace Class
 
             //Test reload of cache
             var dispatcher = new QueryDispatcher();
-            dispatcher.Initialize();           
-        }
-
-        public static void DeriavativeTableTest()
-        {
-            //var dt = new CachedTables();
-            //var tTo1 = new CachedTables.DerivativeTable()
-            //{
-            //    ServerId = 1,
-            //    Database = "db",
-            //    Schema = "dbo",
-            //    Table = "table2",
-            //    Access = DerivativeTableAccess.Forced,
-            //    Cascade = true
-            //};
-
-            //var tTo2 = new CachedTables.DerivativeTable()
-            //{
-            //    ServerId = 1,
-            //    Database = "db",
-            //    Schema = "dbo",
-            //    Table = "table3",
-            //    Access = DerivativeTableAccess.Denied,
-            //    Cascade = false
-            //};
-
-            //dt.Add(1, "db", "dbo", "table1", tTo1);
-            //dt.Add(1, "db", "dbo", "table1", tTo2);
-            //dt.Add(1, "db", "dbo", "table2", tTo1);
-
-            //var ms = new MemoryStream();
-            //dt.Serialize(ms);
-
-            //ms.Position = 0;
-            //var dtDeserialize = CachedTables.Deserialize(ms);
-            //var msDeserialize = new MemoryStream();
-            //dtDeserialize.Serialize(msDeserialize);
-
-            //if (!ms.ToArray().SequenceEqual(msDeserialize.ToArray()))
-            //    throw new Exception("");
+            dispatcher.Initialize();
         }
 
         public static void ExtensionsTest()
@@ -196,42 +237,6 @@ namespace Class
             //Add
             var l = t.Add(5).Add(1);
             if (!l.SequenceEqual(new int[] { 1, 2, 3, 4, 5, 1 }))
-                throw new Exception("");
-        }
-
-        public static void StaticTableTest()
-        {
-            var values = new string[] { "table1", "table2", "table3", "table4" };
-            var st = new StaticTable();
-
-            st.Add(1, "database", "schema", "TABLE1");
-            st.Add(1, "dataBASE", "schema", "taBle1");
-            st.Add(1, "database", "schema", "table2");
-            st.Add(1, "database", "schema", "taBle3");
-            st.Add(1, "database", "schema", "table4");
-
-            st.Add(2, "database1", "schema", "table1");
-            st.Add(2, "database1", "schema", "table1");
-            st.Add(2, "database2", "schema", "table2");
-            st.Add(2, "database2", "schema", "table3");
-            st.Add(3, "database3", "schema", "table4");
-
-            if (!st[1, "DATAbase", "sChema"].SequenceEqual(values))
-                throw new Exception("");
-
-            if (st[9, "DATAbase", "sChema"] != null)
-                throw new Exception("Devrait être null");
-
-            if (!st.Contains(3, "dATabase3", "sCHEMA", "table4"))
-                throw new Exception("");
-
-            if (!st.Remove(3, "dATabase3", "sCHEMA", "table4"))
-                throw new Exception("");
-
-            if (st.Contains(3, "dATabase3", "sCHEMA", "table4"))
-                throw new Exception("");
-
-            if (st[3, "dATabase3", "sCHEMA"] != null)
                 throw new Exception("");
         }
 
