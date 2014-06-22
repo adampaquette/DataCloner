@@ -146,6 +146,13 @@ namespace DataCloner.DataClasse.Cache
             }
         }
 
+        public class TableDef
+        {
+            public bool IsStatic { get; set; }
+            public TableTo[] DerivativeTable { get; set; }
+
+        }
+
         public class TableTo
         {
             public Int32 ServerId { get; set; }

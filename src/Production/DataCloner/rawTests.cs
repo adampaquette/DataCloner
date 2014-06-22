@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Data;
 using System.Security.Cryptography;
 
 using DataCloner.DataAccess;
@@ -20,21 +21,82 @@ namespace Class
     {
         static int Main(string[] args)
         {
-            ConfigTest();
+            GeneralDBTest();
+            //ConfigTest();
             /*StaticTableTest();
             ExtensionsTest();*/
             //DeriavativeTableTest();
-            CacheTest();
+            //CacheTest();
 
+
+            Console.ReadKey();
             return 0;
         }
 
-        public void GeneralDBTest()
+        public DataTable Read1(string query)
         {
-            var ti = new TableIdentifier { DatabaseName = "botnet", SchemaName = "botnet", TableName = "link" };
-            var ri = new RowIdentifier { TableIdentifier = ti };
-            ri.Columns.Add("fromPageHostId", 6);
-            ri.Columns.Add("fromPageId", 4);
+            System.Data.SqlClient.SqlConnection conn = new System.Data.SqlClient.SqlConnection();
+            using (var cmd = conn.CreateCommand())
+            {
+                cmd.CommandText = query;
+                cmd.Connection.Open();
+                var table = new DataTable();
+                using (var r = cmd.ExecuteReader())
+                    table.Load(r);
+                return table;
+            }
+        }
+
+        public List<S> Read5<S>(string query, Func<IDataRecord, S> selector)
+        {
+            System.Data.SqlClient.SqlConnection conn = new System.Data.SqlClient.SqlConnection();
+            using (var cmd = conn.CreateCommand())
+            {
+                cmd.CommandText = query;
+                cmd.Connection.Open();
+                using (var r = cmd.ExecuteReader())
+                {
+                    var items = new List<S>();
+                    while (r.Read())
+                        items.Add(selector(r));
+                    return items;
+                }
+            }
+        }
+
+        public class DataTable1
+        { 
+            
+        
+        }
+
+
+        public static void GeneralDBTest()
+        {
+            var conn = new MySql.Data.MySqlClient.MySqlConnection("server=localhost;user id=root; password=cdxsza; database=mysql; pooling=false");
+            conn.Open();
+            using (var cmd = conn.CreateCommand())
+            {
+                cmd.CommandText = "SELECT * FROM botnet.page limit 5;";
+                using (var r = cmd.ExecuteReader())
+                {
+                    while (r.Read())
+                        Console.WriteLine(r["id"].ToString());
+                }
+            }
+
+            var dt = new DataTable();
+            using (var cmd = conn.CreateCommand())
+            {
+                cmd.CommandText = "SELECT * FROM botnet.page limit 5;";
+                using (var r = cmd.ExecuteReader())
+                    dt.Load(r);
+            }
+
+            //var ti = new TableIdentifier { DatabaseName = "botnet", SchemaName = "botnet", TableName = "link" };
+            //var ri = new RowIdentifier { TableIdentifier = ti };
+            //ri.Columns.Add("fromPageHostId", 6);
+            //ri.Columns.Add("fromPageId", 4);
 
             //var m = new DataCloner.DataAccess.QueryProviderMySql("server=localhost;user id=root; password=cdxsza; database=mysql; pooling=false");
             //var dt = m.GetFK(ti);
