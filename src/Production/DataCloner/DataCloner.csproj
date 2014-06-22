@@ -79,7 +79,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DataClasse\Cache\DerivativeTable.cs" />
+    <Compile Include="DataClasse\Cache\CachedTables.cs" />
+    <Compile Include="DataClasse\Cache\TableDef.cs" />
     <Compile Include="DataClasse\Helper\ConfigConverter.cs" />
     <Compile Include="Enum\Enums.cs" />
     <Compile Include="rawTests.cs" />
@@ -89,7 +90,6 @@
     <Compile Include="DataClasse\ColumnIdentifier.cs" />
     <Compile Include="DataClasse\Cache\Configuration.cs" />
     <Compile Include="DataClasse\Cache\Connection.cs" />
-    <Compile Include="DataClasse\Cache\StaticTable.cs" />
     <Compile Include="DataClasse\RowIdentifier.cs" />
     <Compile Include="DataClasse\TableIdentifier.cs" />
     <Compile Include="DataCloner.cs" />

@@ -138,41 +138,41 @@ namespace Class
 
         public static void DeriavativeTableTest()
         {
-            var dt = new DerivativeTable();
-            var tTo1 = new DerivativeTable.TableTo()
-            {
-                ServerId = 1,
-                Database = "db",
-                Schema = "dbo",
-                Table = "table2",
-                Access = DerivativeTableAccess.Forced,
-                Cascade = true
-            };
+            //var dt = new CachedTables();
+            //var tTo1 = new CachedTables.DerivativeTable()
+            //{
+            //    ServerId = 1,
+            //    Database = "db",
+            //    Schema = "dbo",
+            //    Table = "table2",
+            //    Access = DerivativeTableAccess.Forced,
+            //    Cascade = true
+            //};
 
-            var tTo2 = new DerivativeTable.TableTo()
-            {
-                ServerId = 1,
-                Database = "db",
-                Schema = "dbo",
-                Table = "table3",
-                Access = DerivativeTableAccess.Denied,
-                Cascade = false
-            };
+            //var tTo2 = new CachedTables.DerivativeTable()
+            //{
+            //    ServerId = 1,
+            //    Database = "db",
+            //    Schema = "dbo",
+            //    Table = "table3",
+            //    Access = DerivativeTableAccess.Denied,
+            //    Cascade = false
+            //};
 
-            dt.Add(1, "db", "dbo", "table1", tTo1);
-            dt.Add(1, "db", "dbo", "table1", tTo2);
-            dt.Add(1, "db", "dbo", "table2", tTo1);
+            //dt.Add(1, "db", "dbo", "table1", tTo1);
+            //dt.Add(1, "db", "dbo", "table1", tTo2);
+            //dt.Add(1, "db", "dbo", "table2", tTo1);
 
-            var ms = new MemoryStream();
-            dt.Serialize(ms);
+            //var ms = new MemoryStream();
+            //dt.Serialize(ms);
 
-            ms.Position = 0;
-            var dtDeserialize = DerivativeTable.Deserialize(ms);
-            var msDeserialize = new MemoryStream();
-            dtDeserialize.Serialize(msDeserialize);
+            //ms.Position = 0;
+            //var dtDeserialize = CachedTables.Deserialize(ms);
+            //var msDeserialize = new MemoryStream();
+            //dtDeserialize.Serialize(msDeserialize);
 
-            if (!ms.ToArray().SequenceEqual(msDeserialize.ToArray()))
-                throw new Exception("");
+            //if (!ms.ToArray().SequenceEqual(msDeserialize.ToArray()))
+            //    throw new Exception("");
         }
 
         public static void ExtensionsTest()

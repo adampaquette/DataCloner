@@ -19,14 +19,12 @@ namespace DataCloner.DataClasse.Cache
 
         public string ConfigFileHash { get; set; }
         public List<Connection> ConnectionStrings { get; set; }
-        public DerivativeTable DerivativeTables { get; set; }
-        public StaticTable StaticTables { get; set; }
+        public CachedTables CachedTables { get; set; }
 
         public Configuration()
         {
             ConnectionStrings = new List<Connection>();
-            DerivativeTables = new DerivativeTable();
-            StaticTables = new StaticTable();
+            CachedTables = new CachedTables();
         }        
 
         public void Serialize(Stream stream)
@@ -45,8 +43,7 @@ namespace DataCloner.DataClasse.Cache
             stream.Write(ConnectionStrings.Count);
             foreach (var cs in ConnectionStrings)
                 cs.Serialize(stream);
-            DerivativeTables.Serialize(stream);
-            StaticTables.Serialize(stream);
+            CachedTables.Serialize(stream);
             
             stream.Flush();
         }
@@ -67,8 +64,7 @@ namespace DataCloner.DataClasse.Cache
             for (int i = 0; i < nbConnection; i++)
                 config.ConnectionStrings.Add(Connection.Deserialize(stream));
 
-            config.DerivativeTables = DerivativeTable.Deserialize(stream);
-            config.StaticTables = StaticTable.Deserialize(stream);
+            config.CachedTables = CachedTables.Deserialize(stream);
 
             return config;
         }
