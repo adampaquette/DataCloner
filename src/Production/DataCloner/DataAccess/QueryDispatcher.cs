@@ -86,13 +86,11 @@ namespace DataCloner.DataAccess
             }
         }
 
-        private void FillForeignKeys(IDataReader reader, String database)
+        private void FillForeignKeys(IDataReader reader, Int16 serverId, String database)
         {
-
-
             while (reader.Read())
-            { 
-                  // _cache.CachedTables.
+            {
+                Console.WriteLine(reader.GetString(0) + "    " + reader.GetString(1) + "    " + reader.GetString(2));
             }        
         }
 

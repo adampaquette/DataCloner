@@ -61,7 +61,7 @@ namespace DataCloner.DataAccess
             return databases.ToArray();
         }
 
-        public void FillForeignKeys(Action<IDataReader,string> reader, string database)
+        public void FillForeignKeys(Action<IDataReader,Int16,string> reader, string database)
         {
             var sql =
                 "SELECT " +
@@ -83,7 +83,7 @@ namespace DataCloner.DataAccess
                 cmd.Parameters.Add("@DATABASE", database);
                 using (var r = cmd.ExecuteReader())
                 {
-                    reader(r, database);
+                    reader(r, _serverIdCtx, database);
                 }
             }
         }
