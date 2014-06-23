@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using System.Data;
 
 using DataCloner.Framework;
 using DataCloner.Enum;
@@ -115,6 +116,14 @@ namespace DataCloner.DataClasse.Cache
                 else
                     _dic[server][database][schema] = value;
             }
+        }
+
+        public TableDef GetOrCreate(Int16 server, string database, string schema, string table)
+        { 
+            IEnumerable<TableDef> t = this[server,database,schema].Where(e=> e.Name == table);
+            if (t.Any())
+                return t.First();
+            return new TableDef();
         }
 
         public void Serialize(Stream stream)

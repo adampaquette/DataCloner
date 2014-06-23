@@ -27,7 +27,7 @@ namespace DataCloner.DataAccess
         {
             string fullCacheName = cacheName + Configuration.Extension;
             string fullConfigName = cacheName + ConfigurationXml.Extension;
-            bool cacheIsGood = true;
+            bool cacheIsGood = false;
 
             _cache = new Configuration();
 
@@ -73,18 +73,27 @@ namespace DataCloner.DataAccess
                 //Start fetching each server
                 foreach (var cs in config.ConnectionStrings)
                 {
-                    string[] databases = _providers[cs.Id].GetDatabasesName();
+                    IQueryProvider provider = _providers[cs.Id];
+                    string[] databases = provider.GetDatabasesName();
 
                     nbRows = databases.Length;
                     for (int i = 0; i < nbRows; i++)
                     { 
-   
+                        provider.FillForeignKeys(FillForeignKeys, databases[i]);
                     }
                 
                 }
-
-
             }
+        }
+
+        private void FillForeignKeys(IDataReader reader, String database)
+        {
+
+
+            while (reader.Read())
+            { 
+                  // _cache.CachedTables.
+            }        
         }
 
         /// <summary>
@@ -98,7 +107,7 @@ namespace DataCloner.DataAccess
             foreach (Connection conn in conns)
             {
                 Type t = Type.GetType(conn.ProviderName);
-                var provider = Activator.CreateInstance(t, new object[] { conn.ConnectionString }) as IQueryProvider;
+                var provider = Activator.CreateInstance(t, new object[] { conn.ConnectionString, conn.Id }) as IQueryProvider;
                 _providers.Add(conn.Id, provider);
             }
         }

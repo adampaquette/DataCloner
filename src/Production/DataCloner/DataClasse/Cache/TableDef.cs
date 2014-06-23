@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Data;
 using System.Threading.Tasks;
 using System.IO;
 
@@ -204,6 +205,14 @@ namespace DataCloner.DataClasse.Cache
         public bool IsForeignKey { get; set; }
         public bool IsAutoIncrement { get; set; }
         public string BuilderName { get; set; }
+
+        public static SchemaColumn Create(IDataRecord record)
+        {
+            return new SchemaColumn
+            {
+                 //Name = record.GetValue(0);
+            };
+        }
     }
 
     internal sealed class DerivativeTable

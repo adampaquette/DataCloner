@@ -195,18 +195,18 @@ namespace Class
             string configFileName = "dc.config";
             string cacheFileName = "dc.cache";
 
-            //Hash config file
-            HashAlgorithm murmur = MurmurHash.Create32(managed: false);
-            byte[] configFile = File.ReadAllBytes(configFileName);
-            string hashConfigFile = Encoding.Default.GetString(murmur.ComputeHash(configFile));
+            ////Hash config file
+            //HashAlgorithm murmur = MurmurHash.Create32(managed: false);
+            //byte[] configFile = File.ReadAllBytes(configFileName);
+            //string hashConfigFile = Encoding.Default.GetString(murmur.ComputeHash(configFile));
 
-            //Build new cache file
-            var fsOutputConfig = new FileStream(cacheFileName, FileMode.Create);
-            var config = new Configuration();
-            config.ConfigFileHash = hashConfigFile;
-            config.Serialize(fsOutputConfig);
+            ////Build new cache file
+            //var fsOutputConfig = new FileStream(cacheFileName, FileMode.Create);
+            //var config = new Configuration();
+            //config.ConfigFileHash = hashConfigFile;
+            //config.Serialize(fsOutputConfig);
 
-            fsOutputConfig.Close();
+            //fsOutputConfig.Close();
 
             //Test reload of cache
             var dispatcher = new QueryDispatcher();

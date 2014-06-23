@@ -13,16 +13,18 @@ namespace DataCloner.DataAccess
     public class QueryProviderMySql : IQueryProvider
     {
         private MySqlConnection _conn;
+        private readonly Int16 _serverIdCtx;
         private readonly bool _isReadOnly;
 
-        public QueryProviderMySql(string connectionString)
+        public QueryProviderMySql(string connectionString, Int16 serverId)
         {
+            _serverIdCtx = serverId;
             _conn = new MySqlConnection(connectionString);
             _conn.Open();
         }
 
-        public QueryProviderMySql(string connectionString, bool readOnly)
-            : this(connectionString)
+        public QueryProviderMySql(string connectionString, Int16 serverId, bool readOnly)
+            : this(connectionString, serverId)
         {
             _isReadOnly = readOnly;
         }
@@ -48,7 +50,8 @@ namespace DataCloner.DataAccess
 
             using (var cmd = _conn.CreateCommand())
             {
-                cmd.CommandText = "SELECT SHEMA_NAME FROM SCHEMATA WHERE SCHEMA_NAME NOT IN ('information_schema','performance_schema','mysql')";
+                cmd.CommandText = "SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA " +
+                                  "WHERE SCHEMA_NAME NOT IN ('information_schema','performance_schema','mysql')";
                 using (var r = cmd.ExecuteReader())
                 {
                     while (r.Read())
@@ -58,22 +61,31 @@ namespace DataCloner.DataAccess
             return databases.ToArray();
         }
 
-        public void FillForeignKeys(CachedTables tables)
-        { 
-            var sql = 
+        public void FillForeignKeys(Action<IDataReader,string> reader, string database)
+        {
+            var sql =
                 "SELECT " +
-	                "TABLE_NAME," +
-	                "COLUMN_NAME, " +
-	                "DATA_TYPE, " +
-	                "COLUMN_KEY = 'PRI' AS 'IsPrimaryKey', " +
-	                "'' AS 'IsForeignKey', " +
-	                "EXTRA = 'auto_increment' AS 'IsAutoIncrement' " +
-                "FROM COLUMNS " + 
-                "WHERE TABLE_SCHEMA = 'botnet' " +
+                    "TABLE_NAME," +
+                    "COLUMN_NAME, " +
+                    "DATA_TYPE, " +
+                    "COLUMN_KEY = 'PRI' AS 'IsPrimaryKey', " +
+                    "'' AS 'IsForeignKey', " +
+                    "EXTRA = 'auto_increment' AS 'IsAutoIncrement' " +
+                "FROM INFORMATION_SCHEMA.COLUMNS " +
+                "WHERE TABLE_SCHEMA = @DATABASE " +
                 "ORDER BY " +
-	                "TABLE_NAME," +
-	                "ORDINAL_POSITION";
-        
+                    "TABLE_NAME," +
+                    "ORDINAL_POSITION";
+
+            using (var cmd = _conn.CreateCommand())
+            {
+                cmd.CommandText = sql;
+                cmd.Parameters.Add("@DATABASE", database);
+                using (var r = cmd.ExecuteReader())
+                {
+                    reader(r, database);
+                }
+            }
         }
 
         public DataTable GetFk(ITableIdentifier ti)

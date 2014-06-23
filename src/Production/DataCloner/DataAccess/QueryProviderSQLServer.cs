@@ -145,7 +145,7 @@ namespace DataCloner.DataAccess
             throw new NotImplementedException();
         }
 
-        public void FillForeignKeys(CachedTables tables)
+        public void FillForeignKeys(Action<IDataReader,string> reader,String database)
         {
         }
     }
