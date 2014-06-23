@@ -52,8 +52,8 @@ namespace DataCloner.Interface
 
     public interface IQueryDispatcher
     {        
-        DataTable GetFk(ITableIdentifier ti);
-        Int64 GetLastInsertedPk(Int16 serverId);
+        //DataTable GetFk(ITableIdentifier ti);
+        //Int64 GetLastInsertedPk(Int16 serverId);
         DataTable Select(IRowIdentifier ri);
         void Insert(ITableIdentifier ti, DataRow[] rows);
         void Update(IRowIdentifier ri, DataRow[] rows);

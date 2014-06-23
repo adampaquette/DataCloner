@@ -65,11 +65,12 @@ namespace DataCloner.DataAccess
         {
             var sql =
                 "SELECT " +
+                    "'' AS SHEMA," +
                     "TABLE_NAME," +
-                    "COLUMN_NAME, " +
-                    "DATA_TYPE, " +
-                    "COLUMN_KEY = 'PRI' AS 'IsPrimaryKey', " +
-                    "'' AS 'IsForeignKey', " +
+                    "COLUMN_NAME," +
+                    "DATA_TYPE," +
+                    "COLUMN_KEY = 'PRI' AS 'IsPrimaryKey'," +
+                    "1 AS 'IsForeignKey'," +
                     "EXTRA = 'auto_increment' AS 'IsAutoIncrement' " +
                 "FROM INFORMATION_SCHEMA.COLUMNS " +
                 "WHERE TABLE_SCHEMA = @DATABASE " +

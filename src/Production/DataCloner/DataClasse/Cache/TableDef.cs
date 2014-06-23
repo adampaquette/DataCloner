@@ -53,10 +53,10 @@ namespace DataCloner.DataClasse.Cache
         public void Serialize(BinaryWriter stream)
         {
             Int32 nbRows = DerivativeTables.Length;
-            stream.Write(Name);
+            stream.Write(Name == null ? "": Name);
             stream.Write(IsStatic);
-            stream.Write(SelectCommand);
-            stream.Write(InsertCommand);
+            stream.Write(SelectCommand == null ? "" : SelectCommand);
+            stream.Write(InsertCommand == null ? "" : InsertCommand);
 
             stream.Write(nbRows);
             for (int i = 0; i < nbRows; i++)
@@ -97,7 +97,7 @@ namespace DataCloner.DataClasse.Cache
                 stream.Write(SchemaColumns[i].IsPrimary);
                 stream.Write(SchemaColumns[i].IsForeignKey);
                 stream.Write(SchemaColumns[i].IsAutoIncrement);
-                stream.Write(SchemaColumns[i].BuilderName);
+                stream.Write(SchemaColumns[i].BuilderName == null ? "" : SchemaColumns[i].BuilderName);
             }
         }
 
