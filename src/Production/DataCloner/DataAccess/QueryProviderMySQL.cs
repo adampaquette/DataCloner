@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Text;
 using System.Data;
+using System.Collections.Generic;
+
+using DataCloner.DataClasse.Cache;
 using DataCloner.Interface;
 using MySql.Data.MySqlClient;
 using IQueryProvider = DataCloner.Interface.IQueryProvider;
@@ -37,6 +40,40 @@ namespace DataCloner.DataAccess
         public bool IsReadOnly
         {
             get { return _isReadOnly; }
+        }
+
+        public string[] GetDatabasesName()
+        {
+            List<string> databases = new List<string>();
+
+            using (var cmd = _conn.CreateCommand())
+            {
+                cmd.CommandText = "SELECT SHEMA_NAME FROM SCHEMATA WHERE SCHEMA_NAME NOT IN ('information_schema','performance_schema','mysql')";
+                using (var r = cmd.ExecuteReader())
+                {
+                    while (r.Read())
+                        databases.Add(r.GetString(0));
+                }
+            }
+            return databases.ToArray();
+        }
+
+        public void FillForeignKeys(CachedTables tables)
+        { 
+            var sql = 
+                "SELECT " +
+	                "TABLE_NAME," +
+	                "COLUMN_NAME, " +
+	                "DATA_TYPE, " +
+	                "COLUMN_KEY = 'PRI' AS 'IsPrimaryKey', " +
+	                "'' AS 'IsForeignKey', " +
+	                "EXTRA = 'auto_increment' AS 'IsAutoIncrement' " +
+                "FROM COLUMNS " + 
+                "WHERE TABLE_SCHEMA = 'botnet' " +
+                "ORDER BY " +
+	                "TABLE_NAME," +
+	                "ORDINAL_POSITION";
+        
         }
 
         public DataTable GetFk(ITableIdentifier ti)

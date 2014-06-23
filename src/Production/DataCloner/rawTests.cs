@@ -21,14 +21,11 @@ namespace Class
     {
         static int Main(string[] args)
         {
-            //CachedTableTest();
+            CachedTableTest();
             GeneralDBTest();
-            //ConfigTest();
-            /*StaticTableTest();
-            ExtensionsTest();*/
-            //DeriavativeTableTest();
-            //CacheTest();
-
+            ConfigTest();
+            CacheTest();
+            ExtensionsTest();
 
             Console.ReadKey();
             return 0;

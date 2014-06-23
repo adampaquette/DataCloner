@@ -2,8 +2,10 @@
 using System.Text;
 using System.Data;
 using System.Data.SqlClient;
+
 using DataCloner.DataClasse;
 using DataCloner.Interface;
+using DataCloner.DataClasse.Cache;
 using IQueryProvider = DataCloner.Interface.IQueryProvider;
 
 namespace DataCloner.DataAccess
@@ -136,5 +138,15 @@ namespace DataCloner.DataAccess
         }
 
         #endregion
+
+
+        public string[] GetDatabasesName()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void FillForeignKeys(CachedTables tables)
+        {
+        }
     }
 }

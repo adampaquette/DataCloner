@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Data;
 
+using DataCloner.DataClasse.Cache;
+
 namespace DataCloner.Interface
 {
     public interface IQueryProvider : IDisposable
     {
         IDbConnection Connection { get; }
         bool IsReadOnly { get; }
+        string[] GetDatabasesName();
+        void FillForeignKeys(CachedTables tables);        
         DataTable GetFk(ITableIdentifier ti);
         Int64 GetLastInsertedPk();
         DataTable Select(IRowIdentifier ri);

@@ -60,15 +60,28 @@ namespace DataCloner.DataAccess
             //Rebuild cache
             if (!cacheIsGood)
             {
+                int nbRows;
                 var config = ConfigurationXml.Load(fullConfigName);
                 _cache.ConfigFileHash = hashConfigFile;
 
+                //Copy connection strings
                 foreach (var cs in config.ConnectionStrings)
                     _cache.ConnectionStrings.Add(new Connection(cs.Id, cs.ProviderName, cs.ConnectionString, cs.SameConfigAsId));
 
                 InitProviders(_cache.ConnectionStrings);
 
+                //Start fetching each server
+                foreach (var cs in config.ConnectionStrings)
+                {
+                    string[] databases = _providers[cs.Id].GetDatabasesName();
 
+                    nbRows = databases.Length;
+                    for (int i = 0; i < nbRows; i++)
+                    { 
+   
+                    }
+                
+                }
 
 
             }
