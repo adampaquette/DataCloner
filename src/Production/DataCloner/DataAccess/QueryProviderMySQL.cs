@@ -61,7 +61,7 @@ namespace DataCloner.DataAccess
             return databases.ToArray();
         }
 
-        public void FillForeignKeys(Action<IDataReader,Int16,string> reader, string database)
+        public void GetForeignKeys(Action<IDataReader,Int16,string> reader, string database)
         {
             var sql =
                 "SELECT " +

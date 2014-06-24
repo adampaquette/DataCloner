@@ -118,13 +118,99 @@ namespace DataCloner.DataClasse.Cache
             }
         }
 
-        public TableDef GetOrCreate(Int16 server, string database, string schema, string table)
-        { 
-            IEnumerable<TableDef> t = this[server,database,schema].Where(e=> e.Name == table);
-            if (t.Any())
-                return t.First();
-            return new TableDef();
+        public void LoadForeignKeys(IDataReader reader, Int16 serverId, String database)
+        {
+            var lstTable = new List<TableDef>();
+            var lstSchemaColumn = new List<SchemaColumn>();
+            var previousTable = new TableDef();
+            string previousSchema = string.Empty;
+            string currentSchema = string.Empty;
+            string currentTable;
+
+            //Init first row
+            if (reader.Read())
+            {
+                currentSchema = reader.GetString(0);
+                currentTable = reader.GetString(1);
+
+                previousSchema = currentSchema;
+                previousTable.Name = currentTable;
+
+                lstSchemaColumn.Add(new SchemaColumn()
+                {
+                    Name = reader.GetString(2),
+                    Type = reader.GetString(3),
+                    IsPrimary = reader.GetBoolean(4),
+                    IsForeignKey = reader.GetBoolean(5),
+                    IsAutoIncrement = reader.GetBoolean(6)
+                });
+            }
+
+            while (reader.Read())
+            {
+                currentSchema = reader.GetString(0);
+                currentTable = reader.GetString(1);
+
+                //Si on change de table
+                if (currentSchema != previousSchema || currentTable != previousTable.Name)
+                {
+                    previousTable.SchemaColumns = lstSchemaColumn.ToArray();
+                    lstTable.Add(previousTable);
+
+                    lstSchemaColumn = new List<SchemaColumn>();
+                    previousTable = new TableDef();
+                    previousTable.Name = currentTable;
+                }
+
+                //Si on change de schema
+                if (currentSchema != previousSchema)
+                {
+                    _dic[serverId][database][currentSchema] = lstTable.ToArray();
+                    lstTable = new List<TableDef>();
+                }
+
+                //Ajoute la colonne
+                lstSchemaColumn.Add(new SchemaColumn()
+                {
+                    Name = reader.GetString(2),
+                    Type = reader.GetString(3),
+                    IsPrimary = reader.GetBoolean(4),
+                    IsForeignKey = reader.GetBoolean(5),
+                    IsAutoIncrement = reader.GetBoolean(6)
+                });
+            }
+
+            //On ajoute le dernier schema
+            if (lstTable.Count > 0)
+                _dic[serverId][database][currentSchema] = lstTable.ToArray();
         }
+
+        private void GenerateCommands()
+        {
+            foreach (var server in _dic)
+            {
+                foreach (var database in server.Value)
+                {
+                    foreach (var schema in database.Value)
+                    {
+                        int nbTables = schema.Value.Length;
+                        for (int i = 0; i < nbTables; i++)
+                        {
+                            TableDef table = schema.Value[i];
+
+                        }
+                    }               
+                }
+            }
+        }
+
+        //public TableDef GetOrCreate(Int16 server, string database, string schema, string table)
+        //{ 
+        //    IEnumerable<TableDef> t = this[server,database,schema].Where(e=> e.Name == table);
+        //    if (t.Any())
+        //        return t.First();
+        //    return new TableDef();
+        //}
 
         public void Serialize(Stream stream)
         {

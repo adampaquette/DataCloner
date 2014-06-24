@@ -93,7 +93,6 @@ namespace DataCloner.DataClasse.Cache
             {
                 stream.Write(SchemaColumns[i].Name);
                 stream.Write(SchemaColumns[i].Type);
-                stream.Write(SchemaColumns[i].Order);
                 stream.Write(SchemaColumns[i].IsPrimary);
                 stream.Write(SchemaColumns[i].IsForeignKey);
                 stream.Write(SchemaColumns[i].IsAutoIncrement);
@@ -163,7 +162,6 @@ namespace DataCloner.DataClasse.Cache
                 {
                     Name = stream.ReadString(),
                     Type = stream.ReadString(),
-                    Order = stream.ReadInt16(),
                     IsPrimary = stream.ReadBoolean(),
                     IsForeignKey = stream.ReadBoolean(),
                     IsAutoIncrement = stream.ReadBoolean(),
@@ -186,8 +184,6 @@ namespace DataCloner.DataClasse.Cache
         public string SchemaTo { get; set; }
         public string TableTo { get; set; }
         public ForeignKeyColumn[] Columns { get; set; }
-
-
     }
 
     internal sealed class ForeignKeyColumn
@@ -200,19 +196,10 @@ namespace DataCloner.DataClasse.Cache
     {
         public string Name { get; set; }
         public string Type { get; set; }
-        public Int16 Order { get; set; }
         public bool IsPrimary { get; set; }
         public bool IsForeignKey { get; set; }
         public bool IsAutoIncrement { get; set; }
         public string BuilderName { get; set; }
-
-        public static SchemaColumn Create(IDataRecord record)
-        {
-            return new SchemaColumn
-            {
-                 //Name = record.GetValue(0);
-            };
-        }
     }
 
     internal sealed class DerivativeTable

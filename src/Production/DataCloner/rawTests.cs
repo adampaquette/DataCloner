@@ -21,13 +21,13 @@ namespace Class
     {
         static int Main(string[] args)
         {
-            CachedTableTest();
+            /*CachedTableTest();
             GeneralDBTest();
-            ConfigTest();
+            ConfigTest();*/
             CacheTest();
-            ExtensionsTest();
+           //ExtensionsTest();
 
-            Console.ReadKey();
+            //Console.ReadKey();
             return 0;
         }
 
@@ -118,7 +118,6 @@ namespace Class
             {
                 Name = "COL1",
                 Type = "INT",
-                Order = 1,
                 IsPrimary = true,
                 IsForeignKey = false,
                 IsAutoIncrement = true,
@@ -128,7 +127,6 @@ namespace Class
             {
                 Name = "COL2",
                 Type = "INT",
-                Order = 1,
                 IsPrimary = false,
                 IsForeignKey = false,
                 IsAutoIncrement = false,
