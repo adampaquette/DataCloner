@@ -42,7 +42,7 @@ namespace DataCloner.DataAccess
             get { return _isReadOnly; }
         }
 
-        public DataTable GetFk(ITableIdentifier ti)
+        public DataTable GetForeignKeys(ITableIdentifier ti)
         {
             var sql = "SELECT DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS";
 
@@ -145,8 +145,14 @@ namespace DataCloner.DataAccess
             throw new NotImplementedException();
         }
 
-        public void GetForeignKeys(Action<IDataReader,Int16,string> reader,String database)
+        public void GetColumns(Action<IDataReader,Int16,string> reader,String database)
         {
+            throw new NotImplementedException();
+        }
+
+        public void GetForeignKeys(Action<IDataReader, short, string> reader, string database)
+        {
+            throw new NotImplementedException();
         }
     }
 }

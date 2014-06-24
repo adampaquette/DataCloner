@@ -67,7 +67,6 @@ namespace DataCloner.DataAccess
             //Rebuild cache
             if (!cacheIsGood)
             {
-                int nbRows;
                 var config = ConfigurationXml.Load(fullConfigName);
                 _cache.ConfigFileHash = hashConfigFile;
 
@@ -82,13 +81,15 @@ namespace DataCloner.DataAccess
                 {
                     IQueryProvider provider = _providers[cs.Id];
                     string[] databases = provider.GetDatabasesName();
+                    int nbDatabases = databases.Length;
 
-                    nbRows = databases.Length;
-                    for (int i = 0; i < nbRows; i++)
+                    for (int i = 0; i < nbDatabases; i++)
                     {
+                        provider.GetColumns(_cache.CachedTables.LoadColumns, databases[i]);
                         provider.GetForeignKeys(_cache.CachedTables.LoadForeignKeys, databases[i]);
                     }
-                }
+                }                
+                _cache.CachedTables.GenerateCommands();
 
                 //Save cache
                 var fsCache = new FileStream(fullCacheName, FileMode.Create);

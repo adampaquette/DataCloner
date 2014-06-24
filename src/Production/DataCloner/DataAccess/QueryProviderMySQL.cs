@@ -61,7 +61,7 @@ namespace DataCloner.DataAccess
             return databases.ToArray();
         }
 
-        public void GetForeignKeys(Action<IDataReader,Int16,string> reader, string database)
+        public void GetColumns(Action<IDataReader,Int16,string> reader, string database)
         {
             var sql =
                 "SELECT " +
@@ -81,7 +81,7 @@ namespace DataCloner.DataAccess
             using (var cmd = _conn.CreateCommand())
             {
                 cmd.CommandText = sql;
-                cmd.Parameters.Add("@DATABASE", database);
+                cmd.Parameters.AddWithValue("@DATABASE", database);
                 using (var r = cmd.ExecuteReader())
                 {
                     reader(r, _serverIdCtx, database);
@@ -89,31 +89,37 @@ namespace DataCloner.DataAccess
             }
         }
 
-        public DataTable GetFk(ITableIdentifier ti)
+        public void GetForeignKeys(Action<IDataReader,Int16,string> reader, string database)
         {
             var dtReturn = new DataTable();
 
             var sql =
                 "SELECT " +
-                "	TC.TABLE_SCHEMA," +
-                "	TC.TABLE_NAME," +
-                " k.COLUMN_NAME," +
-                " K.REFERENCED_TABLE_SCHEMA," +
-                "	K.REFERENCED_TABLE_NAME," +
-                "	K.REFERENCED_COLUMN_NAME " +
+                    "'' AS 'Schema'," +
+                    "TC.TABLE_NAME," +
+                    "TC.CONSTRAINT_NAME," + 
+                    "K.COLUMN_NAME," +
+                    "K.REFERENCED_TABLE_SCHEMA," +
+                    "K.REFERENCED_TABLE_NAME," +
+                    "K.REFERENCED_COLUMN_NAME " +
                 "FROM information_schema.TABLE_CONSTRAINTS TC " +
-                "LEFT JOIN information_schema.KEY_COLUMN_USAGE K ON TC.CONSTRAINT_NAME = K.CONSTRAINT_NAME " +
-                "WHERE TC.CONSTRAINT_TYPE = 'FOREIGN KEY' " +
-                "AND TC.TABLE_SCHEMA = @shema " +
-                "AND TC.TABLE_NAME = @table";
+                "INNER JOIN information_schema.KEY_COLUMN_USAGE K ON TC.TABLE_NAME = K.TABLE_NAME " +
+                                                                "AND TC.CONSTRAINT_NAME = K.CONSTRAINT_NAME " +
+                "WHERE TC.TABLE_SCHEMA = @DATABASE " +
+                "AND TC.CONSTRAINT_TYPE = 'FOREIGN KEY' " + 
+                "ORDER BY " +
+                    "TC.TABLE_NAME," +
+	                "TC.CONSTRAINT_NAME";
 
-            var cmd = new MySqlCommand(sql, _conn);
-            cmd.Parameters.AddWithValue("@shema", ti.SchemaName);
-            cmd.Parameters.AddWithValue("@table", ti.TableName);
-
-            new MySqlDataAdapter(cmd).Fill(dtReturn);
-
-            return dtReturn;
+            using (var cmd = _conn.CreateCommand())
+            {
+                cmd.CommandText = sql;
+                cmd.Parameters.AddWithValue("@DATABASE", database);
+                using (var r = cmd.ExecuteReader())
+                {
+                    reader(r, _serverIdCtx, database);
+                }
+            }
         }
 
         public Int64 GetLastInsertedPk()

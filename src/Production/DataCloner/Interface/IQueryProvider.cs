@@ -10,9 +10,9 @@ namespace DataCloner.Interface
         IDbConnection Connection { get; }
         bool IsReadOnly { get; }
         string[] GetDatabasesName();
-        void GetForeignKeys(Action<IDataReader, Int16, string> reader, String database);    
-        DataTable GetFk(ITableIdentifier ti);
-        Int64 GetLastInsertedPk();
+        void GetColumns(Action<IDataReader, Int16, string> reader, String database);    
+        void GetForeignKeys(Action<IDataReader,Int16,string> reader, String database);
+        //Int64 GetLastInsertedPk();
         DataTable Select(IRowIdentifier ri);
         void Insert(ITableIdentifier ti, DataRow[] rows);
         void Update(IRowIdentifier ri, DataRow[] rows);
