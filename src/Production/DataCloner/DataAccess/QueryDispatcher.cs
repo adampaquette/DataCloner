@@ -9,6 +9,7 @@ using DataCloner.Interface;
 using DataCloner.DataClasse;
 using DataCloner.DataClasse.Cache;
 using DataCloner.DataClasse.Configuration;
+using DataCloner.Framework;
 
 using Murmur;
 
@@ -109,7 +110,7 @@ namespace DataCloner.DataAccess
             foreach (Connection conn in conns)
             {
                 Type t = Type.GetType(conn.ProviderName);
-                var provider = Activator.CreateInstance(t, new object[] { conn.ConnectionString, conn.Id }) as IQueryProvider;
+                var provider = FastActivator<string, Int16>.CreateInstance(t, conn.ConnectionString, conn.Id) as IQueryProvider;
                 _providers.Add(conn.Id, provider);
             }
         }

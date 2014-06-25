@@ -19,8 +19,8 @@ namespace DataCloner.DataAccess
         public QueryProviderMySql(string connectionString, Int16 serverId)
         {
             _serverIdCtx = serverId;
-            _conn = new MySqlConnection(connectionString);
-            _conn.Open();
+            //_conn = new MySqlConnection(connectionString);
+            //_conn.Open();
         }
 
         public QueryProviderMySql(string connectionString, Int16 serverId, bool readOnly)

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Data;
 using System.Security.Cryptography;
+using System.Diagnostics;
 
 using DataCloner.DataAccess;
 using DataCloner.DataClasse;
@@ -21,14 +22,64 @@ namespace Class
     {
         static int Main(string[] args)
         {
+            //ActivatorTest();
+
             /*CachedTableTest();
             GeneralDBTest();
             ConfigTest();*/
             CacheTest();
-           //ExtensionsTest();
+            //ExtensionsTest();
 
-            //Console.ReadKey();
+            Console.ReadKey();
             return 0;
+        }
+
+        public static void ActivatorTest()
+        {
+            string strType = "DataCloner.DataAccess.QueryProviderMySql";
+            string strConn = "server=localhost;user id=root; password=cdxsza; database=mysql; pooling=false";
+            Int16 server = 1;
+            Type t = Type.GetType(strType);
+            Stopwatch sw = new Stopwatch();
+            int nbLoop = 100000;
+
+
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+            GC.Collect();
+            sw.Reset();
+            sw.Start();
+            for (int i = 0; i < nbLoop; i++)
+            {
+                var providerFA = FastActivator<string, Int16>.GetConstructor(t, new Type[] { typeof(string), typeof(Int16) })(strConn, server);
+            }
+            sw.Stop();
+            Console.WriteLine("FastActivator.GetConstructor : " + sw.ElapsedMilliseconds.ToString());
+
+
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+            GC.Collect();
+            sw.Reset();
+            sw.Start();
+            for (int i = 0; i < nbLoop; i++)
+            {
+                var providerFA2 = FastActivator<string, Int16>.CreateInstance(t, strConn, server);
+            }
+            sw.Stop();
+            Console.WriteLine("FastActivator.CreateInstance : " + sw.ElapsedMilliseconds.ToString());
+
+
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+            GC.Collect();
+            sw.Start();
+            for (int i = 0; i < nbLoop; i++)
+            {
+                var provider = Activator.CreateInstance(t, new object[] { strConn, server }) as IQueryProvider;
+            }
+            sw.Stop();
+            Console.WriteLine("Activator.CreateInstance : " + sw.ElapsedMilliseconds.ToString());
         }
 
         public DataTable Read1(string query)
@@ -172,7 +223,7 @@ namespace Class
             var output = TableDef.Deserialize(ms1);
             output.Serialize(ms2);
 
-            if(!ms1.ToArray().SequenceEqual(ms2.ToArray()))
+            if (!ms1.ToArray().SequenceEqual(ms2.ToArray()))
                 throw new Exception("");
 
             //Test cachedtables
