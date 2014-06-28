@@ -55,9 +55,11 @@ namespace DataCloner.DataAccess
                     cacheIsGood = _cache.ConfigFileHash == hashConfigFile;
 
                     if (cacheIsGood)
+                    {
                         Configuration.DeserializeBody(brCache, _cache); //Load cache            
-
-                    InitProviders(_cache.ConnectionStrings);
+                        InitProviders(_cache.ConnectionStrings);
+                        return;
+                    }
                 }
                 finally
                 { 
@@ -93,9 +95,9 @@ namespace DataCloner.DataAccess
                 _cache.CachedTables.GenerateCommands();
 
                 //Save cache
-                var fsCache = new FileStream(fullCacheName, FileMode.Create);
-                _cache.Serialize(fsCache);
-                fsCache.Close();
+                //var fsCache = new FileStream(fullCacheName, FileMode.Create);
+                //_cache.Serialize(fsCache);
+                //fsCache.Close();
             }
         }  
 

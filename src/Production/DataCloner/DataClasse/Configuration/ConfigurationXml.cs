@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Xml.Serialization;
+using System.Xml;
 
 namespace DataCloner.DataClasse.Configuration
 {
@@ -12,20 +13,14 @@ namespace DataCloner.DataClasse.Configuration
         public const string ConfigName = "dc";
         public const string Extension = ".config";
 
-        [XmlArrayItem("add")]
+        [XmlArrayItem("add")]        
         public List<ConnectionXml> ConnectionStrings { get; set; }
-        public StaticTableXml StaticTables { get; set; }
-        public DerivativeTableAccessXml DerivativeTableAccess { get; set; }
-        public ForeignKeysXml ForeignKeys { get; set; }
-        public DataBuilderXml DataBuilders { get; set; }
+        public TableModifiersXml TableModifiers { get; set; }
 
         public ConfigurationXml()
         {
             ConnectionStrings = new List<ConnectionXml>();
-            StaticTables = new StaticTableXml();
-            DerivativeTableAccess = new DerivativeTableAccessXml();
-            ForeignKeys = new ForeignKeysXml();
-            DataBuilders = new DataBuilderXml();
+            TableModifiers = new TableModifiersXml();
         }
 
         public void Save(string path)

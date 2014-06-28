@@ -24,13 +24,13 @@ namespace Class
         {
             //ActivatorTest();
 
-            /*CachedTableTest();
-            GeneralDBTest();
-            ConfigTest();*/
-            CacheTest();
+            //CachedTableObjTest();
+            //GeneralDBTest();
+            ConfigTest();
+            LoadingCacheTest();
             //ExtensionsTest();
 
-            Console.ReadKey();
+            //Console.ReadKey();
             return 0;
         }
 
@@ -155,7 +155,7 @@ namespace Class
             //a.SQLTraveler(null, true, true);
         }
 
-        public static void CachedTableTest()
+        public static void CachedTableObjTest()
         {
             var ct = new CachedTables();
             var table1 = new TableDef();
@@ -239,7 +239,7 @@ namespace Class
                 throw new Exception("");
         }
 
-        public static void CacheTest()
+        public static void LoadingCacheTest()
         {
             string configFileName = "dc.config";
             string cacheFileName = "dc.cache";
@@ -293,107 +293,86 @@ namespace Class
             //ConnectionXML
             //=============
             var cs = new ConnectionXml(1, "DataCloner.DataAccess.QueryProviderMySql", "server=localhost;user id=root; password=cdxsza; database=mysql; pooling=false", 1);
+            var cs2 = new ConnectionXml(2, "DataCloner.DataAccess.QueryProviderMySql", "server=localhost;user id=root; password=cdxsza; database=mysql; pooling=false", 1);
             config.ConnectionStrings.Add(cs);
+            config.ConnectionStrings.Add(cs2);
 
-            //StaticTableXml
-            //==============            
-            var schema1 = new StaticTableXml.SchemaXml { Name = "dbo" };
-            schema1.Tables.Add(new StaticTableXml.TableXml("table1", true));
-            schema1.Tables.Add(new StaticTableXml.TableXml("table2", true));
-
-            var schema2 = new StaticTableXml.SchemaXml { Name = "master" };
-            schema2.Tables.Add(new StaticTableXml.TableXml("person", true));
-            schema2.Tables.Add(new StaticTableXml.TableXml("house", true));
-
-            var listSchema = new List<StaticTableXml.SchemaXml> { schema1, schema2 };
-
-            var database = new StaticTableXml.DatabaseXml(listSchema, "db");
-            var server = new StaticTableXml.ServerXml(new List<StaticTableXml.DatabaseXml> { database }, 1);
-            var server2 = new StaticTableXml.ServerXml(new List<StaticTableXml.DatabaseXml> { database }, 2);
-            var staticTable = new StaticTableXml(new List<StaticTableXml.ServerXml> { server, server2 });
-            config.StaticTables = staticTable;
-
-            //DataBuilderXml 
-            //==============  
-            var col1DB = new DataBuilderXml.ColumnXml("ID", "DataCloner.Builder.Generic", "CreateID", true);
-            var col2DB = new DataBuilderXml.ColumnXml("NAS", "Client.Builder.Builder1", "CreateNAS", true);
-
-            var schemaDB1 = new DataBuilderXml.SchemaXml { Name = "master" };
-            schemaDB1.Tables.Add(new DataBuilderXml.TableXml("person", new List<DataBuilderXml.ColumnXml>() { col1DB, col2DB }));
-
-            var listSchemaDB = new List<DataBuilderXml.SchemaXml> { schemaDB1 };
-
-            var databaseDB = new DataBuilderXml.DatabaseXml(listSchemaDB, "db");
-            var serverDB = new DataBuilderXml.ServerXml(new List<DataBuilderXml.DatabaseXml> { databaseDB }, 1);
-            var dataBuilders = new DataBuilderXml(new List<DataBuilderXml.ServerXml> { serverDB });
-            config.DataBuilders = dataBuilders;
-
-            //DerivativeTableAccessXml
-            //========================
-            var toDTA = new DerivativeTableAccessXml.TableToXml("table1", DerivativeTableAccess.Forced, true, true);
-            var lstToDTA = new List<DerivativeTableAccessXml.TableToXml>() { toDTA };
-            var schemaDerivativeTableAccess = new DerivativeTableAccessXml.SchemaXml { Name = "dbo" };
-            schemaDerivativeTableAccess.Tables.Add(new DerivativeTableAccessXml.TableFromXml("table1", DerivativeTableAccess.Denied, true, true, null));
-            schemaDerivativeTableAccess.Tables.Add(new DerivativeTableAccessXml.TableFromXml("table2", DerivativeTableAccess.Forced, true, false, null));
-            schemaDerivativeTableAccess.Tables.Add(new DerivativeTableAccessXml.TableFromXml("table3", DerivativeTableAccess.NotSet, true, false, lstToDTA));
-
-            var listSchemaDerivativeTableAccess = new List<DerivativeTableAccessXml.SchemaXml>
+            var dataColumnBuilder1 = new TableModifiersXml.DataColumnBuilderXml()
             {
-                schemaDerivativeTableAccess
+                BuilderName = "Client.Builder.CreatePK",
+                Name = "col1"
             };
 
-            var databaseDerivativeTableAccess = new DerivativeTableAccessXml.DatabaseXml(listSchemaDerivativeTableAccess, "db");
-            var serverDerivativeTableAccess = new DerivativeTableAccessXml.ServerXml(new List<DerivativeTableAccessXml.DatabaseXml> { databaseDerivativeTableAccess }, 1);
-            var derivativeTableAccess = new DerivativeTableAccessXml(new List<DerivativeTableAccessXml.ServerXml> { serverDerivativeTableAccess });
-            config.DerivativeTableAccess = derivativeTableAccess;
+            var dataColumnBuilder2 = new TableModifiersXml.DataColumnBuilderXml()
+            {
+                BuilderName = "Client.Builder.CreateNAS",
+                Name = "col4"
+            };
 
-            //ForeignKeysXml
-            //==============
-            var serverfk1 = new ForeignKeysXml.ServerXml();
-            var dbfk1 = new ForeignKeysXml.DatabaseXml();
-            var schemafk1 = new ForeignKeysXml.SchemaXml();
-            var tablefk1 = new ForeignKeysXml.TableXml();
-            var addForeignKeyXmLfk1 = new ForeignKeysXml.AddForeignKeyXml();
-            var removeForeignKeyXmLfk1 = new ForeignKeysXml.RemoveForeignKeyXml();
-            var removeForeignKeyXmLfk2 = new ForeignKeysXml.RemoveForeignKeyXml();
-            var collumnNameXmLfk1 = new ForeignKeysXml.CollumnNameXml();
-            var collumnXmLfk1 = new ForeignKeysXml.CollumnXml();
-            var collumnXmLfk2 = new ForeignKeysXml.CollumnXml();
+            var derivativeTable1 = new TableModifiersXml.DerivativeSubTableXml()
+            {
+                ServerId = 1,
+                Database = "db",
+                Schema = "dbo",
+                Table = "table2",
+                Access = DerivativeTableAccess.Denied
+            };
 
-            collumnXmLfk1.ColNameDest = "col1";
-            collumnXmLfk1.Name = "col1";
+            var fkAdd1 = new TableModifiersXml.ForeignKeyAddXml()
+            {
+                ServerId = 1,
+                Database = "db",
+                Schema = "dbo",
+                Table = "table55",
+                Columns = new List<TableModifiersXml.ForeignKeyColumnXml>()
+                { 
+                    new TableModifiersXml.ForeignKeyColumnXml()
+                    {
+                        NameFrom = "col1", 
+                        NameTo = "col1"
+                    },
+                    new TableModifiersXml.ForeignKeyColumnXml()
+                    {
+                        NameFrom = "col2", 
+                        NameTo = "col2"
+                    }
+                }
+            };
 
-            collumnXmLfk2.ColNameDest = "col2";
-            collumnXmLfk2.Name = "col2";
+            var fkRemove = new TableModifiersXml.ForeignKeyRemoveXml()
+            {
+                Name = "col3"
+            };
 
-            collumnNameXmLfk1.Name = "col3";
+            var table1 = new TableModifiersXml.TableModifierXml();
+            table1.Name = "table1";
+            table1.IsStatic = false;
+            table1.DataBuilders.Add(dataColumnBuilder1);
+            table1.DerativeTables.GloabalAccess = DerivativeTableAccess.Forced;
+            table1.DerativeTables.Cascade = true;
+            table1.DerativeTables.DerativeSubTables.Add(derivativeTable1);
+            table1.ForeignKeys.ForeignKeyAdd.Add(fkAdd1);
+            table1.ForeignKeys.ForeignKeyRemove.Add(fkRemove);
 
-            addForeignKeyXmLfk1.ServerIdDest = 1;
-            addForeignKeyXmLfk1.DatabaseDest = "db1";
-            addForeignKeyXmLfk1.SchemaDest = "dbo";
-            addForeignKeyXmLfk1.TableDest = "table1";
-            addForeignKeyXmLfk1.Collumns.Add(collumnXmLfk1);
-            addForeignKeyXmLfk1.Collumns.Add(collumnXmLfk2);
+            var schema1 = new TableModifiersXml.SchemaXml()
+            {
+                Name = "dbo",
+                Tables = new List<TableModifiersXml.TableModifierXml>() { table1 }
+            };
 
-            removeForeignKeyXmLfk1.Name = "fk1";
+            var database1 = new TableModifiersXml.DatabaseXml()
+            {
+                Name = "db",
+                Schemas = new List<TableModifiersXml.SchemaXml>() { schema1 }
+            };
 
-            removeForeignKeyXmLfk2.Collumns.Add(collumnNameXmLfk1);
+            var server1 = new TableModifiersXml.ServerXml()
+            {
+                Id = 1,
+                Databases = new List<TableModifiersXml.DatabaseXml>() { database1 }
+            };
 
-            tablefk1.Name = "table1";
-            tablefk1.AddForeignKeys.Add(addForeignKeyXmLfk1);
-            tablefk1.RemoveForeignKeys.Add(removeForeignKeyXmLfk1);
-            tablefk1.RemoveForeignKeys.Add(removeForeignKeyXmLfk2);
-
-            schemafk1.Name = "dbo";
-            schemafk1.Tables.Add(tablefk1);
-
-            dbfk1.Name = "db1";
-            dbfk1.Schemas.Add(schemafk1);
-
-            serverfk1.Id = 1;
-            serverfk1.Databases.Add(dbfk1);
-
-            config.ForeignKeys.Servers.Add(serverfk1);
+            config.TableModifiers.Servers.Add(server1);
 
             //Save / load from file
             //=====================
