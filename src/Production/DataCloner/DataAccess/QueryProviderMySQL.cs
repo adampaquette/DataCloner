@@ -2,6 +2,7 @@
 using System.Text;
 using System.Data;
 using System.Collections.Generic;
+using System.Linq;
 
 using DataCloner.DataClasse.Cache;
 using DataCloner.Interface;
@@ -10,21 +11,23 @@ using IQueryProvider = DataCloner.Interface.IQueryProvider;
 
 namespace DataCloner.DataAccess
 {
-    public class QueryProviderMySql : IQueryProvider
+    internal sealed class QueryProviderMySql : IQueryProvider
     {
-        private MySqlConnection _conn;
+        private readonly MySqlConnection _conn;
+        private readonly Configuration _cache;
         private readonly Int16 _serverIdCtx;
         private readonly bool _isReadOnly;
 
-        public QueryProviderMySql(string connectionString, Int16 serverId)
+        public QueryProviderMySql(string connectionString, Int16 serverId, Configuration cache)
         {
+            _cache = cache;
             _serverIdCtx = serverId;
             _conn = new MySqlConnection(connectionString);
             _conn.Open();
         }
 
-        public QueryProviderMySql(string connectionString, Int16 serverId, bool readOnly)
-            : this(connectionString, serverId)
+        public QueryProviderMySql(string connectionString, Int16 serverId, Configuration cache, bool readOnly)
+            : this(connectionString, serverId, cache)
         {
             _isReadOnly = readOnly;
         }
@@ -61,7 +64,7 @@ namespace DataCloner.DataAccess
             return databases.ToArray();
         }
 
-        public void GetColumns(Action<IDataReader,Int16,string> reader, string database)
+        public void GetColumns(Action<IDataReader, Int16, string> reader, string database)
         {
             var sql =
                 "SELECT " +
@@ -89,7 +92,7 @@ namespace DataCloner.DataAccess
             }
         }
 
-        public void GetForeignKeys(Action<IDataReader,Int16,string> reader, string database)
+        public void GetForeignKeys(Action<IDataReader, Int16, string> reader, string database)
         {
             var dtReturn = new DataTable();
 
@@ -97,7 +100,7 @@ namespace DataCloner.DataAccess
                 "SELECT " +
                     "'' AS 'Schema'," +
                     "TC.TABLE_NAME," +
-                    "TC.CONSTRAINT_NAME," + 
+                    "TC.CONSTRAINT_NAME," +
                     "K.COLUMN_NAME," +
                     "K.REFERENCED_TABLE_SCHEMA," +
                     "K.REFERENCED_TABLE_NAME," +
@@ -106,10 +109,10 @@ namespace DataCloner.DataAccess
                 "INNER JOIN information_schema.KEY_COLUMN_USAGE K ON TC.TABLE_NAME = K.TABLE_NAME " +
                                                                 "AND TC.CONSTRAINT_NAME = K.CONSTRAINT_NAME " +
                 "WHERE TC.TABLE_SCHEMA = @DATABASE " +
-                "AND TC.CONSTRAINT_TYPE = 'FOREIGN KEY' " + 
+                "AND TC.CONSTRAINT_TYPE = 'FOREIGN KEY' " +
                 "ORDER BY " +
                     "TC.TABLE_NAME," +
-	                "TC.CONSTRAINT_NAME";
+                    "TC.CONSTRAINT_NAME";
 
             using (var cmd = _conn.CreateCommand())
             {
@@ -128,34 +131,42 @@ namespace DataCloner.DataAccess
             return (Int64)cmd.ExecuteScalar();
         }
 
-        public DataTable Select(IRowIdentifier ri)
+        public object[][] Select(IRowIdentifier ri)
         {
-            var dtReturn = new DataTable();
-            var cmd = new MySqlCommand();
-            var sql = new StringBuilder("SELECT * FROM ");
-            sql.Append(ri.TableIdentifier.DatabaseName)
-               .Append(".")
-               .Append(ri.TableIdentifier.TableName);
+            List<object[]> rows = new List<object[]>();
+            TableDef table = _cache.CachedTables.GetTable(ri.ServerId, ri.DatabaseName, ri.SchemaName, ri.TableName);
+            StringBuilder query = new StringBuilder(table.SelectCommand);
+            int nbParams = ri.Columns.Count;
 
-            if (ri.Columns.Count > 1)
-                sql.Append(" WHERE 1=1");
-
-            foreach (var kv in ri.Columns)
+            using (var cmd = _conn.CreateCommand())
             {
-                sql.Append(" AND ")
-                   .Append(kv.Key)
-                   .Append(" = @")
-                   .Append(kv.Key);
+                //Build query / params
+                if (nbParams > 0)
+                    query.Append(" WHERE ");
 
-                cmd.Parameters.AddWithValue("@" + kv.Key, kv.Value);
+                for (int i = 0; i < nbParams; i++)
+                {
+                    string paramName = ri.Columns.ElementAt(i).Key;
+                    query.Append(paramName).Append(" = @").Append(paramName);
+                    cmd.Parameters.AddWithValue("@" + paramName, ri.Columns.ElementAt(i).Value);
+                }
+                cmd.CommandText = query.ToString();
+                
+                //Exec query
+                using (var r = cmd.ExecuteReader())
+                {
+                    while (r.Read())
+                    {
+                        object[] values = new object[r.FieldCount];
+                        r.GetValues(values);
+                        rows.Add(values);
+                    }
+                }
             }
 
-            cmd.CommandText = sql.ToString();
-            cmd.Connection = _conn;
-
-            new MySqlDataAdapter(cmd).Fill(dtReturn);
-
-            return dtReturn;
+            if (rows != null)
+                return rows.ToArray();
+            return null;
         }
 
         public void Insert(ITableIdentifier ti, DataRow[] rows)
@@ -200,9 +211,9 @@ namespace DataCloner.DataAccess
         {
             var cmd = new MySqlCommand();
             var sql = new StringBuilder("DELETE FROM ");
-            sql.Append(ri.TableIdentifier.DatabaseName)
+            sql.Append(ri.DatabaseName)
                .Append(".")
-               .Append(ri.TableIdentifier.TableName);
+               .Append(ri.TableName);
 
             if (ri.Columns.Count > 1)
                 sql.Append(" WHERE 1=1");
@@ -230,16 +241,16 @@ namespace DataCloner.DataAccess
 
         public void Dispose(bool disposing)
         {
-            if (disposing)
-            {
-                if (_conn != null)
-                {
-                    if (_conn.State != ConnectionState.Closed)
-                        _conn.Close();
-                    _conn.Dispose();
-                    _conn = null;
-                }
-            }
+            //if (disposing)
+            //{
+            //    if (_conn != null)
+            //    {
+            //        if (_conn.State != ConnectionState.Closed)
+            //            _conn.Close();
+            //        _conn.Dispose();
+            //        _conn = null;
+            //    }
+            //}
         }
 
         //public bool OpenConnection()

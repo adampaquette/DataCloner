@@ -17,7 +17,7 @@ namespace DataCloner.DataAccess
 {
     internal class QueryDispatcher : IQueryDispatcher
     {
-        private Configuration _cache;
+        public Configuration Cache {get;set;}
         private Dictionary<Int16, IQueryProvider> _providers;
 
         public QueryDispatcher()
@@ -30,7 +30,7 @@ namespace DataCloner.DataAccess
             string fullConfigName = cacheName + ConfigurationXml.Extension;
             bool cacheIsGood = false;
 
-            _cache = new Configuration();
+            Cache = new Configuration();
 
             if (!File.Exists(fullConfigName))
                 throw new FileNotFoundException("The configuration file doesn't exist!");
@@ -51,13 +51,13 @@ namespace DataCloner.DataAccess
                     fsCache = new FileStream(fullCacheName, FileMode.Open);
                     brCache = new BinaryReader(fsCache);
                     
-                    _cache.ConfigFileHash = brCache.ReadString();
-                    cacheIsGood = _cache.ConfigFileHash == hashConfigFile;
+                    Cache.ConfigFileHash = brCache.ReadString();
+                    cacheIsGood = Cache.ConfigFileHash == hashConfigFile;
 
                     if (cacheIsGood)
                     {
-                        Configuration.DeserializeBody(brCache, _cache); //Load cache            
-                        InitProviders(_cache.ConnectionStrings);
+                        Configuration.DeserializeBody(brCache, Cache); //Load cache            
+                        InitProviders(Cache.ConnectionStrings);
                         return;
                     }
                 }
@@ -71,13 +71,13 @@ namespace DataCloner.DataAccess
             if (!cacheIsGood)
             {
                 var config = ConfigurationXml.Load(fullConfigName);
-                _cache.ConfigFileHash = hashConfigFile;
+                Cache.ConfigFileHash = hashConfigFile;
 
                 //Copy connection strings
                 foreach (var cs in config.ConnectionStrings)
-                    _cache.ConnectionStrings.Add(new Connection(cs.Id, cs.ProviderName, cs.ConnectionString, cs.SameConfigAsId));
+                    Cache.ConnectionStrings.Add(new Connection(cs.Id, cs.ProviderName, cs.ConnectionString, cs.SameConfigAsId));
 
-                InitProviders(_cache.ConnectionStrings);
+                InitProviders(Cache.ConnectionStrings);
 
                 //Start fetching each server
                 foreach (var cs in config.ConnectionStrings)
@@ -88,11 +88,11 @@ namespace DataCloner.DataAccess
 
                     for (int i = 0; i < nbDatabases; i++)
                     {
-                        provider.GetColumns(_cache.CachedTables.LoadColumns, databases[i]);
-                        provider.GetForeignKeys(_cache.CachedTables.LoadForeignKeys, databases[i]);
+                        provider.GetColumns(Cache.CachedTables.LoadColumns, databases[i]);
+                        provider.GetForeignKeys(Cache.CachedTables.LoadForeignKeys, databases[i]);
                     }
                 }                
-                _cache.CachedTables.GenerateCommands();
+                Cache.CachedTables.GenerateCommands();
 
                 //Save cache
                 //var fsCache = new FileStream(fullCacheName, FileMode.Create);
@@ -112,14 +112,14 @@ namespace DataCloner.DataAccess
             foreach (Connection conn in conns)
             {
                 Type t = Type.GetType(conn.ProviderName);
-                var provider = FastActivator<string, Int16>.CreateInstance(t, conn.ConnectionString, conn.Id) as IQueryProvider;
+                var provider = FastActivator<string, Int16, Configuration>.CreateInstance(t, conn.ConnectionString, conn.Id, Cache) as IQueryProvider;
                 _providers.Add(conn.Id, provider);
             }
         }
 
-        public DataTable Select(IRowIdentifier ri)
+        public object[][] Select(IRowIdentifier ri)
         {
-            return _providers[ri.TableIdentifier.ServerId].Select(ri);
+            return _providers[ri.ServerId].Select(ri);
         }
 
         public void Insert(ITableIdentifier ti, DataRow[] rows)
@@ -129,12 +129,12 @@ namespace DataCloner.DataAccess
 
         public void Update(IRowIdentifier ri, DataRow[] rows)
         {
-            _providers[ri.TableIdentifier.ServerId].Update(ri, rows);
+            _providers[ri.ServerId].Update(ri, rows);
         }
 
         public void Delete(IRowIdentifier ri)
         {
-            _providers[ri.TableIdentifier.ServerId].Delete(ri);
+            _providers[ri.ServerId].Delete(ri);
         }
 
         public void Dispose()

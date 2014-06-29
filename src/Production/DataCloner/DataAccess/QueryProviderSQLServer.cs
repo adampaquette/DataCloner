@@ -54,7 +54,7 @@ namespace DataCloner.DataAccess
             throw new NotImplementedException();
         }
 
-        public DataTable Select(IRowIdentifier ri)
+        public object[][] Select(IRowIdentifier ri)
         {
             throw new NotImplementedException();
         }

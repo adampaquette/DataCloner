@@ -22,16 +22,30 @@ namespace Class
     {
         static int Main(string[] args)
         {
+            //ConfigTest();
+            DataclonerTest1();
             //ActivatorTest();
-
             //CachedTableObjTest();
             //GeneralDBTest();
-            ConfigTest();
-            LoadingCacheTest();
+            //LoadingCacheTest();
             //ExtensionsTest();
-
             //Console.ReadKey();
             return 0;
+        }
+
+        public static void DataclonerTest1()
+        {
+            var dc = new DataCloner.DataCloner();
+            dc.Initialize();
+
+            RowIdentifier source = new RowIdentifier();
+            source.ServerId = 1;
+            source.DatabaseName = "sakila";
+            source.SchemaName = "";
+            source.TableName = "customer";
+            source.Columns.Add("customer_id",1);
+
+            dc.SqlTraveler(source, true, false);
         }
 
         public static void ActivatorTest()

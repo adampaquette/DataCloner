@@ -36,6 +36,15 @@ namespace DataCloner.DataClasse.Cache
         //    return false;
         //}
 
+        public TableDef GetTable(Int16 server, string database, string schema, string table)
+        {
+            if (_dic.ContainsKey(server) &&
+                _dic[server].ContainsKey(database) &&
+                _dic[server][database].ContainsKey(schema))
+                return _dic[server][database][schema].Where(t => t.Name == table).FirstOrDefault();
+            return null;
+        }
+
         public void Add(Int16 server, string database, string schema, TableDef table)
         {
             database = database.ToLower();
