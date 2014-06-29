@@ -95,9 +95,9 @@ namespace DataCloner.DataAccess
                 Cache.CachedTables.GenerateCommands();
 
                 //Save cache
-                //var fsCache = new FileStream(fullCacheName, FileMode.Create);
-                //_cache.Serialize(fsCache);
-                //fsCache.Close();
+                var fsCache = new FileStream(fullCacheName, FileMode.Create);
+                Cache.Serialize(fsCache);
+                fsCache.Close();
             }
         }  
 

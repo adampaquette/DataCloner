@@ -79,6 +79,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataClasse\KeyRelationship.cs" />
     <Compile Include="DataClasse\Cache\CachedTables.cs" />
     <Compile Include="DataClasse\Cache\TableDef.cs" />
     <Compile Include="Enum\Enums.cs" />
