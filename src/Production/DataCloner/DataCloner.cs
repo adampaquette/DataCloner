@@ -7,6 +7,7 @@ using DataCloner.Interface;
 using System;
 using System.IO;
 using System.Text;
+using System.Collections.Generic;
 using System.Security.Cryptography;
 
 using Murmur;
@@ -17,6 +18,8 @@ namespace DataCloner
     {        
         private QueryDispatcher _dispatcher;
         private CachedTables _cacheTable;
+
+        public Dictionary<Tuple<Int16, String>, Tuple<Int16, String>> ServerMap {get;set;}
 
         public DataCloner()
         {

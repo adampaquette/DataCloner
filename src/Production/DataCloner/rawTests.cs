@@ -33,6 +33,19 @@ namespace Class
             return 0;
         }
 
+        public static void KeyRelationshipTest()
+        {
+            KeyRelationship kr = new KeyRelationship();
+            object[] destKey = new object[] { 1, 2 };
+
+            kr.SetKey(1, "db", "dbo", "table1", new object[] { 1, 1 }, destKey);
+
+            object[] key = kr.GetKey(1, "db", "dbo", "table1", new object[] { 1, 1 });
+
+            if (key != destKey)
+                throw new Exception("");
+        }
+
         public static void DataclonerTest1()
         {
             var dc = new DataCloner.DataCloner();
