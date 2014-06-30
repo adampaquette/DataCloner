@@ -10,54 +10,41 @@ using DataCloner.Enum;
 
 namespace DataCloner.DataClasse.Cache
 {
-    /// <summary>
-    /// Contient les tables statiques de la base de données
-    /// </summary>
-    /// <remarks>Optimisé pour la lecture et non pour l'écriture!</remarks>
     internal sealed class KeyRelationship
     {
-        private Dictionary<Int16, Dictionary<string, Dictionary<string, Dictionary<string, object[]>>>> _dic = new Dictionary<Int16, Dictionary<string, Dictionary<string, Dictionary<string, object[]>>>>();
+        private Dictionary<Int16, Dictionary<string, Dictionary<string, Dictionary<string, Dictionary<object[], object[]>>>>> _dic = new Dictionary<Int16, Dictionary<string, Dictionary<string, Dictionary<string, Dictionary<object[], object[]>>>>>();
 
-        public bool Contains(Int32 server, string database, string schema, string tableFrom, DerivativeTable tableTo)
+        public object[] GetKey(Int16 server, string database, string schema, string table, object[] keyValuesSource)
         {
-            database = database.ToLower();
-            schema = schema.ToLower();
-            tableFrom = tableFrom.ToLower();
-            tableTo.Database = tableTo.Database.ToLower();
-            tableTo.Schema = tableTo.Schema.ToLower();
-            tableTo.Table = tableTo.Table.ToLower();
-
             if (_dic.ContainsKey(server) &&
                 _dic[server].ContainsKey(database) &&
                 _dic[server][database].ContainsKey(schema) &&
-                _dic[server][database][schema].ContainsKey(tableFrom) &&
-                _dic[server][database][schema][tableFrom].Contains(tableTo))
-                return true;
-            return false;
-        }
-
-        public TableDef GetTable(Int16 server, string database, string schema, string table)
-        {
-            if (_dic.ContainsKey(server) &&
-                _dic[server].ContainsKey(database) &&
-                _dic[server][database].ContainsKey(schema))
-                return _dic[server][database][schema].Where(t => t.Name == table).FirstOrDefault();
+                _dic[server][database][schema].ContainsKey(table) &&
+                _dic[server][database][schema][table].ContainsKey(keyValuesSource))
+                return _dic[server][database][schema][table][keyValuesSource];
             return null;
         }
 
-        public void Add(Int16 server, string database, string schema, TableDef table)
+        public void Add(Int16 server, string database, string schema, string table, object[] keyValuesSource, object[] keyValuesDestination)
         {
             database = database.ToLower();
             schema = schema.ToLower();
 
+            //var dict = new Dictionary<byte[], string>(StructuralComparisons.StructuralEqualityComparer);
+
             if (!_dic.ContainsKey(server))
-                _dic.Add(server, new Dictionary<string, Dictionary<string, TableDef[]>>());
+                _dic.Add(server, new Dictionary<string, Dictionary<string, Dictionary<string, Dictionary<object[], object[]>>>>());
 
             if (!_dic[server].ContainsKey(database))
-                _dic[server].Add(database, new Dictionary<string, TableDef[]>());
+                _dic[server].Add(database, new Dictionary<string, Dictionary<string, Dictionary<object[], object[]>>>());
 
             if (!_dic[server][database].ContainsKey(schema))
-                _dic[server][database].Add(schema, new TableDef[] { table });
+                _dic[server][database].Add(schema, new Dictionary<string, Dictionary<object[], object[]>>());
+
+            if (!_dic[server][database][schema].ContainsKey(table))
+                _dic[server][database][schema].Add(table, new Dictionary<object[], object[]>());
+            
+            
             else
             {
                 if (!_dic[server][database][schema].Contains(table))
