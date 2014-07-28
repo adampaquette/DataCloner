@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -22,6 +23,7 @@ namespace Class
     {
         static int Main(string[] args)
         {
+            //KeyRelationshipTest();
             //ConfigTest();
             DataclonerTest1();
             //ActivatorTest();
@@ -36,27 +38,33 @@ namespace Class
         public static void KeyRelationshipTest()
         {
             KeyRelationship kr = new KeyRelationship();
-            object[] destKey = new object[] { 1, 2 };
-
-            kr.SetKey(1, "db", "dbo", "table1", new object[] { 1, 1 }, destKey);
+            kr.SetKey(1, "db", "dbo", "table1", new object[] { 1, 1 }, new object[] { 1, 2 });
+            kr.SetKey(1, "db", "dbo", "table1", new object[] { 1, 2 }, new object[] { 1 });
 
             object[] key = kr.GetKey(1, "db", "dbo", "table1", new object[] { 1, 1 });
+            object[] key2 = kr.GetKey(1, "db", "dbo", "table1", new object[] { 1, 2 });
 
-            if (key != destKey)
+            if (!StructuralComparisons.StructuralEqualityComparer.Equals(new object[] { 1, 2 }, key))
+                throw new Exception("");
+            if (!StructuralComparisons.StructuralEqualityComparer.Equals(new object[] { 1 }, key2))
                 throw new Exception("");
         }
 
         public static void DataclonerTest1()
         {
             var dc = new DataCloner.DataCloner();
-            dc.Initialize();
+            
+            //Map serveur source / destination
+            dc.ServerMap.Add(new Tuple<short, string>(1, "sakila"), new Tuple<short, string>(1, "sakila"));
+            
+            dc.Initialize();          
 
             RowIdentifier source = new RowIdentifier();
             source.ServerId = 1;
-            source.DatabaseName = "sakila";
-            source.SchemaName = "";
-            source.TableName = "customer";
-            source.Columns.Add("customer_id",1);
+            source.Database = "sakila";
+            source.Schema = "";
+            source.Table = "customer";
+            source.Columns.Add("active", 0);
 
             dc.SqlTraveler(source, true, false);
         }

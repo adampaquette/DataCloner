@@ -65,5 +65,11 @@ namespace DataCloner.Framework
             xs.Serialize(sw, obj, ns);
             return sw.ToString();
         }
+
+        public static int IndexOf<T>(this IEnumerable<T> list, Predicate<T> condition)
+        {
+            int i = -1;
+            return list.Any(x => { i++; return condition(x); }) ? i : -1;
+        }
     }
 }

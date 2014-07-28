@@ -5,7 +5,7 @@ namespace DataCloner.DataClasse
 {
     public class ColumnIdentifier : TableIdentifier, IColumnIdentifier
     {
-        public string ColumnName { get; set; }
+        public string Column { get; set; }
     }
 
     public class EqualityComparerIColumnIdentifier : IEqualityComparer<IColumnIdentifier>
@@ -13,15 +13,15 @@ namespace DataCloner.DataClasse
         bool IEqualityComparer<IColumnIdentifier>.Equals(IColumnIdentifier x, IColumnIdentifier y)
         {
             return x.ServerId.Equals(y.ServerId) &&
-                   x.DatabaseName.Equals(y.DatabaseName) &&
-                   x.SchemaName.Equals(y.SchemaName) &&
-                   x.TableName.Equals(y.TableName) &&
-                   x.ColumnName.Equals(y.ColumnName);
+                   x.Database.Equals(y.Database) &&
+                   x.Schema.Equals(y.Schema) &&
+                   x.Table.Equals(y.Table) &&
+                   x.Column.Equals(y.Column);
         }
 
         int IEqualityComparer<IColumnIdentifier>.GetHashCode(IColumnIdentifier obj)
         {
-            return (obj.ServerId + obj.DatabaseName + obj.SchemaName + obj.TableName + obj.ColumnName).GetHashCode();
+            return (obj.ServerId + obj.Database + obj.Schema + obj.Table + obj.Column).GetHashCode();
         }
     }
 }

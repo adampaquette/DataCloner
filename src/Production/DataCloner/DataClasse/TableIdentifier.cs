@@ -7,14 +7,14 @@ namespace DataCloner.DataClasse
     public class TableIdentifier : ITableIdentifier
     {
         public Int16 ServerId { get; set; }
-        public string DatabaseName { get; set; }
-        public string SchemaName { get; set; }
-        public string TableName { get; set; }
+        public string Database { get; set; }
+        public string Schema { get; set; }
+        public string Table { get; set; }
 
         public override string ToString()
         {
             //TODO : EST UTILISÉ PAR GETHASHCODE??
-            return ServerId + "." + DatabaseName + "." + SchemaName + "." + TableName;
+            return ServerId + "." + Database + "." + Schema + "." + Table;
         }
     }
 
@@ -23,14 +23,14 @@ namespace DataCloner.DataClasse
         bool IEqualityComparer<ITableIdentifier>.Equals(ITableIdentifier x, ITableIdentifier y)
         {
             return x.ServerId.Equals(y.ServerId) &&
-                   x.DatabaseName.Equals(y.DatabaseName) &&
-                   x.SchemaName.Equals(y.SchemaName) &&
-                   x.TableName.Equals(y.TableName);
+                   x.Database.Equals(y.Database) &&
+                   x.Schema.Equals(y.Schema) &&
+                   x.Table.Equals(y.Table);
         }
 
         int IEqualityComparer<ITableIdentifier>.GetHashCode(ITableIdentifier obj)
         {
-            return (obj.ServerId.ToString() + obj.DatabaseName + obj.SchemaName + obj.TableName).GetHashCode();
+            return (obj.ServerId.ToString() + obj.Database + obj.Schema + obj.Table).GetHashCode();
         }
     }
 }

@@ -134,7 +134,7 @@ namespace DataCloner.DataAccess
         public object[][] Select(IRowIdentifier ri)
         {
             List<object[]> rows = new List<object[]>();
-            TableDef table = _cache.CachedTables.GetTable(ri.ServerId, ri.DatabaseName, ri.SchemaName, ri.TableName);
+            TableDef table = _cache.CachedTables.GetTable(ri.ServerId, ri.Database, ri.Schema, ri.Table);
             StringBuilder query = new StringBuilder(table.SelectCommand);
             int nbParams = ri.Columns.Count;
 
@@ -173,9 +173,9 @@ namespace DataCloner.DataAccess
         {
             var cmd = new MySqlCommand();
             var sql = new StringBuilder("INSERT INTO  ");
-            sql.Append(ti.DatabaseName)
+            sql.Append(ti.Database)
                .Append(".")
-               .Append(ti.TableName)
+               .Append(ti.Table)
                .Append(" VALUES(");
 
 
@@ -211,9 +211,9 @@ namespace DataCloner.DataAccess
         {
             var cmd = new MySqlCommand();
             var sql = new StringBuilder("DELETE FROM ");
-            sql.Append(ri.DatabaseName)
+            sql.Append(ri.Database)
                .Append(".")
-               .Append(ri.TableName);
+               .Append(ri.Table);
 
             if (ri.Columns.Count > 1)
                 sql.Append(" WHERE 1=1");

@@ -84,6 +84,7 @@
     <Compile Include="DataClasse\Cache\TableDef.cs" />
     <Compile Include="Enum\Enums.cs" />
     <Compile Include="Framework\FastActivator.cs" />
+    <Compile Include="Framework\Helpers.cs" />
     <Compile Include="rawTests.cs" />
     <Compile Include="DataAccess\QueryProviderMySQL.cs" />
     <Compile Include="DataAccess\QueryProviderSQLServer.cs" />

@@ -16,7 +16,8 @@ namespace DataCloner.DataClasse.Cache
     /// <remarks>Optimisé pour la lecture et non pour l'écriture!</remarks>
     internal sealed class CachedTables
     {
-        private Dictionary<Int16, Dictionary<string, Dictionary<string, TableDef[]>>> _dic = new Dictionary<Int16, Dictionary<string, Dictionary<string, TableDef[]>>>();
+        private Dictionary<Int16, Dictionary<string, Dictionary<string, TableDef[]>>> _dic = 
+            new Dictionary<Int16, Dictionary<string, Dictionary<string, TableDef[]>>>();
 
         //public bool Contains(Int32 server, string database, string schema, string tableFrom, DerivativeTable tableTo)
         //{

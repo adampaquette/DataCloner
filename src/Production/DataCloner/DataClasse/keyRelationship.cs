@@ -11,10 +11,13 @@ using DataCloner.Enum;
 
 namespace DataCloner.DataClasse.Cache
 {
+    /// <summary>
+    /// Server / database / schema / table / primarykey source value = primarykey destination value
+    /// </summary>
     internal sealed class KeyRelationship
     {
-        //var dict = new Dictionary<byte[], string>(StructuralComparisons.StructuralEqualityComparer);
-        private Dictionary<Int16, Dictionary<string, Dictionary<string, Dictionary<string, Dictionary<object[], object[]>>>>> _dic = new Dictionary<Int16, Dictionary<string, Dictionary<string, Dictionary<string, Dictionary<object[], object[]>>>>>();
+        private Dictionary<Int16, Dictionary<string, Dictionary<string, Dictionary<string, Dictionary<object[], object[]>>>>> _dic = 
+            new Dictionary<Int16, Dictionary<string, Dictionary<string, Dictionary<string, Dictionary<object[], object[]>>>>>();
 
         public object[] GetKey(Int16 server, string database, string schema, string table, object[] keyValuesSource)
         {
@@ -39,12 +42,12 @@ namespace DataCloner.DataClasse.Cache
                 _dic[server][database].Add(schema, new Dictionary<string, Dictionary<object[], object[]>>());
 
             if (!_dic[server][database][schema].ContainsKey(table))
-                _dic[server][database][schema].Add(table, new Dictionary<object[], object[]>(StructuralComparisons.StructuralEqualityComparer));
+                _dic[server][database][schema].Add(table, new Dictionary<object[], object[]>(StructuralEqualityComparer<object[]>.Default));
 
-            if (!_dic[server][database][schema][table].ContainsKey(keyValuesSource))
+            if (_dic[server][database][schema][table].ContainsKey(keyValuesSource))
                 throw new ArgumentException("Key already exist!");
             else
-                _dic[server][database][schema][table][keyValuesSource] = keyValuesDestination;
+                _dic[server][database][schema][table][keyValuesSource] = keyValuesDestination;           
         }
 
         public object[] this[Int16 server, string database, string schema, string table, object[] keyValuesSource, object[] keyValuesDestination]
@@ -71,13 +74,13 @@ namespace DataCloner.DataClasse.Cache
                     _dic[server][database].Add(schema, new Dictionary<string, Dictionary<object[], object[]>>());
 
                 if (!_dic[server][database][schema].ContainsKey(table))
-                    _dic[server][database][schema].Add(table, new Dictionary<object[], object[]>(StructuralComparisons.StructuralEqualityComparer));
+                    _dic[server][database][schema].Add(table, new Dictionary<object[], object[]>(StructuralEqualityComparer<object[]>.Default));
 
-                if (!_dic[server][database][schema][table].ContainsKey(keyValuesSource))
+                if (_dic[server][database][schema][table].ContainsKey(keyValuesSource))
                     throw new ArgumentException("Key already exist!");
                 else
                     _dic[server][database][schema][table][keyValuesSource] = keyValuesDestination;
             }
         }      
-    }
+    }    
 }

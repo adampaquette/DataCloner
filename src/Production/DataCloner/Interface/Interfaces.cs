@@ -7,22 +7,22 @@ namespace DataCloner.Interface
     public interface ITableIdentifier
     {
         Int16 ServerId { get; set; }
-        string DatabaseName { get; set; }
-        string SchemaName { get; set; }
-        string TableName { get; set; }
+        string Database { get; set; }
+        string Schema { get; set; }
+        string Table { get; set; }
     }
 
     public interface IColumnIdentifier : ITableIdentifier
     {
-        string ColumnName { get; set; }
+        string Column { get; set; }
     }
 
     public interface IRowIdentifier
     {
         Int16 ServerId { get; set; }
-        string DatabaseName { get; set; }
-        string SchemaName { get; set; }
-        string TableName { get; set; }
+        string Database { get; set; }
+        string Schema { get; set; }
+        string Table { get; set; }
         IDictionary<string, object> Columns { get; set; }
     }
 

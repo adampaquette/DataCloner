@@ -22,9 +22,56 @@ namespace DataCloner.DataClasse.Cache
 
         public TableDef()
         {
-            DerivativeTables = new DerivativeTable[]{};
-            ForeignKeys = new ForeignKey[]{};
-            SchemaColumns = new SchemaColumn[]{};
+            DerivativeTables = new DerivativeTable[] { };
+            ForeignKeys = new ForeignKey[] { };
+            SchemaColumns = new SchemaColumn[] { };
+        }
+
+        /// <summary>
+        /// Récupère la clef primaire d'une ligne provenant de la base de données.
+        /// </summary>
+        /// <param name="row"></param>
+        /// <returns></returns>
+        /// <remarks>TODO : Optimiser avec un pointeur ou une référence pour éviter de copier l'objet row en mémoire.</remarks>
+        public object[] BuildPrimaryKey(object[] row)
+        {
+            var pk = new List<object>();
+            for (int i = 0; i < SchemaColumns.Length; i++)
+            {
+                if (SchemaColumns[i].IsPrimary)
+                    pk.Add(row[i]);
+            }
+            return pk.ToArray();
+        }
+
+        /// <summary>
+        /// Récupère la clef primaire d'une ligne provenant de la base de données.
+        /// </summary>
+        /// <param name="row"></param>
+        /// <returns></returns>
+        /// <remarks>TODO : Optimiser avec un pointeur ou une référence pour éviter de copier l'objet row en mémoire.</remarks>
+        public Dictionary<string, object> BuildPrimaryKeyForReturn(object[] row)
+        {
+            var pk = new Dictionary<string, object>();
+            for (int i = 0; i < SchemaColumns.Length; i++)
+            {
+                if (SchemaColumns[i].IsPrimary)
+                    pk.Add(SchemaColumns[i].Name, row[i]);
+            }
+            return pk;
+        }
+
+        public Dictionary<string, object> BuildPKFromKeyRelationships(object[] key)
+        {
+            var pkColumns = SchemaColumns.Where(c => c.IsPrimary).ToArray();
+
+            if (key.Length != pkColumns.Length)
+                throw new Exception("The key doesn't correspond to table defenition.");
+
+            var pk = new Dictionary<string, object>();
+            for (int i = 0; i < pkColumns.Count(); i++)
+                pk.Add(pkColumns[i].Name, key[i]);
+            return pk;
         }
 
         public override bool Equals(object obj)
@@ -53,7 +100,7 @@ namespace DataCloner.DataClasse.Cache
         public void Serialize(BinaryWriter stream)
         {
             Int32 nbRows = DerivativeTables.Length;
-            stream.Write(Name == null ? "": Name);
+            stream.Write(Name == null ? "" : Name);
             stream.Write(IsStatic);
             stream.Write(SelectCommand == null ? "" : SelectCommand);
             stream.Write(InsertCommand == null ? "" : InsertCommand);
@@ -107,7 +154,7 @@ namespace DataCloner.DataClasse.Cache
             List<DerivativeTable> dtList = new List<DerivativeTable>();
             List<ForeignKey> fkList = new List<ForeignKey>();
             List<ForeignKeyColumn> fkColList = new List<ForeignKeyColumn>();
-            List<SchemaColumn> schemaColList = new List<SchemaColumn>();            
+            List<SchemaColumn> schemaColList = new List<SchemaColumn>();
 
             t.Name = stream.ReadString();
             t.IsStatic = stream.ReadBoolean();
@@ -126,7 +173,7 @@ namespace DataCloner.DataClasse.Cache
                     Access = (DerivativeTableAccess)stream.ReadInt32(),
                     Cascade = stream.ReadBoolean()
                 });
-            }            
+            }
 
             nbRows = stream.ReadInt32();
             for (int i = 0; i < nbRows; i++)
