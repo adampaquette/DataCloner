@@ -122,9 +122,9 @@ namespace DataCloner.DataAccess
             return _providers[ri.ServerId].Select(ri);
         }
 
-        public void Insert(ITableIdentifier ti, DataRow[] rows)
+        public void Insert(ITableIdentifier ti, object[] row)
         {
-            _providers[ti.ServerId].Insert(ti, rows);
+            _providers[ti.ServerId].Insert(ti, row);
         }
 
         public void Update(IRowIdentifier ri, DataRow[] rows)

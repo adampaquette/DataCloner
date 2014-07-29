@@ -27,6 +27,7 @@ namespace DataCloner
 
         public DataCloner()
         {
+            ServerMap = new Dictionary<Tuple<short, string>, Tuple<short, string>>();
         }
 
         public void Initialize(string cacheName = Configuration.CacheName)
@@ -46,10 +47,18 @@ namespace DataCloner
             int nbRows = sourceRows.Length;
             var table = _cacheTable.GetTable(riSource.ServerId, riSource.Database, riSource.Schema, riSource.Table);
             var fks = table.ForeignKeys;
+            var serverDestination = ServerMap[new Tuple<short,string>(riSource.ServerId, riSource.Database)];
             var riReturn = new RowIdentifier()
             {
                 ServerId = riSource.ServerId,
                 Database = riSource.Database,
+                Schema = riSource.Schema,
+                Table = riSource.Table
+            };
+            var tiDestination = new TableIdentifier()
+            {
+                ServerId = serverDestination.Item1,
+                Database = serverDestination.Item2,
                 Schema = riSource.Schema,
                 Table = riSource.Table
             };
@@ -139,7 +148,7 @@ namespace DataCloner
                                         int posTblSourceFK = table.SchemaColumns.IndexOf(c => c.Name == fk.Columns[j].NameFrom);
                                         int posTblDestinationPK = fkTable.SchemaColumns.IndexOf(c => c.Name == fk.Columns[j].NameTo);
 
-                                        currentRow[posTblSourceFK] = fkRow[0][posTblDestinationPK];
+                                        destinationRow[posTblSourceFK] = fkRow[0][posTblDestinationPK];
                                     }
                                 }
                             }
@@ -161,15 +170,14 @@ namespace DataCloner
                                     int posTblSourceFK = table.SchemaColumns.IndexOf(c => c.Name == fk.Columns[j].NameFrom);
                                     int posTblDestinationPK = fkTable.SchemaColumns.IndexOf(c => c.Name == fk.Columns[j].NameTo);
 
-                                    currentRow[posTblSourceFK] = newFKRow[0][posTblDestinationPK];
+                                    destinationRow[posTblSourceFK] = newFKRow[0][posTblDestinationPK];
                                 }
                             }
-
                         }
                     }
 
                     //La ligne des destination est prète à l'enregistrement
-                    _dispatcher.Insert()
+                    _dispatcher.Insert(tiDestination, destinationRow);
 
                 }
             }

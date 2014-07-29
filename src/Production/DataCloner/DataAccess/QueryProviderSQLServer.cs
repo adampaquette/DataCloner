@@ -59,7 +59,7 @@ namespace DataCloner.DataAccess
             throw new NotImplementedException();
         }
 
-        public void Insert(ITableIdentifier ti, DataRow[] rows)
+        public void Insert(ITableIdentifier ti, object[] row)
         {
             throw new NotImplementedException();
         }

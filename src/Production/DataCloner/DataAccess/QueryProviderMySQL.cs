@@ -134,8 +134,8 @@ namespace DataCloner.DataAccess
         public object[][] Select(IRowIdentifier ri)
         {
             List<object[]> rows = new List<object[]>();
-            TableDef table = _cache.CachedTables.GetTable(ri.ServerId, ri.Database, ri.Schema, ri.Table);
-            StringBuilder query = new StringBuilder(table.SelectCommand);
+            TableDef schema = _cache.CachedTables.GetTable(ri.ServerId, ri.Database, ri.Schema, ri.Table);
+            StringBuilder query = new StringBuilder(schema.SelectCommand);
             int nbParams = ri.Columns.Count;
 
             using (var cmd = _conn.CreateCommand())
@@ -169,37 +169,25 @@ namespace DataCloner.DataAccess
             return null;
         }
 
-        public void Insert(ITableIdentifier ti, DataRow[] rows)
+        public void Insert(ITableIdentifier ti, object[] row)
         {
-            var cmd = new MySqlCommand();
-            var sql = new StringBuilder("INSERT INTO  ");
-            sql.Append(ti.Database)
-               .Append(".")
-               .Append(ti.Table)
-               .Append(" VALUES(");
+            TableDef schema = _cache.CachedTables.GetTable(ti.ServerId, ti.Database, ti.Schema, ti.Table);
+            if (schema.SchemaColumns.Count() != row.Length) 
+                throw new Exception("The row doesn't correspond to schema!");
 
+            using (var cmd = _conn.CreateCommand())
+            {
+                //Add params
+                for (int i = 0; i < schema.SchemaColumns.Count(); i++)
+                {
+                    if (schema.SchemaColumns[i].IsAutoIncrement) continue;
+                    cmd.Parameters.AddWithValue("@" + schema.SchemaColumns[i].Name, row[i]);
+                }
+                cmd.CommandText = schema.InsertCommand;
 
-
-            /*TODO : RÉCUPÉRER LE SHÉMA DE LA TABLE
-             * Pour chaque colonne qui n'est pas une PK autoincrement, 
-             * construire la requête
-
-            */
-            /*            foreach (var row in rows)
-                        {
-                            sql.Append(" AND ")
-                               .Append(kv.Key)
-                               .Append(" = @")
-                               .Append(kv.Key);
-
-                            cmd.Parameters.AddWithValue("@" + kv.Key, kv.Value);
-                        }
-
-                        cmd.CommandText = sql.ToString();
-                        cmd.Connection = _conn;
-
-                        new MySqlDataAdapter(cmd).*/
-
+                //Exec query
+                var r = cmd.ExecuteNonQuery();
+            }
         }
 
         public void Update(IRowIdentifier ri, DataRow[] rows)
