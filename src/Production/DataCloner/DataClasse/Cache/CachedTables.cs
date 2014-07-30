@@ -291,20 +291,20 @@ namespace DataCloner.DataClasse.Cache
                             int nbCols = table.SchemaColumns.Length;
                             for (int j = 0; j < nbCols; j++)
                             {
+                                //Select
+                                sbSelect.Append(table.SchemaColumns[j].Name);
+                                if (j < nbCols - 1) sbSelect.Append(",");
+
+                                //Insert
                                 if (!table.SchemaColumns[j].IsAutoIncrement)
                                 {
                                     sbInsert.Append(table.SchemaColumns[j].Name);
-                                    sbSelect.Append(table.SchemaColumns[j].Name);
-                                    if (j < nbCols - 1)
-                                    {
-                                        sbInsert.Append(",");
-                                        sbSelect.Append(",");
-                                    }
+                                    if (j < nbCols - 1) sbInsert.Append(",");
                                 }
                             }
                             sbInsert.Append(") VALUES(");
 
-                            //Valeur des colonnes
+                            //Valeur des colonnes Insert
                             for (int j = 0; j < nbCols; j++)
                             {
                                 if (!table.SchemaColumns[j].IsAutoIncrement)

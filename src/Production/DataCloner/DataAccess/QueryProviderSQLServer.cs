@@ -49,7 +49,7 @@ namespace DataCloner.DataAccess
             throw new NotImplementedException();
         }
 
-        public Int64 GetLastInsertedPk()
+        public object GetLastInsertedPk()
         {
             throw new NotImplementedException();
         }

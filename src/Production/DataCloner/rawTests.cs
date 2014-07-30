@@ -53,19 +53,31 @@ namespace Class
         public static void DataclonerTest1()
         {
             var dc = new DataCloner.DataCloner();
-            
+            RowIdentifier source = new RowIdentifier();
+
             //Map serveur source / destination
             dc.ServerMap.Add(new Tuple<short, string>(1, "sakila"), new Tuple<short, string>(1, "sakila"));
             
             dc.Initialize();          
 
-            RowIdentifier source = new RowIdentifier();
+            //Basic test 1 row
             source.ServerId = 1;
             source.Database = "sakila";
             source.Schema = "";
+            source.Table = "actor";
+            source.Columns.Add("actor_id", 1);
+            dc.SqlTraveler(source, true, false);
+
+            //Medium test 1 rows with dependencies
+            source.Columns.Clear();
+            source.Table = "city";
+            source.Columns.Add("city_id", 9);
+            dc.SqlTraveler(source, true, false);
+
+            //Medium test 15 rows with dependencies
+            source.Columns.Clear();
             source.Table = "customer";
             source.Columns.Add("active", 0);
-
             dc.SqlTraveler(source, true, false);
         }
 

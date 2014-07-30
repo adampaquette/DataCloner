@@ -125,10 +125,10 @@ namespace DataCloner.DataAccess
             }
         }
 
-        public Int64 GetLastInsertedPk()
+        public object GetLastInsertedPk()
         {
             var cmd = new MySqlCommand("SELECT LAST_INSERT_ID();", _conn);
-            return (Int64)cmd.ExecuteScalar();
+            return cmd.ExecuteScalar();
         }
 
         public object[][] Select(IRowIdentifier ri)

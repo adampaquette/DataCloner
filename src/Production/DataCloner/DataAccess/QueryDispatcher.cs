@@ -137,6 +137,11 @@ namespace DataCloner.DataAccess
             _providers[ri.ServerId].Delete(ri);
         }
 
+        public object GetLastInsertedPk(Int16 serverId)
+        {
+            return _providers[serverId].GetLastInsertedPk();
+        }
+
         public void Dispose()
         {
             //TODO : IDISPOSABLE

@@ -50,8 +50,8 @@ namespace DataCloner
             var serverDestination = ServerMap[new Tuple<short,string>(riSource.ServerId, riSource.Database)];
             var riReturn = new RowIdentifier()
             {
-                ServerId = riSource.ServerId,
-                Database = riSource.Database,
+                ServerId = serverDestination.Item1,
+                Database = serverDestination.Item2,
                 Schema = riSource.Schema,
                 Table = riSource.Table
             };
@@ -69,8 +69,9 @@ namespace DataCloner
             //For each row
             for (int i = 0; i < nbRows; i++)
             {
+                var autoIncrementPK = table.SchemaColumns.Where(c => c.IsAutoIncrement).Any(); 
                 var currentRow = sourceRows[i];
-                object[] sourceKey = table.BuildPrimaryKey(currentRow);
+                object[] sourceKey = table.BuildRawPKFromDataRow(currentRow);
                 object[] destKey;
 
                 //Si ligne déjà enregistrée
@@ -80,7 +81,7 @@ namespace DataCloner
                     if (shouldReturnFk)
                     {
                         //Construit la pk de retour
-                        riReturn.Columns = table.BuildPKFromKeyRelationships(destKey);
+                        riReturn.Columns = table.BuildPKFromKey(destKey);
                         return riReturn;
                     }
                     else
@@ -139,7 +140,7 @@ namespace DataCloner
                                 else if (fkDestinationExists)
                                 {
                                     //Sauve la clef
-                                    var colFkObj = fkTable.BuildPrimaryKey(fkRow[0]);
+                                    var colFkObj = fkTable.BuildRawPKFromDataRow(fkRow[0]);
                                     _keyRelationships.SetKey(fk.ServerIdTo, fk.DatabaseTo, fk.SchemaTo, fk.TableTo, colFkObj, colFkObj);
 
                                     //Affecte la clef
@@ -160,10 +161,6 @@ namespace DataCloner
                                 var riNewFK =  SqlTraveler(riFK, false, true);
                                 object[][] newFKRow = _dispatcher.Select(riNewFK);
 
-                                //Sauve la clef
-                                var colFkObj = fkTable.BuildPrimaryKey(newFKRow[0]);
-                                _keyRelationships.SetKey(fk.ServerIdTo, fk.DatabaseTo, fk.SchemaTo, fk.TableTo, colFkObj, colFkObj);
-
                                 //Affecte la clef
                                 for (int j = 0; j < fk.Columns.Length; j++)
                                 {
@@ -176,15 +173,38 @@ namespace DataCloner
                         }
                     }
 
-                    //La ligne des destination est prète à l'enregistrement
+                    //Générer la PK
+                    if (!autoIncrementPK)
+                    {
+                                        
+                    }
+
+                    //La ligne de destination est prète à l'enregistrement
                     _dispatcher.Insert(tiDestination, destinationRow);
+
+                    if(autoIncrementPK)
+                    {
+                        destKey = new object[] { _dispatcher.GetLastInsertedPk(riSource.ServerId) };
+                        _keyRelationships.SetKey(riSource.ServerId, riSource.Database, riSource.Schema, riSource.Table, sourceKey, destKey);                       
+                    }
+                    else
+                    {
+                    
+                    }
+
+                    //On affecte la valeur de retour
+                    if (shouldReturnFk)
+                    {
+                        riReturn.Columns = table.BuildPKFromKey(destKey);
+                    }
+                   
 
                 }
             }
 
 
 
-            return null;
+            return riReturn;
         }
 
 

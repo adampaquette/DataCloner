@@ -27,8 +27,7 @@ SQLTraveler(byval riSource as rowIdentifier,
 					Si la table de destination de la FK est statique
 						Construire requête SELECT pour la ligne table destination
 						Récupérer la ligne
-						Si une ligne existe	dans destination	
-                            Ajouter la liggne dans keyRelationshipDictionnary
+						Si une ligne existe	dans destination	                            
 							Affecter la valeur des colonnes PK à celles de lineDestination (FK)
 						Sinon
 							Créer une rowIdentifier ri avec la valeur des colonnes de la contrainte FK
