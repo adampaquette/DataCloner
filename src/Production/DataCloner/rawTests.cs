@@ -14,6 +14,7 @@ using DataCloner.DataClasse.Cache;
 using DataCloner.DataClasse.Configuration;
 using DataCloner.Framework;
 using DataCloner.Enum;
+using DataCloner;
 
 using Murmur;
 
@@ -56,7 +57,7 @@ namespace Class
             RowIdentifier source = new RowIdentifier();
 
             //Map serveur source / destination
-            dc.ServerMap.Add(new Tuple<short, string>(1, "sakila"), new Tuple<short, string>(1, "sakila"));
+            dc.ServerMap.Add(new ServerIdentifier{ ServerId = 1, Database = "sakila"}, new ServerIdentifier{ ServerId = 1, Database = "sakila"});
             
             dc.Initialize();          
 

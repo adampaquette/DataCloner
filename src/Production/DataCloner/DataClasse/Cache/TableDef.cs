@@ -97,6 +97,7 @@ namespace DataCloner.DataClasse.Cache
             return Deserialize(new BinaryReader(stream));
         }
 
+        //TODO : FIXER LA SÉRIALISATION QUI AJOUTE UNE COLONNE À LA DERNIÈRE FK
         public void Serialize(BinaryWriter stream)
         {
             Int32 nbRows = DerivativeTables.Length;
@@ -147,6 +148,7 @@ namespace DataCloner.DataClasse.Cache
             }
         }
 
+        //TODO : FIXER LA SÉRIALISATION QUI AJOUTE UNE COLONNE À LA DERNIÈRE FK
         public static TableDef Deserialize(BinaryReader stream)
         {
             Int32 nbRows, nbRows2;

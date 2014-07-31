@@ -16,18 +16,23 @@ using Murmur;
 
 namespace DataCloner
 {
+    public struct ServerIdentifier
+    {
+        public Int16 ServerId { get; set; }
+        public string Database { get; set; }
+    }
+
     class DataCloner
     {
         private QueryDispatcher _dispatcher;
         private CachedTables _cacheTable;
         private KeyRelationship _keyRelationships;
 
-        //
-        public Dictionary<Tuple<Int16, String>, Tuple<Int16, String>> ServerMap { get; set; }
+        public Dictionary<ServerIdentifier, ServerIdentifier> ServerMap { get; set; }
 
         public DataCloner()
         {
-            ServerMap = new Dictionary<Tuple<short, string>, Tuple<short, string>>();
+            ServerMap = new Dictionary<ServerIdentifier, ServerIdentifier>();
         }
 
         public void Initialize(string cacheName = Configuration.CacheName)
@@ -47,18 +52,19 @@ namespace DataCloner
             int nbRows = sourceRows.Length;
             var table = _cacheTable.GetTable(riSource.ServerId, riSource.Database, riSource.Schema, riSource.Table);
             var fks = table.ForeignKeys;
-            var serverDestination = ServerMap[new Tuple<short,string>(riSource.ServerId, riSource.Database)];
+            var serverDest = ServerMap[new ServerIdentifier { ServerId = riSource.ServerId, Database = riSource.Database }];
+            var autoIncrementPK = table.SchemaColumns.Where(c => c.IsAutoIncrement).Any();
             var riReturn = new RowIdentifier()
             {
-                ServerId = serverDestination.Item1,
-                Database = serverDestination.Item2,
+                ServerId = serverDest.ServerId,
+                Database = serverDest.Database,
                 Schema = riSource.Schema,
                 Table = riSource.Table
             };
             var tiDestination = new TableIdentifier()
             {
-                ServerId = serverDestination.Item1,
-                Database = serverDestination.Item2,
+                ServerId = serverDest.ServerId,
+                Database = serverDest.Database,
                 Schema = riSource.Schema,
                 Table = riSource.Table
             };
@@ -69,13 +75,12 @@ namespace DataCloner
             //For each row
             for (int i = 0; i < nbRows; i++)
             {
-                var autoIncrementPK = table.SchemaColumns.Where(c => c.IsAutoIncrement).Any(); 
                 var currentRow = sourceRows[i];
                 object[] sourceKey = table.BuildRawPKFromDataRow(currentRow);
                 object[] destKey;
 
                 //Si ligne déjà enregistrée
-                destKey = _keyRelationships.GetKey(riSource.ServerId, riSource.Database, riSource.Schema, riSource.Table, sourceKey);
+                destKey = _keyRelationships.GetKey(serverDest.ServerId, serverDest.Database, riSource.Schema, riSource.Table, sourceKey);
                 if (destKey != null)
                 {
                     if (shouldReturnFk)
@@ -125,7 +130,7 @@ namespace DataCloner
                             for (int j = 0; j < fk.Columns.Length; j++)
                             {
                                 int posTblSource = table.SchemaColumns.IndexOf(c => c.Name == fk.Columns[j].NameFrom);
-                                colFK.Add(table.SchemaColumns[posTblSource].Name, currentRow[posTblSource]);
+                                colFK.Add(fk.Columns[j].NameTo, currentRow[posTblSource]);
                             }
 
                             //On ne copie pas la ligne si la table est statique
@@ -158,7 +163,7 @@ namespace DataCloner
                             if (!fkDestinationExists)
                             {
                                 //Crer la ligne et ses dépendances
-                                var riNewFK =  SqlTraveler(riFK, false, true);
+                                var riNewFK = SqlTraveler(riFK, false, true);
                                 object[][] newFKRow = _dispatcher.Select(riNewFK);
 
                                 //Affecte la clef
@@ -176,20 +181,20 @@ namespace DataCloner
                     //Générer la PK
                     if (!autoIncrementPK)
                     {
-                                        
+
                     }
 
                     //La ligne de destination est prète à l'enregistrement
                     _dispatcher.Insert(tiDestination, destinationRow);
 
-                    if(autoIncrementPK)
+                    if (autoIncrementPK)
                     {
-                        destKey = new object[] { _dispatcher.GetLastInsertedPk(riSource.ServerId) };
-                        _keyRelationships.SetKey(riSource.ServerId, riSource.Database, riSource.Schema, riSource.Table, sourceKey, destKey);                       
+                        destKey = new object[] { _dispatcher.GetLastInsertedPk(serverDest.ServerId) };
+                        _keyRelationships.SetKey(riSource.ServerId, riSource.Database, riSource.Schema, riSource.Table, sourceKey, destKey);
                     }
                     else
                     {
-                    
+
                     }
 
                     //On affecte la valeur de retour
@@ -197,16 +202,10 @@ namespace DataCloner
                     {
                         riReturn.Columns = table.BuildPKFromKey(destKey);
                     }
-                   
-
                 }
             }
 
-
-
             return riReturn;
         }
-
-
     }
 }
