@@ -46,7 +46,8 @@ SQLTraveler(byval riSource as rowIdentifier,
 			Créer la requête d'INSERT avec les valeurs de lineDestination
 			Enregistrer la ligne dans la table destination
 			Récupérer la PK nouvellement créée
-			Enregistrer la PK dans keyRelationshipDictionnary
+			Ajouter la PK dans keyRelationshipDictionnary
+            Ajouter les colonnes de contrainte unique dans keyRelationshipDictionnary
             Si shouldReturnFK == true
                 Affecter riRetour avec la valeur des colonnes de la PK
 			

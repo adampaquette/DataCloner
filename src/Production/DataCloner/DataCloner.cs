@@ -98,7 +98,8 @@ namespace DataCloner
                     foreach (var fk in table.ForeignKeys)
                     {
                         //Si le foreignkey est déjà dans la table de destination, on l'utilise
-                        object[] fkDest = _keyRelationships.GetKey(fk.ServerIdTo, fk.DatabaseTo, fk.SchemaTo, fk.TableTo, fk.Columns);
+                        object[] fkValue = table.BuildRawFKFromDataRow(fk, currentRow);
+                        object[] fkDest = _keyRelationships.GetKey(fk.ServerIdTo, fk.DatabaseTo, fk.SchemaTo, fk.TableTo, fkValue);
                         if (fkDest != null)
                         {
                             //On trouve la position de chaque colonne pour affecter la valeur de destination
@@ -109,6 +110,7 @@ namespace DataCloner
                                     if (fk.Columns[j].NameFrom == table.SchemaColumns[k].Name)
                                     {
                                         destinationRow[k] = fkDest[j];
+                                        break;
                                     }
                                 }
                             }
@@ -117,21 +119,14 @@ namespace DataCloner
                         {
                             var fkDestinationExists = false;
                             var fkTable = _cacheTable.GetTable(fk.ServerIdTo, fk.DatabaseTo, fk.SchemaTo, fk.TableTo);
-                            var colFK = new Dictionary<string, object>();
                             var riFK = new RowIdentifier()
                             {
                                 ServerId = fk.ServerIdTo,
                                 Database = fk.DatabaseTo,
                                 Schema = fk.SchemaTo,
-                                Table = fk.TableTo,
-                                Columns = colFK
+                                Table = fk.TableTo
                             };
-
-                            for (int j = 0; j < fk.Columns.Length; j++)
-                            {
-                                int posTblSource = table.SchemaColumns.IndexOf(c => c.Name == fk.Columns[j].NameFrom);
-                                colFK.Add(fk.Columns[j].NameTo, currentRow[posTblSource]);
-                            }
+                            riFK.Columns = table.BuildFKFromDataRow(fk, currentRow);
 
                             //On ne copie pas la ligne si la table est statique
                             if (fkTable.IsStatic)
@@ -164,6 +159,8 @@ namespace DataCloner
                             {
                                 //Crer la ligne et ses dépendances
                                 var riNewFK = SqlTraveler(riFK, false, true);
+
+                                //La FK (ou unique constraint) n'est pas necessairement la PK donc on réobtient la ligne.
                                 object[][] newFKRow = _dispatcher.Select(riNewFK);
 
                                 //Affecte la clef
@@ -177,6 +174,10 @@ namespace DataCloner
                             }
                         }
                     }
+
+                    //Récupérer les colonnes qui doivent être générées depuis la configuration dataBuilder 
+                    //Pour chaque colonne à générer
+                    //...
 
                     //Générer la PK
                     if (!autoIncrementPK)
@@ -196,6 +197,8 @@ namespace DataCloner
                     {
 
                     }
+
+                    //Ajouter les colonnes de contrainte unique dans _keyRelationships
 
                     //On affecte la valeur de retour
                     if (shouldReturnFk)

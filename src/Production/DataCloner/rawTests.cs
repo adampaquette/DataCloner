@@ -61,24 +61,25 @@ namespace Class
             
             dc.Initialize();          
 
-            //Basic test 1 row
+            ////Basic test : 1 row
             source.ServerId = 1;
             source.Database = "sakila";
             source.Schema = "";
-            source.Table = "actor";
-            source.Columns.Add("actor_id", 1);
-            dc.SqlTraveler(source, true, false);
+            //source.Table = "actor";
+            //source.Columns.Add("actor_id", 1);
+            //dc.SqlTraveler(source, true, false);
 
-            //Medium test 1 rows with dependencies
-            source.Columns.Clear();
-            source.Table = "city";
-            source.Columns.Add("city_id", 9);
-            dc.SqlTraveler(source, true, false);
+            ////Basic test : 1 rows with dependencies
+            //source.Columns.Clear();
+            //source.Table = "city";
+            //source.Columns.Add("city_id", 9);
+            //dc.SqlTraveler(source, true, false);
 
-            //Medium test 15 rows with dependencies
+            //Medium test : 1 rows with lots of dependencies
             source.Columns.Clear();
             source.Table = "customer";
             source.Columns.Add("active", 0);
+            source.Columns.Add("address_id", 20);
             dc.SqlTraveler(source, true, false);
         }
 
@@ -159,48 +160,6 @@ namespace Class
                     return items;
                 }
             }
-        }
-
-        public static void GeneralDBTest()
-        {
-            var conn = new MySql.Data.MySqlClient.MySqlConnection("server=localhost;user id=root; password=cdxsza; database=mysql; pooling=false");
-            conn.Open();
-            using (var cmd = conn.CreateCommand())
-            {
-                cmd.CommandText = "SELECT * FROM botnet.page limit 5;";
-                using (var r = cmd.ExecuteReader())
-                {
-                    while (r.Read())
-                        Console.WriteLine(r["id"].ToString());
-                }
-            }
-
-            var dt = new DataTable();
-            using (var cmd = conn.CreateCommand())
-            {
-                cmd.CommandText = "SELECT * FROM botnet.page limit 5;";
-                using (var r = cmd.ExecuteReader())
-                    dt.Load(r);
-            }
-
-            //var ti = new TableIdentifier { DatabaseName = "botnet", SchemaName = "botnet", TableName = "link" };
-            //var ri = new RowIdentifier { TableIdentifier = ti };
-            //ri.Columns.Add("fromPageHostId", 6);
-            //ri.Columns.Add("fromPageId", 4);
-
-            //var m = new DataCloner.DataAccess.QueryProviderMySql("server=localhost;user id=root; password=cdxsza; database=mysql; pooling=false");
-            //var dt = m.GetFK(ti);
-            //m.Select(ri);
-
-            //var conn = new System.Data.SqlClient.SqlConnection("Data Source=une_sql_pgis;Initial Catalog=PGISCBL;Integrated Security=SSPI;");
-            //conn.Open();
-            //if (conn.Database != "PGISCBL")
-            //    conn.ChangeDatabase("PGISCBL");
-            ////var dt = conn.GetSchema("Columns");
-            //conn.Close();
-
-            //var a = new DataCloner.DataCloner();
-            //a.SQLTraveler(null, true, true);
         }
 
         public static void CachedTableObjTest()

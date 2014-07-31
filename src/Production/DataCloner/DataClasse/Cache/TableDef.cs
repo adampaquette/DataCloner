@@ -6,6 +6,7 @@ using System.Data;
 using System.Threading.Tasks;
 using System.IO;
 
+using DataCloner.Framework;
 using DataCloner.Enum;
 
 namespace DataCloner.DataClasse.Cache
@@ -27,12 +28,28 @@ namespace DataCloner.DataClasse.Cache
             SchemaColumns = new SchemaColumn[] { };
         }
 
-        /// <summary>
-        /// Récupère la clef primaire d'une ligne provenant de la base de données.
-        /// </summary>
-        /// <param name="row"></param>
-        /// <returns></returns>
-        /// <remarks>TODO : Optimiser avec un pointeur ou une référence pour éviter de copier l'objet row en mémoire.</remarks>
+        public object[] BuildRawFKFromDataRow(ForeignKey fk, object[] row)
+        {
+            var pk = new List<object>();
+            for (int j = 0; j < fk.Columns.Length; j++)
+            {
+                int posTblSource = SchemaColumns.IndexOf(c => c.Name == fk.Columns[j].NameFrom);
+                pk.Add(row[posTblSource]);
+            }
+            return pk.ToArray();
+        }
+
+        public Dictionary<string, object> BuildFKFromDataRow(ForeignKey fk, object[] row)
+        {
+            var colFK = new Dictionary<string, object>();
+            for (int j = 0; j < fk.Columns.Length; j++)
+            {
+                int posTblSource = SchemaColumns.IndexOf(c => c.Name == fk.Columns[j].NameFrom);
+                colFK.Add(fk.Columns[j].NameTo, row[posTblSource]);
+            }
+            return colFK;
+        }
+        
         public object[] BuildRawPKFromDataRow(object[] row)
         {
             var pk = new List<object>();
@@ -44,12 +61,6 @@ namespace DataCloner.DataClasse.Cache
             return pk.ToArray();
         }
 
-        /// <summary>
-        /// Récupère la clef primaire d'une ligne provenant de la base de données.
-        /// </summary>
-        /// <param name="row"></param>
-        /// <returns></returns>
-        /// <remarks>TODO : Optimiser avec un pointeur ou une référence pour éviter de copier l'objet row en mémoire.</remarks>
         public Dictionary<string, object> BuildPKFromDataRow(object[] row)
         {
             var pk = new Dictionary<string, object>();
@@ -97,14 +108,13 @@ namespace DataCloner.DataClasse.Cache
             return Deserialize(new BinaryReader(stream));
         }
 
-        //TODO : FIXER LA SÉRIALISATION QUI AJOUTE UNE COLONNE À LA DERNIÈRE FK
         public void Serialize(BinaryWriter stream)
         {
             Int32 nbRows = DerivativeTables.Length;
-            stream.Write(Name == null ? "" : Name);
+            stream.Write(Name ?? "");
             stream.Write(IsStatic);
-            stream.Write(SelectCommand == null ? "" : SelectCommand);
-            stream.Write(InsertCommand == null ? "" : InsertCommand);
+            stream.Write(SelectCommand ?? "");
+            stream.Write(InsertCommand ?? "");
 
             stream.Write(nbRows);
             for (int i = 0; i < nbRows; i++)
@@ -144,19 +154,17 @@ namespace DataCloner.DataClasse.Cache
                 stream.Write(SchemaColumns[i].IsPrimary);
                 stream.Write(SchemaColumns[i].IsForeignKey);
                 stream.Write(SchemaColumns[i].IsAutoIncrement);
-                stream.Write(SchemaColumns[i].BuilderName == null ? "" : SchemaColumns[i].BuilderName);
+                stream.Write(SchemaColumns[i].BuilderName ?? "");
             }
         }
 
-        //TODO : FIXER LA SÉRIALISATION QUI AJOUTE UNE COLONNE À LA DERNIÈRE FK
         public static TableDef Deserialize(BinaryReader stream)
         {
             Int32 nbRows, nbRows2;
-            TableDef t = new TableDef();
-            List<DerivativeTable> dtList = new List<DerivativeTable>();
-            List<ForeignKey> fkList = new List<ForeignKey>();
-            List<ForeignKeyColumn> fkColList = new List<ForeignKeyColumn>();
-            List<SchemaColumn> schemaColList = new List<SchemaColumn>();
+            var t = new TableDef();
+            var dtList = new List<DerivativeTable>();
+            var fkList = new List<ForeignKey>();
+            var schemaColList = new List<SchemaColumn>();
 
             t.Name = stream.ReadString();
             t.IsStatic = stream.ReadBoolean();
@@ -180,7 +188,7 @@ namespace DataCloner.DataClasse.Cache
             nbRows = stream.ReadInt32();
             for (int i = 0; i < nbRows; i++)
             {
-                List<SchemaColumn> colSchemaList = new List<SchemaColumn>();
+                var fkColList = new List<ForeignKeyColumn>();
 
                 ForeignKey fk = new ForeignKey()
                 {
@@ -205,7 +213,7 @@ namespace DataCloner.DataClasse.Cache
             }
 
             nbRows = stream.ReadInt32();
-            for (int j = 0; j < nbRows; j++)
+            for (int i = 0; i < nbRows; i++)
             {
                 schemaColList.Add(new SchemaColumn()
                 {

@@ -149,9 +149,11 @@ namespace DataCloner.DataAccess
                     string paramName = ri.Columns.ElementAt(i).Key;
                     query.Append(paramName).Append(" = @").Append(paramName);
                     cmd.Parameters.AddWithValue("@" + paramName, ri.Columns.ElementAt(i).Value);
+                    if (i < nbParams - 1)
+                        query.Append(" AND ");
                 }
                 cmd.CommandText = query.ToString();
-                
+
                 //Exec query
                 using (var r = cmd.ExecuteReader())
                 {
@@ -172,7 +174,7 @@ namespace DataCloner.DataAccess
         public void Insert(ITableIdentifier ti, object[] row)
         {
             TableDef schema = _cache.CachedTables.GetTable(ti.ServerId, ti.Database, ti.Schema, ti.Table);
-            if (schema.SchemaColumns.Count() != row.Length) 
+            if (schema.SchemaColumns.Count() != row.Length)
                 throw new Exception("The row doesn't correspond to schema!");
 
             using (var cmd = _conn.CreateCommand())
