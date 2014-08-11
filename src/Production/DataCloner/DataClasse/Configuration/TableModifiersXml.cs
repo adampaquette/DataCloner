@@ -84,7 +84,7 @@ namespace DataCloner.DataClasse.Configuration
             public string Name { get; set; }
             [XmlAttribute]
             public bool IsStatic { get; set; }
-            public DerativeTablesXml DerativeTables { get; set; }
+            public DerativeTablesConfigXml DerativeTablesConfig { get; set; }
             [XmlArrayItem("Column")]
             public List<DataColumnBuilderXml> DataBuilders { get; set; }
             public ForeignKeysXml ForeignKeys { get; set; }
@@ -92,7 +92,7 @@ namespace DataCloner.DataClasse.Configuration
             public TableModifierXml()
             {
                 DataBuilders = new List<DataColumnBuilderXml>();
-                DerativeTables = new DerativeTablesXml();
+                DerativeTablesConfig = new DerativeTablesConfigXml();
                 ForeignKeys = new ForeignKeysXml();
             }
         }
@@ -107,18 +107,18 @@ namespace DataCloner.DataClasse.Configuration
             public DataColumnBuilderXml() { }
         }
 
-        public class DerativeTablesXml
+        public class DerativeTablesConfigXml
         {
             [XmlAttribute]
-            public DerivativeTableAccess GloabalAccess { get; set; }
+            public DerivativeTableAccess GlobalAccess { get; set; }
             [XmlAttribute]
             public bool Cascade { get; set; }
             [XmlElement("Table")]
-            public List<DerivativeSubTableXml> DerativeSubTables { get; set; }
+            public List<DerivativeSubTableXml> DerativeTables { get; set; }
 
-            public DerativeTablesXml() 
+            public DerativeTablesConfigXml() 
             {
-                DerativeSubTables = new List<DerivativeSubTableXml>();
+                DerativeTables = new List<DerivativeSubTableXml>();
             }
         }
 

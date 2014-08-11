@@ -7,6 +7,7 @@ using System.Data;
 
 using DataCloner.Framework;
 using DataCloner.Enum;
+using DataCloner.DataClasse.Configuration;
 
 namespace DataCloner.DataClasse.Cache
 {
@@ -16,7 +17,7 @@ namespace DataCloner.DataClasse.Cache
     /// <remarks>Optimisé pour la lecture et non pour l'écriture!</remarks>
     internal sealed class CachedTables
     {
-        private Dictionary<Int16, Dictionary<string, Dictionary<string, TableDef[]>>> _dic = 
+        private Dictionary<Int16, Dictionary<string, Dictionary<string, TableDef[]>>> _dic =
             new Dictionary<Int16, Dictionary<string, Dictionary<string, TableDef[]>>>();
 
         //public bool Contains(Int32 server, string database, string schema, string tableFrom, DerivativeTable tableTo)
@@ -186,7 +187,7 @@ namespace DataCloner.DataClasse.Cache
                     //Change de table
                     previousTable = _dic[serverId][database][currentSchema].Where(t => t.Name == reader.GetString(1)).First();
                     lstForeignKeys = new List<ForeignKey>();
-                }                
+                }
 
                 //Ajoute la colonne
                 lstForeignKeyColumns.Add(new ForeignKeyColumn()
@@ -326,6 +327,108 @@ namespace DataCloner.DataClasse.Cache
 
                             table.InsertCommand = sbInsert.ToString();
                             table.SelectCommand = sbSelect.ToString();
+                        }
+                    }
+                }
+            }
+        }
+
+        public void GenerateDerivativeTables(ConfigurationXml config)
+        {
+            //Precompile chaque table dérivée de chaque table
+            foreach (var server in _dic)
+            {
+                foreach (var database in server.Value)
+                {
+                    foreach (var schema in database.Value)
+                    {
+                        foreach (var table in schema.Value)
+                        {
+                            var globalAccess = DerivativeTableAccess.NotSet;
+                            var globalCascade = false;
+
+                            //On remplit avec les éléments de la configuration
+                            if (config.TableModifiers.Servers.Exists(s => s.Id == server.Key))
+                            {
+                                var serConfig = config.TableModifiers.Servers.Find(s => s.Id == server.Key);
+                                if (serConfig != null)
+                                {
+                                    var dbConfig = serConfig.Databases.Find(d => d.Name == database.Key);
+                                    if (dbConfig != null)
+                                    {
+                                        var scheConfig = dbConfig.Schemas.Find(s => s.Name == schema.Key);
+                                        if (scheConfig != null)
+                                        {
+                                            var tblConfig = scheConfig.Tables.Find(t => t.Name == table.Name);
+                                            if (tblConfig != null)
+                                            {
+                                                globalAccess = tblConfig.DerativeTablesConfig.GlobalAccess;
+                                                globalCascade = tblConfig.DerativeTablesConfig.Cascade;
+
+                                                foreach (var dtConfig in tblConfig.DerativeTablesConfig.DerativeTables)
+                                                {
+                                                    var dt = new DerivativeTable
+                                                    {
+                                                        ServerId = dtConfig.ServerId,
+                                                        Schema = dtConfig.Schema,
+                                                        Database = dtConfig.Database,
+                                                        Table = dtConfig.Table                                                         
+                                                    };
+
+                                                    if (dtConfig.Access == DerivativeTableAccess.NotSet)
+                                                        dt.Access = globalAccess;
+                                                    else
+                                                        dt.Access = dtConfig.Access;
+
+                                                    //if(dtConfig.Cascade)
+
+
+                                                    table.DerivativeTables = table.DerivativeTables.Add(dt);
+                                                }
+                                            }
+                                        }
+
+
+                                    }
+                                }
+                            }
+
+                            if (globalAccess != DerivativeTableAccess.Denied)
+                            {
+                                //On trouve les dérivées de la table
+                                foreach (var dbDeriv in server.Value)
+                                {
+                                    foreach (var schemaDeriv in database.Value)
+                                    {
+                                        foreach (var tableDeriv in schema.Value)
+                                        {
+                                            foreach (var fk in tableDeriv.ForeignKeys)
+                                            {
+                                                //Si correspondance
+                                                if (fk.ServerIdTo == server.Key && fk.DatabaseTo == database.Key &&
+                                                    fk.SchemaTo == schema.Key && fk.TableTo == table.Name)
+                                                {
+                                                    //Si non présente
+                                                    if (!table.DerivativeTables.Any(t => t.ServerId == fk.ServerIdTo && t.Schema == fk.SchemaTo &&
+                                                        t.Database == fk.DatabaseTo && t.Table == fk.TableTo))
+                                                    {
+                                                        table.DerivativeTables = table.DerivativeTables.Add(new DerivativeTable
+                                                        {
+                                                            ServerId = fk.ServerIdTo,
+                                                            Schema = fk.SchemaTo,
+                                                            Database = fk.DatabaseTo,
+                                                            Table = fk.TableTo
+                                                        });
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+
+                            }
+
+
                         }
                     }
                 }

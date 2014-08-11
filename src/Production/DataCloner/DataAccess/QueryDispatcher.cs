@@ -93,6 +93,7 @@ namespace DataCloner.DataAccess
                     }
                 }                
                 Cache.CachedTables.GenerateCommands();
+                Cache.CachedTables.GenerateDerivativeTables(config);
 
                 //Save cache
                 var fsCache = new FileStream(fullCacheName, FileMode.Create);

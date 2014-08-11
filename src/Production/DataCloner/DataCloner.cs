@@ -53,7 +53,7 @@ namespace DataCloner
             var table = _cacheTable.GetTable(riSource.ServerId, riSource.Database, riSource.Schema, riSource.Table);
             var fks = table.ForeignKeys;
             var serverDest = ServerMap[new ServerIdentifier { ServerId = riSource.ServerId, Database = riSource.Database }];
-            var autoIncrementPK = table.SchemaColumns.Where(c => c.IsAutoIncrement).Any();
+            var autoIncrementPK = table.SchemaColumns.Where(c => c.IsAutoIncrement && c.IsPrimary).Any();
             var riReturn = new RowIdentifier()
             {
                 ServerId = serverDest.ServerId,
@@ -177,12 +177,12 @@ namespace DataCloner
 
                     //Récupérer les colonnes qui doivent être générées depuis la configuration dataBuilder 
                     //Pour chaque colonne à générer
-                    //...
-
-                    //Générer la PK
-                    if (!autoIncrementPK)
+                    foreach (var col in table.SchemaColumns)
                     {
-
+                        if ((col.IsPrimary && !col.IsAutoIncrement) || !string.IsNullOrWhiteSpace(col.BuilderName))
+                        { 
+                            //Générer data
+                        }
                     }
 
                     //La ligne de destination est prète à l'enregistrement
@@ -199,12 +199,37 @@ namespace DataCloner
                     }
 
                     //Ajouter les colonnes de contrainte unique dans _keyRelationships
+                    //...
 
                     //On affecte la valeur de retour
                     if (shouldReturnFk)
                     {
                         riReturn.Columns = table.BuildPKFromKey(destKey);
                     }
+
+                    /***********************************
+                                Get derivative
+                     ***********************************/
+                    IEnumerable<DerivativeTable> derivativeTable;
+
+                    if (getDerivatives)
+                        derivativeTable = table.DerivativeTables;
+                    else
+                        derivativeTable = table.DerivativeTables.Where(t => t.Access == Enum.DerivativeTableAccess.Forced);
+
+                    foreach (var dt in derivativeTable)
+                    {
+                        var cachedDT = _cacheTable.GetTable(dt.ServerId, dt.Database, dt.Schema, dt.Table);
+                        
+                        if (dt.Access == Enum.DerivativeTableAccess.Forced && dt.Cascade)
+                        {
+                            getDerivatives = true;
+                        }
+
+
+                        //var riNewFK = SqlTraveler(riFK, getDerivatives, false);
+                    }
+
                 }
             }
 
