@@ -124,9 +124,9 @@ namespace DataCloner
                                 ServerId = fk.ServerIdTo,
                                 Database = fk.DatabaseTo,
                                 Schema = fk.SchemaTo,
-                                Table = fk.TableTo
+                                Table = fk.TableTo,
+                                Columns = table.BuildFKFromDataRow(fk, currentRow)
                             };
-                            riFK.Columns = table.BuildFKFromDataRow(fk, currentRow);
 
                             //On ne copie pas la ligne si la table est statique
                             if (fkTable.IsStatic)
@@ -180,7 +180,7 @@ namespace DataCloner
                     foreach (var col in table.SchemaColumns)
                     {
                         if ((col.IsPrimary && !col.IsAutoIncrement) || !string.IsNullOrWhiteSpace(col.BuilderName))
-                        { 
+                        {
                             //Générer data
                         }
                     }
@@ -191,6 +191,7 @@ namespace DataCloner
                     if (autoIncrementPK)
                     {
                         destKey = new object[] { _dispatcher.GetLastInsertedPk(serverDest.ServerId) };
+                        //table.SetPKFromKey(ref destinationRow, destKey);
                         _keyRelationships.SetKey(riSource.ServerId, riSource.Database, riSource.Schema, riSource.Table, sourceKey, destKey);
                     }
                     else
@@ -220,16 +221,23 @@ namespace DataCloner
                     foreach (var dt in derivativeTable)
                     {
                         var cachedDT = _cacheTable.GetTable(dt.ServerId, dt.Database, dt.Schema, dt.Table);
-                        
+
                         if (dt.Access == Enum.DerivativeTableAccess.Forced && dt.Cascade)
                         {
                             getDerivatives = true;
                         }
 
+                        var riDT = new RowIdentifier
+                        {
+                            ServerId = dt.ServerId,
+                            Database = dt.Database,
+                            Schema = dt.Schema,
+                            Table = dt.Table,
+                            Columns = table.BuildDerivativePK(cachedDT, currentRow)
+                        };
 
-                        //var riNewFK = SqlTraveler(riFK, getDerivatives, false);
+                        SqlTraveler(riDT, getDerivatives, false);
                     }
-
                 }
             }
 
