@@ -372,7 +372,7 @@ namespace DataCloner.DataClasse.Cache
                                                         ServerId = dtConfig.ServerId,
                                                         Schema = dtConfig.Schema,
                                                         Database = dtConfig.Database,
-                                                        Table = dtConfig.Table                                                         
+                                                        Table = dtConfig.Table
                                                     };
 
                                                     if (dtConfig.Access == DerivativeTableAccess.NotSet)
@@ -387,8 +387,6 @@ namespace DataCloner.DataClasse.Cache
                                                 }
                                             }
                                         }
-
-
                                     }
                                 }
                             }
@@ -425,10 +423,42 @@ namespace DataCloner.DataClasse.Cache
                                         }
                                     }
                                 }
-
                             }
+                        }
+                    }
+                }
+            }
+        }
 
-
+        public void MergeCacheAndUserConfig(ConfigurationXml config)
+        {
+            foreach (var server in _dic)
+            {
+                var serConfig = config.TableModifiers.Servers.Find(s => s.Id == server.Key);
+                if (serConfig != null)
+                {
+                    foreach (var database in server.Value)
+                    {
+                        var dbConfig = serConfig.Databases.Find(d => d.Name == database.Key);
+                        if (dbConfig != null)
+                        {
+                            foreach (var schema in database.Value)
+                            {
+                                var scheConfig = dbConfig.Schemas.Find(s => s.Name == schema.Key);
+                                if (scheConfig != null)
+                                {
+                                    foreach (var table in schema.Value)
+                                    {                                       
+                                        var tblConfig = scheConfig.Tables.Find(t => t.Name == table.Name);
+                                        if (tblConfig != null)
+                                        {
+                                            //On affecte les changements de la configuration
+                                            table.IsStatic = tblConfig.IsStatic;
+                                            
+                                        }
+                                    }                                   
+                                }
+                            }
                         }
                     }
                 }

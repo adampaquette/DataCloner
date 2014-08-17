@@ -49,7 +49,7 @@ namespace DataCloner.DataClasse.Cache
             }
             return colFK;
         }
-        
+
         public object[] BuildRawPKFromDataRow(object[] row)
         {
             var pk = new List<object>();
@@ -83,6 +83,59 @@ namespace DataCloner.DataClasse.Cache
             for (int i = 0; i < pkColumns.Count(); i++)
                 pk.Add(pkColumns[i].Name, key[i]);
             return pk;
+        }
+
+        public void SetPKFromKey(ref object[] row, object[] key)
+        {
+            var nbPKColumns = SchemaColumns.Where(c => c.IsPrimary).Count();
+            var nbCols = SchemaColumns.Count();
+
+            if (key.Length != nbPKColumns)
+                throw new Exception("The key doesn't correspond to table defenition.");
+            if (row.Length != nbCols)
+                throw new Exception("The row doesn't correspond to table defenition.");
+
+            var pkIndex = 0;
+            for (int i = 0; i < nbCols; i++)
+            {
+                if (SchemaColumns[i].IsPrimary)
+                {
+                    row[i] = key[pkIndex];
+                    pkIndex++;
+                    if (pkIndex == nbPKColumns)
+                        break;
+                }
+            }
+        }
+
+        public Dictionary<string, object> BuildDerivativePK(TableDef derivativeTable, object[] sourceRow)
+        {
+            var colPKSource = new Dictionary<string, object>();
+            var colPKDest = new Dictionary<string, object>();
+
+            for (int j = 0; j < SchemaColumns.Length; j++)
+            {
+                if (SchemaColumns[j].IsPrimary)
+                    colPKSource.Add(SchemaColumns[j].Name, sourceRow[j]);
+            }
+
+            foreach (var fk in derivativeTable.ForeignKeys)
+            {
+                bool isGoodFK = true;
+                foreach (var col in fk.Columns)
+                {
+                    if (!colPKSource.ContainsKey(col.NameTo))
+                        isGoodFK = false;
+                }
+
+                if (isGoodFK)
+                {
+                    foreach (var col in fk.Columns)
+                        colPKDest.Add(col.NameFrom, colPKSource[col.NameTo]);
+                    break;
+                }
+            }
+            return colPKDest;
         }
 
         public override bool Equals(object obj)

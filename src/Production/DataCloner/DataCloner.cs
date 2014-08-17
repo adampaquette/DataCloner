@@ -141,16 +141,7 @@ namespace DataCloner
                                 {
                                     //Sauve la clef
                                     var colFkObj = fkTable.BuildRawPKFromDataRow(fkRow[0]);
-                                    _keyRelationships.SetKey(fk.ServerIdTo, fk.DatabaseTo, fk.SchemaTo, fk.TableTo, colFkObj, colFkObj);
-
-                                    //Affecte la clef
-                                    for (int j = 0; j < fk.Columns.Length; j++)
-                                    {
-                                        int posTblSourceFK = table.SchemaColumns.IndexOf(c => c.Name == fk.Columns[j].NameFrom);
-                                        int posTblDestinationPK = fkTable.SchemaColumns.IndexOf(c => c.Name == fk.Columns[j].NameTo);
-
-                                        destinationRow[posTblSourceFK] = fkRow[0][posTblDestinationPK];
-                                    }
+                                    _keyRelationships.SetKey(fk.ServerIdTo, fk.DatabaseTo, fk.SchemaTo, fk.TableTo, colFkObj, colFkObj);                                   
                                 }
                             }
 
