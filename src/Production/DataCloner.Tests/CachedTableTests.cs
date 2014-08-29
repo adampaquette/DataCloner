@@ -16,20 +16,22 @@ using Xunit;
 
 namespace DataCloner.Tests
 {
-    public class mainTests
+    public class CachedTableTests
     {
-        [Fact()]
-        public static void CachedTableSerialization()
-        {
-            var ct = new CachedTables();
-            var table1 = new TableDef();
+        private CachedTables _cache;
+        private TableDef _table;
 
-            table1.Name = "table1";
-            table1.IsStatic = false;
-            table1.SelectCommand = "SELECT * FROM TABLE1";
-            table1.InsertCommand = "INSERT INTO TABLE1 VALUES(@COL1, @COL2)";
+        public CachedTableTests()
+        { 
+            _cache = new CachedTables();
+            _table = new TableDef();
 
-            table1.SchemaColumns = table1.SchemaColumns.Add(new SchemaColumn()
+            _table.Name = "table1";
+            _table.IsStatic = false;
+            _table.SelectCommand = "SELECT * FROM TABLE1";
+            _table.InsertCommand = "INSERT INTO TABLE1 VALUES(@COL1, @COL2)";
+
+            _table.SchemaColumns = _table.SchemaColumns.Add(new SchemaColumn()
             {
                 Name = "COL1",
                 Type = "INT",
@@ -38,7 +40,7 @@ namespace DataCloner.Tests
                 IsAutoIncrement = true,
                 BuilderName = ""
             });
-            table1.SchemaColumns = table1.SchemaColumns.Add(new SchemaColumn()
+            _table.SchemaColumns = _table.SchemaColumns.Add(new SchemaColumn()
             {
                 Name = "COL2",
                 Type = "INT",
@@ -48,7 +50,7 @@ namespace DataCloner.Tests
                 BuilderName = "Builder.NASBuilder"
             });
 
-            table1.DerivativeTables = table1.DerivativeTables.Add(new DerivativeTable()
+            _table.DerivativeTables = _table.DerivativeTables.Add(new DerivativeTable()
             {
                 ServerId = 1,
                 Database = "db",
@@ -57,7 +59,7 @@ namespace DataCloner.Tests
                 Access = DerivativeTableAccess.Forced,
                 Cascade = true
             });
-            table1.DerivativeTables = table1.DerivativeTables.Add(new DerivativeTable()
+            _table.DerivativeTables = _table.DerivativeTables.Add(new DerivativeTable()
             {
                 ServerId = 1,
                 Database = "db",
@@ -67,7 +69,7 @@ namespace DataCloner.Tests
                 Cascade = false
             });
 
-            table1.ForeignKeys = table1.ForeignKeys.Add(new ForeignKey()
+            _table.ForeignKeys = _table.ForeignKeys.Add(new ForeignKey()
             {
                 ServerIdTo = 2,
                 DatabaseTo = "db",
@@ -76,30 +78,36 @@ namespace DataCloner.Tests
                 Columns = new ForeignKeyColumn[] { new ForeignKeyColumn() { NameFrom = "COL1", NameTo = "COL1" } }
             });
 
-            ct.Add(1, "db", "dbo", table1);
+            _cache.Add(1, "db1", "dbo", _table);
+            _cache.Add(1, "db2", "dbo", _table);
+        }
 
+        [Fact()]
+        public void TableDefBinarySerialization()
+        {
             MemoryStream ms1 = new MemoryStream();
             MemoryStream ms2 = new MemoryStream();
 
-            //Test TableDef
-            table1.Serialize(ms1);
+            _table.Serialize(ms1);
             ms1.Position = 0;
             var output = TableDef.Deserialize(ms1);
             output.Serialize(ms2);
 
-            Assert.True(ms1.ToArray().SequenceEqual(ms2.ToArray()));
-                
+            Assert.True(ms1.ToArray().SequenceEqual(ms2.ToArray()));           
+        }
 
-            //Test cachedtables
-            ms1 = new MemoryStream();
-            ms2 = new MemoryStream();
+        [Fact()]
+        public void CachedTablesBinarySerialization()
+        {
+            MemoryStream ms1 = new MemoryStream();
+            MemoryStream ms2 = new MemoryStream();
 
-            ct.Serialize(ms1);
+            _cache.Serialize(ms1);
             ms1.Position = 0;
-            var outputCT = CachedTables.Deserialize(ms1);
-            outputCT.Serialize(ms2);
+            var output = CachedTables.Deserialize(ms1);
+            output.Serialize(ms2);
 
-            Assert.True(ms1.ToArray().SequenceEqual(ms2.ToArray()));               
+            Assert.True(ms1.ToArray().SequenceEqual(ms2.ToArray()));
         }
     }
 }

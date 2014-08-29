@@ -66,6 +66,13 @@ namespace DataCloner.Framework
             return sw.ToString();
         }
 
+        public static T DeserializeXml<T>(this string str)
+        {
+            var xs = new XmlSerializer(typeof(T));
+            var sr = new StringReader(str);
+            return (T)xs.Deserialize(sr);
+        }
+
         public static int IndexOf<T>(this IEnumerable<T> list, Predicate<T> condition)
         {
             int i = -1;
