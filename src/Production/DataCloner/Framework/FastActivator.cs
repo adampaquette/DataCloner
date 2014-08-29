@@ -60,6 +60,8 @@ namespace DataCloner.Framework
 
         public static Func<T1, object> GetConstructor(Type objType, Type[] argTypes)
         {
+            if (argTypes.Length != 1)
+                throw new ArgumentException(string.Format("Arguments found {0} : Expected : 1", argTypes.Length));
             Func<T1, object> constructor;
             if (!constructorCache.TryGetValue(objType, out constructor))
             {
@@ -82,6 +84,8 @@ namespace DataCloner.Framework
 
         public static Func<T1, T2, object> GetConstructor(Type objType, Type[] argTypes)
         {
+            if (argTypes.Length != 2)
+                throw new ArgumentException(string.Format("Arguments found {0} : Expected : 2", argTypes.Length));
             Func<T1, T2, object> constructor;
             if (!constructorCache.TryGetValue(objType, out constructor))
             {
@@ -107,11 +111,13 @@ namespace DataCloner.Framework
 
         public static Func<T1, T2, T3, object> GetConstructor(Type objType, Type[] argTypes)
         {
+            if (argTypes.Length != 3)
+                throw new ArgumentException(string.Format("Arguments found {0} : Expected : 3", argTypes.Length));
             Func<T1, T2, T3, object> constructor;
             if (!constructorCache.TryGetValue(objType, out constructor))
             {
                 constructor = (Func<T1, T2, T3, object>)FastActivator.BuildConstructorDelegate(objType, typeof(Func<T1, T2, T3, object>), argTypes);
-                //constructorCache.Add(objType, constructor);
+                constructorCache.Add(objType, constructor);
             }
             return constructor;
         }

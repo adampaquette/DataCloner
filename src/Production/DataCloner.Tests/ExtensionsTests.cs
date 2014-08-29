@@ -18,7 +18,7 @@ namespace DataCloner.Tests
 {
     public class ExtensionsTests
     {
-        [Fact()]
+        [Fact]
         public void XmlSerialization()
         {
             var lst = new List<string>{"xml", "Serialization", "test"};
@@ -28,7 +28,7 @@ namespace DataCloner.Tests
             Assert.Equal(str, strOutput);
         }
 
-        [Fact()]
+        [Fact]
         public void ArrayRemoveAt()
         {
             var t = new int[] { 1, 2, 3, 4 };
@@ -39,7 +39,7 @@ namespace DataCloner.Tests
             Assert.True(m.SequenceEqual(new int[] { 2, 3 }));
         }
 
-        [Fact()]
+        [Fact]
         public void ArrayRemove()
         {
             var t = new int[] { 1, 2, 3, 4 };
@@ -47,7 +47,7 @@ namespace DataCloner.Tests
             Assert.True(n.SequenceEqual(new int[] { 1, 2, 3 }));
         }
 
-        [Fact()]
+        [Fact]
         public void ArrayAdd()
         {
             var t = new int[] { 1, 2, 3, 4 };

@@ -82,7 +82,7 @@ namespace DataCloner.Tests
             _cache.Add(1, "db2", "dbo", _table);
         }
 
-        [Fact()]
+        [Fact]
         public void TableDefBinarySerialization()
         {
             MemoryStream ms1 = new MemoryStream();
@@ -96,7 +96,7 @@ namespace DataCloner.Tests
             Assert.True(ms1.ToArray().SequenceEqual(ms2.ToArray()));           
         }
 
-        [Fact()]
+        [Fact]
         public void CachedTablesBinarySerialization()
         {
             MemoryStream ms1 = new MemoryStream();

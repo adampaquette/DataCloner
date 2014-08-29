@@ -28,7 +28,7 @@ namespace DataCloner.Tests
             _keys.SetKey(1, "db", "dbo", "table1", new object[] { 1, 2 }, new object[] { 1 });
         }
 
-        [Fact()]
+        [Fact]
         public void GetKeyValueTests()
         {
             object[] key = _keys.GetKey(1, "db", "dbo", "table1", new object[] { 1, 1 });
