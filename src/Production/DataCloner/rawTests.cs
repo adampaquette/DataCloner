@@ -25,7 +25,7 @@ namespace Class
         static int Main(string[] args)
         {
             //KeyRelationshipTest();
-            //ConfigTest();
+            ConfigTest();
             DataclonerTest1();
             //ActivatorTest();
             //CachedTableObjTest();
@@ -370,7 +370,17 @@ namespace Class
 
             var fkRemove = new TableModifiersXml.ForeignKeyRemoveXml()
             {
-                Name = "col3"
+                Columns = new List<TableModifiersXml.ForeignKeyRemoveColumnXml>
+                {
+                    new TableModifiersXml.ForeignKeyRemoveColumnXml
+                    {
+                        Name = "col3"
+                    },
+                    new TableModifiersXml.ForeignKeyRemoveColumnXml
+                    {
+                        Name = "col4"
+                    }
+                }
             };
 
             var table1 = new TableModifiersXml.TableModifierXml();
@@ -406,10 +416,10 @@ namespace Class
             //Save / load from file
             //=====================
             var serialized = config.SerializeXml();
-            config.Save("dc.config");
+            config.Save("dctest.config");
 
             ConfigurationXml configLoaded;
-            configLoaded = ConfigurationXml.Load("dc.config");
+            configLoaded = ConfigurationXml.Load("dctest.config");
         }
     }
 }

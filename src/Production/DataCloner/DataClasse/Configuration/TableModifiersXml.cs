@@ -186,10 +186,18 @@ namespace DataCloner.DataClasse.Configuration
 
         public class ForeignKeyRemoveXml
         {
+            [XmlElement("Column")]
+            public List<ForeignKeyRemoveColumnXml> Columns { get; set; }
+
+            public ForeignKeyRemoveXml() { }
+        }
+
+        public class ForeignKeyRemoveColumnXml
+        {
             [XmlAttribute]
             public string Name { get; set; }
 
-            public ForeignKeyRemoveXml() { }
+            public ForeignKeyRemoveColumnXml() { }
         }
     }
 }

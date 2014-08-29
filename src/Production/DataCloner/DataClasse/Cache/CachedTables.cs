@@ -266,7 +266,7 @@ namespace DataCloner.DataClasse.Cache
             }
         }
 
-        public void GenerateCommands()
+        private void GenerateCommands()
         {
             foreach (var server in _dic)
             {
@@ -333,9 +333,13 @@ namespace DataCloner.DataClasse.Cache
             }
         }
 
-        public void GenerateDerivativeTables(ConfigurationXml config)
+        /// <summary>
+        /// Génène les tables dérivées depuis les FK.
+        /// </summary>
+        /// <param name="config"></param>
+        /// <remarks>La configuration utilisateur des FK doit avoir été fusionnée à la cache avant la création des tables dérivées.</remarks>
+        private void GenerateDerivativeTables(ConfigurationXml config)
         {
-            //Precompile chaque table dérivée de chaque table
             foreach (var server in _dic)
             {
                 foreach (var database in server.Value)
@@ -344,80 +348,30 @@ namespace DataCloner.DataClasse.Cache
                     {
                         foreach (var table in schema.Value)
                         {
-                            var globalAccess = DerivativeTableAccess.NotSet;
-                            var globalCascade = false;
-
-                            //On remplit avec les éléments de la configuration
-                            if (config.TableModifiers.Servers.Exists(s => s.Id == server.Key))
+                            //On trouve les dérivées de la table
+                            foreach (var dbDeriv in server.Value)
                             {
-                                var serConfig = config.TableModifiers.Servers.Find(s => s.Id == server.Key);
-                                if (serConfig != null)
+                                foreach (var schemaDeriv in database.Value)
                                 {
-                                    var dbConfig = serConfig.Databases.Find(d => d.Name == database.Key);
-                                    if (dbConfig != null)
+                                    foreach (var tableDeriv in schema.Value)
                                     {
-                                        var scheConfig = dbConfig.Schemas.Find(s => s.Name == schema.Key);
-                                        if (scheConfig != null)
+                                        foreach (var fk in tableDeriv.ForeignKeys)
                                         {
-                                            var tblConfig = scheConfig.Tables.Find(t => t.Name == table.Name);
-                                            if (tblConfig != null)
+                                            //Si correspondance
+                                            if (fk.ServerIdTo == server.Key && fk.DatabaseTo == database.Key &&
+                                                fk.SchemaTo == schema.Key && fk.TableTo == table.Name)
                                             {
-                                                globalAccess = tblConfig.DerativeTablesConfig.GlobalAccess;
-                                                globalCascade = tblConfig.DerativeTablesConfig.Cascade;
-
-                                                foreach (var dtConfig in tblConfig.DerativeTablesConfig.DerativeTables)
+                                                //Si non présente
+                                                if (!table.DerivativeTables.Any(t => t.ServerId == fk.ServerIdTo && t.Schema == fk.SchemaTo &&
+                                                    t.Database == fk.DatabaseTo && t.Table == fk.TableTo))
                                                 {
-                                                    var dt = new DerivativeTable
+                                                    table.DerivativeTables = table.DerivativeTables.Add(new DerivativeTable
                                                     {
-                                                        ServerId = dtConfig.ServerId,
-                                                        Schema = dtConfig.Schema,
-                                                        Database = dtConfig.Database,
-                                                        Table = dtConfig.Table
-                                                    };
-
-                                                    if (dtConfig.Access == DerivativeTableAccess.NotSet)
-                                                        dt.Access = globalAccess;
-                                                    else
-                                                        dt.Access = dtConfig.Access;
-
-                                                    //if(dtConfig.Cascade)
-
-
-                                                    table.DerivativeTables = table.DerivativeTables.Add(dt);
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-
-                            if (globalAccess != DerivativeTableAccess.Denied)
-                            {
-                                //On trouve les dérivées de la table
-                                foreach (var dbDeriv in server.Value)
-                                {
-                                    foreach (var schemaDeriv in database.Value)
-                                    {
-                                        foreach (var tableDeriv in schema.Value)
-                                        {
-                                            foreach (var fk in tableDeriv.ForeignKeys)
-                                            {
-                                                //Si correspondance
-                                                if (fk.ServerIdTo == server.Key && fk.DatabaseTo == database.Key &&
-                                                    fk.SchemaTo == schema.Key && fk.TableTo == table.Name)
-                                                {
-                                                    //Si non présente
-                                                    if (!table.DerivativeTables.Any(t => t.ServerId == fk.ServerIdTo && t.Schema == fk.SchemaTo &&
-                                                        t.Database == fk.DatabaseTo && t.Table == fk.TableTo))
-                                                    {
-                                                        table.DerivativeTables = table.DerivativeTables.Add(new DerivativeTable
-                                                        {
-                                                            ServerId = fk.ServerIdTo,
-                                                            Schema = fk.SchemaTo,
-                                                            Database = fk.DatabaseTo,
-                                                            Table = fk.TableTo
-                                                        });
-                                                    }
+                                                        ServerId = fk.ServerIdTo,
+                                                        Schema = fk.SchemaTo,
+                                                        Database = fk.DatabaseTo,
+                                                        Table = fk.TableTo
+                                                    });
                                                 }
                                             }
                                         }
@@ -430,7 +384,7 @@ namespace DataCloner.DataClasse.Cache
             }
         }
 
-        public void MergeCacheAndUserConfig(ConfigurationXml config)
+        private void MergeFKConfig(ConfigurationXml config)
         {
             foreach (var server in _dic)
             {
@@ -448,21 +402,153 @@ namespace DataCloner.DataClasse.Cache
                                 if (scheConfig != null)
                                 {
                                     foreach (var table in schema.Value)
-                                    {                                       
+                                    {
                                         var tblConfig = scheConfig.Tables.Find(t => t.Name == table.Name);
                                         if (tblConfig != null)
                                         {
                                             //On affecte les changements de la configuration
-                                            table.IsStatic = tblConfig.IsStatic;
-                                            
+
+                                            //On supprime les clefs
+                                            foreach (var fkConfig in tblConfig.ForeignKeys.ForeignKeyRemove)
+                                            {
+                                                foreach (var colConfig in fkConfig.Columns)
+                                                {
+                                                    for(int j = 0; j< table.ForeignKeys.Count(); j++)
+                                                    {
+                                                        var fk = table.ForeignKeys[j];
+
+                                                        for (int i =0; i< fk.Columns.Count(); i++)
+                                                        {
+                                                            if (fk.Columns[i].NameFrom == colConfig.Name)
+                                                            {
+                                                                fk.Columns.RemoveAt(i);
+                                                                i--;
+
+                                                                if (fk.Columns.Count() == 0)
+                                                                {
+                                                                    table.ForeignKeys.RemoveAt(j);
+                                                                    j--;
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+
+                                            //On ajoute les clefs
+                                            foreach (var fkConfig in tblConfig.ForeignKeys.ForeignKeyAdd)
+                                            {
+                                                var newFK = new ForeignKey
+                                                {
+                                                    ServerIdTo = fkConfig.ServerId,
+                                                    DatabaseTo = fkConfig.Database,
+                                                    SchemaTo = fkConfig.Schema,
+                                                    TableTo = fkConfig.Table,
+                                                    Columns = (from fk in fkConfig.Columns select new ForeignKeyColumn { NameFrom = fk.NameFrom, NameTo  =fk.NameTo }).ToArray()
+                                                };
+
+                                                table.ForeignKeys.Add(newFK);                    
+                                            }
                                         }
-                                    }                                   
+                                    }
                                 }
                             }
                         }
                     }
                 }
             }
+        }
+
+        private void MergeCacheAndUserConfig(ConfigurationXml config)
+        {
+            foreach (var server in _dic)
+            {
+                var serConfig = config.TableModifiers.Servers.Find(s => s.Id == server.Key);
+                if (serConfig != null)
+                {
+                    foreach (var database in server.Value)
+                    {
+                        var dbConfig = serConfig.Databases.Find(d => d.Name == database.Key);
+                        if (dbConfig != null)
+                        {
+                            foreach (var schema in database.Value)
+                            {
+                                var scheConfig = dbConfig.Schemas.Find(s => s.Name == schema.Key);
+                                if (scheConfig != null)
+                                {
+                                    foreach (var table in schema.Value)
+                                    {
+                                        var tblConfig = scheConfig.Tables.Find(t => t.Name == table.Name);
+                                        if (tblConfig != null)
+                                        {
+                                            //On affecte les changements de la configuration
+                                            table.IsStatic = tblConfig.IsStatic;
+
+                                            var globalAccess = tblConfig.DerativeTablesConfig.GlobalAccess;
+                                            var globalCascade =  tblConfig.DerativeTablesConfig.Cascade;
+
+                                            foreach (var derivTbl in table.DerivativeTables)
+                                            {
+                                                var derivTblConfig = tblConfig.DerativeTablesConfig.DerativeTables.Where(t =>
+                                                                                t.ServerId == derivTbl.ServerId &&
+                                                                                t.Database == derivTbl.Database &&
+                                                                                t.Schema == derivTbl.Schema &&
+                                                                                t.Table == derivTbl.Table).FirstOrDefault();
+                                                if (derivTblConfig != null)
+                                                {
+                                                    derivTbl.Access = derivTblConfig.Access;
+                                                    derivTbl.Cascade = derivTblConfig.Cascade;
+                                                }
+                                                else
+                                                {
+                                                    derivTbl.Access = globalAccess;
+                                                    derivTbl.Cascade = globalCascade;
+                                                }
+                                            }
+
+
+                                            //foreach (var dtConfig in tblConfig.DerativeTablesConfig.DerativeTables)
+                                            //{
+                                            //    var dt = new DerivativeTable
+                                            //    {
+                                            //        ServerId = dtConfig.ServerId,
+                                            //        Schema = dtConfig.Schema,
+                                            //        Database = dtConfig.Database,
+                                            //        Table = dtConfig.Table
+                                            //    };
+
+                                            //    if (dtConfig.Access == DerivativeTableAccess.NotSet)
+                                            //        dt.Access = globalAccess;
+                                            //    else
+                                            //        dt.Access = dtConfig.Access;
+
+                                            //    //if(dtConfig.Cascade)
+
+
+                                            //    table.DerivativeTables = table.DerivativeTables.Add(dt);
+                                            //}
+
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Termine la construction de la cache.
+        /// </summary>
+        /// <param name="config"></param>
+        /// <remarks>Le schéma de la BD doit préalablement avoir été obtenu. GetColumns() et GetForeignKeys()</remarks>
+        public void FinalizeCache(ConfigurationXml config)
+        {
+            GenerateCommands();
+            MergeFKConfig(config);
+            GenerateDerivativeTables(config);
+            MergeCacheAndUserConfig(config);
         }
 
         public void Serialize(Stream stream)

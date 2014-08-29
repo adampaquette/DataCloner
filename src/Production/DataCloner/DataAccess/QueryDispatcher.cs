@@ -92,9 +92,7 @@ namespace DataCloner.DataAccess
                         provider.GetForeignKeys(Cache.CachedTables.LoadForeignKeys, databases[i]);
                     }
                 }                
-                Cache.CachedTables.GenerateCommands();
-                Cache.CachedTables.GenerateDerivativeTables(config);
-                Cache.CachedTables.MergeCacheAndUserConfig(config);
+                Cache.CachedTables.FinalizeCache(config);
 
                 //Save cache
                 var fsCache = new FileStream(fullCacheName, FileMode.Create);
