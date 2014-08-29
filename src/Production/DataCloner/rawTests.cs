@@ -24,6 +24,7 @@ namespace Class
     {
         static int Main(string[] args)
         {
+#if DEBUG
             //KeyRelationshipTest();
             ConfigTest();
             DataclonerTest1();
@@ -33,8 +34,10 @@ namespace Class
             //LoadingCacheTest();
             //ExtensionsTest();
             //Console.ReadKey();
+#endif
             return 0;
         }
+#if DEBUG
 
         public static void KeyRelationshipTest()
         {
@@ -421,5 +424,6 @@ namespace Class
             ConfigurationXml configLoaded;
             configLoaded = ConfigurationXml.Load("dctest.config");
         }
-    }
+#endif
+    }   
 }
