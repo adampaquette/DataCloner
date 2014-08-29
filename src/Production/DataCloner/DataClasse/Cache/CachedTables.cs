@@ -484,6 +484,7 @@ namespace DataCloner.DataClasse.Cache
                                             //On affecte les changements de la configuration
                                             table.IsStatic = tblConfig.IsStatic;
 
+                                            //Derivative tables
                                             var globalAccess = tblConfig.DerativeTablesConfig.GlobalAccess;
                                             var globalCascade =  tblConfig.DerativeTablesConfig.Cascade;
 
@@ -506,28 +507,13 @@ namespace DataCloner.DataClasse.Cache
                                                 }
                                             }
 
-
-                                            //foreach (var dtConfig in tblConfig.DerativeTablesConfig.DerativeTables)
-                                            //{
-                                            //    var dt = new DerivativeTable
-                                            //    {
-                                            //        ServerId = dtConfig.ServerId,
-                                            //        Schema = dtConfig.Schema,
-                                            //        Database = dtConfig.Database,
-                                            //        Table = dtConfig.Table
-                                            //    };
-
-                                            //    if (dtConfig.Access == DerivativeTableAccess.NotSet)
-                                            //        dt.Access = globalAccess;
-                                            //    else
-                                            //        dt.Access = dtConfig.Access;
-
-                                            //    //if(dtConfig.Cascade)
-
-
-                                            //    table.DerivativeTables = table.DerivativeTables.Add(dt);
-                                            //}
-
+                                            //Data builder
+                                            foreach (var builderCol in tblConfig.DataBuilders)
+                                            {
+                                                var col = table.SchemaColumns.Where(c => c.Name == builderCol.Name).FirstOrDefault();
+                                                if (col != null)
+                                                    col.BuilderName = builderCol.BuilderName;
+                                            }
                                         }
                                     }
                                 }
