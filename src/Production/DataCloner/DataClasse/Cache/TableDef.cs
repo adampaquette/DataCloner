@@ -110,13 +110,13 @@ namespace DataCloner.DataClasse.Cache
 
         public Dictionary<string, object> BuildDerivativePK(TableDef derivativeTable, object[] sourceRow)
         {
-            var colPKSource = new Dictionary<string, object>();
-            var colPKDest = new Dictionary<string, object>();
+            var colPKSrc = new Dictionary<string, object>();
+            var colPKDst = new Dictionary<string, object>();
 
             for (int j = 0; j < SchemaColumns.Length; j++)
             {
                 if (SchemaColumns[j].IsPrimary)
-                    colPKSource.Add(SchemaColumns[j].Name, sourceRow[j]);
+                    colPKSrc.Add(SchemaColumns[j].Name, sourceRow[j]);
             }
 
             foreach (var fk in derivativeTable.ForeignKeys)
@@ -124,18 +124,18 @@ namespace DataCloner.DataClasse.Cache
                 bool isGoodFK = true;
                 foreach (var col in fk.Columns)
                 {
-                    if (!colPKSource.ContainsKey(col.NameTo))
+                    if (!colPKSrc.ContainsKey(col.NameTo))
                         isGoodFK = false;
                 }
 
                 if (isGoodFK)
                 {
                     foreach (var col in fk.Columns)
-                        colPKDest.Add(col.NameFrom, colPKSource[col.NameTo]);
+                        colPKDst.Add(col.NameFrom, colPKSrc[col.NameTo]);
                     break;
                 }
             }
-            return colPKDest;
+            return colPKDst;
         }
 
         public override bool Equals(object obj)

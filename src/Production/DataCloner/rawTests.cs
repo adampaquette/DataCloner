@@ -39,8 +39,10 @@ namespace Class
             RowIdentifier source = new RowIdentifier();
 
             //Map serveur source / destination
-            dc.ServerMap.Add(new ServerIdentifier { ServerId = 1, Database = "sakila" }, new ServerIdentifier { ServerId = 1, Database = "sakila" });
-            dc.ServerMap.Add(new ServerIdentifier { ServerId = 1, Database = "employees" }, new ServerIdentifier { ServerId = 1, Database = "employees" });
+            dc.ServerMap.Add(new ServerIdentifier { ServerId = 1, Database = "sakila", Schema = "" }, 
+                             new ServerIdentifier { ServerId = 1, Database = "sakila", Schema = "" });
+            dc.ServerMap.Add(new ServerIdentifier { ServerId = 1, Database = "employees", Schema = "" }, 
+                             new ServerIdentifier { ServerId = 1, Database = "employees", Schema = "" });
 
             dc.Initialize();
 

@@ -17,13 +17,13 @@ namespace DataCloner.Framework
             if (index < 0 || index >= source.Length)
                 throw new ArgumentOutOfRangeException("index", index, "index is outside the bounds of source array");
 
-            T[] dest = new T[source.Length - 1];
-            Array.Copy(source, 0, dest, 0, index);
+            T[] destination = new T[source.Length - 1];
+            Array.Copy(source, 0, destination, 0, index);
 
             if (index < source.Length - 1)
-                Array.Copy(source, index + 1, dest, index, source.Length - index - 1);
+                Array.Copy(source, index + 1, destination, index, source.Length - index - 1);
 
-            return dest;
+            return destination;
         }
 
         public static T[] Remove<T>(this T[] source, T obj)

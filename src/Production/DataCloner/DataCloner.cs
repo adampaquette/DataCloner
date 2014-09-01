@@ -20,6 +20,7 @@ namespace DataCloner
     {
         public Int16 ServerId { get; set; }
         public string Database { get; set; }
+        public string Schema { get; set; }
     }
 
     class DataCloner
@@ -48,24 +49,30 @@ namespace DataCloner
 
         public IRowIdentifier SqlTraveler(IRowIdentifier riSource, bool getDerivatives, bool shouldReturnFk)
         {
-            object[][] sourceRows = _dispatcher.Select(riSource);
-            int nbRows = sourceRows.Length;
+            object[][] srcRows = _dispatcher.Select(riSource);
+            int nbRows = srcRows.Length;
             var table = _cacheTable.GetTable(riSource.ServerId, riSource.Database, riSource.Schema, riSource.Table);
             var fks = table.ForeignKeys;
-            var serverDest = ServerMap[new ServerIdentifier { ServerId = riSource.ServerId, Database = riSource.Database }];
             var autoIncrementPK = table.SchemaColumns.Where(c => c.IsAutoIncrement && c.IsPrimary).Any();
+            var serverDst = ServerMap[new ServerIdentifier 
+            { 
+                ServerId = riSource.ServerId, 
+                Database = riSource.Database,
+                Schema = riSource.Schema
+            }];
+            
             var riReturn = new RowIdentifier()
             {
-                ServerId = serverDest.ServerId,
-                Database = serverDest.Database,
-                Schema = riSource.Schema,
+                ServerId = serverDst.ServerId,
+                Database = serverDst.Database,
+                Schema = serverDst.Schema,
                 Table = riSource.Table
             };
             var tiDestination = new TableIdentifier()
             {
-                ServerId = serverDest.ServerId,
-                Database = serverDest.Database,
-                Schema = riSource.Schema,
+                ServerId = serverDst.ServerId,
+                Database = serverDst.Database,
+                Schema = serverDst.Schema,
                 Table = riSource.Table
             };
 
@@ -75,18 +82,18 @@ namespace DataCloner
             //For each row
             for (int i = 0; i < nbRows; i++)
             {
-                var currentRow = sourceRows[i];
-                object[] sourceKey = table.BuildRawPKFromDataRow(currentRow);
-                object[] destKey;
+                var currentRow = srcRows[i];
+                object[] srcKey = table.BuildRawPKFromDataRow(currentRow);
+                object[] dstKey;
 
                 //Si ligne déjà enregistrée
-                destKey = _keyRelationships.GetKey(serverDest.ServerId, serverDest.Database, riSource.Schema, riSource.Table, sourceKey);
-                if (destKey != null)
+                dstKey = _keyRelationships.GetKey(serverDst.ServerId, serverDst.Database, serverDst.Schema, riSource.Table, srcKey);
+                if (dstKey != null)
                 {
                     if (shouldReturnFk)
                     {
                         //Construit la pk de retour
-                        riReturn.Columns = table.BuildPKFromKey(destKey);
+                        riReturn.Columns = table.BuildPKFromKey(dstKey);
                         return riReturn;
                     }
                     else
@@ -99,8 +106,8 @@ namespace DataCloner
                     {
                         //Si le foreignkey est déjà dans la table de destination, on l'utilise
                         object[] fkValue = table.BuildRawFKFromDataRow(fk, currentRow);
-                        object[] fkDest = _keyRelationships.GetKey(fk.ServerIdTo, fk.DatabaseTo, fk.SchemaTo, fk.TableTo, fkValue);
-                        if (fkDest != null)
+                        object[] fkDst = _keyRelationships.GetKey(fk.ServerIdTo, fk.DatabaseTo, fk.SchemaTo, fk.TableTo, fkValue);
+                        if (fkDst != null)
                         {
                             //On trouve la position de chaque colonne pour affecter la valeur de destination
                             for (int j = 0; j < fk.Columns.Length; j++)
@@ -109,7 +116,7 @@ namespace DataCloner
                                 {
                                     if (fk.Columns[j].NameFrom == table.SchemaColumns[k].Name)
                                     {
-                                        destinationRow[k] = fkDest[j];
+                                        destinationRow[k] = fkDst[j];
                                         break;
                                     }
                                 }
@@ -181,9 +188,9 @@ namespace DataCloner
 
                     if (autoIncrementPK)
                     {
-                        destKey = new object[] { _dispatcher.GetLastInsertedPk(serverDest.ServerId) };
+                        dstKey = new object[] { _dispatcher.GetLastInsertedPk(serverDst.ServerId) };
                         //table.SetPKFromKey(ref destinationRow, destKey);
-                        _keyRelationships.SetKey(riSource.ServerId, riSource.Database, riSource.Schema, riSource.Table, sourceKey, destKey);
+                        _keyRelationships.SetKey(riSource.ServerId, riSource.Database, riSource.Schema, riSource.Table, srcKey, dstKey);
                     }
                     else
                     {
@@ -196,7 +203,7 @@ namespace DataCloner
                     //On affecte la valeur de retour
                     if (shouldReturnFk)
                     {
-                        riReturn.Columns = table.BuildPKFromKey(destKey);
+                        riReturn.Columns = table.BuildPKFromKey(dstKey);
                     }
 
                     /***********************************
