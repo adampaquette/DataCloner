@@ -73,10 +73,10 @@ namespace DataCloner.Tests
             Type t = Type.GetType("System.String");
             object result = null;
 
-            Assert.Throws(typeof(ArgumentException), new Assert.ThrowsDelegate(() =>
+            Assert.Throws(typeof(ArgumentException), () =>
             {
                 result = FastActivator<char[]>.GetConstructor(t, new Type[] { typeof(char[]), typeof(int) });
-            }));
+            });
         }
 
         [Fact]
@@ -85,10 +85,10 @@ namespace DataCloner.Tests
             Type t = Type.GetType("System.String");
             object result = null;
 
-            Assert.Throws(typeof(ArgumentException), new Assert.ThrowsDelegate(() =>
+            Assert.Throws(typeof(ArgumentException), () => 
             {
                 result = FastActivator<char, int>.GetConstructor(t, new Type[] { typeof(char) });
-            }));
+            });
         }
 
         [Fact]
@@ -96,10 +96,10 @@ namespace DataCloner.Tests
         {
             Type t = Type.GetType("System.String");
 
-            Assert.Throws(typeof(ArgumentException), new Assert.ThrowsDelegate(() =>
+            Assert.Throws(typeof(ArgumentException), () =>
             {
                 FastActivator<char, int, int>.GetConstructor(t, new Type[] { typeof(char*), typeof(int)});
-            }));
+            });
         }
     }
 }

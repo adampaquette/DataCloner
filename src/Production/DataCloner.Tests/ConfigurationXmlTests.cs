@@ -131,5 +131,23 @@ namespace DataCloner.Tests
 
             File.Delete(fileName);
         }
+
+        [Fact]
+        public void ConnectionStringServerIdInvalid()
+        {
+            var config = new ConfigurationXml();
+            config.ConnectionStrings.Add(new ConnectionXml(0, "", "", "", 0));
+
+            Assert.Throws(typeof(InvalidDataException), () => { config.Validate(); });
+        }
+
+        [Fact]
+        public void ConnectionStringNotFoundFromSameConfigAsId()
+        {
+            var config = new ConfigurationXml();
+            config.ConnectionStrings.Add(new ConnectionXml(1, "", "", "", 2));
+
+            Assert.Throws(typeof(InvalidDataException), () => { config.Validate(); });
+        }
     }
 }

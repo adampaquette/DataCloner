@@ -51,16 +51,16 @@ namespace DataCloner
         {
             object[][] srcRows = _dispatcher.Select(riSource);
             int nbRows = srcRows.Length;
-            var table = _cacheTable.GetTable(riSource.ServerId, riSource.Database, riSource.Schema, riSource.Table);
+            var table = _cacheTable.GetTable(Impersonate(riSource.ServerId), riSource.Database, riSource.Schema, riSource.Table);
             var fks = table.ForeignKeys;
             var autoIncrementPK = table.SchemaColumns.Where(c => c.IsAutoIncrement && c.IsPrimary).Any();
-            var serverDst = ServerMap[new ServerIdentifier 
-            { 
-                ServerId = riSource.ServerId, 
+            var serverDst = ServerMap[new ServerIdentifier
+            {
+                ServerId = riSource.ServerId,
                 Database = riSource.Database,
                 Schema = riSource.Schema
             }];
-            
+
             var riReturn = new RowIdentifier()
             {
                 ServerId = serverDst.ServerId,
@@ -125,7 +125,7 @@ namespace DataCloner
                         else
                         {
                             var fkDestinationExists = false;
-                            var fkTable = _cacheTable.GetTable(fk.ServerIdTo, fk.DatabaseTo, fk.SchemaTo, fk.TableTo);
+                            var fkTable = _cacheTable.GetTable(Impersonate(fk.ServerIdTo), fk.DatabaseTo, fk.SchemaTo, fk.TableTo);
                             var riFK = new RowIdentifier()
                             {
                                 ServerId = fk.ServerIdTo,
@@ -148,7 +148,7 @@ namespace DataCloner
                                 {
                                     //Sauve la clef
                                     var colFkObj = fkTable.BuildRawPKFromDataRow(fkRow[0]);
-                                    _keyRelationships.SetKey(fk.ServerIdTo, fk.DatabaseTo, fk.SchemaTo, fk.TableTo, colFkObj, colFkObj);                                   
+                                    _keyRelationships.SetKey(fk.ServerIdTo, fk.DatabaseTo, fk.SchemaTo, fk.TableTo, colFkObj, colFkObj);
                                 }
                             }
 
@@ -218,7 +218,7 @@ namespace DataCloner
 
                     foreach (var dt in derivativeTable)
                     {
-                        var cachedDT = _cacheTable.GetTable(dt.ServerId, dt.Database, dt.Schema, dt.Table);
+                        var cachedDT = _cacheTable.GetTable(Impersonate(dt.ServerId), dt.Database, dt.Schema, dt.Table);
 
                         if (dt.Access == Enum.DerivativeTableAccess.Forced && dt.Cascade)
                         {
@@ -240,6 +240,18 @@ namespace DataCloner
             }
 
             return riReturn;
+        }
+
+        /// <summary>
+        /// Impersonnification du schéma
+        /// </summary>
+        /// <param name="serverId"></param>
+        private Int16 Impersonate(Int16 serverId)
+        {
+            Int16 id =  _dispatcher.Cache.ConnectionStrings.Where(c => c.Id == serverId).First().SameConfigAsId;
+            if (id > 0)
+                return id;
+            return serverId; 
         }
     }
 }
