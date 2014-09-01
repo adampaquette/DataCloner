@@ -16,6 +16,8 @@ using DataCloner.Framework;
 using DataCloner.Enum;
 using DataCloner;
 
+using System.Data.SQLite;
+
 using Murmur;
 
 namespace Class
@@ -41,6 +43,12 @@ namespace Class
             dc.ServerMap.Add(new ServerIdentifier { ServerId = 1, Database = "employees" }, new ServerIdentifier { ServerId = 1, Database = "employees" });
 
             dc.Initialize();
+
+
+            SQLiteConnection.CreateFile("testDB.sqlite");
+
+            
+
 
             /*******************
                  Employees
@@ -83,7 +91,7 @@ namespace Class
             source.Columns.Add("active", 0);
             source.Columns.Add("address_id", 20);
             dc.SqlTraveler(source, true, false);
-        }               
+        }
 #endif
-    }   
+    }
 }

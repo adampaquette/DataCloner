@@ -25,8 +25,8 @@ namespace DataCloner.Tests
         {
             _config = new ConfigurationXml();
 
-            var cs = new ConnectionXml(1, "DataCloner.DataAccess.QueryProviderMySql", "server=localhost;user id=root; password=cdxsza; database=mysql; pooling=false", 1);
-            var cs2 = new ConnectionXml(2, "DataCloner.DataAccess.QueryProviderMySql", "server=localhost;user id=root; password=cdxsza; database=mysql; pooling=false", 1);
+            var cs = new ConnectionXml(1, "PROD", "DataCloner.DataAccess.QueryProviderMySql", "server=localhost;user id=root; password=cdxsza; database=mysql; pooling=false", 1);
+            var cs2 = new ConnectionXml(2, "UNI", "DataCloner.DataAccess.QueryProviderMySql", "server=localhost;user id=root; password=cdxsza; database=mysql; pooling=false", 1);
             _config.ConnectionStrings.Add(cs);
             _config.ConnectionStrings.Add(cs2);
 

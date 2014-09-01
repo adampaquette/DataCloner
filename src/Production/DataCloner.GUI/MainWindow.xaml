@@ -1,0 +1,53 @@
+﻿<Window x:Class="DataCloner.GUI.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="DataCloner GUI" Height="461" Width="525" BorderBrush="#FFC11C1C">
+    <Grid RenderTransformOrigin="0.5,0.5">
+        <Grid.RenderTransform>
+            <TransformGroup>
+                <ScaleTransform ScaleY="1" ScaleX="1"/>
+                <SkewTransform AngleY="0" AngleX="0"/>
+                <RotateTransform Angle="0"/>
+                <TranslateTransform/>
+            </TransformGroup>
+        </Grid.RenderTransform>
+        <Button Content="Exécuter" HorizontalAlignment="Right" Margin="0,0,10,10" VerticalAlignment="Bottom" Width="121" Height="34" />
+        <Label Content="Source : " HorizontalAlignment="Left" Margin="10,10,0,0" Width="99" Height="29" VerticalAlignment="Top"/>
+        <ComboBox Name="cbServerSource" HorizontalAlignment="Left" Margin="10,39,0,0" VerticalAlignment="Top" Width="120" ItemsSource="{Binding Mode=OneWay}">
+            <ComboBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Name}"/>
+                </DataTemplate>
+            </ComboBox.ItemTemplate>
+        </ComboBox>
+
+        <Label Content="Destination : " HorizontalAlignment="Left" Margin="10,76,0,0" Width="117" Height="29" VerticalAlignment="Top"/>
+        <ComboBox Name="cbServerDestination" HorizontalAlignment="Left" Margin="10,105,0,0" VerticalAlignment="Top" Width="120" ItemsSource="{Binding Mode=OneWay}">
+            <ComboBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Name}"/>
+                </DataTemplate>
+            </ComboBox.ItemTemplate>
+        </ComboBox>
+        <TextBlock HorizontalAlignment="Left" Margin="179,15,0,0" TextWrapping="Wrap" Text="Type d'extraction : " VerticalAlignment="Top"/>
+        <ComboBox Margin="179,39,10,0" VerticalAlignment="Top"/>
+        <Slider Margin="10,170,10,0" VerticalAlignment="Top"/>
+        <TextBlock HorizontalAlignment="Left" Margin="12,146,0,0" TextWrapping="Wrap" Text="Nombre de copies :" VerticalAlignment="Top" RenderTransformOrigin="0.483,0.564">
+            <TextBlock.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform AngleX="6.34"/>
+                    <RotateTransform/>
+                    <TranslateTransform X="1.005"/>
+                </TransformGroup>
+            </TextBlock.RenderTransform>
+        </TextBlock>
+        <ListView Margin="10,232,10,58">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn/>
+                </GridView>
+            </ListView.View>
+        </ListView>
+    </Grid>
+</Window>

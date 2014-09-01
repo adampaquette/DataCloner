@@ -37,7 +37,7 @@ namespace DataCloner.DataClasse.Configuration
         public static ConfigurationXml Load(string path)
         {
             var xs = new XmlSerializer(typeof(ConfigurationXml));
-            if (!File.Exists(path)) return new ConfigurationXml();
+            if (!File.Exists(path)) return null;
             var fs = new FileStream(path, FileMode.Open);
             var cReturn = (ConfigurationXml)xs.Deserialize(fs);
             fs.Close();
