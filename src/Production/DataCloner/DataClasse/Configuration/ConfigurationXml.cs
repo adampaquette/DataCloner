@@ -53,7 +53,7 @@ namespace DataCloner.DataClasse.Configuration
                 if (cs.Id == 0)
                     throw new InvalidDataException("The connection string's Id cannot be 0. Index start at 1.");
 
-                if (ConnectionStrings.Where(c => c.Id == cs.SameConfigAsId && cs.SameConfigAsId > 0).FirstOrDefault() == null)
+                if (cs.SameConfigAsId > 0 && ConnectionStrings.Where(c => c.Id == cs.SameConfigAsId).FirstOrDefault() == null)
                     throw new InvalidDataException(String.Format("The connection string's Id {0} cannot be found for the attribute SameConfigAsId. " +
                                                                  "Zero represent nothing.", cs.SameConfigAsId));
             }
