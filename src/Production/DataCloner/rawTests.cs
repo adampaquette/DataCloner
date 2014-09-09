@@ -27,6 +27,7 @@ namespace Class
         static int Main(string[] args)
         {
 #if DEBUG
+            ServerMapTest();
             DataclonerTest1();
 #endif
             return 0;
@@ -48,8 +49,6 @@ namespace Class
 
 
             SQLiteConnection.CreateFile("testDB.sqlite");
-
-            
 
 
             /*******************
@@ -94,6 +93,45 @@ namespace Class
             source.Columns.Add("address_id", 20);
             dc.SqlTraveler(source, true, false);
         }
+
+        public static void ServerMapTest()
+        {
+            var sm = new ServersMaps();
+
+            var r1 = new ServersMaps.Road
+            {
+                ServerSrc = 3,
+                DatabaseSrc = "db1",
+                SchemaSrc = "",
+                ServerDst = 1,
+                DatabaseDst = "cloned",
+                SchemaDst = ""
+            };
+
+            var r2 = new ServersMaps.Road
+            {
+                ServerSrc = 2,
+                DatabaseSrc = "db1",
+                SchemaSrc = "",
+                ServerDst = 1,
+                DatabaseDst = "cloned",
+                SchemaDst = ""
+            };
+
+            var map = new ServersMaps.Map
+            {
+                nameFrom = "PROD",
+                nameTo = "UNE",
+                Roads = new List<ServersMaps.Road> { r1, r2 }
+            };
+
+            sm.Maps.Add(map);
+
+            string strSM = sm.SerializeXml();
+            var destrSM = strSM.DeserializeXml<ServersMaps>();
+        }
+
+
 #endif
     }
 }
