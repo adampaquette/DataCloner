@@ -11,12 +11,14 @@
                 <TranslateTransform/>
             </TransformGroup>
         </Grid.RenderTransform>
-        <Button Content="Exécuter" HorizontalAlignment="Right" Margin="0,0,217,10" VerticalAlignment="Bottom" Width="121" Height="34" />
+        <Button Name="btnExec" Content="Exécuter" HorizontalAlignment="Right" Margin="0,0,10,10" VerticalAlignment="Bottom" Width="121" Height="34" 
+                 Click="btnExec_Click" />
         <Label Content="Source : " HorizontalAlignment="Left" Margin="10,10,0,0" Width="99" Height="29" VerticalAlignment="Top"/>
-        <ComboBox Name="cbServerSource" HorizontalAlignment="Left" Margin="10,39,0,0" VerticalAlignment="Top" Width="120" ItemsSource="{Binding Mode=OneWay}">
+        <ComboBox Name="cbServerSource" HorizontalAlignment="Left" Margin="10,39,0,0" VerticalAlignment="Top" Width="120" ItemsSource="{Binding Mode=OneWay}"
+                   SelectionChanged="cbServerSource_SelectionChanged">
             <ComboBox.ItemTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding Name}"/>
+                    <TextBlock Text="{Binding}"/>
                 </DataTemplate>
             </ComboBox.ItemTemplate>
         </ComboBox>
@@ -25,13 +27,13 @@
         <ComboBox Name="cbServerDestination" HorizontalAlignment="Left" Margin="10,105,0,0" VerticalAlignment="Top" Width="120" ItemsSource="{Binding Mode=OneWay}">
             <ComboBox.ItemTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding Name}"/>
+                    <TextBlock Text="{Binding}"/>
                 </DataTemplate>
             </ComboBox.ItemTemplate>
         </ComboBox>
         <TextBlock HorizontalAlignment="Left" Margin="179,15,0,0" TextWrapping="Wrap" Text="Type d'extraction : " VerticalAlignment="Top"/>
-        <ComboBox Margin="179,39,217,0" VerticalAlignment="Top"/>
-        <Slider Margin="10,170,217,0" VerticalAlignment="Top"/>
+        <ComboBox Margin="179,39,10,0" VerticalAlignment="Top" Height="22"/>
+        <Slider Margin="10,170,10,0" VerticalAlignment="Top"/>
         <TextBlock HorizontalAlignment="Left" Margin="12,146,0,0" TextWrapping="Wrap" Text="Nombre de copies :" VerticalAlignment="Top" RenderTransformOrigin="0.483,0.564">
             <TextBlock.RenderTransform>
                 <TransformGroup>
@@ -42,13 +44,12 @@
                 </TransformGroup>
             </TextBlock.RenderTransform>
         </TextBlock>
-        <ListView Margin="10,232,217,58">
+        <ListView Margin="10,232,10,58">
             <ListView.View>
                 <GridView>
                     <GridViewColumn/>
                 </GridView>
             </ListView.View>
         </ListView>
-        <ListBox Name="lbMaps" HorizontalAlignment="Left" Height="381" Margin="328,39,0,0" VerticalAlignment="Top" Width="179"/>
     </Grid>
 </Window>

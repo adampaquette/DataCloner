@@ -36,7 +36,7 @@ namespace Class
 
         public static void DataclonerTest1()
         {
-            var dc = new DataCloner.DataCloner();
+            var dc = new DataCloner.Cloner();
             RowIdentifier source = new RowIdentifier();
 
             //Map serveur source / destination
@@ -129,6 +129,9 @@ namespace Class
 
             string strSM = sm.SerializeXml();
             var destrSM = strSM.DeserializeXml<ServersMaps>();
+
+            sm.SaveXml("serversmaps.config");
+            var smloaded = Extensions.LoadXml<ServersMaps>("serversmaps.config");
         }
 
 

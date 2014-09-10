@@ -23,7 +23,7 @@ namespace DataCloner
         public string Schema { get; set; }
     }
 
-    class DataCloner
+    public class Cloner
     {
         private QueryDispatcher _dispatcher;
         private CachedTables _cacheTable;
@@ -31,7 +31,7 @@ namespace DataCloner
 
         public Dictionary<ServerIdentifier, ServerIdentifier> ServerMap { get; set; }
 
-        public DataCloner()
+        public Cloner()
         {
             ServerMap = new Dictionary<ServerIdentifier, ServerIdentifier>();
         }

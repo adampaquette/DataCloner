@@ -6,7 +6,7 @@ namespace DataCloner.DataClasse.Configuration
 {
     public class ServersMaps
     {
-    [XmlElement("Map")]
+        [XmlElement("Map")]
         public List<Map> Maps { get; set; }
 
         public ServersMaps()
@@ -23,16 +23,16 @@ namespace DataCloner.DataClasse.Configuration
             [XmlElement("Road")]
             public List<Road> Roads { get; set; }
 
-            public Map() 
+            public Map()
             {
                 Roads = new List<Road>();
             }
         }
 
         public class Road
-        { 
+        {
             [XmlAttribute]
-            public Int16 ServerSrc {get;set;}
+            public Int16 ServerSrc { get; set; }
             [XmlAttribute]
             public string DatabaseSrc { get; set; }
             [XmlAttribute]

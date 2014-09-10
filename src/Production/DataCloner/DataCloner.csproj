@@ -95,7 +95,7 @@
     <Compile Include="DataClasse\Cache\Connection.cs" />
     <Compile Include="DataClasse\RowIdentifier.cs" />
     <Compile Include="DataClasse\TableIdentifier.cs" />
-    <Compile Include="DataCloner.cs" />
+    <Compile Include="Cloner.cs" />
     <Compile Include="Framework\Extensions.cs" />
     <Compile Include="Interface\Interfaces.cs" />
     <Compile Include="Interface\IQueryProvider.cs" />
