@@ -12,7 +12,7 @@ using Murmur;
 
 namespace DataCloner.DataClasse.Cache
 {
-    class Configuration
+    internal class Configuration
     {
         public const string CacheName = "dc";
         public const string Extension = ".cache";

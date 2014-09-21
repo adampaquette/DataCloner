@@ -57,6 +57,9 @@
     <StartupObject>Class.main</StartupObject>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="LZ4">
+      <HintPath>..\packages\lz4net.1.0.5.93\lib\net40-client\LZ4.dll</HintPath>
+    </Reference>
     <Reference Include="MySql.Data, Version=6.8.3.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
       <Private>True</Private>
       <HintPath>..\packages\MySql.Data.6.8.3\lib\net45\MySql.Data.dll</HintPath>
@@ -79,6 +82,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Archive\DataArchive.cs" />
     <Compile Include="DataClasse\Configuration\ServerMaps.cs" />
     <Compile Include="DataClasse\KeyRelationship.cs" />
     <Compile Include="DataClasse\Cache\CachedTables.cs" />
