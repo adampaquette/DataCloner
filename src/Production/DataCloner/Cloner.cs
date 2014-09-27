@@ -11,6 +11,7 @@ using System.IO;
 using System.Text;
 using System.Collections.Generic;
 using System.Security.Cryptography;
+using System.Data.SQLite;
 
 using Murmur;
 
@@ -25,11 +26,15 @@ namespace DataCloner
 
     public class Cloner
     {
+        private const string TEMP_FOLDER_NAME = "temp";
+
         private QueryDispatcher _dispatcher;
         private CachedTables _cacheTable;
         private KeyRelationship _keyRelationships;
 
         public Dictionary<ServerIdentifier, ServerIdentifier> ServerMap { get; set; }
+        public bool SaveToFile { get; set; }
+        public string SavePath { get; set; }
 
         public Cloner()
         {
@@ -45,6 +50,9 @@ namespace DataCloner
 
             if (ServerMap == null)
                 throw new Exception("ServerMap is not defined! Links source and destination.");
+
+            if (SaveToFile)
+                CreateDatabasesFiles();
         }
 
         public IRowIdentifier SqlTraveler(IRowIdentifier riSource, bool getDerivatives, bool shouldReturnFk)
@@ -248,10 +256,41 @@ namespace DataCloner
         /// <param name="serverId"></param>
         private Int16 Impersonate(Int16 serverId)
         {
-            Int16 id =  _dispatcher.Cache.ConnectionStrings.Where(c => c.Id == serverId).First().SameConfigAsId;
+            Int16 id = _dispatcher.Cache.ConnectionStrings.Where(c => c.Id == serverId).First().SameConfigAsId;
             if (id > 0)
                 return id;
-            return serverId; 
+            return serverId;
+        }
+
+        private void CreateDatabasesFiles()
+        {
+            string folderPath = Path.Combine(Path.GetDirectoryName(SavePath), TEMP_FOLDER_NAME);
+            int nbFileToCreate = ServerMap.Select(r => r.Value.ServerId).Distinct().Count();
+            int lastIdUsed = _dispatcher.Cache.ConnectionStrings.Max(cs => cs.Id);
+
+            if (!Directory.Exists(folderPath))
+                Directory.CreateDirectory(folderPath);
+
+            for (int i = 0; i < nbFileToCreate; i++)
+            {
+                int id = lastIdUsed + i + 1;
+                string fileName = id.ToString() + ".sqlite";
+                string fullFilePath = Path.Combine(folderPath, fileName);
+
+                //Crer le fichier
+                SQLiteConnection.CreateFile(fullFilePath);
+
+                //Crer la string de connection
+                _dispatcher.Cache.ConnectionStrings.Add(new Connection
+                {
+                    Id = (short)id,
+                    ConnectionString = String.Format("Data Source={0};Version=3;", fullFilePath),
+                    ProviderName = "SQLite",
+                    SameConfigAsId = 0
+                });
+
+                _dispatcher.CreateDatabaseFromCache(null, null);
+            }
         }
     }
 }

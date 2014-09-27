@@ -19,7 +19,6 @@ namespace DataCloner.Archive
 
         public string Description { get; set; }
         public List<RowIdentifier> OriginalQueries { get; set; }
-        public ServersMaps Maps { get; set; }
         public Configuration Cache { get; set; }
         public List<string> Databases { get; set; }
 
@@ -96,9 +95,6 @@ namespace DataCloner.Archive
                 foreach (var ri in OriginalQueries)
                     bstream.Write(ri.SerializeXml());
 
-                //Maps
-                bstream.Write(Maps.SerializeXml());
-
                 //Cache 
                 Cache.Serialize(ostream);
 
@@ -134,9 +130,6 @@ namespace DataCloner.Archive
                 for (int i = 0; i<nbQueries; i++)
                     archiveOut.OriginalQueries.Add(bstream.ReadString().DeserializeXml<RowIdentifier>());
 
-                //Maps
-                archiveOut.Maps = bstream.ReadString().DeserializeXml<ServersMaps>();
-
                 //Cache 
                 archiveOut.Cache = Configuration.Deserialize(istream);
 
@@ -148,7 +141,7 @@ namespace DataCloner.Archive
                     string filePath = Path.Combine(decompressedPath, fileName);
                     Int64 fileSize = bstream.ReadInt64();
                     if (fileSize > Int32.MaxValue)
-                        throw new OverflowException(String.Format("File size for {0} is larger then 32 bit byte.", fileName));
+                        throw new OverflowException(String.Format("File size for {0} is larger then 32 bit value.", fileName));
                     Int32 fileSize32 = Convert.ToInt32(fileSize);
 
                     if(!Directory.Exists(decompressedPath))

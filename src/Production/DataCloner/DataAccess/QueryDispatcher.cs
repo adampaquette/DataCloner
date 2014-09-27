@@ -142,6 +142,11 @@ namespace DataCloner.DataAccess
             return _providers[serverId].GetLastInsertedPk();
         }
 
+        public void CreateDatabaseFromCache(ServerIdentifier source, ServerIdentifier destination)
+        { 
+        
+        }
+
         public void Dispose()
         {
             //TODO : IDISPOSABLE
