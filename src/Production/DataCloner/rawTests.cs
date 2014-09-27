@@ -28,9 +28,9 @@ namespace Class
         static int Main(string[] args)
         {
 #if DEBUG
-            ArchiveTest();
+            //ArchiveTest();
             //ServerMapTest();
-            //DataclonerTest1();
+            DataclonerTest1();
 #endif
             return 0;
         }
@@ -172,10 +172,6 @@ namespace Class
                              new ServerIdentifier { ServerId = 1, Database = "employees", Schema = "" });
 
             dc.Initialize();
-
-
-            SQLiteConnection.CreateFile("testDB.sqlite");
-
 
             /*******************
                  Employees

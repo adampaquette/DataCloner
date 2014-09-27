@@ -289,7 +289,7 @@ namespace DataCloner
                     SameConfigAsId = 0
                 });
 
-                _dispatcher.CreateDatabaseFromCache(null, null);
+                //_dispatcher.CreateDatabaseFromCache(null, null);
             }
         }
     }

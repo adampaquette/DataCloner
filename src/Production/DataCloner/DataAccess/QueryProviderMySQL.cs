@@ -64,14 +64,14 @@ namespace DataCloner.DataAccess
             return databases.ToArray();
         }
 
-        public void GetColumns(Action<IDataReader, Int16, string> reader, string database)
+        public void GetColumns(ColumnReader reader, string database)
         {
             var sql =
                 "SELECT " +
                     "'' AS SHEMA," +
                     "TABLE_NAME," +
                     "COLUMN_NAME," +
-                    "DATA_TYPE," +
+                    "COLUMN_TYPE," +
                     "COLUMN_KEY = 'PRI' AS 'IsPrimaryKey'," +
                     "1 AS 'IsForeignKey'," +
                     "EXTRA = 'auto_increment' AS 'IsAutoIncrement' " +
@@ -87,7 +87,7 @@ namespace DataCloner.DataAccess
                 cmd.Parameters.AddWithValue("@DATABASE", database);
                 using (var r = cmd.ExecuteReader())
                 {
-                    reader(r, _serverIdCtx, database);
+                    reader(r, _serverIdCtx, database, SqlToClrDatatype);
                 }
             }
         }
@@ -273,6 +273,120 @@ namespace DataCloner.DataAccess
         public void Init()
         {
             throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Détermine le type CLR depuis le type SQL renseigné sous les formes :
+        /// smallint(5) unsigned, varchar(50), decimal(5,2), timestamp, enum('G','P','R').
+        /// </summary>
+        /// <param name="fullType">Type de la colonne SQL</param>
+        /// <returns>Type CLR</returns>
+        /// <seealso cref="http://kimbriggs.com/computers/computer-notes/mysql-notes/mysql-data-types-50.file"/>
+        public Type SqlToClrDatatype(string fullType)
+        {
+            fullType = fullType.ToLower();
+            int startPosLength = fullType.IndexOf("(");
+            int endPosLength = fullType.IndexOf(")");
+            string[] values = fullType.Split(' ');
+            string type;
+            string descriptor;
+            string[] descriptorValues = null;
+            int length;
+            int precision;
+            bool? signedness = null;
+
+            //S'il y a une description du type entre ()
+            if (startPosLength > -1 && endPosLength > startPosLength)
+            {
+                descriptor = fullType.Substring(startPosLength + 1, endPosLength - startPosLength - 1);
+                descriptorValues = descriptor.Split(',');
+                type = values[0].Substring(0, startPosLength);
+            }
+            else
+            {
+                type = values[0];
+            }
+
+            if (values.Length > 1)
+                signedness = values[1] == "signed";
+
+            //Parse descriptior
+            switch (type)
+            {
+                case "enum":
+                case "set":
+                    break; //Not supported
+                default:
+                    if (descriptorValues != null)
+                    {
+                        if (descriptorValues.Length > 1)
+                            precision = Int32.Parse(descriptorValues[1]);
+                        length = Int32.Parse(descriptorValues[0]);
+                    }
+                    break;
+            }
+
+            //From unsigned to CLR data type
+            if (signedness.HasValue && !signedness.Value)
+            {
+                switch (type)
+                {
+                    case "tinyint":
+                    case "smallint":
+                    case "mediumint": //À vérifier
+                        return typeof(Int32);
+                    case "int":
+                        return typeof(Int64);
+                    case "bigint":
+                        return typeof(Decimal);                        
+                }
+            }
+
+            //From signed to CLR data type
+            switch (type)
+            {
+                case "tinyint":
+                    return typeof(Byte);
+                case "smallint":
+                case "year":
+                    return typeof(Int16);
+                case "mediumint":
+                case "int":
+                    return typeof(Int32);
+                case "bigint":
+                case "bit":
+                    return typeof(Int64);
+                case "float":
+                    return typeof(Single);
+                case "double":
+                    return typeof(Double);
+                case "decimal":
+                    return typeof(Decimal);
+                case "char":
+                case "varchar":
+                case "tinytext":
+                case "text":
+                case "mediumtext":
+                case "longtext":
+                case "binary":
+                case "varbinary":
+                    return typeof(String);
+                case "tinyblob":
+                case "blob":
+                case "mediumblob":
+                case "longblob":
+                case "enum":
+                case "set":
+                    return typeof(Byte[]);
+                case "date":
+                case "datetime":
+                    return typeof(DateTime);
+                case "time":
+                case "timestamp":
+                    return typeof(TimeSpan);
+            }
+
+            return null;
         }
     }
 }
