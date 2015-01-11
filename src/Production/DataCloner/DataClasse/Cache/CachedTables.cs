@@ -140,20 +140,21 @@ namespace DataCloner.DataClasse.Cache
             string currentTable = string.Empty;
             string currentConstraint = string.Empty;
 
+            if (!reader.Read())
+                return;
+
             //Init first row
-            if (reader.Read())
+            currentSchema = reader.GetString(0);
+            previousTable = _dic[serverId][database][currentSchema].Where(t => t.Name == reader.GetString(1)).First();
+            previousConstraint = reader.GetString(2);
+            fkPreviousConstraint = new ForeignKey()
             {
-                currentSchema = reader.GetString(0);
-                previousTable = _dic[serverId][database][currentSchema].Where(t => t.Name == reader.GetString(1)).First();
-                previousConstraint = reader.GetString(2);
-                fkPreviousConstraint = new ForeignKey()
-                {
-                    ServerIdTo = serverId,
-                    DatabaseTo = database,
-                    SchemaTo = currentSchema,
-                    TableTo = reader.GetString(5)
-                };
-            }
+                ServerIdTo = serverId,
+                DatabaseTo = database,
+                SchemaTo = currentSchema,
+                TableTo = reader.GetString(5)
+            };
+
 
             //Pour chaque ligne
             do
@@ -215,12 +216,12 @@ namespace DataCloner.DataClasse.Cache
             string currentSchema = string.Empty;
             string currentTable;
 
+            if (!reader.Read())
+                return;
+
             //Init first row
-            if (reader.Read())
-            {
-                previousSchema = reader.GetString(0);
-                previousTable.Name = reader.GetString(1);
-            }
+            previousSchema = reader.GetString(0);
+            previousTable.Name = reader.GetString(1);
 
             //Pour chaque ligne
             do
@@ -413,11 +414,11 @@ namespace DataCloner.DataClasse.Cache
                                             {
                                                 foreach (var colConfig in fkConfig.Columns)
                                                 {
-                                                    for(int j = 0; j< table.ForeignKeys.Count(); j++)
+                                                    for (int j = 0; j < table.ForeignKeys.Count(); j++)
                                                     {
                                                         var fk = table.ForeignKeys[j];
 
-                                                        for (int i =0; i< fk.Columns.Count(); i++)
+                                                        for (int i = 0; i < fk.Columns.Count(); i++)
                                                         {
                                                             if (fk.Columns[i].NameFrom == colConfig.Name)
                                                             {
@@ -444,10 +445,10 @@ namespace DataCloner.DataClasse.Cache
                                                     DatabaseTo = fkConfig.Database,
                                                     SchemaTo = fkConfig.Schema,
                                                     TableTo = fkConfig.Table,
-                                                    Columns = (from fk in fkConfig.Columns select new ForeignKeyColumn { NameFrom = fk.NameFrom, NameTo  =fk.NameTo }).ToArray()
+                                                    Columns = (from fk in fkConfig.Columns select new ForeignKeyColumn { NameFrom = fk.NameFrom, NameTo = fk.NameTo }).ToArray()
                                                 };
 
-                                                table.ForeignKeys.Add(newFK);                    
+                                                table.ForeignKeys.Add(newFK);
                                             }
                                         }
                                     }
@@ -486,7 +487,7 @@ namespace DataCloner.DataClasse.Cache
 
                                             //Derivative tables
                                             var globalAccess = tblConfig.DerativeTablesConfig.GlobalAccess;
-                                            var globalCascade =  tblConfig.DerativeTablesConfig.Cascade;
+                                            var globalCascade = tblConfig.DerativeTablesConfig.Cascade;
 
                                             foreach (var derivTbl in table.DerivativeTables)
                                             {
