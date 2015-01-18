@@ -2,7 +2,6 @@
 using DataCloner.DataClasse;
 using DataCloner.DataClasse.Cache;
 using DataCloner.DataClasse.Configuration;
-using DataCloner.Interface;
 using DataCloner.Framework;
 
 using System;
@@ -45,7 +44,7 @@ namespace DataCloner
         {
             _dispatcher = new QueryDispatcher();
             _dispatcher.Initialize(cacheName);
-            _cacheTable = _dispatcher.Cache.CachedTables;
+            _cacheTable = QueryDispatcher.Cache.CachedTables;
             _keyRelationships = new KeyRelationship();
 
             if (ServerMap == null)
@@ -57,9 +56,9 @@ namespace DataCloner
 
         public IRowIdentifier SqlTraveler(IRowIdentifier riSource, bool getDerivatives, bool shouldReturnFk)
         {
-            object[][] srcRows = _dispatcher.Select(riSource);
+            var srcRows = riSource.Select();
             int nbRows = srcRows.Length;
-            var table = _cacheTable.GetTable(Impersonate(riSource.ServerId), riSource.Database, riSource.Schema, riSource.Table);
+            var table = riSource.GetTable();
             var fks = table.ForeignKeys;
             var autoIncrementPK = table.SchemaColumns.Where(c => c.IsAutoIncrement && c.IsPrimary).Any();
             var serverDst = ServerMap[new ServerIdentifier
@@ -133,7 +132,8 @@ namespace DataCloner
                         else
                         {
                             var fkDestinationExists = false;
-                            var fkTable = _cacheTable.GetTable(Impersonate(fk.ServerIdTo), fk.DatabaseTo, fk.SchemaTo, fk.TableTo);
+                            var fkTable = fk.GetTable();
+                            //var fkTable = _cacheTable.GetTable(Impersonate(fk.ServerIdTo), fk.DatabaseTo, fk.SchemaTo, fk.TableTo);
                             var riFK = new RowIdentifier()
                             {
                                 ServerId = fk.ServerIdTo,
@@ -226,7 +226,8 @@ namespace DataCloner
 
                     foreach (var dt in derivativeTable)
                     {
-                        var cachedDT = _cacheTable.GetTable(Impersonate(dt.ServerId), dt.Database, dt.Schema, dt.Table);
+                        var cachedDT = dt.GetTable();
+                        //var cachedDT = _cacheTable.GetTable(Impersonate(dt.ServerId), dt.Database, dt.Schema, dt.Table);
 
                         if (dt.Access == Enum.DerivativeTableAccess.Forced && dt.Cascade)
                         {
@@ -250,23 +251,11 @@ namespace DataCloner
             return riReturn;
         }
 
-        /// <summary>
-        /// Impersonnification du schéma
-        /// </summary>
-        /// <param name="serverId"></param>
-        private Int16 Impersonate(Int16 serverId)
-        {
-            Int16 id = _dispatcher.Cache.ConnectionStrings.Where(c => c.Id == serverId).First().SameConfigAsId;
-            if (id > 0)
-                return id;
-            return serverId;
-        }
-
         private void CreateDatabasesFiles()
         {
             string folderPath = Path.Combine(Path.GetDirectoryName(SavePath), TEMP_FOLDER_NAME);
             int nbFileToCreate = ServerMap.Select(r => r.Value.ServerId).Distinct().Count();
-            int lastIdUsed = _dispatcher.Cache.ConnectionStrings.Max(cs => cs.Id);
+            int lastIdUsed = QueryDispatcher.Cache.ConnectionStrings.Max(cs => cs.Id);
 
             if (!Directory.Exists(folderPath))
                 Directory.CreateDirectory(folderPath);
@@ -281,7 +270,7 @@ namespace DataCloner
                 SQLiteConnection.CreateFile(fullFilePath);
 
                 //Crer la string de connection
-                _dispatcher.Cache.ConnectionStrings.Add(new Connection
+                QueryDispatcher.Cache.ConnectionStrings.Add(new Connection
                 {
                     Id = (short)id,
                     ConnectionString = String.Format("Data Source={0};Version=3;", fullFilePath),

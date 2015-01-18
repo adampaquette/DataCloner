@@ -7,7 +7,9 @@ using System.Threading.Tasks;
 using System.IO;
 
 using DataCloner.Framework;
+using DataCloner.Framework.GeneralExtensionHelper;
 using DataCloner.Enum;
+using DataCloner.DataAccess;
 
 namespace DataCloner.DataClasse.Cache
 {
@@ -336,6 +338,27 @@ namespace DataCloner.DataClasse.Cache
         public override int GetHashCode()
         {
             return Table.GetHashCode();
+        }
+    }
+
+    internal static class TableDefExtensions
+    {
+        internal static TableDef GetTable(this ForeignKey fk)
+        {
+            return QueryDispatcher.Cache.CachedTables.GetTable(
+                Impersonate(fk.ServerIdTo), fk.DatabaseTo, fk.SchemaTo, fk.TableTo);
+        }
+
+        internal static TableDef GetTable(this DerivativeTable dt)
+        {
+            return QueryDispatcher.Cache.CachedTables.GetTable(
+                Impersonate(dt.ServerId), dt.Database, dt.Schema, dt.Table);
+        }
+
+        internal static TableDef GetTable(this ITableIdentifier dt)
+        {
+            return QueryDispatcher.Cache.CachedTables.GetTable(
+                Impersonate(dt.ServerId), dt.Database, dt.Schema, dt.Table);
         }
     }
 }

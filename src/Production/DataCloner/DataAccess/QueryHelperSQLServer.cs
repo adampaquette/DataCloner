@@ -4,9 +4,8 @@ using System.Data;
 using System.Data.SqlClient;
 
 using DataCloner.DataClasse;
-using DataCloner.Interface;
 using DataCloner.DataClasse.Cache;
-using IQueryProvider = DataCloner.Interface.IQueryProvider;
+using IQueryProvider = DataCloner.IQueryHelper;
 
 namespace DataCloner.DataAccess
 {

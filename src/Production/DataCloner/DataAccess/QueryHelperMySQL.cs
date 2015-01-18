@@ -4,35 +4,33 @@ using System.Data;
 using System.Collections.Generic;
 using System.Linq;
 
+using SqlFu;
 using DataCloner.DataClasse.Cache;
-using DataCloner.Interface;
-using MySql.Data.MySqlClient;
-using IQueryProvider = DataCloner.Interface.IQueryProvider;
 
 namespace DataCloner.DataAccess
 {
-    internal sealed class QueryProviderMySql : IQueryProvider
+    internal sealed class QueryHelperMySql : IQueryHelper
     {
-        private readonly MySqlConnection _conn;
+        private readonly IDbConnection _conn;
         private readonly Configuration _cache;
         private readonly Int16 _serverIdCtx;
         private readonly bool _isReadOnly;
 
-        public QueryProviderMySql(string connectionString, Int16 serverId, Configuration cache)
+        public QueryHelperMySql(string connectionString, Int16 serverId, Configuration cache)
         {
             _cache = cache;
             _serverIdCtx = serverId;
-            _conn = new MySqlConnection(connectionString);
+            _conn = new SqlFuConnection(connectionString, DbEngine.MySql);
             _conn.Open();
         }
 
-        public QueryProviderMySql(string connectionString, Int16 serverId, Configuration cache, bool readOnly)
+        public QueryHelperMySql(string connectionString, Int16 serverId, Configuration cache, bool readOnly)
             : this(connectionString, serverId, cache)
         {
             _isReadOnly = readOnly;
         }
 
-        ~QueryProviderMySql()
+        ~QueryHelperMySql()
         {
             Dispose(false);
         }
@@ -84,7 +82,13 @@ namespace DataCloner.DataAccess
             using (var cmd = _conn.CreateCommand())
             {
                 cmd.CommandText = sql;
-                cmd.Parameters.AddWithValue("@DATABASE", database);
+
+                var p = cmd.CreateParameter();
+                p.ParameterName = "@DATABASE";
+                p.Value = database;
+                cmd.Parameters.Add(p);
+                //cmd.Parameters.AddWithValue("@DATABASE", database);
+
                 using (var r = cmd.ExecuteReader())
                 {
                     reader(r, _serverIdCtx, database, SqlToClrDatatype);
@@ -117,7 +121,13 @@ namespace DataCloner.DataAccess
             using (var cmd = _conn.CreateCommand())
             {
                 cmd.CommandText = sql;
-                cmd.Parameters.AddWithValue("@DATABASE", database);
+
+                var p = cmd.CreateParameter();
+                p.ParameterName = "@DATABASE";
+                p.Value = database;
+                cmd.Parameters.Add(p);
+                //cmd.Parameters.AddWithValue("@DATABASE", database);
+
                 using (var r = cmd.ExecuteReader())
                 {
                     reader(r, _serverIdCtx, database);
@@ -127,14 +137,17 @@ namespace DataCloner.DataAccess
 
         public object GetLastInsertedPk()
         {
-            var cmd = new MySqlCommand("SELECT LAST_INSERT_ID();", _conn);
+            var cmd = _conn.CreateCommand();
+            cmd.CommandText = "SELECT LAST_INSERT_ID();";
+            //var cmd = new MySqlCommand("SELECT LAST_INSERT_ID();", _conn);
             return cmd.ExecuteScalar();
         }
 
         public object[][] Select(IRowIdentifier ri)
         {
             List<object[]> rows = new List<object[]>();
-            TableDef schema = _cache.CachedTables.GetTable(ri.ServerId, ri.Database, ri.Schema, ri.Table);
+            TableDef schema = ri.GetTable();
+            //TableDef schema = _cache.CachedTables.GetTable(ri.ServerId, ri.Database, ri.Schema, ri.Table);
             StringBuilder query = new StringBuilder(schema.SelectCommand);
             int nbParams = ri.Columns.Count;
 
@@ -148,7 +161,13 @@ namespace DataCloner.DataAccess
                 {
                     string paramName = ri.Columns.ElementAt(i).Key;
                     query.Append(paramName).Append(" = @").Append(paramName);
-                    cmd.Parameters.AddWithValue("@" + paramName, ri.Columns.ElementAt(i).Value);
+
+                    var p = cmd.CreateParameter();
+                    p.ParameterName = "@" + paramName;
+                    p.Value = ri.Columns.ElementAt(i).Value;
+                    cmd.Parameters.Add(p);
+                    //cmd.Parameters.AddWithValue("@" + paramName, ri.Columns.ElementAt(i).Value);
+
                     if (i < nbParams - 1)
                         query.Append(" AND ");
                 }
@@ -173,7 +192,8 @@ namespace DataCloner.DataAccess
 
         public void Insert(ITableIdentifier ti, object[] row)
         {
-            TableDef schema = _cache.CachedTables.GetTable(ti.ServerId, ti.Database, ti.Schema, ti.Table);
+            TableDef schema = ti.GetTable();
+            //TableDef schema = _cache.CachedTables.GetTable(ti.ServerId, ti.Database, ti.Schema, ti.Table);
             if (schema.SchemaColumns.Count() != row.Length)
                 throw new Exception("The row doesn't correspond to schema!");
 
@@ -183,7 +203,12 @@ namespace DataCloner.DataAccess
                 for (int i = 0; i < schema.SchemaColumns.Count(); i++)
                 {
                     if (schema.SchemaColumns[i].IsAutoIncrement) continue;
-                    cmd.Parameters.AddWithValue("@" + schema.SchemaColumns[i].Name, row[i]);
+
+                    var p = cmd.CreateParameter();
+                    p.ParameterName = "@" + schema.SchemaColumns[i].Name;
+                    p.Value = row[i];
+                    cmd.Parameters.Add(p);
+                    //cmd.Parameters.AddWithValue("@" + schema.SchemaColumns[i].Name, row[i]);
                 }
                 cmd.CommandText = schema.InsertCommand;
 
@@ -199,7 +224,7 @@ namespace DataCloner.DataAccess
 
         public void Delete(IRowIdentifier ri)
         {
-            var cmd = new MySqlCommand();
+            var cmd = _conn.CreateCommand();
             var sql = new StringBuilder("DELETE FROM ");
             sql.Append(ri.Database)
                .Append(".")
@@ -215,7 +240,11 @@ namespace DataCloner.DataAccess
                    .Append(" = @")
                    .Append(kv.Key);
 
-                cmd.Parameters.AddWithValue("@" + kv.Key, kv.Value);
+                var p = cmd.CreateParameter();
+                p.ParameterName = "@" + kv.Key;
+                p.Value = kv.Value;
+                cmd.Parameters.Add(p);
+                //cmd.Parameters.AddWithValue("@" + kv.Key, kv.Value);
             }
 
             cmd.CommandText = sql.ToString();
@@ -338,7 +367,7 @@ namespace DataCloner.DataAccess
                     case "int":
                         return typeof(Int64);
                     case "bigint":
-                        return typeof(Decimal);                        
+                        return typeof(Decimal);
                 }
             }
 

@@ -5,7 +5,6 @@ using System.IO;
 using System.Text;
 using System.Security.Cryptography;
 
-using DataCloner.Interface;
 using DataCloner.DataClasse;
 using DataCloner.DataClasse.Cache;
 using DataCloner.DataClasse.Configuration;
@@ -17,8 +16,8 @@ namespace DataCloner.DataAccess
 {
     internal class QueryDispatcher : IQueryDispatcher
     {
-        public Configuration Cache {get;set;}
-        private Dictionary<Int16, IQueryProvider> _providers;
+        public static Configuration Cache { get; set; }
+        private static Dictionary<Int16, IQueryHelper> _providers;
 
         public QueryDispatcher()
         {
@@ -43,14 +42,9 @@ namespace DataCloner.DataAccess
             //Check if cached file match with config file version
             if (File.Exists(fullCacheName))
             {
-                FileStream fsCache = null;
-                BinaryReader brCache = null;
-
-                try
+                using (var fsCache = new FileStream(fullCacheName, FileMode.Open))
+                using (var brCache = new BinaryReader(fsCache))
                 {
-                    fsCache = new FileStream(fullCacheName, FileMode.Open);
-                    brCache = new BinaryReader(fsCache);
-                    
                     Cache.ConfigFileHash = brCache.ReadString();
                     cacheIsGood = Cache.ConfigFileHash == hashConfigFile;
 
@@ -60,10 +54,6 @@ namespace DataCloner.DataAccess
                         InitProviders(Cache.ConnectionStrings);
                         return;
                     }
-                }
-                finally
-                { 
-                    if (fsCache != null) fsCache.Close();
                 }
             }
 
@@ -82,16 +72,14 @@ namespace DataCloner.DataAccess
                 //Start fetching each server
                 foreach (var cs in config.ConnectionStrings)
                 {
-                    IQueryProvider provider = _providers[cs.Id];
-                    string[] databases = provider.GetDatabasesName();
-                    int nbDatabases = databases.Length;
+                    IQueryHelper provider = _providers[cs.Id];
 
-                    for (int i = 0; i < nbDatabases; i++)
+                    foreach (var database in provider.GetDatabasesName())
                     {
-                        provider.GetColumns(Cache.CachedTables.LoadColumns, databases[i]);
-                        provider.GetForeignKeys(Cache.CachedTables.LoadForeignKeys, databases[i]);
+                        provider.GetColumns(Cache.CachedTables.LoadColumns, database);
+                        provider.GetForeignKeys(Cache.CachedTables.LoadForeignKeys, database);
                     }
-                }                
+                }
                 Cache.CachedTables.FinalizeCache(config);
 
                 //Save cache
@@ -99,7 +87,7 @@ namespace DataCloner.DataAccess
                 Cache.Serialize(fsCache);
                 fsCache.Close();
             }
-        }  
+        }
 
         /// <summary>
         /// Récupération des providers qui seront utilisés pour effectuer les requêtes
@@ -107,14 +95,20 @@ namespace DataCloner.DataAccess
         /// <param name="config"></param>
         private void InitProviders(List<Connection> conns)
         {
-            _providers = new Dictionary<short, IQueryProvider>();
+            _providers = new Dictionary<short, IQueryHelper>();
 
             foreach (Connection conn in conns)
-            {
-                Type t = Type.GetType(conn.ProviderName);
-                var provider = FastActivator<string, Int16, Configuration>.CreateInstance(t, conn.ConnectionString, conn.Id, Cache) as IQueryProvider;
-                _providers.Add(conn.Id, provider);
-            }
+                _providers.Add(conn.Id, QueryHelperFactory.GetQueryHelper(conn.ProviderName, conn.ConnectionString, conn.Id, Cache));
+        }
+
+        public static IDbConnection GetConnection(IServerIdentifier server)
+        {
+            return _providers[server.ServerId].Connection;
+        }
+
+        public static IQueryHelper GetProvider(IServerIdentifier server)
+        {
+            return _providers[server.ServerId];
         }
 
         public object[][] Select(IRowIdentifier ri)
@@ -143,8 +137,8 @@ namespace DataCloner.DataAccess
         }
 
         public void CreateDatabaseFromCache(ServerIdentifier source, ServerIdentifier destination)
-        { 
-        
+        {
+
         }
 
         public void Dispose()
@@ -154,6 +148,14 @@ namespace DataCloner.DataAccess
             {
                 conn.Value.Dispose();
             }
+        }
+    }
+
+    internal static class QueryDispatcherExtensions
+    {
+        public static object[][] Select(this IRowIdentifier ri)
+        {
+            return QueryDispatcher.GetProvider(ri).Select(ri);
         }
     }
 }

@@ -3,12 +3,12 @@ using System.Data;
 
 using DataCloner.DataClasse.Cache;
 
-namespace DataCloner.Interface
+namespace DataCloner
 {
 
     public delegate void ColumnReader(IDataReader reader, Int16 serverId, string database, Func<string, Type> sqlToClrDatatype);
 
-    public interface IQueryProvider : IDisposable
+    public interface IQueryHelper : IDisposable
     {
         IDbConnection Connection { get; }
         bool IsReadOnly { get; }

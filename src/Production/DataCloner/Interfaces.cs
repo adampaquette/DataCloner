@@ -2,11 +2,15 @@
 using System.Collections.Generic;
 using System.Data;
 
-namespace DataCloner.Interface
+namespace DataCloner
 {
-    public interface ITableIdentifier
+    public interface IServerIdentifier
     {
         Int16 ServerId { get; set; }
+    }
+
+    public interface ITableIdentifier : IServerIdentifier
+    {
         string Database { get; set; }
         string Schema { get; set; }
         string Table { get; set; }
@@ -17,12 +21,8 @@ namespace DataCloner.Interface
         string Column { get; set; }
     }
 
-    public interface IRowIdentifier
+    public interface IRowIdentifier : ITableIdentifier
     {
-        Int16 ServerId { get; set; }
-        string Database { get; set; }
-        string Schema { get; set; }
-        string Table { get; set; }
         IDictionary<string, object> Columns { get; set; }
     }
 
@@ -54,7 +54,7 @@ namespace DataCloner.Interface
     }
 
     public interface IQueryDispatcher
-    {        
+    {
         //DataTable GetFk(ITableIdentifier ti);
         //Int64 GetLastInsertedPk(Int16 serverId);
         //object[] Select(IRowIdentifier ri);
