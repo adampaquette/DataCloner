@@ -14,16 +14,12 @@ using Murmur;
 
 namespace DataCloner.DataAccess
 {
-    internal class QueryDispatcher : IQueryDispatcher
+    internal static class QueryDispatcher
     {
         public static Configuration Cache { get; set; }
         private static Dictionary<Int16, IQueryHelper> _providers;
 
-        public QueryDispatcher()
-        {
-        }
-
-        public void Initialize(string cacheName = Configuration.CacheName)
+        public static void Initialize(string cacheName = Configuration.CacheName)
         {
             string fullCacheName = cacheName + Configuration.Extension;
             string fullConfigName = cacheName + ConfigurationXml.Extension;
@@ -93,7 +89,7 @@ namespace DataCloner.DataAccess
         /// Récupération des providers qui seront utilisés pour effectuer les requêtes
         /// </summary>
         /// <param name="config"></param>
-        private void InitProviders(List<Connection> conns)
+        private static void InitProviders(List<Connection> conns)
         {
             _providers = new Dictionary<short, IQueryHelper>();
 
@@ -106,42 +102,27 @@ namespace DataCloner.DataAccess
             return _providers[server.ServerId].Connection;
         }
 
-        public static IQueryHelper GetProvider(IServerIdentifier server)
+        public static IDbConnection GetConnection(Int16 server)
+        {
+            return _providers[server].Connection;
+        }
+
+        public static IQueryHelper GetQueryHelper(IServerIdentifier server)
         {
             return _providers[server.ServerId];
         }
 
-        public object[][] Select(IRowIdentifier ri)
+        public static IQueryHelper GetQueryHelper(Int16 server)
         {
-            return _providers[ri.ServerId].Select(ri);
+            return _providers[server];
         }
 
-        public void Insert(ITableIdentifier ti, object[] row)
-        {
-            _providers[ti.ServerId].Insert(ti, row);
-        }
-
-        public void Update(IRowIdentifier ri, DataRow[] rows)
-        {
-            _providers[ri.ServerId].Update(ri, rows);
-        }
-
-        public void Delete(IRowIdentifier ri)
-        {
-            _providers[ri.ServerId].Delete(ri);
-        }
-
-        public object GetLastInsertedPk(Int16 serverId)
-        {
-            return _providers[serverId].GetLastInsertedPk();
-        }
-
-        public void CreateDatabaseFromCache(ServerIdentifier source, ServerIdentifier destination)
+        public static void CreateDatabaseFromCache(ServerIdentifier source, ServerIdentifier destination)
         {
 
         }
 
-        public void Dispose()
+        public static void Dispose()
         {
             //TODO : IDISPOSABLE
             foreach (var conn in _providers)
@@ -153,9 +134,14 @@ namespace DataCloner.DataAccess
 
     internal static class QueryDispatcherExtensions
     {
-        public static object[][] Select(this IRowIdentifier ri)
+        public static IDbConnection GetConnection(this IServerIdentifier server)
         {
-            return QueryDispatcher.GetProvider(ri).Select(ri);
+            return QueryDispatcher.GetQueryHelper(server).Connection;
+        }
+
+        public static IQueryHelper GetQueryHelper(this IServerIdentifier server)
+        {
+            return QueryDispatcher.GetQueryHelper(server);
         }
     }
 }

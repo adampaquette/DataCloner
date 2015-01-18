@@ -87,7 +87,6 @@ namespace DataCloner.DataAccess
                 p.ParameterName = "@DATABASE";
                 p.Value = database;
                 cmd.Parameters.Add(p);
-                //cmd.Parameters.AddWithValue("@DATABASE", database);
 
                 using (var r = cmd.ExecuteReader())
                 {
@@ -139,7 +138,6 @@ namespace DataCloner.DataAccess
         {
             var cmd = _conn.CreateCommand();
             cmd.CommandText = "SELECT LAST_INSERT_ID();";
-            //var cmd = new MySqlCommand("SELECT LAST_INSERT_ID();", _conn);
             return cmd.ExecuteScalar();
         }
 
@@ -147,7 +145,6 @@ namespace DataCloner.DataAccess
         {
             List<object[]> rows = new List<object[]>();
             TableDef schema = ri.GetTable();
-            //TableDef schema = _cache.CachedTables.GetTable(ri.ServerId, ri.Database, ri.Schema, ri.Table);
             StringBuilder query = new StringBuilder(schema.SelectCommand);
             int nbParams = ri.Columns.Count;
 
@@ -166,7 +163,6 @@ namespace DataCloner.DataAccess
                     p.ParameterName = "@" + paramName;
                     p.Value = ri.Columns.ElementAt(i).Value;
                     cmd.Parameters.Add(p);
-                    //cmd.Parameters.AddWithValue("@" + paramName, ri.Columns.ElementAt(i).Value);
 
                     if (i < nbParams - 1)
                         query.Append(" AND ");
@@ -193,7 +189,6 @@ namespace DataCloner.DataAccess
         public void Insert(ITableIdentifier ti, object[] row)
         {
             TableDef schema = ti.GetTable();
-            //TableDef schema = _cache.CachedTables.GetTable(ti.ServerId, ti.Database, ti.Schema, ti.Table);
             if (schema.SchemaColumns.Count() != row.Length)
                 throw new Exception("The row doesn't correspond to schema!");
 
@@ -208,7 +203,6 @@ namespace DataCloner.DataAccess
                     p.ParameterName = "@" + schema.SchemaColumns[i].Name;
                     p.Value = row[i];
                     cmd.Parameters.Add(p);
-                    //cmd.Parameters.AddWithValue("@" + schema.SchemaColumns[i].Name, row[i]);
                 }
                 cmd.CommandText = schema.InsertCommand;
 
@@ -244,7 +238,6 @@ namespace DataCloner.DataAccess
                 p.ParameterName = "@" + kv.Key;
                 p.Value = kv.Value;
                 cmd.Parameters.Add(p);
-                //cmd.Parameters.AddWithValue("@" + kv.Key, kv.Value);
             }
 
             cmd.CommandText = sql.ToString();

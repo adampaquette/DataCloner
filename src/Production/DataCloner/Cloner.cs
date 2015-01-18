@@ -27,7 +27,6 @@ namespace DataCloner
     {
         private const string TEMP_FOLDER_NAME = "temp";
 
-        private QueryDispatcher _dispatcher;
         private CachedTables _cacheTable;
         private KeyRelationship _keyRelationships;
 
@@ -42,8 +41,7 @@ namespace DataCloner
 
         public void Initialize(string cacheName = Configuration.CacheName)
         {
-            _dispatcher = new QueryDispatcher();
-            _dispatcher.Initialize(cacheName);
+            QueryDispatcher.Initialize(cacheName);
             _cacheTable = QueryDispatcher.Cache.CachedTables;
             _keyRelationships = new KeyRelationship();
 
@@ -90,7 +88,7 @@ namespace DataCloner
             for (int i = 0; i < nbRows; i++)
             {
                 var currentRow = srcRows[i];
-                object[] srcKey = table.BuildRawPKFromDataRow(currentRow);
+                var srcKey = table.BuildRawPKFromDataRow(currentRow);
                 object[] dstKey;
 
                 //Si ligne déjà enregistrée
@@ -112,8 +110,8 @@ namespace DataCloner
                     foreach (var fk in table.ForeignKeys)
                     {
                         //Si le foreignkey est déjà dans la table de destination, on l'utilise
-                        object[] fkValue = table.BuildRawFKFromDataRow(fk, currentRow);
-                        object[] fkDst = _keyRelationships.GetKey(fk.ServerIdTo, fk.DatabaseTo, fk.SchemaTo, fk.TableTo, fkValue);
+                        var fkValue = table.BuildRawFKFromDataRow(fk, currentRow);
+                        var fkDst = _keyRelationships.GetKey(fk.ServerIdTo, fk.DatabaseTo, fk.SchemaTo, fk.TableTo, fkValue);
                         if (fkDst != null)
                         {
                             //On trouve la position de chaque colonne pour affecter la valeur de destination
@@ -133,7 +131,6 @@ namespace DataCloner
                         {
                             var fkDestinationExists = false;
                             var fkTable = fk.GetTable();
-                            //var fkTable = _cacheTable.GetTable(Impersonate(fk.ServerIdTo), fk.DatabaseTo, fk.SchemaTo, fk.TableTo);
                             var riFK = new RowIdentifier()
                             {
                                 ServerId = fk.ServerIdTo,
@@ -146,7 +143,7 @@ namespace DataCloner
                             //On ne copie pas la ligne si la table est statique
                             if (fkTable.IsStatic)
                             {
-                                object[][] fkRow = _dispatcher.Select(riFK);
+                                var fkRow = riFK.Select();
                                 fkDestinationExists = fkRow.Length == 1;
 
                                 //Si la ligne existe déjà, on l'utilise
@@ -167,7 +164,7 @@ namespace DataCloner
                                 var riNewFK = SqlTraveler(riFK, false, true);
 
                                 //La FK (ou unique constraint) n'est pas necessairement la PK donc on réobtient la ligne.
-                                object[][] newFKRow = _dispatcher.Select(riNewFK);
+                                var newFKRow = riNewFK.Select();
 
                                 //Affecte la clef
                                 for (int j = 0; j < fk.Columns.Length; j++)
@@ -192,11 +189,11 @@ namespace DataCloner
                     }
 
                     //La ligne de destination est prète à l'enregistrement
-                    _dispatcher.Insert(tiDestination, destinationRow);
+                    tiDestination.Insert(destinationRow);
 
                     if (autoIncrementPK)
                     {
-                        dstKey = new object[] { _dispatcher.GetLastInsertedPk(serverDst.ServerId) };
+                        dstKey = new object[] { QueryDispatcher.GetQueryHelper(serverDst.ServerId).GetLastInsertedPk() };
                         //table.SetPKFromKey(ref destinationRow, destKey);
                         _keyRelationships.SetKey(riSource.ServerId, riSource.Database, riSource.Schema, riSource.Table, srcKey, dstKey);
                     }
@@ -227,12 +224,8 @@ namespace DataCloner
                     foreach (var dt in derivativeTable)
                     {
                         var cachedDT = dt.GetTable();
-                        //var cachedDT = _cacheTable.GetTable(Impersonate(dt.ServerId), dt.Database, dt.Schema, dt.Table);
-
                         if (dt.Access == Enum.DerivativeTableAccess.Forced && dt.Cascade)
-                        {
                             getDerivatives = true;
-                        }
 
                         var riDT = new RowIdentifier
                         {

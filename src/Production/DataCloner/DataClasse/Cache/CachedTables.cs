@@ -607,13 +607,4 @@ namespace DataCloner.DataClasse.Cache
             return cTables;
         }
     }
-
-    internal static class CachedTableExtensions
-    {
-        internal static TableDef GetTable(this IRowIdentifier ri)
-        {
-            return QueryDispatcher.Cache.CachedTables.GetTable(
-                Impersonate(ri.ServerId), ri.Database, ri.Schema, ri.Table);
-        }        
-    }
 }
