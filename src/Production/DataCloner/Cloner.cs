@@ -13,6 +13,7 @@ using System.Security.Cryptography;
 using System.Data.SQLite;
 
 using Murmur;
+using DataCloner.PlugIn;
 
 namespace DataCloner
 {
@@ -122,7 +123,7 @@ namespace DataCloner
                                     if (fk.Columns[j].NameFrom == table.SchemaColumns[k].Name)
                                     {
                                         destinationRow[k] = fkDst[j];
-                                        break;
+                                        break; //TODO : VÉRIFIER SI ÇA BREAK À LA PREMIERE COL. SI OUI = ERREUR
                                     }
                                 }
                             }
@@ -178,15 +179,8 @@ namespace DataCloner
                         }
                     }
 
-                    //Récupérer les colonnes qui doivent être générées depuis la configuration dataBuilder 
-                    //Pour chaque colonne à générer
-                    foreach (var col in table.SchemaColumns)
-                    {
-                        if ((col.IsPrimary && !col.IsAutoIncrement) || !string.IsNullOrWhiteSpace(col.BuilderName))
-                        {
-                            //Générer data
-                        }
-                    }
+                    //Générer les colonnes qui ont été marquées dans la configuration dataBuilder 
+                    DataBuilder.BuildDataFromTable(tiDestination.GetConnection(), table, ref destinationRow);
 
                     //La ligne de destination est prète à l'enregistrement
                     tiDestination.Insert(destinationRow);
@@ -211,37 +205,40 @@ namespace DataCloner
                         riReturn.Columns = table.BuildPKFromKey(dstKey);
                     }
 
-                    /***********************************
-                                Get derivative
-                     ***********************************/
-                    IEnumerable<DerivativeTable> derivativeTable;
-
-                    if (getDerivatives)
-                        derivativeTable = table.DerivativeTables;
-                    else
-                        derivativeTable = table.DerivativeTables.Where(t => t.Access == Enum.DerivativeTableAccess.Forced);
-
-                    foreach (var dt in derivativeTable)
-                    {
-                        var cachedDT = dt.GetTable();
-                        if (dt.Access == Enum.DerivativeTableAccess.Forced && dt.Cascade)
-                            getDerivatives = true;
-
-                        var riDT = new RowIdentifier
-                        {
-                            ServerId = dt.ServerId,
-                            Database = dt.Database,
-                            Schema = dt.Schema,
-                            Table = dt.Table,
-                            Columns = table.BuildDerivativePK(cachedDT, currentRow)
-                        };
-
-                        SqlTraveler(riDT, getDerivatives, false);
-                    }
+                    //On clone les lignes des tables dépendantes
+                    GetDerivatives(table, currentRow, getDerivatives);                  
                 }
             }
 
             return riReturn;
+        }
+
+        private void GetDerivatives(TableDef table, object[] sourceRow, bool getDerivatives)
+        {
+            IEnumerable<IDerivativeTable> derivativeTable;
+
+            if (getDerivatives)
+                derivativeTable = table.DerivativeTables;
+            else
+                derivativeTable = table.DerivativeTables.Where(t => t.Access == Enum.DerivativeTableAccess.Forced);
+
+            foreach (var dt in derivativeTable)
+            {
+                var cachedDT = dt.GetTable();
+                if (dt.Access == Enum.DerivativeTableAccess.Forced && dt.Cascade)
+                    getDerivatives = true;
+
+                var riDT = new RowIdentifier
+                {
+                    ServerId = dt.ServerId,
+                    Database = dt.Database,
+                    Schema = dt.Schema,
+                    Table = dt.Table,
+                    Columns = table.BuildDerivativePK(cachedDT, sourceRow)
+                };
+
+                SqlTraveler(riDT, getDerivatives, false);
+            }
         }
 
         private void CreateDatabasesFiles()

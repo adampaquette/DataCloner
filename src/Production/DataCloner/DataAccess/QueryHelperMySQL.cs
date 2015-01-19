@@ -90,7 +90,7 @@ namespace DataCloner.DataAccess
 
                 using (var r = cmd.ExecuteReader())
                 {
-                    reader(r, _serverIdCtx, database, SqlToClrDatatype);
+                    reader(r, _serverIdCtx, database, SqlTypeToDbType);
                 }
             }
         }
@@ -298,13 +298,13 @@ namespace DataCloner.DataAccess
         }
 
         /// <summary>
-        /// Détermine le type CLR depuis le type SQL renseigné sous les formes :
+        /// Détermine le DbType correspondant au type SQL sous les formes :
         /// smallint(5) unsigned, varchar(50), decimal(5,2), timestamp, enum('G','P','R').
         /// </summary>
         /// <param name="fullType">Type de la colonne SQL</param>
-        /// <returns>Type CLR</returns>
+        /// <returns>Type DbType</returns>
         /// <seealso cref="http://kimbriggs.com/computers/computer-notes/mysql-notes/mysql-data-types-50.file"/>
-        public Type SqlToClrDatatype(string fullType)
+        public DbType SqlTypeToDbType(string fullType)
         {
             fullType = fullType.ToLower();
             int startPosLength = fullType.IndexOf("(");
@@ -356,11 +356,11 @@ namespace DataCloner.DataAccess
                     case "tinyint":
                     case "smallint":
                     case "mediumint": //À vérifier
-                        return typeof(Int32);
+                        return DbType.Int32;
                     case "int":
-                        return typeof(Int64);
+                        return DbType.Int64;
                     case "bigint":
-                        return typeof(Decimal);
+                        return DbType.Decimal;
                 }
             }
 
@@ -368,22 +368,22 @@ namespace DataCloner.DataAccess
             switch (type)
             {
                 case "tinyint":
-                    return typeof(Byte);
+                    return DbType.Byte;
                 case "smallint":
                 case "year":
-                    return typeof(Int16);
+                    return DbType.Int16;
                 case "mediumint":
                 case "int":
-                    return typeof(Int32);
+                    return DbType.Int32;
                 case "bigint":
                 case "bit":
-                    return typeof(Int64);
+                    return DbType.Int64;
                 case "float":
-                    return typeof(Single);
+                    return DbType.Single;
                 case "double":
-                    return typeof(Double);
+                    return DbType.Double;
                 case "decimal":
-                    return typeof(Decimal);
+                    return DbType.Decimal;
                 case "char":
                 case "varchar":
                 case "tinytext":
@@ -392,23 +392,23 @@ namespace DataCloner.DataAccess
                 case "longtext":
                 case "binary":
                 case "varbinary":
-                    return typeof(String);
+                    return DbType.String;
                 case "tinyblob":
                 case "blob":
                 case "mediumblob":
                 case "longblob":
                 case "enum":
                 case "set":
-                    return typeof(Byte[]);
+                    return DbType.Binary;
                 case "date":
                 case "datetime":
-                    return typeof(DateTime);
+                    return DbType.DateTime;
                 case "time":
                 case "timestamp":
-                    return typeof(TimeSpan);
+                    return DbType.Time;
             }
 
-            return null;
+            return DbType.Object;
         }
     }
 }

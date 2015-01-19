@@ -13,15 +13,15 @@ using DataCloner.DataAccess;
 
 namespace DataCloner.DataClasse.Cache
 {
-    internal sealed class TableDef
+    internal sealed class TableDef : ITableDef
     {
         public string Name { get; set; }
         public bool IsStatic { get; set; }
         public string SelectCommand { get; set; }
         public string InsertCommand { get; set; }
-        public DerivativeTable[] DerivativeTables { get; set; }
-        public ForeignKey[] ForeignKeys { get; set; }
-        public SchemaColumn[] SchemaColumns { get; set; }
+        public IDerivativeTable[] DerivativeTables { get; set; }
+        public IForeignKey[] ForeignKeys { get; set; }
+        public ISchemaColumn[] SchemaColumns { get; set; }
 
         public TableDef()
         {
@@ -30,7 +30,7 @@ namespace DataCloner.DataClasse.Cache
             SchemaColumns = new SchemaColumn[] { };
         }
 
-        public object[] BuildRawFKFromDataRow(ForeignKey fk, object[] row)
+        public object[] BuildRawFKFromDataRow(IForeignKey fk, object[] row)
         {
             var pk = new List<object>();
             for (int j = 0; j < fk.Columns.Length; j++)
@@ -41,7 +41,7 @@ namespace DataCloner.DataClasse.Cache
             return pk.ToArray();
         }
 
-        public Dictionary<string, object> BuildFKFromDataRow(ForeignKey fk, object[] row)
+        public Dictionary<string, object> BuildFKFromDataRow(IForeignKey fk, object[] row)
         {
             var colFK = new Dictionary<string, object>();
             for (int j = 0; j < fk.Columns.Length; j++)
@@ -110,7 +110,7 @@ namespace DataCloner.DataClasse.Cache
             }
         }
 
-        public Dictionary<string, object> BuildDerivativePK(TableDef derivativeTable, object[] sourceRow)
+        public Dictionary<string, object> BuildDerivativePK(ITableDef derivativeTable, object[] sourceRow)
         {
             var colPKSrc = new Dictionary<string, object>();
             var colPKDst = new Dictionary<string, object>();
@@ -205,7 +205,7 @@ namespace DataCloner.DataClasse.Cache
             for (int i = 0; i < nbRows; i++)
             {
                 stream.Write(SchemaColumns[i].Name);
-                stream.Write(SchemaColumns[i].Type);
+                stream.Write((Int32)SchemaColumns[i].Type);
                 stream.Write(SchemaColumns[i].IsPrimary);
                 stream.Write(SchemaColumns[i].IsForeignKey);
                 stream.Write(SchemaColumns[i].IsAutoIncrement);
@@ -273,7 +273,7 @@ namespace DataCloner.DataClasse.Cache
                 schemaColList.Add(new SchemaColumn()
                 {
                     Name = stream.ReadString(),
-                    Type = stream.ReadString(),
+                    Type = (DbType)stream.ReadInt32(),
                     IsPrimary = stream.ReadBoolean(),
                     IsForeignKey = stream.ReadBoolean(),
                     IsAutoIncrement = stream.ReadBoolean(),
@@ -289,32 +289,32 @@ namespace DataCloner.DataClasse.Cache
         }
     }
 
-    internal sealed class ForeignKey
+    internal sealed class ForeignKey : IForeignKey
     {
         public Int16 ServerIdTo { get; set; }
         public string DatabaseTo { get; set; }
         public string SchemaTo { get; set; }
         public string TableTo { get; set; }
-        public ForeignKeyColumn[] Columns { get; set; }
+        public IForeignKeyColumn[] Columns { get; set; }
     }
 
-    internal sealed class ForeignKeyColumn
+    internal sealed class ForeignKeyColumn : IForeignKeyColumn
     {
         public string NameFrom { get; set; }
         public string NameTo { get; set; }
     }
 
-    internal sealed class SchemaColumn
+    internal sealed class SchemaColumn : ISchemaColumn
     {
         public string Name { get; set; }
-        public string Type { get; set; }
+        public DbType Type { get; set; }
         public bool IsPrimary { get; set; }
         public bool IsForeignKey { get; set; }
         public bool IsAutoIncrement { get; set; }
         public string BuilderName { get; set; }
     }
 
-    internal sealed class DerivativeTable
+    internal sealed class DerivativeTable : IDerivativeTable
     {
         public Int16 ServerId { get; set; }
         public string Database { get; set; }
@@ -343,13 +343,13 @@ namespace DataCloner.DataClasse.Cache
 
     internal static class TableDefExtensions
     {
-        internal static TableDef GetTable(this ForeignKey fk)
+        internal static TableDef GetTable(this IForeignKey fk)
         {
             return QueryDispatcher.Cache.CachedTables.GetTable(
                 Impersonate(fk.ServerIdTo), fk.DatabaseTo, fk.SchemaTo, fk.TableTo);
         }
 
-        internal static TableDef GetTable(this DerivativeTable dt)
+        internal static TableDef GetTable(this IDerivativeTable dt)
         {
             return QueryDispatcher.Cache.CachedTables.GetTable(
                 Impersonate(dt.ServerId), dt.Database, dt.Schema, dt.Table);

@@ -3,10 +3,10 @@ using System.Data;
 
 using DataCloner.DataClasse.Cache;
 
-namespace DataCloner
+namespace DataCloner.DataAccess
 {
-
-    public delegate void ColumnReader(IDataReader reader, Int16 serverId, string database, Func<string, Type> sqlToClrDatatype);
+    public delegate void ColumnReader(IDataReader reader, Int16 serverId, string database, SqlTypeToDbTypeConverter sqlToClrDatatype);
+    public delegate DbType SqlTypeToDbTypeConverter(string sqlDataType);
 
     public interface IQueryHelper : IDisposable
     {
@@ -20,6 +20,6 @@ namespace DataCloner
         void Insert(ITableIdentifier ti, object[] row);
         void Update(IRowIdentifier ri, DataRow[] rows);
         void Delete(IRowIdentifier ri);
-        Type SqlToClrDatatype(string type);
+        DbType SqlTypeToDbType(string type);
     }
 }

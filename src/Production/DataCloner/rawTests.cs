@@ -94,7 +94,7 @@ namespace Class
             table.SchemaColumns = table.SchemaColumns.Add(new SchemaColumn()
             {
                 Name = "COL1",
-                Type = "INT",
+                Type = DbType.Int32,
                 IsPrimary = true,
                 IsForeignKey = false,
                 IsAutoIncrement = true,
@@ -103,7 +103,7 @@ namespace Class
             table.SchemaColumns = table.SchemaColumns.Add(new SchemaColumn()
             {
                 Name = "COL2",
-                Type = "INT",
+                Type = DbType.Int32,
                 IsPrimary = false,
                 IsForeignKey = false,
                 IsAutoIncrement = false,

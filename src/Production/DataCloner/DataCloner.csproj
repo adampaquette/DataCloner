@@ -96,6 +96,7 @@
     <Compile Include="Archive\DataArchive.cs" />
     <Compile Include="CrudHelpers.cs" />
     <Compile Include="DataAccess\QueryHelperFactory.cs" />
+    <Compile Include="DataClasse\Cache\ITableDef.cs" />
     <Compile Include="DataClasse\Configuration\ServerMapsXml.cs" />
     <Compile Include="DataClasse\KeyRelationship.cs" />
     <Compile Include="DataClasse\Cache\CachedTables.cs" />
@@ -103,6 +104,10 @@
     <Compile Include="Enum\Enums.cs" />
     <Compile Include="Framework\FastActivator.cs" />
     <Compile Include="Framework\Helpers.cs" />
+    <Compile Include="PlugIn\AutoIncrementDataBuilder.cs" />
+    <Compile Include="PlugIn\DataBuilder.cs" />
+    <Compile Include="PlugIn\IDataBuilder.cs" />
+    <Compile Include="PlugIn\StringDataBuilder.cs" />
     <Compile Include="rawTests.cs" />
     <Compile Include="DataAccess\QueryHelperMySQL.cs" />
     <Compile Include="DataAccess\QueryHelperSQLServer.cs" />
@@ -115,7 +120,7 @@
     <Compile Include="Cloner.cs" />
     <Compile Include="Framework\Extensions.cs" />
     <Compile Include="Interfaces.cs" />
-    <Compile Include="IQueryHelper.cs" />
+    <Compile Include="DataAccess\IQueryHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DataClasse\Configuration\ConfigurationXml.cs" />
     <Compile Include="DataClasse\Configuration\ConnectionXml.cs" />

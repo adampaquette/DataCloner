@@ -209,7 +209,7 @@ namespace DataCloner.DataClasse.Cache
             }
         }
 
-        public void LoadColumns(IDataReader reader, Int16 serverId, String database, Func<string, Type> dataTypeParser)
+        public void LoadColumns(IDataReader reader, Int16 serverId, String database, SqlTypeToDbTypeConverter dataTypeParser)
         {
             var lstTable = new List<TableDef>();
             var lstSchemaColumn = new List<SchemaColumn>();
@@ -253,7 +253,7 @@ namespace DataCloner.DataClasse.Cache
                 lstSchemaColumn.Add(new SchemaColumn()
                 {
                     Name = reader.GetString(2),
-                    Type = dataTypeParser(reader.GetString(3)).ToString(),
+                    Type = dataTypeParser(reader.GetString(3)),
                     IsPrimary = reader.GetBoolean(4),
                     IsForeignKey = reader.GetBoolean(5),
                     IsAutoIncrement = reader.GetBoolean(6)
