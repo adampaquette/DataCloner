@@ -13,6 +13,7 @@ using DataCloner.Enum;
 
 using Class;
 using Xunit;
+using System.Data;
 
 namespace DataCloner.Tests
 {
@@ -34,7 +35,7 @@ namespace DataCloner.Tests
             _table.SchemaColumns = _table.SchemaColumns.Add(new SchemaColumn()
             {
                 Name = "COL1",
-                Type = "INT",
+                Type = DbType.Int32,
                 IsPrimary = true,
                 IsForeignKey = false,
                 IsAutoIncrement = true,
@@ -43,7 +44,7 @@ namespace DataCloner.Tests
             _table.SchemaColumns = _table.SchemaColumns.Add(new SchemaColumn()
             {
                 Name = "COL2",
-                Type = "INT",
+                Type = DbType.Int32,
                 IsPrimary = false,
                 IsForeignKey = false,
                 IsAutoIncrement = false,
