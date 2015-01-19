@@ -96,11 +96,11 @@
     <Compile Include="Archive\DataArchive.cs" />
     <Compile Include="CrudHelpers.cs" />
     <Compile Include="DataAccess\QueryHelperFactory.cs" />
-    <Compile Include="DataClasse\Cache\ITableDef.cs" />
+    <Compile Include="DataClasse\Cache\ITableSchema.cs" />
     <Compile Include="DataClasse\Configuration\ServerMapsXml.cs" />
     <Compile Include="DataClasse\KeyRelationship.cs" />
-    <Compile Include="DataClasse\Cache\CachedTables.cs" />
-    <Compile Include="DataClasse\Cache\TableDef.cs" />
+    <Compile Include="DataClasse\Cache\CachedTablesSchema.cs" />
+    <Compile Include="DataClasse\Cache\TableSchema.cs" />
     <Compile Include="Enum\Enums.cs" />
     <Compile Include="Framework\FastActivator.cs" />
     <Compile Include="Framework\Helpers.cs" />

@@ -144,7 +144,7 @@ namespace DataCloner.DataAccess
         public object[][] Select(IRowIdentifier ri)
         {
             List<object[]> rows = new List<object[]>();
-            TableDef schema = ri.GetTable();
+            TableSchema schema = ri.GetTable();
             StringBuilder query = new StringBuilder(schema.SelectCommand);
             int nbParams = ri.Columns.Count;
 
@@ -188,19 +188,19 @@ namespace DataCloner.DataAccess
 
         public void Insert(ITableIdentifier ti, object[] row)
         {
-            TableDef schema = ti.GetTable();
-            if (schema.SchemaColumns.Count() != row.Length)
+            TableSchema schema = ti.GetTable();
+            if (schema.ColumnsDefinition.Count() != row.Length)
                 throw new Exception("The row doesn't correspond to schema!");
 
             using (var cmd = _conn.CreateCommand())
             {
                 //Add params
-                for (int i = 0; i < schema.SchemaColumns.Count(); i++)
+                for (int i = 0; i < schema.ColumnsDefinition.Count(); i++)
                 {
-                    if (schema.SchemaColumns[i].IsAutoIncrement) continue;
+                    if (schema.ColumnsDefinition[i].IsAutoIncrement) continue;
 
                     var p = cmd.CreateParameter();
-                    p.ParameterName = "@" + schema.SchemaColumns[i].Name;
+                    p.ParameterName = "@" + schema.ColumnsDefinition[i].Name;
                     p.Value = row[i];
                     cmd.Parameters.Add(p);
                 }

@@ -83,15 +83,15 @@ namespace Class
             sm.Maps.Add(map);
 
             //Cache
-            CachedTables ct = new CachedTables();
-            TableDef table = new TableDef();
+            CachedTablesSchema ct = new CachedTablesSchema();
+            TableSchema table = new TableSchema();
 
             table.Name = "table1";
             table.IsStatic = false;
             table.SelectCommand = "SELECT * FROM TABLE1";
             table.InsertCommand = "INSERT INTO TABLE1 VALUES(@COL1, @COL2)";
 
-            table.SchemaColumns = table.SchemaColumns.Add(new SchemaColumn()
+            table.ColumnsDefinition = table.ColumnsDefinition.Add(new ColumnDefinition()
             {
                 Name = "COL1",
                 Type = DbType.Int32,
@@ -100,7 +100,7 @@ namespace Class
                 IsAutoIncrement = true,
                 BuilderName = ""
             });
-            table.SchemaColumns = table.SchemaColumns.Add(new SchemaColumn()
+            table.ColumnsDefinition = table.ColumnsDefinition.Add(new ColumnDefinition()
             {
                 Name = "COL2",
                 Type = DbType.Int32,
@@ -144,7 +144,7 @@ namespace Class
             Configuration config = new Configuration();
             config.ConnectionStrings = new List<Connection> { new Connection { Id = 1, ConnectionString = "", ProviderName = "", SameConfigAsId = 0 } };
             config.ConfigFileHash = "";
-            config.CachedTables = ct;
+            config.CachedTablesSchema = ct;
 
             //Créaton de l'archive
             var ar = new DataArchive();

@@ -13,18 +13,18 @@ namespace DataCloner.PlugIn
 {
     internal static class DataBuilder
     {
-        public static void BuildDataFromTable(IDbConnection conn, ITableDef table, ref object[] dataRow)
+        public static void BuildDataFromTable(IDbConnection conn, ITableSchema table, ref object[] dataRow)
         {
             //TODO:Cache instance of each builder
-            if(table.SchemaColumns.Length != dataRow.Length)
+            if(table.ColumnsDefinition.Length != dataRow.Length)
                 throw new ArgumentException(
                     String.Format("The number of columns defined in the cached table {0} '{1}' is different from the current row '{2}'.", 
-                    table.Name, table.SchemaColumns.Length, dataRow.Length));
+                    table.Name, table.ColumnsDefinition.Length, dataRow.Length));
 
-            for (int i =0; i<table.SchemaColumns.Length; i++)
+            for (int i =0; i<table.ColumnsDefinition.Length; i++)
             {
                 bool mustGenerate = false;
-                var col = table.SchemaColumns[i];
+                var col = table.ColumnsDefinition[i];
                 IDataBuilder builder = null;
 
                 if (!string.IsNullOrWhiteSpace(col.BuilderName))

@@ -17,10 +17,10 @@ namespace DataCloner.DataClasse.Cache
     /// Contient les tables statiques de la base de données
     /// </summary>
     /// <remarks>Optimisé pour la lecture et non pour l'écriture!</remarks>
-    internal sealed class CachedTables
+    internal sealed class CachedTablesSchema
     {
-        private Dictionary<Int16, Dictionary<string, Dictionary<string, TableDef[]>>> _dic =
-            new Dictionary<Int16, Dictionary<string, Dictionary<string, TableDef[]>>>();
+        private Dictionary<Int16, Dictionary<string, Dictionary<string, TableSchema[]>>> _dic =
+            new Dictionary<Int16, Dictionary<string, Dictionary<string, TableSchema[]>>>();
 
         //public bool Contains(Int32 server, string database, string schema, string tableFrom, DerivativeTable tableTo)
         //{
@@ -40,7 +40,7 @@ namespace DataCloner.DataClasse.Cache
         //    return false;
         //}
 
-        public TableDef GetTable(Int16 server, string database, string schema, string table)
+        public TableSchema GetTable(Int16 server, string database, string schema, string table)
         {
             if (_dic.ContainsKey(server) &&
                 _dic[server].ContainsKey(database) &&
@@ -49,19 +49,19 @@ namespace DataCloner.DataClasse.Cache
             return null;
         }
 
-        public void Add(Int16 server, string database, string schema, TableDef table)
+        public void Add(Int16 server, string database, string schema, TableSchema table)
         {
             database = database.ToLower();
             schema = schema.ToLower();
 
             if (!_dic.ContainsKey(server))
-                _dic.Add(server, new Dictionary<string, Dictionary<string, TableDef[]>>());
+                _dic.Add(server, new Dictionary<string, Dictionary<string, TableSchema[]>>());
 
             if (!_dic[server].ContainsKey(database))
-                _dic[server].Add(database, new Dictionary<string, TableDef[]>());
+                _dic[server].Add(database, new Dictionary<string, TableSchema[]>());
 
             if (!_dic[server][database].ContainsKey(schema))
-                _dic[server][database].Add(schema, new TableDef[] { table });
+                _dic[server][database].Add(schema, new TableSchema[] { table });
             else
             {
                 if (!_dic[server][database][schema].Contains(table))
@@ -69,7 +69,7 @@ namespace DataCloner.DataClasse.Cache
             }
         }
 
-        public bool Remove(Int16 server, string database, string schema, TableDef table)
+        public bool Remove(Int16 server, string database, string schema, TableSchema table)
         {
             database = database.ToLower();
             schema = schema.ToLower();
@@ -98,7 +98,7 @@ namespace DataCloner.DataClasse.Cache
             return false;
         }
 
-        public TableDef[] this[Int16 server, string database, string schema]
+        public TableSchema[] this[Int16 server, string database, string schema]
         {
             get
             {
@@ -119,10 +119,10 @@ namespace DataCloner.DataClasse.Cache
                 schema = schema.ToLower();
 
                 if (!_dic.ContainsKey(server))
-                    _dic.Add(server, new Dictionary<string, Dictionary<string, TableDef[]>>());
+                    _dic.Add(server, new Dictionary<string, Dictionary<string, TableSchema[]>>());
 
                 if (!_dic[server].ContainsKey(database))
-                    _dic[server].Add(database, new Dictionary<string, TableDef[]>());
+                    _dic[server].Add(database, new Dictionary<string, TableSchema[]>());
 
                 if (!_dic[server][database].ContainsKey(schema))
                     _dic[server][database].Add(schema, value);
@@ -135,7 +135,7 @@ namespace DataCloner.DataClasse.Cache
         {
             var lstForeignKeys = new List<ForeignKey>();
             var lstForeignKeyColumns = new List<ForeignKeyColumn>();
-            var previousTable = new TableDef();
+            var previousTable = new TableSchema();
             var fkPreviousConstraint = new ForeignKey();
             string previousConstraint = string.Empty;
             string currentSchema = string.Empty;
@@ -211,9 +211,9 @@ namespace DataCloner.DataClasse.Cache
 
         public void LoadColumns(IDataReader reader, Int16 serverId, String database, SqlTypeToDbTypeConverter dataTypeParser)
         {
-            var lstTable = new List<TableDef>();
-            var lstSchemaColumn = new List<SchemaColumn>();
-            var previousTable = new TableDef();
+            var lstTable = new List<TableSchema>();
+            var lstSchemaColumn = new List<ColumnDefinition>();
+            var previousTable = new TableSchema();
             string previousSchema = string.Empty;
             string currentSchema = string.Empty;
             string currentTable;
@@ -234,11 +234,11 @@ namespace DataCloner.DataClasse.Cache
                 //Si on change de table
                 if (currentSchema != previousSchema || currentTable != previousTable.Name)
                 {
-                    previousTable.SchemaColumns = lstSchemaColumn.ToArray();
+                    previousTable.ColumnsDefinition = lstSchemaColumn.ToArray();
                     lstTable.Add(previousTable);
 
-                    lstSchemaColumn = new List<SchemaColumn>();
-                    previousTable = new TableDef();
+                    lstSchemaColumn = new List<ColumnDefinition>();
+                    previousTable = new TableSchema();
                     previousTable.Name = currentTable;
                 }
 
@@ -246,11 +246,11 @@ namespace DataCloner.DataClasse.Cache
                 if (currentSchema != previousSchema)
                 {
                     this[serverId, database, currentSchema] = lstTable.ToArray();
-                    lstTable = new List<TableDef>();
+                    lstTable = new List<TableSchema>();
                 }
 
                 //Ajoute la colonne
-                lstSchemaColumn.Add(new SchemaColumn()
+                lstSchemaColumn.Add(new ColumnDefinition()
                 {
                     Name = reader.GetString(2),
                     Type = dataTypeParser(reader.GetString(3)),
@@ -263,7 +263,7 @@ namespace DataCloner.DataClasse.Cache
             //Ajoute la dernière table / schema
             if (lstSchemaColumn.Count > 0)
             {
-                previousTable.SchemaColumns = lstSchemaColumn.ToArray();
+                previousTable.ColumnsDefinition = lstSchemaColumn.ToArray();
                 lstTable.Add(previousTable);
                 this[serverId, database, currentSchema] = lstTable.ToArray();
             }
@@ -280,7 +280,7 @@ namespace DataCloner.DataClasse.Cache
                         int nbTables = schema.Value.Length;
                         for (int i = 0; i < nbTables; i++)
                         {
-                            TableDef table = schema.Value[i];
+                            TableSchema table = schema.Value[i];
                             StringBuilder sbInsert = new StringBuilder("INSERT INTO ");
                             StringBuilder sbSelect = new StringBuilder("SELECT ");
 
@@ -292,17 +292,17 @@ namespace DataCloner.DataClasse.Cache
                                          .Append(" (");
 
                             //Nom des colonnes
-                            int nbCols = table.SchemaColumns.Length;
+                            int nbCols = table.ColumnsDefinition.Length;
                             for (int j = 0; j < nbCols; j++)
                             {
                                 //Select
-                                sbSelect.Append(table.SchemaColumns[j].Name);
+                                sbSelect.Append(table.ColumnsDefinition[j].Name);
                                 if (j < nbCols - 1) sbSelect.Append(",");
 
                                 //Insert
-                                if (!table.SchemaColumns[j].IsAutoIncrement)
+                                if (!table.ColumnsDefinition[j].IsAutoIncrement)
                                 {
-                                    sbInsert.Append(table.SchemaColumns[j].Name);
+                                    sbInsert.Append(table.ColumnsDefinition[j].Name);
                                     if (j < nbCols - 1) sbInsert.Append(",");
                                 }
                             }
@@ -311,9 +311,9 @@ namespace DataCloner.DataClasse.Cache
                             //Valeur des colonnes Insert
                             for (int j = 0; j < nbCols; j++)
                             {
-                                if (!table.SchemaColumns[j].IsAutoIncrement)
+                                if (!table.ColumnsDefinition[j].IsAutoIncrement)
                                 {
-                                    sbInsert.Append("@").Append(table.SchemaColumns[j].Name);
+                                    sbInsert.Append("@").Append(table.ColumnsDefinition[j].Name);
                                     if (j < nbCols - 1)
                                         sbInsert.Append(",");
                                 }
@@ -513,7 +513,7 @@ namespace DataCloner.DataClasse.Cache
                                             //Data builder
                                             foreach (var builderCol in tblConfig.DataBuilders)
                                             {
-                                                var col = table.SchemaColumns.Where(c => c.Name == builderCol.Name).FirstOrDefault();
+                                                var col = table.ColumnsDefinition.Where(c => c.Name == builderCol.Name).FirstOrDefault();
                                                 if (col != null)
                                                     col.BuilderName = builderCol.BuilderName;
                                             }
@@ -545,7 +545,7 @@ namespace DataCloner.DataClasse.Cache
             Serialize(new BinaryWriter(stream));
         }
 
-        public static CachedTables Deserialize(Stream stream)
+        public static CachedTablesSchema Deserialize(Stream stream)
         {
             return Deserialize(new BinaryReader(stream));
         }
@@ -574,31 +574,31 @@ namespace DataCloner.DataClasse.Cache
             }
         }
 
-        public static CachedTables Deserialize(BinaryReader stream)
+        public static CachedTablesSchema Deserialize(BinaryReader stream)
         {
-            var cTables = new CachedTables();
+            var cTables = new CachedTablesSchema();
 
             int nbServers = stream.ReadInt32();
             for (int n = 0; n < nbServers; n++)
             {
                 Int16 serverId = stream.ReadInt16();
-                cTables._dic.Add(serverId, new Dictionary<string, Dictionary<string, TableDef[]>>());
+                cTables._dic.Add(serverId, new Dictionary<string, Dictionary<string, TableSchema[]>>());
 
                 int nbDatabases = stream.ReadInt32();
                 for (int j = 0; j < nbDatabases; j++)
                 {
                     string database = stream.ReadString();
-                    cTables._dic[serverId].Add(database, new Dictionary<string, TableDef[]>());
+                    cTables._dic[serverId].Add(database, new Dictionary<string, TableSchema[]>());
 
                     int nbSchemas = stream.ReadInt32();
                     for (int k = 0; k < nbSchemas; k++)
                     {
-                        var lstTables = new List<TableDef>();
+                        var lstTables = new List<TableSchema>();
                         string schema = stream.ReadString();
 
                         int nbTablesFrom = stream.ReadInt32();
                         for (int l = 0; l < nbTablesFrom; l++)
-                            lstTables.Add(TableDef.Deserialize(stream));
+                            lstTables.Add(TableSchema.Deserialize(stream));
 
                         cTables._dic[serverId][database].Add(schema, lstTables.ToArray());
                     }

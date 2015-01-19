@@ -72,11 +72,11 @@ namespace DataCloner.DataAccess
 
                     foreach (var database in provider.GetDatabasesName())
                     {
-                        provider.GetColumns(Cache.CachedTables.LoadColumns, database);
-                        provider.GetForeignKeys(Cache.CachedTables.LoadForeignKeys, database);
+                        provider.GetColumns(Cache.CachedTablesSchema.LoadColumns, database);
+                        provider.GetForeignKeys(Cache.CachedTablesSchema.LoadForeignKeys, database);
                     }
                 }
-                Cache.CachedTables.FinalizeCache(config);
+                Cache.CachedTablesSchema.FinalizeCache(config);
 
                 //Save cache
                 var fsCache = new FileStream(fullCacheName, FileMode.Create);

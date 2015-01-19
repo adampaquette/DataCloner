@@ -19,20 +19,20 @@ namespace DataCloner.Tests
 {
     public class CachedTableTests
     {
-        private CachedTables _cache;
-        private TableDef _table;
+        private CachedTablesSchema _cache;
+        private TableSchema _table;
 
         public CachedTableTests()
         { 
-            _cache = new CachedTables();
-            _table = new TableDef();
+            _cache = new CachedTablesSchema();
+            _table = new TableSchema();
 
             _table.Name = "table1";
             _table.IsStatic = false;
             _table.SelectCommand = "SELECT * FROM TABLE1";
             _table.InsertCommand = "INSERT INTO TABLE1 VALUES(@COL1, @COL2)";
 
-            _table.SchemaColumns = _table.SchemaColumns.Add(new SchemaColumn()
+            _table.ColumnsDefinition = _table.ColumnsDefinition.Add(new ColumnDefinition()
             {
                 Name = "COL1",
                 Type = DbType.Int32,
@@ -41,7 +41,7 @@ namespace DataCloner.Tests
                 IsAutoIncrement = true,
                 BuilderName = ""
             });
-            _table.SchemaColumns = _table.SchemaColumns.Add(new SchemaColumn()
+            _table.ColumnsDefinition = _table.ColumnsDefinition.Add(new ColumnDefinition()
             {
                 Name = "COL2",
                 Type = DbType.Int32,
@@ -91,7 +91,7 @@ namespace DataCloner.Tests
 
             _table.Serialize(ms1);
             ms1.Position = 0;
-            var output = TableDef.Deserialize(ms1);
+            var output = TableSchema.Deserialize(ms1);
             output.Serialize(ms2);
 
             Assert.True(ms1.ToArray().SequenceEqual(ms2.ToArray()));           
@@ -105,7 +105,7 @@ namespace DataCloner.Tests
 
             _cache.Serialize(ms1);
             ms1.Position = 0;
-            var output = CachedTables.Deserialize(ms1);
+            var output = CachedTablesSchema.Deserialize(ms1);
             output.Serialize(ms2);
 
             Assert.True(ms1.ToArray().SequenceEqual(ms2.ToArray()));

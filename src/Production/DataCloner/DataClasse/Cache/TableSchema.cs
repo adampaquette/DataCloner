@@ -13,7 +13,7 @@ using DataCloner.DataAccess;
 
 namespace DataCloner.DataClasse.Cache
 {
-    internal sealed class TableDef : ITableDef
+    internal sealed class TableSchema : ITableSchema
     {
         public string Name { get; set; }
         public bool IsStatic { get; set; }
@@ -21,13 +21,13 @@ namespace DataCloner.DataClasse.Cache
         public string InsertCommand { get; set; }
         public IDerivativeTable[] DerivativeTables { get; set; }
         public IForeignKey[] ForeignKeys { get; set; }
-        public ISchemaColumn[] SchemaColumns { get; set; }
+        public IColumnDefinition[] ColumnsDefinition { get; set; }
 
-        public TableDef()
+        public TableSchema()
         {
             DerivativeTables = new DerivativeTable[] { };
             ForeignKeys = new ForeignKey[] { };
-            SchemaColumns = new SchemaColumn[] { };
+            ColumnsDefinition = new ColumnDefinition[] { };
         }
 
         public object[] BuildRawFKFromDataRow(IForeignKey fk, object[] row)
@@ -35,7 +35,7 @@ namespace DataCloner.DataClasse.Cache
             var pk = new List<object>();
             for (int j = 0; j < fk.Columns.Length; j++)
             {
-                int posTblSource = SchemaColumns.IndexOf(c => c.Name == fk.Columns[j].NameFrom);
+                int posTblSource = ColumnsDefinition.IndexOf(c => c.Name == fk.Columns[j].NameFrom);
                 pk.Add(row[posTblSource]);
             }
             return pk.ToArray();
@@ -46,7 +46,7 @@ namespace DataCloner.DataClasse.Cache
             var colFK = new Dictionary<string, object>();
             for (int j = 0; j < fk.Columns.Length; j++)
             {
-                int posTblSource = SchemaColumns.IndexOf(c => c.Name == fk.Columns[j].NameFrom);
+                int posTblSource = ColumnsDefinition.IndexOf(c => c.Name == fk.Columns[j].NameFrom);
                 colFK.Add(fk.Columns[j].NameTo, row[posTblSource]);
             }
             return colFK;
@@ -55,9 +55,9 @@ namespace DataCloner.DataClasse.Cache
         public object[] BuildRawPKFromDataRow(object[] row)
         {
             var pk = new List<object>();
-            for (int i = 0; i < SchemaColumns.Length; i++)
+            for (int i = 0; i < ColumnsDefinition.Length; i++)
             {
-                if (SchemaColumns[i].IsPrimary)
+                if (ColumnsDefinition[i].IsPrimary)
                     pk.Add(row[i]);
             }
             return pk.ToArray();
@@ -66,17 +66,17 @@ namespace DataCloner.DataClasse.Cache
         public Dictionary<string, object> BuildPKFromDataRow(object[] row)
         {
             var pk = new Dictionary<string, object>();
-            for (int i = 0; i < SchemaColumns.Length; i++)
+            for (int i = 0; i < ColumnsDefinition.Length; i++)
             {
-                if (SchemaColumns[i].IsPrimary)
-                    pk.Add(SchemaColumns[i].Name, row[i]);
+                if (ColumnsDefinition[i].IsPrimary)
+                    pk.Add(ColumnsDefinition[i].Name, row[i]);
             }
             return pk;
         }
 
         public Dictionary<string, object> BuildPKFromKey(object[] key)
         {
-            var pkColumns = SchemaColumns.Where(c => c.IsPrimary).ToArray();
+            var pkColumns = ColumnsDefinition.Where(c => c.IsPrimary).ToArray();
 
             if (key.Length != pkColumns.Length)
                 throw new Exception("The key doesn't correspond to table defenition.");
@@ -89,8 +89,8 @@ namespace DataCloner.DataClasse.Cache
 
         public void SetPKFromKey(ref object[] row, object[] key)
         {
-            var nbPKColumns = SchemaColumns.Where(c => c.IsPrimary).Count();
-            var nbCols = SchemaColumns.Count();
+            var nbPKColumns = ColumnsDefinition.Where(c => c.IsPrimary).Count();
+            var nbCols = ColumnsDefinition.Count();
 
             if (key.Length != nbPKColumns)
                 throw new Exception("The key doesn't correspond to table defenition.");
@@ -100,7 +100,7 @@ namespace DataCloner.DataClasse.Cache
             var pkIndex = 0;
             for (int i = 0; i < nbCols; i++)
             {
-                if (SchemaColumns[i].IsPrimary)
+                if (ColumnsDefinition[i].IsPrimary)
                 {
                     row[i] = key[pkIndex];
                     pkIndex++;
@@ -110,15 +110,15 @@ namespace DataCloner.DataClasse.Cache
             }
         }
 
-        public Dictionary<string, object> BuildDerivativePK(ITableDef derivativeTable, object[] sourceRow)
+        public Dictionary<string, object> BuildDerivativePK(ITableSchema derivativeTable, object[] sourceRow)
         {
             var colPKSrc = new Dictionary<string, object>();
             var colPKDst = new Dictionary<string, object>();
 
-            for (int j = 0; j < SchemaColumns.Length; j++)
+            for (int j = 0; j < ColumnsDefinition.Length; j++)
             {
-                if (SchemaColumns[j].IsPrimary)
-                    colPKSrc.Add(SchemaColumns[j].Name, sourceRow[j]);
+                if (ColumnsDefinition[j].IsPrimary)
+                    colPKSrc.Add(ColumnsDefinition[j].Name, sourceRow[j]);
             }
 
             foreach (var fk in derivativeTable.ForeignKeys)
@@ -142,7 +142,7 @@ namespace DataCloner.DataClasse.Cache
 
         public override bool Equals(object obj)
         {
-            TableDef t = obj as TableDef;
+            TableSchema t = obj as TableSchema;
             if (t == null)
                 return false;
             return t.Equals(Name);
@@ -158,7 +158,7 @@ namespace DataCloner.DataClasse.Cache
             Serialize(new BinaryWriter(stream));
         }
 
-        public static TableDef Deserialize(Stream stream)
+        public static TableSchema Deserialize(Stream stream)
         {
             return Deserialize(new BinaryReader(stream));
         }
@@ -200,26 +200,26 @@ namespace DataCloner.DataClasse.Cache
                 }
             }
 
-            nbRows = SchemaColumns.Length;
+            nbRows = ColumnsDefinition.Length;
             stream.Write(nbRows);
             for (int i = 0; i < nbRows; i++)
             {
-                stream.Write(SchemaColumns[i].Name);
-                stream.Write((Int32)SchemaColumns[i].Type);
-                stream.Write(SchemaColumns[i].IsPrimary);
-                stream.Write(SchemaColumns[i].IsForeignKey);
-                stream.Write(SchemaColumns[i].IsAutoIncrement);
-                stream.Write(SchemaColumns[i].BuilderName ?? "");
+                stream.Write(ColumnsDefinition[i].Name);
+                stream.Write((Int32)ColumnsDefinition[i].Type);
+                stream.Write(ColumnsDefinition[i].IsPrimary);
+                stream.Write(ColumnsDefinition[i].IsForeignKey);
+                stream.Write(ColumnsDefinition[i].IsAutoIncrement);
+                stream.Write(ColumnsDefinition[i].BuilderName ?? "");
             }
         }
 
-        public static TableDef Deserialize(BinaryReader stream)
+        public static TableSchema Deserialize(BinaryReader stream)
         {
             Int32 nbRows, nbRows2;
-            var t = new TableDef();
+            var t = new TableSchema();
             var dtList = new List<DerivativeTable>();
             var fkList = new List<ForeignKey>();
-            var schemaColList = new List<SchemaColumn>();
+            var schemaColList = new List<ColumnDefinition>();
 
             t.Name = stream.ReadString();
             t.IsStatic = stream.ReadBoolean();
@@ -270,7 +270,7 @@ namespace DataCloner.DataClasse.Cache
             nbRows = stream.ReadInt32();
             for (int i = 0; i < nbRows; i++)
             {
-                schemaColList.Add(new SchemaColumn()
+                schemaColList.Add(new ColumnDefinition()
                 {
                     Name = stream.ReadString(),
                     Type = (DbType)stream.ReadInt32(),
@@ -283,7 +283,7 @@ namespace DataCloner.DataClasse.Cache
 
             t.DerivativeTables = dtList.ToArray();
             t.ForeignKeys = fkList.ToArray();
-            t.SchemaColumns = schemaColList.ToArray();
+            t.ColumnsDefinition = schemaColList.ToArray();
 
             return t;
         }
@@ -304,10 +304,11 @@ namespace DataCloner.DataClasse.Cache
         public string NameTo { get; set; }
     }
 
-    internal sealed class SchemaColumn : ISchemaColumn
+    internal sealed class ColumnDefinition : IColumnDefinition
     {
         public string Name { get; set; }
         public DbType Type { get; set; }
+        public string Descriptor { get; set; }
         public bool IsPrimary { get; set; }
         public bool IsForeignKey { get; set; }
         public bool IsAutoIncrement { get; set; }
@@ -343,21 +344,21 @@ namespace DataCloner.DataClasse.Cache
 
     internal static class TableDefExtensions
     {
-        internal static TableDef GetTable(this IForeignKey fk)
+        internal static TableSchema GetTable(this IForeignKey fk)
         {
-            return QueryDispatcher.Cache.CachedTables.GetTable(
+            return QueryDispatcher.Cache.CachedTablesSchema.GetTable(
                 Impersonate(fk.ServerIdTo), fk.DatabaseTo, fk.SchemaTo, fk.TableTo);
         }
 
-        internal static TableDef GetTable(this IDerivativeTable dt)
+        internal static TableSchema GetTable(this IDerivativeTable dt)
         {
-            return QueryDispatcher.Cache.CachedTables.GetTable(
+            return QueryDispatcher.Cache.CachedTablesSchema.GetTable(
                 Impersonate(dt.ServerId), dt.Database, dt.Schema, dt.Table);
         }
 
-        internal static TableDef GetTable(this ITableIdentifier dt)
+        internal static TableSchema GetTable(this ITableIdentifier dt)
         {
-            return QueryDispatcher.Cache.CachedTables.GetTable(
+            return QueryDispatcher.Cache.CachedTablesSchema.GetTable(
                 Impersonate(dt.ServerId), dt.Database, dt.Schema, dt.Table);
         }
     }

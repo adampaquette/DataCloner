@@ -11,6 +11,6 @@ namespace DataCloner.PlugIn
 {
     public interface IDataBuilder
     {
-       object BuildData(IDbConnection conn, ITableDef table, ISchemaColumn column);
+       object BuildData(IDbConnection conn, ITableSchema table, IColumnDefinition column);
     }
 }

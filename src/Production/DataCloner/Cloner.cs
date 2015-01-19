@@ -28,7 +28,7 @@ namespace DataCloner
     {
         private const string TEMP_FOLDER_NAME = "temp";
 
-        private CachedTables _cacheTable;
+        private CachedTablesSchema _cacheTable;
         private KeyRelationship _keyRelationships;
 
         public Dictionary<ServerIdentifier, ServerIdentifier> ServerMap { get; set; }
@@ -43,7 +43,7 @@ namespace DataCloner
         public void Initialize(string cacheName = Configuration.CacheName)
         {
             QueryDispatcher.Initialize(cacheName);
-            _cacheTable = QueryDispatcher.Cache.CachedTables;
+            _cacheTable = QueryDispatcher.Cache.CachedTablesSchema;
             _keyRelationships = new KeyRelationship();
 
             if (ServerMap == null)
@@ -59,7 +59,7 @@ namespace DataCloner
             int nbRows = srcRows.Length;
             var table = riSource.GetTable();
             var fks = table.ForeignKeys;
-            var autoIncrementPK = table.SchemaColumns.Where(c => c.IsAutoIncrement && c.IsPrimary).Any();
+            var autoIncrementPK = table.ColumnsDefinition.Where(c => c.IsAutoIncrement && c.IsPrimary).Any();
             var serverDst = ServerMap[new ServerIdentifier
             {
                 ServerId = riSource.ServerId,
@@ -118,9 +118,9 @@ namespace DataCloner
                             //On trouve la position de chaque colonne pour affecter la valeur de destination
                             for (int j = 0; j < fk.Columns.Length; j++)
                             {
-                                for (int k = 0; k < table.SchemaColumns.Length; k++)
+                                for (int k = 0; k < table.ColumnsDefinition.Length; k++)
                                 {
-                                    if (fk.Columns[j].NameFrom == table.SchemaColumns[k].Name)
+                                    if (fk.Columns[j].NameFrom == table.ColumnsDefinition[k].Name)
                                     {
                                         destinationRow[k] = fkDst[j];
                                         break; //TODO : VÉRIFIER SI ÇA BREAK À LA PREMIERE COL. SI OUI = ERREUR
@@ -170,8 +170,8 @@ namespace DataCloner
                                 //Affecte la clef
                                 for (int j = 0; j < fk.Columns.Length; j++)
                                 {
-                                    int posTblSourceFK = table.SchemaColumns.IndexOf(c => c.Name == fk.Columns[j].NameFrom);
-                                    int posTblDestinationPK = fkTable.SchemaColumns.IndexOf(c => c.Name == fk.Columns[j].NameTo);
+                                    int posTblSourceFK = table.ColumnsDefinition.IndexOf(c => c.Name == fk.Columns[j].NameFrom);
+                                    int posTblDestinationPK = fkTable.ColumnsDefinition.IndexOf(c => c.Name == fk.Columns[j].NameTo);
 
                                     destinationRow[posTblSourceFK] = newFKRow[0][posTblDestinationPK];
                                 }
@@ -213,7 +213,7 @@ namespace DataCloner
             return riReturn;
         }
 
-        private void GetDerivatives(TableDef table, object[] sourceRow, bool getDerivatives)
+        private void GetDerivatives(TableSchema table, object[] sourceRow, bool getDerivatives)
         {
             IEnumerable<IDerivativeTable> derivativeTable;
 

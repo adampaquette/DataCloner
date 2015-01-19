@@ -9,7 +9,7 @@ using System.Data;
 
 namespace DataCloner.DataClasse.Cache
 {
-    public interface ITableDef
+    public interface ITableSchema
     {
         string Name { get; set; }
         bool IsStatic { get; set; }
@@ -17,7 +17,7 @@ namespace DataCloner.DataClasse.Cache
         string InsertCommand { get; set; }
         IDerivativeTable[] DerivativeTables { get; set; }
         IForeignKey[] ForeignKeys { get; set; }
-        ISchemaColumn[] SchemaColumns { get; set; }
+        IColumnDefinition[] ColumnsDefinition { get; set; }
     }
 
     public interface IDerivativeTable
@@ -45,10 +45,11 @@ namespace DataCloner.DataClasse.Cache
         string NameTo { get; set; }
     }
 
-    public interface ISchemaColumn
+    public interface IColumnDefinition
     {
         string Name { get; set; }
         DbType Type { get; set; }
+        string Descriptor { get; set; }
         bool IsPrimary { get; set; }
         bool IsForeignKey { get; set; }
         bool IsAutoIncrement { get; set; }
