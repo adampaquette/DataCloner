@@ -185,16 +185,12 @@ namespace DataCloner
                     //La ligne de destination est prète à l'enregistrement
                     tiDestination.Insert(destinationRow);
 
+                    //Sauve la PK dans la cache
                     if (autoIncrementPK)
-                    {
-                        dstKey = new object[] { QueryDispatcher.GetQueryHelper(serverDst.ServerId).GetLastInsertedPk() };
-                        //table.SetPKFromKey(ref destinationRow, destKey);
-                        _keyRelationships.SetKey(riSource.ServerId, riSource.Database, riSource.Schema, riSource.Table, srcKey, dstKey);
-                    }
+                        dstKey = new object[] { QueryDispatcher.GetQueryHelper(serverDst.ServerId).GetLastInsertedPk() };                       
                     else
-                    {
-
-                    }
+                        dstKey = table.BuildRawPKFromDataRow(destinationRow);
+                    _keyRelationships.SetKey(riSource.ServerId, riSource.Database, riSource.Schema, riSource.Table, srcKey, dstKey);
 
                     //Ajouter les colonnes de contrainte unique dans _keyRelationships
                     //...

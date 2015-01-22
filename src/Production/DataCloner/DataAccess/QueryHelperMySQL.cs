@@ -304,111 +304,128 @@ namespace DataCloner.DataAccess
         /// <param name="fullType">Type de la colonne SQL</param>
         /// <returns>Type DbType</returns>
         /// <seealso cref="http://kimbriggs.com/computers/computer-notes/mysql-notes/mysql-data-types-50.file"/>
-        public DbType SqlTypeToDbType(string fullType)
+        public void SqlTypeToDbType(string fullType, out DbType type, out string size)
         {
             fullType = fullType.ToLower();
             int startPosLength = fullType.IndexOf("(");
             int endPosLength = fullType.IndexOf(")");
             string[] values = fullType.Split(' ');
-            string type;
-            string descriptor;
+            string strType;
             string[] descriptorValues = null;
-            int length;
-            int precision;
+            //int length;
+            //int precision;
             bool? signedness = null;
+            type = DbType.Object;
+            size = null;
 
             //S'il y a une description du type entre ()
             if (startPosLength > -1 && endPosLength > startPosLength)
             {
-                descriptor = fullType.Substring(startPosLength + 1, endPosLength - startPosLength - 1);
-                descriptorValues = descriptor.Split(',');
-                type = values[0].Substring(0, startPosLength);
+                size = fullType.Substring(startPosLength + 1, endPosLength - startPosLength - 1);
+                descriptorValues = size.Split(',');
+                strType = values[0].Substring(0, startPosLength);
             }
             else
             {
-                type = values[0];
+                strType = values[0];
             }
 
             if (values.Length > 1)
                 signedness = values[1] == "signed";
 
             //Parse descriptior
-            switch (type)
-            {
-                case "enum":
-                case "set":
-                    break; //Not supported
-                default:
-                    if (descriptorValues != null)
-                    {
-                        if (descriptorValues.Length > 1)
-                            precision = Int32.Parse(descriptorValues[1]);
-                        length = Int32.Parse(descriptorValues[0]);
-                    }
-                    break;
-            }
+            //switch (strType)
+            //{
+            //    case "enum":
+            //    case "set":
+            //        type = DbType.Object; //Not supported
+            //        break; 
+            //    default:
+            //        if (descriptorValues != null)
+            //        {
+            //            if (descriptorValues.Length > 1)
+            //                precision = Int32.Parse(descriptorValues[1]);
+            //            length = Int32.Parse(descriptorValues[0]);
+            //        }
+            //        break;
+            //}
 
             //From unsigned to CLR data type
             if (signedness.HasValue && !signedness.Value)
             {
-                switch (type)
+                switch (strType)
                 {
                     case "tinyint":
                     case "smallint":
                     case "mediumint": //À vérifier
-                        return DbType.Int32;
+                        type =  DbType.Int32;
+                        break;
                     case "int":
-                        return DbType.Int64;
+                        type =  DbType.Int64;
+                        break;
                     case "bigint":
-                        return DbType.Decimal;
+                        type =  DbType.Decimal;
+                        break;
                 }
             }
-
-            //From signed to CLR data type
-            switch (type)
+            else
             {
-                case "tinyint":
-                    return DbType.Byte;
-                case "smallint":
-                case "year":
-                    return DbType.Int16;
-                case "mediumint":
-                case "int":
-                    return DbType.Int32;
-                case "bigint":
-                case "bit":
-                    return DbType.Int64;
-                case "float":
-                    return DbType.Single;
-                case "double":
-                    return DbType.Double;
-                case "decimal":
-                    return DbType.Decimal;
-                case "char":
-                case "varchar":
-                case "tinytext":
-                case "text":
-                case "mediumtext":
-                case "longtext":
-                case "binary":
-                case "varbinary":
-                    return DbType.String;
-                case "tinyblob":
-                case "blob":
-                case "mediumblob":
-                case "longblob":
-                case "enum":
-                case "set":
-                    return DbType.Binary;
-                case "date":
-                case "datetime":
-                    return DbType.DateTime;
-                case "time":
-                case "timestamp":
-                    return DbType.Time;
-            }
 
-            return DbType.Object;
+                //From signed to CLR data type
+                switch (strType)
+                {
+                    case "tinyint":
+                        type =  DbType.Byte;
+                        break;
+                    case "smallint":
+                    case "year":
+                        type =  DbType.Int16;
+                        break;
+                    case "mediumint":
+                    case "int":
+                        type =  DbType.Int32;
+                        break;
+                    case "bigint":
+                    case "bit":
+                        type =  DbType.Int64;
+                        break;
+                    case "float":
+                        type =  DbType.Single;
+                        break;
+                    case "double":
+                        type =  DbType.Double;
+                        break;
+                    case "decimal":
+                        type =  DbType.Decimal;
+                        break;
+                    case "char":
+                    case "varchar":
+                    case "tinytext":
+                    case "text":
+                    case "mediumtext":
+                    case "longtext":
+                    case "binary":
+                    case "varbinary":
+                        type =  DbType.String;
+                        break;
+                    case "tinyblob":
+                    case "blob":
+                    case "mediumblob":
+                    case "longblob":
+                    case "enum":
+                    case "set":
+                        type =  DbType.Binary;
+                        break;
+                    case "date":
+                    case "datetime":
+                        type =  DbType.DateTime;
+                        break;
+                    case "time":
+                    case "timestamp":
+                        type =  DbType.Time;
+                        break;
+                }
+            }           
         }
     }
 }

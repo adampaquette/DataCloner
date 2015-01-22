@@ -206,6 +206,7 @@ namespace DataCloner.DataClasse.Cache
             {
                 stream.Write(ColumnsDefinition[i].Name);
                 stream.Write((Int32)ColumnsDefinition[i].Type);
+                stream.Write(ColumnsDefinition[i].Size ?? "");
                 stream.Write(ColumnsDefinition[i].IsPrimary);
                 stream.Write(ColumnsDefinition[i].IsForeignKey);
                 stream.Write(ColumnsDefinition[i].IsAutoIncrement);
@@ -274,6 +275,7 @@ namespace DataCloner.DataClasse.Cache
                 {
                     Name = stream.ReadString(),
                     Type = (DbType)stream.ReadInt32(),
+                    Size = stream.ReadString(),
                     IsPrimary = stream.ReadBoolean(),
                     IsForeignKey = stream.ReadBoolean(),
                     IsAutoIncrement = stream.ReadBoolean(),
@@ -308,7 +310,7 @@ namespace DataCloner.DataClasse.Cache
     {
         public string Name { get; set; }
         public DbType Type { get; set; }
-        public string Descriptor { get; set; }
+        public string Size { get; set; }
         public bool IsPrimary { get; set; }
         public bool IsForeignKey { get; set; }
         public bool IsAutoIncrement { get; set; }

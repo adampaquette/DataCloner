@@ -49,7 +49,7 @@ namespace DataCloner.DataClasse.Cache
     {
         string Name { get; set; }
         DbType Type { get; set; }
-        string Descriptor { get; set; }
+        string Size { get; set; }
         bool IsPrimary { get; set; }
         bool IsForeignKey { get; set; }
         bool IsAutoIncrement { get; set; }

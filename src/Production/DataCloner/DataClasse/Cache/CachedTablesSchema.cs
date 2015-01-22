@@ -250,14 +250,20 @@ namespace DataCloner.DataClasse.Cache
                 }
 
                 //Ajoute la colonne
-                lstSchemaColumn.Add(new ColumnDefinition()
+                var col = new ColumnDefinition()
                 {
                     Name = reader.GetString(2),
-                    Type = dataTypeParser(reader.GetString(3)),
                     IsPrimary = reader.GetBoolean(4),
                     IsForeignKey = reader.GetBoolean(5),
                     IsAutoIncrement = reader.GetBoolean(6)
-                });
+                };
+                DbType type;
+                string size;
+                dataTypeParser(reader.GetString(3), out type, out size);
+                col.Type = type;
+                col.Size = size;
+                lstSchemaColumn.Add(col);
+
             } while (reader.Read());
 
             //Ajoute la dernière table / schema
