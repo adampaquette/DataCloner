@@ -169,6 +169,7 @@ namespace Class
                              new ServerIdentifier { ServerId = 1, Database = "dataclonertestdatabase", Schema = "" });
 
             dc.Initialize();
+            dc.Logger += msg => Console.WriteLine(msg);
 
             source.Columns.Clear();
             source.ServerId = 1;
@@ -176,7 +177,7 @@ namespace Class
             source.Schema = "";
             source.Table = "customers";
             source.Columns.Add("customerNumber", 103);
-            dc.SqlTraveler(source, true, false);
+            dc.SqlTraveler(source, true);
         }
 
         public static void ServerMapTest()

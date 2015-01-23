@@ -35,6 +35,8 @@ namespace DataCloner
         public bool SaveToFile { get; set; }
         public string SavePath { get; set; }
 
+        public event Action<string> Logger;
+
         public Cloner()
         {
             ServerMap = new Dictionary<ServerIdentifier, ServerIdentifier>();
@@ -53,7 +55,12 @@ namespace DataCloner
                 CreateDatabasesFiles();
         }
 
-        public IRowIdentifier SqlTraveler(IRowIdentifier riSource, bool getDerivatives, bool shouldReturnFk)
+        public IRowIdentifier SqlTraveler(IRowIdentifier riSource, bool getDerivatives)
+        {
+            return SqlTraveler(riSource, getDerivatives, false, 0);
+        }
+
+        private IRowIdentifier SqlTraveler(IRowIdentifier riSource, bool getDerivatives, bool shouldReturnFk, int level)
         {
             var srcRows = riSource.Select();
             int nbRows = srcRows.Length;
@@ -81,6 +88,17 @@ namespace DataCloner
                 Schema = serverDst.Schema,
                 Table = riSource.Table
             };
+
+            if (Logger != null)
+            {
+                var sb = new StringBuilder(new string(' ', 3*level));
+                sb.Append(riSource.Database).Append(".").Append(riSource.Schema).Append(".").Append(riSource.Table).Append(" : (");
+                foreach (var col in riSource.Columns)
+                    sb.Append(col.Key).Append("=").Append(col.Value).Append(", ");
+                sb.Remove(sb.Length - 2, 2);
+                sb.Append(")");
+                Logger(sb.ToString());
+            }
 
             if (shouldReturnFk && nbRows > 1)
                 throw new Exception("The foreignkey is not unique!");
@@ -162,7 +180,7 @@ namespace DataCloner
                             if (!fkDestinationExists)
                             {
                                 //Crer la ligne et ses dépendances
-                                var riNewFK = SqlTraveler(riFK, false, true);
+                                var riNewFK = SqlTraveler(riFK, false, true, level+1);
 
                                 //La FK (ou unique constraint) n'est pas necessairement la PK donc on réobtient la ligne.
                                 var newFKRow = riNewFK.Select();
@@ -202,14 +220,14 @@ namespace DataCloner
                     }
 
                     //On clone les lignes des tables dépendantes
-                    GetDerivatives(table, currentRow, getDerivatives);                  
+                    GetDerivatives(table, currentRow, getDerivatives, level);                  
                 }
             }
 
             return riReturn;
         }
 
-        private void GetDerivatives(TableSchema table, object[] sourceRow, bool getDerivatives)
+        private void GetDerivatives(TableSchema table, object[] sourceRow, bool getDerivatives, int level)
         {
             IEnumerable<IDerivativeTable> derivativeTable;
 
@@ -233,7 +251,7 @@ namespace DataCloner
                     Columns = table.BuildDerivativePK(cachedDT, sourceRow)
                 };
 
-                SqlTraveler(riDT, getDerivatives, false);
+                SqlTraveler(riDT, getDerivatives, false, level+1);
             }
         }
 

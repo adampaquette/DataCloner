@@ -52,14 +52,4 @@ namespace DataCloner
         string ColumnName { get; set; }
         byte DataType { get; set; }
     }
-
-    public interface IQueryDispatcher
-    {
-        //DataTable GetFk(ITableIdentifier ti);
-        //Int64 GetLastInsertedPk(Int16 serverId);
-        //object[] Select(IRowIdentifier ri);
-        //void Insert(ITableIdentifier ti, DataRow[] rows);
-        //void Update(IRowIdentifier ri, DataRow[] rows);
-        //void Delete(IRowIdentifier ri);
-    }
 }

@@ -120,7 +120,8 @@ namespace DataCloner.DataClasse.Cache
                     colPKSrc.Add(ColumnsDefinition[j].Name, sourceRow[j]);
             }
 
-            foreach (var fk in derivativeTable.ForeignKeys)
+            //FK qui pointent vers la table courante
+            foreach (var fk in derivativeTable.ForeignKeys.Where(k=>k.TableTo == Name))
             {
                 bool isGoodFK = true;
                 foreach (var col in fk.Columns)
