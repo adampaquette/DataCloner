@@ -36,22 +36,22 @@ namespace DataCloner.DataAccess
             string hashConfigFile = Encoding.Default.GetString(murmur.ComputeHash(configFile));
 
             //Check if cached file match with config file version
-            if (File.Exists(fullCacheName))
-            {
-                using (var fsCache = new FileStream(fullCacheName, FileMode.Open))
-                using (var brCache = new BinaryReader(fsCache))
-                {
-                    Cache.ConfigFileHash = brCache.ReadString();
-                    cacheIsGood = Cache.ConfigFileHash == hashConfigFile;
+            //if (File.Exists(fullCacheName))
+            //{
+            //    using (var fsCache = new FileStream(fullCacheName, FileMode.Open))
+            //    using (var brCache = new BinaryReader(fsCache))
+            //    {
+            //        Cache.ConfigFileHash = brCache.ReadString();
+            //        cacheIsGood = Cache.ConfigFileHash == hashConfigFile;
 
-                    if (cacheIsGood)
-                    {
-                        Configuration.DeserializeBody(brCache, Cache); //Load cache            
-                        InitProviders(Cache.ConnectionStrings);
-                        return;
-                    }
-                }
-            }
+            //        if (cacheIsGood)
+            //        {
+            //            Configuration.DeserializeBody(brCache, Cache); //Load cache            
+            //            InitProviders(Cache.ConnectionStrings);
+            //            return;
+            //        }
+            //    }
+            //}
 
             //Rebuild cache
             if (!cacheIsGood)

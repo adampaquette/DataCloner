@@ -357,11 +357,11 @@ namespace DataCloner.DataClasse.Cache
                         foreach (var table in schema.Value)
                         {
                             //On trouve les dérivées de la table
-                            foreach (var dbDeriv in server.Value)
+                            foreach (var databaseDeriv in server.Value)
                             {
-                                foreach (var schemaDeriv in database.Value)
+                                foreach (var schemaDeriv in databaseDeriv.Value)
                                 {
-                                    foreach (var tableDeriv in schema.Value)
+                                    foreach (var tableDeriv in schemaDeriv.Value)
                                     {
                                         foreach (var fk in tableDeriv.ForeignKeys)
                                         {
@@ -375,10 +375,10 @@ namespace DataCloner.DataClasse.Cache
                                                 {
                                                     table.DerivativeTables = table.DerivativeTables.Add(new DerivativeTable
                                                     {
-                                                        ServerId = fk.ServerIdTo,
-                                                        Schema = fk.SchemaTo,
-                                                        Database = fk.DatabaseTo,
-                                                        Table = fk.TableTo
+                                                        ServerId = server.Key,
+                                                        Database = databaseDeriv.Key,
+                                                        Schema = schemaDeriv.Key,
+                                                        Table = tableDeriv.Name
                                                     });
                                                 }
                                             }
