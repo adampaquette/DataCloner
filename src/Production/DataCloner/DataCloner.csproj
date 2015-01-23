@@ -58,9 +58,6 @@
     <StartupObject>Class.main</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CavemanTools">
-      <HintPath>..\packages\CavemanTools.3.13.0\lib\Net45\CavemanTools.dll</HintPath>
-    </Reference>
     <Reference Include="LZ4">
       <HintPath>..\packages\lz4net.1.0.5.93\lib\net40-client\LZ4.dll</HintPath>
     </Reference>
@@ -70,9 +67,6 @@
     <Reference Include="MySql.Data, Version=6.9.5.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\MySql.Data.6.9.5\lib\net45\MySql.Data.dll</HintPath>
-    </Reference>
-    <Reference Include="SqlFu">
-      <HintPath>..\packages\SqlFu.2.3.5\lib\Net45\SqlFu.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -101,7 +95,8 @@
     <Compile Include="DataClasse\KeyRelationship.cs" />
     <Compile Include="DataClasse\Cache\CachedTablesSchema.cs" />
     <Compile Include="DataClasse\Cache\TableSchema.cs" />
-    <Compile Include="Enum\Enums.cs" />
+    <Compile Include="DbEngine.cs" />
+    <Compile Include="DerivativeTableAccess.cs" />
     <Compile Include="Framework\FastActivator.cs" />
     <Compile Include="Framework\Helpers.cs" />
     <Compile Include="PlugIn\AutoIncrementDataBuilder.cs" />

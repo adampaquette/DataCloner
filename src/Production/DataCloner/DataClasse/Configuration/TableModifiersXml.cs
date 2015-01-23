@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Xml.Serialization;
-using DataCloner.Enum;
 
 namespace DataCloner.DataClasse.Configuration
 {

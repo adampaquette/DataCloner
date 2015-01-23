@@ -6,7 +6,6 @@ using System.IO;
 using System.Data;
 
 using DataCloner.Framework;
-using DataCloner.Enum;
 using DataCloner.Framework.GeneralExtensionHelper;
 using DataCloner.DataClasse.Configuration;
 using DataCloner.DataAccess;

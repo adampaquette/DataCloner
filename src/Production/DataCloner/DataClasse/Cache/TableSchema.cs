@@ -8,7 +8,6 @@ using System.IO;
 
 using DataCloner.Framework;
 using DataCloner.Framework.GeneralExtensionHelper;
-using DataCloner.Enum;
 using DataCloner.DataAccess;
 
 namespace DataCloner.DataClasse.Cache

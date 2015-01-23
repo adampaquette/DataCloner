@@ -7,7 +7,6 @@ using System.IO;
 using System.Data;
 
 using DataCloner.Framework;
-using DataCloner.Enum;
 
 namespace DataCloner.DataClasse.Cache
 {

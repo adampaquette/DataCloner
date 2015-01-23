@@ -180,7 +180,7 @@ namespace DataCloner
                     }
 
                     //Générer les colonnes qui ont été marquées dans la configuration dataBuilder 
-                    DataBuilder.BuildDataFromTable(tiDestination.GetConnection(), table, ref destinationRow);
+                    DataBuilder.BuildDataFromTable(tiDestination.GetQueryHelper(), table, ref destinationRow);
 
                     //La ligne de destination est prète à l'enregistrement
                     tiDestination.Insert(destinationRow);
@@ -216,12 +216,12 @@ namespace DataCloner
             if (getDerivatives)
                 derivativeTable = table.DerivativeTables;
             else
-                derivativeTable = table.DerivativeTables.Where(t => t.Access == Enum.DerivativeTableAccess.Forced);
+                derivativeTable = table.DerivativeTables.Where(t => t.Access == DerivativeTableAccess.Forced);
 
             foreach (var dt in derivativeTable)
             {
                 var cachedDT = dt.GetTable();
-                if (dt.Access == Enum.DerivativeTableAccess.Forced && dt.Cascade)
+                if (dt.Access == DerivativeTableAccess.Forced && dt.Cascade)
                     getDerivatives = true;
 
                 var riDT = new RowIdentifier

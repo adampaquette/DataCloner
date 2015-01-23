@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using DataCloner.Enum;
 using System.Data;
 
 namespace DataCloner.DataClasse.Cache

@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 
 using DataCloner.Framework;
 using System.Data;
-using SqlFu;
+using DataCloner.DataAccess;
 
 namespace DataCloner.PlugIn
 {
     internal static class DataBuilder
     {
-        public static void BuildDataFromTable(IDbConnection conn, ITableSchema table, ref object[] dataRow)
+        public static void BuildDataFromTable(IQueryHelper queryHelper, ITableSchema table, ref object[] dataRow)
         {
             //TODO:Cache instance of each builder
             if(table.ColumnsDefinition.Length != dataRow.Length)
@@ -21,7 +21,8 @@ namespace DataCloner.PlugIn
                     String.Format("The number of columns defined in the cached table {0} '{1}' is different from the current row '{2}'.", 
                     table.Name, table.ColumnsDefinition.Length, dataRow.Length));
 
-            for (int i =0; i<table.ColumnsDefinition.Length; i++)
+            //TODO : REGROUPER LES PK ENSEMBLE CAR SI LA LIGNE per exemple 1-1 existe, il ne faut pas générer 2-2 mais 1-2.
+            for (int i = 0; i < table.ColumnsDefinition.Length; i++)
             {
                 bool mustGenerate = false;
                 var col = table.ColumnsDefinition[i];
@@ -56,7 +57,7 @@ namespace DataCloner.PlugIn
                         throw new NullReferenceException(
                             String.Format("Builder '{0}' for column '{1}' is not found. Watch configuration file.", col.BuilderName, col.Name));
                     else
-                        dataRow[i] = builder.BuildData(conn, table, col);
+                        dataRow[i] = builder.BuildData(queryHelper.Connection, queryHelper.Engine, table, col);
                 }
             }
         }

@@ -4,13 +4,16 @@ using System.Data;
 using System.Collections.Generic;
 using System.Linq;
 
-using SqlFu;
+using MySql.Data.MySqlClient;
+
 using DataCloner.DataClasse.Cache;
 
 namespace DataCloner.DataAccess
 {
     internal sealed class QueryHelperMySql : IQueryHelper
     {
+        public const string ProviderName = "MySql.Data.MySqlClient";
+
         private readonly IDbConnection _conn;
         private readonly Configuration _cache;
         private readonly Int16 _serverIdCtx;
@@ -20,7 +23,7 @@ namespace DataCloner.DataAccess
         {
             _cache = cache;
             _serverIdCtx = serverId;
-            _conn = new SqlFuConnection(connectionString, DbEngine.MySql);
+            _conn = new MySqlConnection(connectionString);
             _conn.Open();
         }
 
@@ -39,6 +42,11 @@ namespace DataCloner.DataAccess
         {
             get { return _conn; }
         }
+
+        public DbEngine Engine
+        {
+            get { return DbEngine.MySql; }
+        }   
 
         public bool IsReadOnly
         {

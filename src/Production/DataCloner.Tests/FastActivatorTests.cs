@@ -10,7 +10,6 @@ using DataCloner.DataClasse;
 using DataCloner.DataClasse.Cache;
 using DataCloner.DataClasse.Configuration;
 using DataCloner.Framework;
-using DataCloner.Enum;
 
 using Class;
 using Xunit;
