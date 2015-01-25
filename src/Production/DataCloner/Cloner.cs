@@ -91,7 +91,7 @@ namespace DataCloner
 
             if (Logger != null)
             {
-                var sb = new StringBuilder(new string(' ', 3*level));
+                var sb = new StringBuilder(new string(' ', 3 * level));
                 sb.Append(riSource.Database).Append(".").Append(riSource.Schema).Append(".").Append(riSource.Table).Append(" : (");
                 foreach (var col in riSource.Columns)
                     sb.Append(col.Key).Append("=").Append(col.Value).Append(", ");
@@ -128,24 +128,15 @@ namespace DataCloner
                     var destinationRow = (object[])currentRow.Clone();
                     foreach (var fk in table.ForeignKeys)
                     {
-                        //Si le foreignkey est déjà dans la table de destination, on l'utilise
+                        //On skip si la FK est null
                         var fkValue = table.BuildRawFKFromDataRow(fk, currentRow);
+                        if (fkValue.Contains(DBNull.Value))
+                            continue;
+
+                        //Si le foreignkey est déjà dans la table de destination, on l'utilise
                         var fkDst = _keyRelationships.GetKey(fk.ServerIdTo, fk.DatabaseTo, fk.SchemaTo, fk.TableTo, fkValue);
                         if (fkDst != null)
-                        {
-                            //On trouve la position de chaque colonne pour affecter la valeur de destination
-                            for (int j = 0; j < fk.Columns.Length; j++)
-                            {
-                                for (int k = 0; k < table.ColumnsDefinition.Length; k++)
-                                {
-                                    if (fk.Columns[j].NameFrom == table.ColumnsDefinition[k].Name)
-                                    {
-                                        destinationRow[k] = fkDst[j];
-                                        break; //TODO : VÉRIFIER SI ÇA BREAK À LA PREMIERE COL. SI OUI = ERREUR
-                                    }
-                                }
-                            }
-                        }
+                            SetFKInDatarow(table, fk, fkDst, destinationRow);
                         else
                         {
                             var fkDestinationExists = false;
@@ -180,7 +171,7 @@ namespace DataCloner
                             if (!fkDestinationExists)
                             {
                                 //Crer la ligne et ses dépendances
-                                var riNewFK = SqlTraveler(riFK, false, true, level+1);
+                                var riNewFK = SqlTraveler(riFK, false, true, level + 1);
 
                                 //La FK (ou unique constraint) n'est pas necessairement la PK donc on réobtient la ligne.
                                 var newFKRow = riNewFK.Select();
@@ -198,14 +189,14 @@ namespace DataCloner
                     }
 
                     //Générer les colonnes qui ont été marquées dans la configuration dataBuilder 
-                    DataBuilder.BuildDataFromTable(tiDestination.GetQueryHelper(), table, ref destinationRow);
+                    DataBuilder.BuildDataFromTable(tiDestination.GetQueryHelper(), table, destinationRow);
 
                     //La ligne de destination est prète à l'enregistrement
                     tiDestination.Insert(destinationRow);
 
                     //Sauve la PK dans la cache
                     if (autoIncrementPK)
-                        dstKey = new object[] { QueryDispatcher.GetQueryHelper(serverDst.ServerId).GetLastInsertedPk() };                       
+                        dstKey = new object[] { QueryDispatcher.GetQueryHelper(serverDst.ServerId).GetLastInsertedPk() };
                     else
                         dstKey = table.BuildRawPKFromDataRow(destinationRow);
                     _keyRelationships.SetKey(riSource.ServerId, riSource.Database, riSource.Schema, riSource.Table, srcKey, dstKey);
@@ -220,11 +211,26 @@ namespace DataCloner
                     }
 
                     //On clone les lignes des tables dépendantes
-                    GetDerivatives(table, currentRow, getDerivatives, level);                  
+                    GetDerivatives(table, currentRow, getDerivatives, level);
                 }
             }
 
             return riReturn;
+        }
+
+        /// <summary>
+        /// //On trouve la position de chaque colonne pour affecter la valeur de destination.
+        /// </summary>
+        private static void SetFKInDatarow(TableSchema table, IForeignKey fkDefinition, object[] fkData, object[] destinationRow)
+        {
+            for (int j = 0; j < fkDefinition.Columns.Length; j++)
+            {
+                for (int k = 0; k < table.ColumnsDefinition.Length; k++)
+                {
+                    if (fkDefinition.Columns[j].NameFrom == table.ColumnsDefinition[k].Name)
+                        destinationRow[k] = fkData[j];
+                }
+            }
         }
 
         private void GetDerivatives(TableSchema table, object[] sourceRow, bool getDerivatives, int level)
@@ -251,7 +257,7 @@ namespace DataCloner
                     Columns = table.BuildDerivativePK(cachedDT, sourceRow)
                 };
 
-                SqlTraveler(riDT, getDerivatives, false, level+1);
+                SqlTraveler(riDT, getDerivatives, false, level + 1);
             }
         }
 

@@ -13,7 +13,7 @@ namespace DataCloner.PlugIn
 {
     internal static class DataBuilder
     {
-        public static void BuildDataFromTable(IQueryHelper queryHelper, ITableSchema table, ref object[] dataRow)
+        public static void BuildDataFromTable(IQueryHelper queryHelper, ITableSchema table, object[] dataRow)
         {
             //TODO:Cache instance of each builder
             if(table.ColumnsDefinition.Length != dataRow.Length)

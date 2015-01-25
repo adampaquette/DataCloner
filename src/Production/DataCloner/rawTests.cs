@@ -171,13 +171,33 @@ namespace Class
             dc.Initialize();
             dc.Logger += msg => Console.WriteLine(msg);
 
+            //source.Columns.Clear();
+            //source.ServerId = 1;
+            //source.Database = "dataclonertestdatabase";
+            //source.Schema = "";
+            //source.Table = "customers";
+            //source.Columns.Add("customerNumber", 103);
+            //dc.SqlTraveler(source, false);
+
+            Console.WriteLine("==============");
+
             source.Columns.Clear();
             source.ServerId = 1;
             source.Database = "dataclonertestdatabase";
             source.Schema = "";
-            source.Table = "customers";
-            source.Columns.Add("customerNumber", 103);
-            dc.SqlTraveler(source, true);
+            source.Table = "employees";
+            source.Columns.Add("employeeNumber", 1370);
+            dc.SqlTraveler(source, false);
+
+            Console.WriteLine("==============");
+
+            source.Columns.Clear();
+            source.ServerId = 1;
+            source.Database = "dataclonertestdatabase";
+            source.Schema = "";
+            source.Table = "employees";
+            source.Columns.Add("employeeNumber", 1370);
+            dc.SqlTraveler(source, false);
         }
 
         public static void ServerMapTest()
