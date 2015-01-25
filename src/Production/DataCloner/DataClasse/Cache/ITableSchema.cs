@@ -16,6 +16,7 @@ namespace DataCloner.DataClasse.Cache
         string InsertCommand { get; set; }
         IDerivativeTable[] DerivativeTables { get; set; }
         IForeignKey[] ForeignKeys { get; set; }
+        IUniqueKey[] UniqueKeys { get; set; }
         IColumnDefinition[] ColumnsDefinition { get; set; }
     }
 
@@ -42,6 +43,11 @@ namespace DataCloner.DataClasse.Cache
     {
         string NameFrom { get; set; }
         string NameTo { get; set; }
+    }
+
+    public interface IUniqueKey
+    {
+        string[] Columns { get; set; }
     }
 
     public interface IColumnDefinition

@@ -20,12 +20,14 @@ namespace DataCloner.DataClasse.Cache
         public string InsertCommand { get; set; }
         public IDerivativeTable[] DerivativeTables { get; set; }
         public IForeignKey[] ForeignKeys { get; set; }
+        public IUniqueKey[] UniqueKeys { get; set; }
         public IColumnDefinition[] ColumnsDefinition { get; set; }
 
         public TableSchema()
         {
             DerivativeTables = new DerivativeTable[] { };
             ForeignKeys = new ForeignKey[] { };
+            UniqueKeys = new UniqueKey[] { };
             ColumnsDefinition = new ColumnDefinition[] { };
         }
 
@@ -304,6 +306,11 @@ namespace DataCloner.DataClasse.Cache
     {
         public string NameFrom { get; set; }
         public string NameTo { get; set; }
+    }
+
+    internal sealed class UniqueKey : IUniqueKey
+    {
+        public string[] Columns { get; set; }
     }
 
     internal sealed class ColumnDefinition : IColumnDefinition

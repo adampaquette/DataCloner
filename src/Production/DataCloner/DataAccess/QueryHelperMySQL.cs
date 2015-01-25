@@ -60,7 +60,7 @@ namespace DataCloner.DataAccess
             using (var cmd = _conn.CreateCommand())
             {
                 cmd.CommandText = "SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA " +
-                                  "WHERE SCHEMA_NAME NOT IN ('information_schema','performance_schema','mysql')";
+                                  "WHERE SCHEMA_NAME NOT IN ('information_schema','performance_schema','mysql');";
                 using (var r = cmd.ExecuteReader())
                 {
                     while (r.Read())
@@ -85,7 +85,7 @@ namespace DataCloner.DataAccess
                 "WHERE TABLE_SCHEMA = @DATABASE " +
                 "ORDER BY " +
                     "TABLE_NAME," +
-                    "ORDINAL_POSITION";
+                    "ORDINAL_POSITION;";
 
             using (var cmd = _conn.CreateCommand())
             {
@@ -103,10 +103,8 @@ namespace DataCloner.DataAccess
             }
         }
 
-        public void GetForeignKeys(Action<IDataReader, Int16, string> reader, string database)
+        public void GetForeignKeys(ForeignKeyReader reader, string database)
         {
-            var dtReturn = new DataTable();
-
             var sql =
                 "SELECT " +
                     "'' AS 'Schema'," +
@@ -123,7 +121,7 @@ namespace DataCloner.DataAccess
                 "AND TC.CONSTRAINT_TYPE = 'FOREIGN KEY' " +
                 "ORDER BY " +
                     "TC.TABLE_NAME," +
-                    "TC.CONSTRAINT_NAME";
+                    "TC.CONSTRAINT_NAME;";
 
             using (var cmd = _conn.CreateCommand())
             {
@@ -133,7 +131,39 @@ namespace DataCloner.DataAccess
                 p.ParameterName = "@DATABASE";
                 p.Value = database;
                 cmd.Parameters.Add(p);
-                //cmd.Parameters.AddWithValue("@DATABASE", database);
+
+                using (var r = cmd.ExecuteReader())
+                {
+                    reader(r, _serverIdCtx, database);
+                }
+            }
+        }
+
+        public void GetUniqueKeys(UniqueKeyReader reader, string database)
+        {
+            var sql =
+                "SELECT " +
+                    "'' AS 'Schema'," +
+                    "TC.TABLE_NAME," +
+                    "TC.CONSTRAINT_NAME," +
+                    "K.COLUMN_NAME " +                   
+                "FROM information_schema.TABLE_CONSTRAINTS TC " +
+                "INNER JOIN information_schema.KEY_COLUMN_USAGE K ON TC.TABLE_NAME = K.TABLE_NAME " +
+                                                                "AND TC.CONSTRAINT_NAME = K.CONSTRAINT_NAME " +
+                "WHERE TC.TABLE_SCHEMA = @DATABASE " +
+                "AND TC.CONSTRAINT_TYPE = 'UNIQUE' " +
+                "ORDER BY " +
+                    "TC.TABLE_NAME," +
+                    "TC.CONSTRAINT_NAME;";
+
+            using (var cmd = _conn.CreateCommand())
+            {
+                cmd.CommandText = sql;
+
+                var p = cmd.CreateParameter();
+                p.ParameterName = "@DATABASE";
+                p.Value = database;
+                cmd.Parameters.Add(p);                
 
                 using (var r = cmd.ExecuteReader())
                 {

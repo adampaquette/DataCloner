@@ -74,6 +74,7 @@ namespace DataCloner.DataAccess
                     {
                         provider.GetColumns(Cache.CachedTablesSchema.LoadColumns, database);
                         provider.GetForeignKeys(Cache.CachedTablesSchema.LoadForeignKeys, database);
+                        provider.GetUniqueKeys(Cache.CachedTablesSchema.LoadUniqueKeys, database);
                     }
                 }
                 Cache.CachedTablesSchema.FinalizeCache(config);

@@ -34,7 +34,7 @@ namespace DataCloner.PlugIn
                     Type t = Type.GetType(col.BuilderName);
                     builder = FastActivator.CreateInstance(t) as IDataBuilder;
                 }
-                else if (col.IsPrimary && !col.IsAutoIncrement)
+                else if (col.IsPrimary && !col.IsAutoIncrement && !col.IsForeignKey)
                 {
                     mustGenerate = true;
                     switch (col.Type)

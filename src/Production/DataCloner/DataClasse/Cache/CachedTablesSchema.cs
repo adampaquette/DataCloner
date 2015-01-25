@@ -135,8 +135,8 @@ namespace DataCloner.DataClasse.Cache
             var lstForeignKeys = new List<ForeignKey>();
             var lstForeignKeyColumns = new List<ForeignKeyColumn>();
             var previousTable = new TableSchema();
-            var fkPreviousConstraint = new ForeignKey();
-            string previousConstraint = string.Empty;
+            var previousConstraint = new ForeignKey();
+            string previousConstraintName = string.Empty;
             string currentSchema = string.Empty;
             string currentTable = string.Empty;
             string currentConstraint = string.Empty;
@@ -147,8 +147,8 @@ namespace DataCloner.DataClasse.Cache
             //Init first row
             currentSchema = reader.GetString(0);
             previousTable = _dic[serverId][database][currentSchema].Where(t => t.Name == reader.GetString(1)).First();
-            previousConstraint = reader.GetString(2);
-            fkPreviousConstraint = new ForeignKey()
+            previousConstraintName = reader.GetString(2);
+            previousConstraint = new ForeignKey()
             {
                 ServerIdTo = serverId,
                 DatabaseTo = database,
@@ -165,20 +165,20 @@ namespace DataCloner.DataClasse.Cache
                 currentConstraint = reader.GetString(2);
 
                 //Si on change de constraint
-                if (currentTable != previousTable.Name || currentConstraint != previousConstraint)
+                if (currentTable != previousTable.Name || currentConstraint != previousConstraintName)
                 {
-                    fkPreviousConstraint.Columns = lstForeignKeyColumns.ToArray();
-                    lstForeignKeys.Add(fkPreviousConstraint);
+                    previousConstraint.Columns = lstForeignKeyColumns.ToArray();
+                    lstForeignKeys.Add(previousConstraint);
 
                     lstForeignKeyColumns = new List<ForeignKeyColumn>();
-                    fkPreviousConstraint = new ForeignKey()
+                    previousConstraint = new ForeignKey()
                     {
                         ServerIdTo = serverId,
                         DatabaseTo = database,
                         SchemaTo = currentSchema,
                         TableTo = reader.GetString(5)
                     };
-                    previousConstraint = currentConstraint;
+                    previousConstraintName = currentConstraint;
                 }
 
                 //Si on change de table
@@ -202,9 +202,70 @@ namespace DataCloner.DataClasse.Cache
             //Ajoute la dernière table / schema
             if (lstForeignKeyColumns.Count > 0)
             {
-                fkPreviousConstraint.Columns = lstForeignKeyColumns.ToArray();
-                lstForeignKeys.Add(fkPreviousConstraint);
+                previousConstraint.Columns = lstForeignKeyColumns.ToArray();
+                lstForeignKeys.Add(previousConstraint);
                 previousTable.ForeignKeys = lstForeignKeys.ToArray();
+            }
+        }
+
+        public void LoadUniqueKeys(IDataReader reader, Int16 serverId, String database)
+        {
+            var lstUniqueKeys = new List<UniqueKey>();
+            var lstUniqueKeyColumns = new List<string>();
+            var previousTable = new TableSchema();
+            var previousConstraint = new UniqueKey();
+            string previousConstraintName = string.Empty;
+            string currentSchema = string.Empty;
+            string currentTable = string.Empty;
+            string currentConstraint = string.Empty;
+
+            if (!reader.Read())
+                return;
+
+            //Init first row
+            currentSchema = reader.GetString(0);
+            previousTable = _dic[serverId][database][currentSchema].Where(t => t.Name == reader.GetString(1)).First();
+            previousConstraintName = reader.GetString(2);
+            previousConstraint = new UniqueKey();
+
+            //Pour chaque ligne
+            do
+            {
+                currentSchema = reader.GetString(0);
+                currentTable = reader.GetString(1);
+                currentConstraint = reader.GetString(2);
+
+                //Si on change de constraint
+                if (currentTable != previousTable.Name || currentConstraint != previousConstraintName)
+                {
+                    previousConstraint.Columns = lstUniqueKeyColumns.ToArray();
+                    lstUniqueKeys.Add(previousConstraint);
+
+                    lstUniqueKeyColumns = new List<string>();
+                    previousConstraint = new UniqueKey();
+                    previousConstraintName = currentConstraint;
+                }
+
+                //Si on change de table
+                if (currentTable != previousTable.Name)
+                {
+                    previousTable.UniqueKeys = lstUniqueKeys.ToArray();
+
+                    //Change de table
+                    previousTable = _dic[serverId][database][currentSchema].Where(t => t.Name == reader.GetString(1)).First();
+                    lstUniqueKeys = new List<UniqueKey>();
+                }
+
+                //Ajoute la colonne
+                lstUniqueKeyColumns.Add(reader.GetString(3));
+            } while (reader.Read());
+
+            //Ajoute la dernière table / schema
+            if (lstUniqueKeyColumns.Count > 0)
+            {
+                previousConstraint.Columns = lstUniqueKeyColumns.ToArray();
+                lstUniqueKeys.Add(previousConstraint);
+                previousTable.UniqueKeys = lstUniqueKeys.ToArray();
             }
         }
 
