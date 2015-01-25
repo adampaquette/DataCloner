@@ -192,11 +192,20 @@ namespace DataCloner.DataClasse.Cache
                 }
 
                 //Ajoute la colonne
+                var colName = reader.GetString(3);
                 lstForeignKeyColumns.Add(new ForeignKeyColumn()
                 {
-                    NameFrom = reader.GetString(3),
+                    NameFrom = colName,
                     NameTo = reader.GetString(6)
                 });
+
+                //Affecte l'indicateur dans le schema
+                var col = previousTable.ColumnsDefinition.Where(c => c.Name == colName).FirstOrDefault();
+                if (col == null)
+                    throw new Exception(string.Format("The column {0} has not been found in the cache for the table {1}.", colName, previousTable.Name));
+                else
+                    col.IsForeignKey = true;
+               
             } while (reader.Read());
 
             //Ajoute la dernière table / schema
@@ -257,7 +266,16 @@ namespace DataCloner.DataClasse.Cache
                 }
 
                 //Ajoute la colonne
-                lstUniqueKeyColumns.Add(reader.GetString(3));
+                var colName = reader.GetString(3);
+                lstUniqueKeyColumns.Add(colName);
+
+                //Affecte l'indicateur dans le schema
+                var col = previousTable.ColumnsDefinition.Where(c => c.Name == colName).FirstOrDefault();
+                if (col == null)
+                    throw new Exception(string.Format("The column {0} has not been found in the cache for the table {1}.", colName, previousTable.Name));
+                else
+                    col.IsUniqueKey = true;
+
             } while (reader.Read());
 
             //Ajoute la dernière table / schema

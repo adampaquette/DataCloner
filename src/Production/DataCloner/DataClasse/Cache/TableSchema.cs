@@ -320,6 +320,7 @@ namespace DataCloner.DataClasse.Cache
         public string Size { get; set; }
         public bool IsPrimary { get; set; }
         public bool IsForeignKey { get; set; }
+        public bool IsUniqueKey { get; set; }
         public bool IsAutoIncrement { get; set; }
         public string BuilderName { get; set; }
     }

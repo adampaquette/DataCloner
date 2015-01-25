@@ -79,7 +79,8 @@ namespace DataCloner.DataAccess
                     "COLUMN_NAME," +
                     "COLUMN_TYPE," +
                     "COLUMN_KEY = 'PRI' AS 'IsPrimaryKey'," +
-                    "1 AS 'IsForeignKey'," +
+                    "0 AS 'IsForeignKey'," +
+                    "0 AS 'IsUniqueKey'," +
                     "EXTRA = 'auto_increment' AS 'IsAutoIncrement' " +
                 "FROM INFORMATION_SCHEMA.COLUMNS " +
                 "WHERE TABLE_SCHEMA = @DATABASE " +

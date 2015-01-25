@@ -57,6 +57,7 @@ namespace DataCloner.DataClasse.Cache
         string Size { get; set; }
         bool IsPrimary { get; set; }
         bool IsForeignKey { get; set; }
+        bool IsUniqueKey { get; set; }
         bool IsAutoIncrement { get; set; }
         string BuilderName { get; set; }
     }
