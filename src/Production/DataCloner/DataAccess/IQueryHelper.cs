@@ -14,7 +14,6 @@ namespace DataCloner.DataAccess
     {
         IDbConnection Connection { get; }
         DbEngine Engine { get; }
-        bool IsReadOnly { get; }
         string[] GetDatabasesName();
         void GetColumns(ColumnReader reader, String database);
         void GetForeignKeys(ForeignKeyReader reader, String database);
