@@ -117,7 +117,7 @@ namespace DataCloner
                     if (shouldReturnFk)
                     {
                         //Construit la pk de retour
-                        riReturn.Columns = table.BuildPKFromKey(dstKey);
+                        riReturn.Columns = table.BuildPKFromRawKey(dstKey);
                         return riReturn;
                     }
                     else
@@ -136,7 +136,7 @@ namespace DataCloner
                         //Si le foreignkey est déjà dans la table de destination, on l'utilise
                         var fkDst = _keyRelationships.GetKey(fk.ServerIdTo, fk.DatabaseTo, fk.SchemaTo, fk.TableTo, fkValue);
                         if (fkDst != null)
-                            SetFKInDatarow(table, fk, fkDst, destinationRow);
+                            table.SetFKInDatarow(fk, fkDst, destinationRow);
                         else
                         {
                             var fkDestinationExists = false;
@@ -174,8 +174,10 @@ namespace DataCloner
                                 if(rowsGenerating.Contains(riFK))
                                 {
                                     //Erreur ..... vilain DBA
+                                    var nullFK = new object[fk.Columns.Length];
                                     //Affecte la FK à NULL ou on en prend une random
-                                    //On ajoute la table courante + FK dans une liste de tâches pour réassigner les FK "correctement" 
+                                    //On ajoute la table courante + FK dans une liste de tâches pour réassigner les FK "correctement"
+                                    table.SetFKInDatarow(fk, nullFK, destinationRow);
                                 }
                                 else
                                 {
@@ -184,17 +186,12 @@ namespace DataCloner
                                     var riNewFK = SqlTraveler(riFK, false, true, level + 1, rowsGenerating);
                                     rowsGenerating.Pop();
                                     
-                                    //La FK (ou unique constraint) n'est pas necessairement la PK donc on réobtient la ligne.
+                                    //La FK (ou unique constraint) n'est pas necessairement la PK donc on réobtient la ligne car
+                                    //SqlTraveler retourne toujours une la PK.
                                     var newFKRow = riNewFK.Select();
 
                                     //Affecte la clef
-                                    for (int j = 0; j < fk.Columns.Length; j++)
-                                    {
-                                        int posTblSourceFK = table.ColumnsDefinition.IndexOf(c => c.Name == fk.Columns[j].NameFrom);
-                                        int posTblDestinationPK = fkTable.ColumnsDefinition.IndexOf(c => c.Name == fk.Columns[j].NameTo);
-
-                                        destinationRow[posTblSourceFK] = newFKRow[0][posTblDestinationPK];
-                                    }
+                                    table.SetFKFromDatarowInDatarow(fkTable, fk, newFKRow, destinationRow);
                                 }                                
                             }
                         }
@@ -219,7 +216,7 @@ namespace DataCloner
                     //On affecte la valeur de retour
                     if (shouldReturnFk)
                     {
-                        riReturn.Columns = table.BuildPKFromKey(dstKey);
+                        riReturn.Columns = table.BuildPKFromRawKey(dstKey);
                     }
 
                     //On clone les lignes des tables dépendantes
@@ -228,21 +225,6 @@ namespace DataCloner
             }
 
             return riReturn;
-        }
-
-        /// <summary>
-        /// //On trouve la position de chaque colonne pour affecter la valeur de destination.
-        /// </summary>
-        private static void SetFKInDatarow(TableSchema table, IForeignKey fkDefinition, object[] fkData, object[] destinationRow)
-        {
-            for (int j = 0; j < fkDefinition.Columns.Length; j++)
-            {
-                for (int k = 0; k < table.ColumnsDefinition.Length; k++)
-                {
-                    if (fkDefinition.Columns[j].NameFrom == table.ColumnsDefinition[k].Name)
-                        destinationRow[k] = fkData[j];
-                }
-            }
         }
 
         private void GetDerivatives(TableSchema table, object[] sourceRow, bool getDerivatives, int level)
@@ -269,7 +251,7 @@ namespace DataCloner
                     Columns = table.BuildDerivativePK(cachedDT, sourceRow)
                 };
 
-                SqlTraveler(riDT, getDerivatives, false, level + 1);
+                SqlTraveler(riDT, getDerivatives, false, level + 1, new Stack<IRowIdentifier>());
             }
         }
 

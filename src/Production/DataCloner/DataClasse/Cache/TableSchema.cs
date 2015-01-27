@@ -75,7 +75,7 @@ namespace DataCloner.DataClasse.Cache
             return pk;
         }
 
-        public Dictionary<string, object> BuildPKFromKey(object[] key)
+        public Dictionary<string, object> BuildPKFromRawKey(object[] key)
         {
             var pkColumns = ColumnsDefinition.Where(c => c.IsPrimary).ToArray();
 
@@ -86,6 +86,32 @@ namespace DataCloner.DataClasse.Cache
             for (int i = 0; i < pkColumns.Count(); i++)
                 pk.Add(pkColumns[i].Name, key[i]);
             return pk;
+        }
+
+        /// <summary>
+        /// //On trouve la position de chaque colonne pour affecter la valeur de destination.
+        /// </summary>
+        public void SetFKInDatarow(IForeignKey fkDefinition, object[] fkData, object[] destinationRow)
+        {
+            for (int j = 0; j < fkDefinition.Columns.Length; j++)
+            {
+                for (int k = 0; k < ColumnsDefinition.Length; k++)
+                {
+                    if (fkDefinition.Columns[j].NameFrom == ColumnsDefinition[k].Name)
+                        destinationRow[k] = fkData[j];
+                }
+            }
+        }
+
+        public void SetFKFromDatarowInDatarow(TableSchema fkTable, IForeignKey fk, object[][] sourceRow, object[] destinationRow)
+        {
+            for (int j = 0; j < fk.Columns.Length; j++)
+            {
+                int posTblSourceFK = ColumnsDefinition.IndexOf(c => c.Name == fk.Columns[j].NameFrom);
+                int posTblDestinationPK = fkTable.ColumnsDefinition.IndexOf(c => c.Name == fk.Columns[j].NameTo);
+
+                destinationRow[posTblSourceFK] = sourceRow[0][posTblDestinationPK];
+            }
         }
 
         public void SetPKFromKey(ref object[] row, object[] key)
