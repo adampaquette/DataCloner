@@ -167,6 +167,8 @@ namespace Class
             //Map serveur source / destination
             dc.ServerMap.Add(new ServerIdentifier { ServerId = 1, Database = "dataclonertestdatabase", Schema = "" },
                              new ServerIdentifier { ServerId = 1, Database = "dataclonertestdatabase", Schema = "" });
+            dc.ServerMap.Add(new ServerIdentifier { ServerId = 1, Database = "sakila", Schema = "" },
+                             new ServerIdentifier { ServerId = 1, Database = "sakila", Schema = "" });
 
             dc.Initialize();
             dc.Logger += msg => Console.WriteLine(msg);
@@ -176,28 +178,28 @@ namespace Class
             //source.Database = "dataclonertestdatabase";
             //source.Schema = "";
             //source.Table = "customers";
-            //source.Columns.Add("customerNumber", 103);
-            //dc.SqlTraveler(source, false);
+            //source.Columns.Add("customerNumber", 141);
+            //dc.SqlTraveler(source, true);
 
-            Console.WriteLine("==============");
-
-            source.Columns.Clear();
-            source.ServerId = 1;
-            source.Database = "dataclonertestdatabase";
-            source.Schema = "";
-            source.Table = "employees";
-            source.Columns.Add("employeeNumber", 1370);
-            dc.SqlTraveler(source, false);
-
-            Console.WriteLine("==============");
+            //Console.WriteLine("==============");
 
             source.Columns.Clear();
             source.ServerId = 1;
-            source.Database = "dataclonertestdatabase";
+            source.Database = "sakila";
             source.Schema = "";
-            source.Table = "employees";
-            source.Columns.Add("employeeNumber", 1370);
-            dc.SqlTraveler(source, false);
+            source.Table = "customer";
+            source.Columns.Add("customer_id", 1);
+            dc.SqlTraveler(source, true);
+
+            //Console.WriteLine("==============");
+
+            //source.Columns.Clear();
+            //source.ServerId = 1;
+            //source.Database = "dataclonertestdatabase";
+            //source.Schema = "";
+            //source.Table = "employees";
+            //source.Columns.Add("employeeNumber", 1370);
+            //dc.SqlTraveler(source, true);
         }
 
         public static void ServerMapTest()

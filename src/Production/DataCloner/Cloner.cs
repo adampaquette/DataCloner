@@ -189,7 +189,7 @@ namespace DataCloner
                     }
 
                     //Générer les colonnes qui ont été marquées dans la configuration dataBuilder 
-                    DataBuilder.BuildDataFromTable(tiDestination.GetQueryHelper(), table, destinationRow);
+                    DataBuilder.BuildDataFromTable(tiDestination.GetQueryHelper(), tiDestination.Database, table, destinationRow);
 
                     //La ligne de destination est prète à l'enregistrement
                     tiDestination.Insert(destinationRow);

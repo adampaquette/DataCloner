@@ -6,7 +6,7 @@ namespace DataCloner.PlugIn
 {
     internal class StringDataBuilder : IDataBuilder
     {
-        public object BuildData(IDbConnection conn, DbEngine engine, ITableSchema table, IColumnDefinition column)
+        public object BuildData(IDbConnection conn, DbEngine engine, string database, ITableSchema table, IColumnDefinition column)
         {
             int size = 10;
             Int32.TryParse(column.Size, out size);
