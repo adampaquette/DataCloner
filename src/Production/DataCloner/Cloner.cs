@@ -57,10 +57,10 @@ namespace DataCloner
 
         public IRowIdentifier SqlTraveler(IRowIdentifier riSource, bool getDerivatives)
         {
-            return SqlTraveler(riSource, getDerivatives, false, 0);
+            return SqlTraveler(riSource, getDerivatives, false, 0, new Stack<IRowIdentifier>());
         }
 
-        private IRowIdentifier SqlTraveler(IRowIdentifier riSource, bool getDerivatives, bool shouldReturnFk, int level)
+        private IRowIdentifier SqlTraveler(IRowIdentifier riSource, bool getDerivatives, bool shouldReturnFk, int level, Stack<IRowIdentifier> rowsGenerating)
         {
             var srcRows = riSource.Select();
             int nbRows = srcRows.Length;
@@ -169,21 +169,33 @@ namespace DataCloner
 
                             //La FK n'existe pas, on la crer
                             if (!fkDestinationExists)
-                            {
-                                //Crer la ligne et ses dépendances
-                                var riNewFK = SqlTraveler(riFK, false, true, level + 1);
-
-                                //La FK (ou unique constraint) n'est pas necessairement la PK donc on réobtient la ligne.
-                                var newFKRow = riNewFK.Select();
-
-                                //Affecte la clef
-                                for (int j = 0; j < fk.Columns.Length; j++)
+                            {            
+                                //Si référence circulaire
+                                if(rowsGenerating.Contains(riFK))
                                 {
-                                    int posTblSourceFK = table.ColumnsDefinition.IndexOf(c => c.Name == fk.Columns[j].NameFrom);
-                                    int posTblDestinationPK = fkTable.ColumnsDefinition.IndexOf(c => c.Name == fk.Columns[j].NameTo);
-
-                                    destinationRow[posTblSourceFK] = newFKRow[0][posTblDestinationPK];
+                                    //Erreur ..... vilain DBA
+                                    //Affecte la FK à NULL ou on en prend une random
+                                    //On ajoute la table courante + FK dans une liste de tâches pour réassigner les FK "correctement" 
                                 }
+                                else
+                                {
+                                    //Crer la ligne et ses dépendances
+                                    rowsGenerating.Push(riFK);
+                                    var riNewFK = SqlTraveler(riFK, false, true, level + 1, rowsGenerating);
+                                    rowsGenerating.Pop();
+                                    
+                                    //La FK (ou unique constraint) n'est pas necessairement la PK donc on réobtient la ligne.
+                                    var newFKRow = riNewFK.Select();
+
+                                    //Affecte la clef
+                                    for (int j = 0; j < fk.Columns.Length; j++)
+                                    {
+                                        int posTblSourceFK = table.ColumnsDefinition.IndexOf(c => c.Name == fk.Columns[j].NameFrom);
+                                        int posTblDestinationPK = fkTable.ColumnsDefinition.IndexOf(c => c.Name == fk.Columns[j].NameTo);
+
+                                        destinationRow[posTblSourceFK] = newFKRow[0][posTblDestinationPK];
+                                    }
+                                }                                
                             }
                         }
                     }
