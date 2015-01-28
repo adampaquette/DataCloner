@@ -20,10 +20,11 @@ namespace DataCloner.DataAccess
         private readonly string _sqlGetForeignKeys;
         private readonly string _sqlGetUniqueKeys;
         private readonly string _sqlGetLastInsertedPk;
+        private readonly string _sqlEnforceIntegrityCheck;
 
         public AbstractQueryHelper(string providerName, string connectionString, Int16 serverId, Configuration cache,
             string sqlGetDatabasesName, string sqlGetColumns, string sqlGetForeignKeys, string sqlGetUniqueKeys,
-            string sqlGetLastInsertedPk)
+            string sqlGetLastInsertedPk, string sqlEnforceIntegrityCheck)
         {
             _factory = DbProviderFactories.GetFactory(providerName);
             _conn = _factory.CreateConnection();
@@ -38,6 +39,7 @@ namespace DataCloner.DataAccess
             _sqlGetForeignKeys = sqlGetForeignKeys;
             _sqlGetUniqueKeys = sqlGetUniqueKeys;
             _sqlGetLastInsertedPk = sqlGetLastInsertedPk;
+            _sqlEnforceIntegrityCheck = sqlEnforceIntegrityCheck;
         }
 
         public IDbConnection Connection
@@ -119,6 +121,20 @@ namespace DataCloner.DataAccess
             var cmd = _conn.CreateCommand();
             cmd.CommandText = _sqlGetLastInsertedPk;
             return cmd.ExecuteScalar();
+        }
+
+        public void EnforceIntegrityCheck(bool active)
+        {
+            var cmd = _conn.CreateCommand();
+
+            var p = cmd.CreateParameter();
+            p.ParameterName = "@ACTIVE";
+            p.Value = active;
+            p.DbType = DbType.Boolean;
+            cmd.Parameters.Add(p);
+
+            cmd.CommandText = _sqlEnforceIntegrityCheck;
+            cmd.ExecuteNonQuery();
         }
 
         public object[][] Select(IRowIdentifier ri)

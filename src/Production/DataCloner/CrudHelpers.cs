@@ -26,5 +26,10 @@ namespace DataCloner
         {
             return QueryDispatcher.GetQueryHelper(server).GetLastInsertedPk();
         }
+
+        public static void EnforceIntegrityCheck(this IServerIdentifier server, bool active)
+        {
+            QueryDispatcher.GetQueryHelper(server).EnforceIntegrityCheck(active);
+        }
     }
 }

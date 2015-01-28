@@ -173,15 +173,15 @@ namespace Class
             dc.Initialize();
             dc.Logger += msg => Console.WriteLine(msg);
 
-            //source.Columns.Clear();
-            //source.ServerId = 1;
-            //source.Database = "dataclonertestdatabase";
-            //source.Schema = "";
-            //source.Table = "customers";
-            //source.Columns.Add("customerNumber", 141);
-            //dc.SqlTraveler(source, true);
+            source.Columns.Clear();
+            source.ServerId = 1;
+            source.Database = "dataclonertestdatabase";
+            source.Schema = "";
+            source.Table = "employees";
+            source.Columns.Add("employeeNumber", 1188);
+            dc.SqlTraveler(source, true);
 
-            //Console.WriteLine("==============");
+            Console.WriteLine("==============");
 
             source.Columns.Clear();
             source.ServerId = 1;

@@ -21,7 +21,7 @@ namespace DataCloner
         string Column { get; set; }
     }
 
-    public interface IRowIdentifier : ITableIdentifier
+    public interface IRowIdentifier : ITableIdentifier, IEquatable<IRowIdentifier>
     {
         IDictionary<string, object> Columns { get; set; }
     }

@@ -19,6 +19,7 @@ namespace DataCloner.DataAccess
         void GetForeignKeys(ForeignKeyReader reader, String database);
         void GetUniqueKeys(UniqueKeyReader reader, string database);
         object GetLastInsertedPk();
+        void EnforceIntegrityCheck(bool active);
         object[][] Select(IRowIdentifier ri);
         void Insert(ITableIdentifier ti, object[] row);
         void Update(IRowIdentifier ri, DataRow[] rows);

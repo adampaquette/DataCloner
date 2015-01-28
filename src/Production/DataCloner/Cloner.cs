@@ -34,6 +34,7 @@ namespace DataCloner
         public Dictionary<ServerIdentifier, ServerIdentifier> ServerMap { get; set; }
         public bool SaveToFile { get; set; }
         public string SavePath { get; set; }
+        public bool EnforceIntegrity { get; set; }
 
         public event Action<string> Logger;
 
@@ -57,6 +58,8 @@ namespace DataCloner
 
         public IRowIdentifier SqlTraveler(IRowIdentifier riSource, bool getDerivatives)
         {
+            riSource.EnforceIntegrityCheck(EnforceIntegrity);
+
             return SqlTraveler(riSource, getDerivatives, false, 0, new Stack<IRowIdentifier>());
         }
 
@@ -174,7 +177,7 @@ namespace DataCloner
                                 if(rowsGenerating.Contains(riFK))
                                 {
                                     //Erreur ..... vilain DBA
-                                    var nullFK = new object[fk.Columns.Length];
+                                    var nullFK = Enumerable.Repeat<object>(1, fk.Columns.Length).ToArray();
                                     //Affecte la FK à NULL ou on en prend une random
                                     //On ajoute la table courante + FK dans une liste de tâches pour réassigner les FK "correctement"
                                     table.SetFKInDatarow(fk, nullFK, destinationRow);
