@@ -24,12 +24,19 @@ namespace DataCloner
         public string Schema { get; set; }
     }
 
+    internal class CircularKeyJob
+    {
+        public IRowIdentifier sourceBaseRowStartPoint { get; set; }
+        public IRowIdentifier sourceFKRowStartPoint { get; set; }
+    }
+
     public class Cloner
     {
         private const string TEMP_FOLDER_NAME = "temp";
 
         private CachedTablesSchema _cacheTable;
         private KeyRelationship _keyRelationships;
+        private List<CircularKeyJob> _circularKeyJobs;
 
         public Dictionary<ServerIdentifier, ServerIdentifier> ServerMap { get; set; }
         public bool SaveToFile { get; set; }
@@ -48,6 +55,7 @@ namespace DataCloner
             QueryDispatcher.Initialize(cacheName);
             _cacheTable = QueryDispatcher.Cache.CachedTablesSchema;
             _keyRelationships = new KeyRelationship();
+            _circularKeyJobs = new List<CircularKeyJob>();
 
             if (ServerMap == null)
                 throw new Exception("ServerMap is not defined! Links source and destination.");
@@ -59,8 +67,11 @@ namespace DataCloner
         public IRowIdentifier SqlTraveler(IRowIdentifier riSource, bool getDerivatives)
         {
             riSource.EnforceIntegrityCheck(EnforceIntegrity);
+            var riReturn = SqlTraveler(riSource, getDerivatives, false, 0, new Stack<IRowIdentifier>());
 
-            return SqlTraveler(riSource, getDerivatives, false, 0, new Stack<IRowIdentifier>());
+            UpdateCircularReferences();
+
+            return riReturn;
         }
 
         private IRowIdentifier SqlTraveler(IRowIdentifier riSource, bool getDerivatives, bool shouldReturnFk, int level, Stack<IRowIdentifier> rowsGenerating)
@@ -76,7 +87,6 @@ namespace DataCloner
                 Database = riSource.Database,
                 Schema = riSource.Schema
             }];
-
             var riReturn = new RowIdentifier()
             {
                 ServerId = serverDst.ServerId,
@@ -172,15 +182,20 @@ namespace DataCloner
 
                             //La FK n'existe pas, on la crer
                             if (!fkDestinationExists)
-                            {            
+                            {
                                 //Si référence circulaire
-                                if(rowsGenerating.Contains(riFK))
+                                if (rowsGenerating.Contains(riFK))
                                 {
-                                    //Erreur ..... vilain DBA
+                                    //Affecte la FK à 1 pour les contraintes NOT NULL. EnforceIntegrity doit être désactivé.
                                     var nullFK = Enumerable.Repeat<object>(1, fk.Columns.Length).ToArray();
-                                    //Affecte la FK à NULL ou on en prend une random
-                                    //On ajoute la table courante + FK dans une liste de tâches pour réassigner les FK "correctement"
                                     table.SetFKInDatarow(fk, nullFK, destinationRow);
+
+                                    //On ajoute une tâche pour réassigner la FK "correctement", une fois que toute la chaîne aura été enregistrée.
+                                    _circularKeyJobs.Add(new CircularKeyJob()
+                                    {
+                                        sourceBaseRowStartPoint = riSource,
+                                        sourceFKRowStartPoint = riFK
+                                    });
                                 }
                                 else
                                 {
@@ -188,14 +203,14 @@ namespace DataCloner
                                     rowsGenerating.Push(riFK);
                                     var riNewFK = SqlTraveler(riFK, false, true, level + 1, rowsGenerating);
                                     rowsGenerating.Pop();
-                                    
+
                                     //La FK (ou unique constraint) n'est pas necessairement la PK donc on réobtient la ligne car
                                     //SqlTraveler retourne toujours une la PK.
                                     var newFKRow = riNewFK.Select();
 
                                     //Affecte la clef
                                     table.SetFKFromDatarowInDatarow(fkTable, fk, newFKRow, destinationRow);
-                                }                                
+                                }
                             }
                         }
                     }
@@ -286,6 +301,26 @@ namespace DataCloner
                 });
 
                 //_dispatcher.CreateDatabaseFromCache(null, null);
+            }
+        }
+
+        private void UpdateCircularReferences()
+        {
+            while (_circularKeyJobs.Count() > 1)
+            {
+                var job = _circularKeyJobs[0];
+
+                var destinationRow = _keyRelationships.GetKey(job.sourceBaseRowStartPoint);
+                var destinationFKRow = _keyRelationships.GetKey(job.sourceFKRowStartPoint);
+
+                var serverDst = ServerMap[new ServerIdentifier
+                {
+                    ServerId = job.sourceBaseRowStartPoint.ServerId,
+                    Database = job.sourceBaseRowStartPoint.Database,
+                    Schema = job.sourceBaseRowStartPoint.Schema
+                }];
+
+                QueryDispatcher.GetQueryHelper(serverDst.ServerId).Update(null, null);
             }
         }
     }

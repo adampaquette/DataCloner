@@ -13,9 +13,17 @@ namespace DataCloner.PlugIn
 {
     internal static class DataBuilder
     {
+        private static Dictionary<string, IDataBuilder> _cachedBuilders;
+
+        static DataBuilder()
+        {
+            _cachedBuilders = new Dictionary<string, IDataBuilder>();
+            _cachedBuilders.Add("AutoIncrementDataBuilder", new AutoIncrementDataBuilder());
+            _cachedBuilders.Add("StringDataBuilder", new StringDataBuilder());
+        }
+
         public static void BuildDataFromTable(IQueryHelper queryHelper, string database, ITableSchema table, object[] dataRow)
         {
-            //TODO:Cache instance of each builder
             if (table.ColumnsDefinition.Length != dataRow.Length)
                 throw new ArgumentException(
                     String.Format("The number of columns defined in the cached table {0} '{1}' is different from the current row '{2}'.",
@@ -31,22 +39,45 @@ namespace DataCloner.PlugIn
                 if (!string.IsNullOrWhiteSpace(col.BuilderName))
                 {
                     mustGenerate = true;
-                    Type t = Type.GetType(col.BuilderName);
-                    builder = FastActivator.CreateInstance(t) as IDataBuilder;
+
+                    if (!_cachedBuilders.ContainsKey(col.BuilderName))
+                    {
+                        Type t = Type.GetType(col.BuilderName);
+                        builder = FastActivator.CreateInstance(t) as IDataBuilder;
+                        _cachedBuilders.Add(col.BuilderName, builder);
+                    }
+                    else
+                        builder = _cachedBuilders[col.BuilderName];
                 }
-                else if (col.IsPrimary && !col.IsAutoIncrement && !col.IsForeignKey)
+                else if ((col.IsPrimary && !col.IsAutoIncrement && !col.IsForeignKey) || col.IsUniqueKey)
                 {
                     mustGenerate = true;
                     switch (col.Type)
                     {
+                        case DbType.Byte:
+                        case DbType.Decimal:
+                        case DbType.Double:
+                        case DbType.SByte:
+                        case DbType.Single:
                         case DbType.Int16:
                         case DbType.Int32:
                         case DbType.Int64:
-                            builder = new AutoIncrementDataBuilder();
+                        case DbType.UInt16:
+                        case DbType.UInt32:
+                        case DbType.UInt64:
+                            builder = _cachedBuilders["AutoIncrementDataBuilder"]; 
                             break;
+                        case DbType.AnsiString:
+                        case DbType.AnsiStringFixedLength:
+                        case DbType.Guid:
                         case DbType.String:
-                            builder = new StringDataBuilder();
+                        case DbType.StringFixedLength:
+                            builder = _cachedBuilders["StringDataBuilder"];
                             break;
+                        default:
+                            throw new NotSupportedException(
+                                String.Format("The generation of the key failed. Please specify a databuilder in the configuration for {0}.{1}.{2}",
+                                database, table, col.Name));
                     }
                 }
 
