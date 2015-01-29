@@ -16,7 +16,7 @@ namespace DataCloner.DataClasse.Cache
     /// Contient les tables statiques de la base de données
     /// </summary>
     /// <remarks>Optimisé pour la lecture et non pour l'écriture!</remarks>
-    internal sealed class CachedTablesSchema
+    internal sealed class DatabasesSchema
     {
         private Dictionary<Int16, Dictionary<string, Dictionary<string, TableSchema[]>>> _dic =
             new Dictionary<Int16, Dictionary<string, Dictionary<string, TableSchema[]>>>();
@@ -155,7 +155,6 @@ namespace DataCloner.DataClasse.Cache
                 SchemaTo = currentSchema,
                 TableTo = reader.GetString(5)
             };
-
 
             //Pour chaque ligne
             do
@@ -629,7 +628,7 @@ namespace DataCloner.DataClasse.Cache
             Serialize(new BinaryWriter(stream));
         }
 
-        public static CachedTablesSchema Deserialize(Stream stream)
+        public static DatabasesSchema Deserialize(Stream stream)
         {
             return Deserialize(new BinaryReader(stream));
         }
@@ -658,9 +657,9 @@ namespace DataCloner.DataClasse.Cache
             }
         }
 
-        public static CachedTablesSchema Deserialize(BinaryReader stream)
+        public static DatabasesSchema Deserialize(BinaryReader stream)
         {
-            var cTables = new CachedTablesSchema();
+            var cTables = new DatabasesSchema();
 
             int nbServers = stream.ReadInt32();
             for (int n = 0; n < nbServers; n++)

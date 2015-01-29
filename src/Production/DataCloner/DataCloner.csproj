@@ -96,7 +96,7 @@
     <Compile Include="DataClasse\Configuration\ServerMapsXml.cs" />
     <Compile Include="DataClasse\ColumnsWithValue.cs" />
     <Compile Include="DataClasse\KeyRelationship.cs" />
-    <Compile Include="DataClasse\Cache\CachedTablesSchema.cs" />
+    <Compile Include="DataClasse\Cache\DatabasesSchema.cs" />
     <Compile Include="DataClasse\Cache\TableSchema.cs" />
     <Compile Include="DbEngine.cs" />
     <Compile Include="DerivativeTableAccess.cs" />
@@ -110,7 +110,7 @@
     <Compile Include="DataAccess\QueryHelperSQLServer.cs" />
     <Compile Include="DataAccess\QueryDispatcher.cs" />
     <Compile Include="DataClasse\ColumnIdentifier.cs" />
-    <Compile Include="DataClasse\Cache\Configuration.cs" />
+    <Compile Include="DataClasse\Cache\Cache.cs" />
     <Compile Include="DataClasse\Cache\Connection.cs" />
     <Compile Include="DataClasse\RowIdentifier.cs" />
     <Compile Include="DataClasse\TableIdentifier.cs" />

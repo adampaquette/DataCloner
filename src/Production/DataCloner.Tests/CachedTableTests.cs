@@ -18,12 +18,12 @@ namespace DataCloner.Tests
 {
     public class CachedTableTests
     {
-        private CachedTablesSchema _cache;
+        private DatabasesSchema _cache;
         private TableSchema _table;
 
         public CachedTableTests()
         { 
-            _cache = new CachedTablesSchema();
+            _cache = new DatabasesSchema();
             _table = new TableSchema();
 
             _table.Name = "table1";
@@ -104,7 +104,7 @@ namespace DataCloner.Tests
 
             _cache.Serialize(ms1);
             ms1.Position = 0;
-            var output = CachedTablesSchema.Deserialize(ms1);
+            var output = DatabasesSchema.Deserialize(ms1);
             output.Serialize(ms2);
 
             Assert.True(ms1.ToArray().SequenceEqual(ms2.ToArray()));

@@ -1,30 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Security.Cryptography;
-
-using DataCloner.DataAccess;
-using DataCloner.DataClasse.Configuration;
-
-using Murmur;
 
 namespace DataCloner.DataClasse.Cache
 {
-    internal class Configuration
+    internal class Cache
     {
         public const string CacheName = "dc";
         public const string Extension = ".cache";
 
         public string ConfigFileHash { get; set; }
         public List<Connection> ConnectionStrings { get; set; }
-        public CachedTablesSchema CachedTablesSchema { get; set; }
+        public DatabasesSchema DatabasesSchema { get; set; }
 
-        public Configuration()
+        public Cache()
         {
             ConnectionStrings = new List<Connection>();
-            CachedTablesSchema = new CachedTablesSchema();
+            DatabasesSchema = new DatabasesSchema();
         }        
 
         public void Serialize(Stream stream)
@@ -32,7 +23,7 @@ namespace DataCloner.DataClasse.Cache
             Serialize(new BinaryWriter(stream));
         }
 
-        public static Configuration Deserialize(Stream stream)
+        public static Cache Deserialize(Stream stream)
         {
             return Deserialize(new BinaryReader(stream));
         }
@@ -43,28 +34,28 @@ namespace DataCloner.DataClasse.Cache
             stream.Write(ConnectionStrings.Count);
             foreach (var cs in ConnectionStrings)
                 cs.Serialize(stream);
-            CachedTablesSchema.Serialize(stream);
+            DatabasesSchema.Serialize(stream);
             
             stream.Flush();
         }
 
-        public static Configuration Deserialize(BinaryReader stream)
+        public static Cache Deserialize(BinaryReader stream)
         {
-            var config = new Configuration();
+            var config = new Cache();
             config.ConfigFileHash = stream.ReadString();
 
-            Configuration.DeserializeBody(stream, config);
+            Cache.DeserializeBody(stream, config);
 
             return config;
         }
 
-        public static Configuration DeserializeBody(BinaryReader stream, Configuration config)
+        public static Cache DeserializeBody(BinaryReader stream, Cache config)
         {
             int nbConnection = stream.ReadInt32();
             for (int i = 0; i < nbConnection; i++)
                 config.ConnectionStrings.Add(Connection.Deserialize(stream));
 
-            config.CachedTablesSchema = CachedTablesSchema.Deserialize(stream);
+            config.DatabasesSchema = DatabasesSchema.Deserialize(stream);
 
             return config;
         }

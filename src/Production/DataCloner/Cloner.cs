@@ -1,15 +1,12 @@
-﻿using DataCloner.DataAccess;
-using DataCloner.DataClasse;
-using DataCloner.DataClasse.Cache;
-using DataCloner.Framework;
-
-using System;
+﻿using System;
 using System.Linq;
 using System.IO;
 using System.Text;
 using System.Collections.Generic;
 using System.Data.SQLite;
 
+using DataCloner.DataAccess;
+using DataCloner.DataClasse.Cache;
 using DataCloner.PlugIn;
 
 namespace DataCloner.DataClasse
@@ -31,7 +28,7 @@ namespace DataCloner.DataClasse
     {
         private const string TEMP_FOLDER_NAME = "temp";
 
-        private CachedTablesSchema _cacheTable;
+        private DatabasesSchema _cacheTable;
         private KeyRelationship _keyRelationships;
         private List<CircularKeyJob> _circularKeyJobs;
 
@@ -47,10 +44,10 @@ namespace DataCloner.DataClasse
             ServerMap = new Dictionary<ServerIdentifier, ServerIdentifier>();
         }
 
-        public void Initialize(string cacheName = Cache.Configuration.CacheName)
+        public void Initialize(string cacheName = Cache.Cache.CacheName)
         {
             QueryDispatcher.Initialize(cacheName);
-            _cacheTable = QueryDispatcher.Cache.CachedTablesSchema;
+            _cacheTable = QueryDispatcher.Cache.DatabasesSchema;
             _keyRelationships = new KeyRelationship();
             _circularKeyJobs = new List<CircularKeyJob>();
 

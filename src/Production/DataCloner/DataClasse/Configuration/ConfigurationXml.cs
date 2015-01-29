@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Xml.Serialization;
-using System.Xml;
 using System.Linq;
 
 namespace DataCloner.DataClasse.Configuration

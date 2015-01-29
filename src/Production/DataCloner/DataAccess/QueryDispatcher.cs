@@ -8,7 +8,6 @@ using System.Security.Cryptography;
 using DataCloner.DataClasse;
 using DataCloner.DataClasse.Cache;
 using DataCloner.DataClasse.Configuration;
-using DataCloner.Framework;
 
 using Murmur;
 
@@ -16,16 +15,16 @@ namespace DataCloner.DataAccess
 {
     internal static class QueryDispatcher
     {
-        public static Configuration Cache { get; set; }
+        public static Cache Cache { get; set; }
         private static Dictionary<Int16, IQueryHelper> _providers;
 
-        public static void Initialize(string cacheName = Configuration.CacheName)
+        public static void Initialize(string cacheName = Cache.CacheName)
         {
-            string fullCacheName = cacheName + Configuration.Extension;
+            string fullCacheName = cacheName + Cache.Extension;
             string fullConfigName = cacheName + ConfigurationXml.Extension;
             bool cacheIsGood = false;
 
-            Cache = new Configuration();
+            Cache = new Cache();
 
             if (!File.Exists(fullConfigName))
                 throw new FileNotFoundException("The configuration file doesn't exist!");
@@ -46,7 +45,7 @@ namespace DataCloner.DataAccess
 
                     if (cacheIsGood)
                     {
-                        Configuration.DeserializeBody(brCache, Cache); //Load cache            
+                        Cache.DeserializeBody(brCache, Cache); //Load cache            
                         InitProviders(Cache.ConnectionStrings);
                         return;
                     }
@@ -72,12 +71,12 @@ namespace DataCloner.DataAccess
 
                     foreach (var database in provider.GetDatabasesName())
                     {
-                        provider.GetColumns(Cache.CachedTablesSchema.LoadColumns, database);
-                        provider.GetForeignKeys(Cache.CachedTablesSchema.LoadForeignKeys, database);
-                        provider.GetUniqueKeys(Cache.CachedTablesSchema.LoadUniqueKeys, database);
+                        provider.GetColumns(Cache.DatabasesSchema.LoadColumns, database);
+                        provider.GetForeignKeys(Cache.DatabasesSchema.LoadForeignKeys, database);
+                        provider.GetUniqueKeys(Cache.DatabasesSchema.LoadUniqueKeys, database);
                     }
                 }
-                Cache.CachedTablesSchema.FinalizeCache(config);
+                Cache.DatabasesSchema.FinalizeCache(config);
 
                 //Save cache
                 var fsCache = new FileStream(fullCacheName, FileMode.Create);

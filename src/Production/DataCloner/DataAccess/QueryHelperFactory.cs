@@ -1,16 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using DataCloner.DataClasse.Cache;
 using System.Data.Common;
+
+using DataCloner.DataClasse.Cache;
 
 namespace DataCloner.DataAccess
 {
     internal static class QueryHelperFactory 
     {
-        public static IQueryHelper GetQueryHelper(string providerName, string connectionString, Int16 serverId, Configuration cache)
+        public static IQueryHelper GetQueryHelper(string providerName, string connectionString, Int16 serverId, Cache cache)
         {
             switch (providerName)
             {
@@ -30,7 +27,7 @@ namespace DataCloner.DataAccess
             throw new Exception("Unkown provider");
         }
 
-        public static IQueryHelper GetQueryHelper(this DbConnection cnx, Int16 serverId, Configuration cache)
+        public static IQueryHelper GetQueryHelper(this DbConnection cnx, Int16 serverId, Cache cache)
         {
             var type = cnx.GetType().Name;
 

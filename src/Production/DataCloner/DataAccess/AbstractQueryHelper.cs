@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Text;
 using System.Data;
+using System.Data.Common;
 using System.Collections.Generic;
 using System.Linq;
-using DataCloner.DataClasse;
 
+using DataCloner.DataClasse;
 using DataCloner.DataClasse.Cache;
-using System.Data.Common;
 
 namespace DataCloner.DataAccess
 {
@@ -14,7 +14,7 @@ namespace DataCloner.DataAccess
     {
         private readonly DbProviderFactory _factory;
         private readonly IDbConnection _conn;
-        private readonly Configuration _cache;
+        private readonly Cache _cache;
         private readonly Int16 _serverIdCtx;
         private readonly string _sqlGetDatabasesName;
         private readonly string _sqlGetColumns;
@@ -23,7 +23,7 @@ namespace DataCloner.DataAccess
         private readonly string _sqlGetLastInsertedPk;
         private readonly string _sqlEnforceIntegrityCheck;
 
-        public AbstractQueryHelper(string providerName, string connectionString, Int16 serverId, Configuration cache,
+        public AbstractQueryHelper(string providerName, string connectionString, Int16 serverId, Cache cache,
             string sqlGetDatabasesName, string sqlGetColumns, string sqlGetForeignKeys, string sqlGetUniqueKeys,
             string sqlGetLastInsertedPk, string sqlEnforceIntegrityCheck)
         {

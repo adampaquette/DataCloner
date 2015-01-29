@@ -9,12 +9,6 @@ namespace DataCloner.DataClasse
         public string Database { get; set; }
         public string Schema { get; set; }
         public string Table { get; set; }
-
-        public override string ToString()
-        {
-            //TODO : EST UTILISÉ PAR GETHASHCODE??
-            return ServerId + "." + Database + "." + Schema + "." + Table;
-        }
     }
 
     public class EqualityComparerITableIdentifier : IEqualityComparer<ITableIdentifier>

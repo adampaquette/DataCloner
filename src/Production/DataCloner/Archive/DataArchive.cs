@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
 
 using DataCloner.DataClasse;
-using DataCloner.DataClasse.Configuration;
 using DataCloner.DataClasse.Cache;
 using DataCloner.Framework;
 
@@ -19,7 +16,7 @@ namespace DataCloner.Archive
 
         public string Description { get; set; }
         public List<RowIdentifier> OriginalQueries { get; set; }
-        public Configuration Cache { get; set; }
+        public Cache Cache { get; set; }
         public List<string> Databases { get; set; }
 
         public DataArchive()
@@ -131,7 +128,7 @@ namespace DataCloner.Archive
                     archiveOut.OriginalQueries.Add(bstream.ReadString().DeserializeXml<RowIdentifier>());
 
                 //Cache 
-                archiveOut.Cache = Configuration.Deserialize(istream);
+                archiveOut.Cache = Cache.Deserialize(istream);
 
                 //Databases
                 int nbDatabases = bstream.ReadInt32();

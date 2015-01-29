@@ -82,7 +82,7 @@ namespace Class
             sm.Maps.Add(map);
 
             //Cache
-            CachedTablesSchema ct = new CachedTablesSchema();
+            DatabasesSchema ct = new DatabasesSchema();
             TableSchema table = new TableSchema();
 
             table.Name = "table1";
@@ -140,10 +140,10 @@ namespace Class
             ct.Add(1, "db1", "dbo", table);
             ct.Add(1, "db2", "dbo", table);
 
-            Configuration config = new Configuration();
+            Cache config = new Cache();
             config.ConnectionStrings = new List<Connection> { new Connection { Id = 1, ConnectionString = "", ProviderName = "", SameConfigAsId = 0 } };
             config.ConfigFileHash = "";
-            config.CachedTablesSchema = ct;
+            config.DatabasesSchema = ct;
 
             //Créaton de l'archive
             var ar = new DataArchive();

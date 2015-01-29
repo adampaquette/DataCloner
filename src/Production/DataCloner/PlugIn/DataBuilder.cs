@@ -1,12 +1,9 @@
-﻿using DataCloner.DataClasse.Cache;
-using System;
+﻿using System;
+using System.Data;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using DataCloner.Framework;
-using System.Data;
+using DataCloner.DataClasse.Cache;
 using DataCloner.DataAccess;
 
 namespace DataCloner.PlugIn

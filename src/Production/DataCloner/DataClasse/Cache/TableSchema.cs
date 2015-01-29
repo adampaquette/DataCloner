@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Data;
-using System.Threading.Tasks;
 using System.IO;
 
 using DataCloner.Framework;
@@ -382,19 +380,19 @@ namespace DataCloner.DataClasse.Cache
     {
         internal static TableSchema GetTable(this IForeignKey fk)
         {
-            return QueryDispatcher.Cache.CachedTablesSchema.GetTable(
+            return QueryDispatcher.Cache.DatabasesSchema.GetTable(
                 Impersonate(fk.ServerIdTo), fk.DatabaseTo, fk.SchemaTo, fk.TableTo);
         }
 
         internal static TableSchema GetTable(this IDerivativeTable dt)
         {
-            return QueryDispatcher.Cache.CachedTablesSchema.GetTable(
+            return QueryDispatcher.Cache.DatabasesSchema.GetTable(
                 Impersonate(dt.ServerId), dt.Database, dt.Schema, dt.Table);
         }
 
         internal static TableSchema GetTable(this ITableIdentifier dt)
         {
-            return QueryDispatcher.Cache.CachedTablesSchema.GetTable(
+            return QueryDispatcher.Cache.DatabasesSchema.GetTable(
                 Impersonate(dt.ServerId), dt.Database, dt.Schema, dt.Table);
         }
     }

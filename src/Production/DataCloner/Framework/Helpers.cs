@@ -2,11 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.ComponentModel;
 
-using DataCloner.DataClasse.Configuration;
 using DataCloner.DataAccess;
 
 namespace DataCloner.Framework
