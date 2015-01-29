@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Data;
-
-using DataCloner.DataClasse.Cache;
+using DataCloner.DataClasse;
 
 namespace DataCloner.DataAccess
 {
@@ -22,7 +21,7 @@ namespace DataCloner.DataAccess
         void EnforceIntegrityCheck(bool active);
         object[][] Select(IRowIdentifier ri);
         void Insert(ITableIdentifier ti, object[] row);
-        void Update(IRowIdentifier ri, DataRow[] rows);
+        void Update(IRowIdentifier riDictionary, ColumnsWithValue values);
         void Delete(IRowIdentifier ri);
         void SqlTypeToDbType(string fullType, out DbType type, out string size);
     }

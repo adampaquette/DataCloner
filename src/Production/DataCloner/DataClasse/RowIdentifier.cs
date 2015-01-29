@@ -9,11 +9,11 @@ namespace DataCloner.DataClasse
         public string Database { get; set; }
         public string Schema { get; set; }
         public string Table { get; set; }
-        public IDictionary<string, object> Columns { get; set; }
+        public ColumnsWithValue Columns { get; set; }
 
         public RowIdentifier()
         {
-            Columns = new Dictionary<string, object>();
+            Columns = new ColumnsWithValue();
         }
 
         public bool Equals(IRowIdentifier obj)

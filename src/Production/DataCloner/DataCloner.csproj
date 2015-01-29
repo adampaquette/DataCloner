@@ -94,6 +94,7 @@
     <Compile Include="DataAccess\QueryHelperMySQL.cs" />
     <Compile Include="DataClasse\Cache\ITableSchema.cs" />
     <Compile Include="DataClasse\Configuration\ServerMapsXml.cs" />
+    <Compile Include="DataClasse\ColumnsWithValue.cs" />
     <Compile Include="DataClasse\KeyRelationship.cs" />
     <Compile Include="DataClasse\Cache\CachedTablesSchema.cs" />
     <Compile Include="DataClasse\Cache\TableSchema.cs" />
@@ -115,7 +116,7 @@
     <Compile Include="DataClasse\TableIdentifier.cs" />
     <Compile Include="Cloner.cs" />
     <Compile Include="Framework\Extensions.cs" />
-    <Compile Include="Interfaces.cs" />
+    <Compile Include="DataClasse\IIdentifier.cs" />
     <Compile Include="DataAccess\IQueryHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DataClasse\Configuration\ConfigurationXml.cs" />

@@ -1,7 +1,6 @@
 ﻿using DataCloner.DataAccess;
 using DataCloner.DataClasse;
 using DataCloner.DataClasse.Cache;
-using DataCloner.DataClasse.Configuration;
 using DataCloner.Framework;
 
 using System;
@@ -9,13 +8,11 @@ using System.Linq;
 using System.IO;
 using System.Text;
 using System.Collections.Generic;
-using System.Security.Cryptography;
 using System.Data.SQLite;
 
-using Murmur;
 using DataCloner.PlugIn;
 
-namespace DataCloner
+namespace DataCloner.DataClasse
 {
     public struct ServerIdentifier
     {
@@ -50,7 +47,7 @@ namespace DataCloner
             ServerMap = new Dictionary<ServerIdentifier, ServerIdentifier>();
         }
 
-        public void Initialize(string cacheName = Configuration.CacheName)
+        public void Initialize(string cacheName = Cache.Configuration.CacheName)
         {
             QueryDispatcher.Initialize(cacheName);
             _cacheTable = QueryDispatcher.Cache.CachedTablesSchema;

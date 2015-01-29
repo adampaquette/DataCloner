@@ -42,9 +42,9 @@ namespace DataCloner.DataClasse.Cache
             return pk.ToArray();
         }
 
-        public Dictionary<string, object> BuildFKFromDataRow(IForeignKey fk, object[] row)
+        public ColumnsWithValue BuildFKFromDataRow(IForeignKey fk, object[] row)
         {
-            var colFK = new Dictionary<string, object>();
+            var colFK = new ColumnsWithValue();
             for (int j = 0; j < fk.Columns.Length; j++)
             {
                 int posTblSource = ColumnsDefinition.IndexOf(c => c.Name == fk.Columns[j].NameFrom);
@@ -64,9 +64,9 @@ namespace DataCloner.DataClasse.Cache
             return pk.ToArray();
         }
 
-        public Dictionary<string, object> BuildPKFromDataRow(object[] row)
+        public ColumnsWithValue BuildPKFromDataRow(object[] row)
         {
-            var pk = new Dictionary<string, object>();
+            var pk = new ColumnsWithValue();
             for (int i = 0; i < ColumnsDefinition.Length; i++)
             {
                 if (ColumnsDefinition[i].IsPrimary)
@@ -75,14 +75,14 @@ namespace DataCloner.DataClasse.Cache
             return pk;
         }
 
-        public Dictionary<string, object> BuildPKFromRawKey(object[] key)
+        public ColumnsWithValue BuildPKFromRawKey(object[] key)
         {
             var pkColumns = ColumnsDefinition.Where(c => c.IsPrimary).ToArray();
 
             if (key.Length != pkColumns.Length)
                 throw new Exception("The key doesn't correspond to table defenition.");
 
-            var pk = new Dictionary<string, object>();
+            var pk = new ColumnsWithValue();
             for (int i = 0; i < pkColumns.Count(); i++)
                 pk.Add(pkColumns[i].Name, key[i]);
             return pk;
@@ -137,10 +137,10 @@ namespace DataCloner.DataClasse.Cache
             }
         }
 
-        public Dictionary<string, object> BuildDerivativePK(ITableSchema derivativeTable, object[] sourceRow)
+        public  ColumnsWithValue BuildDerivativePK(ITableSchema derivativeTable, object[] sourceRow)
         {
-            var colPKSrc = new Dictionary<string, object>();
-            var colPKDst = new Dictionary<string, object>();
+            var colPKSrc = new ColumnsWithValue();
+            var colPKDst = new ColumnsWithValue();
 
             for (int j = 0; j < ColumnsDefinition.Length; j++)
             {

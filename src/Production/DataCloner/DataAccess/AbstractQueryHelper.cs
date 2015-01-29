@@ -3,6 +3,7 @@ using System.Text;
 using System.Data;
 using System.Collections.Generic;
 using System.Linq;
+using DataCloner.DataClasse;
 
 using DataCloner.DataClasse.Cache;
 using System.Data.Common;
@@ -207,9 +208,49 @@ namespace DataCloner.DataAccess
             }
         }
 
-        public void Update(IRowIdentifier ri, DataRow[] rows)
+        public void Update(IRowIdentifier ri, ColumnsWithValue values)
         {
-            throw new NotImplementedException();
+            var cmd = _conn.CreateCommand();
+            var sql = new StringBuilder("UPDATE ");
+            sql.Append(ri.Database)
+               .Append(".")
+               .Append(ri.Table)
+               .Append(" SET ");
+
+            foreach (var col in values)
+            {
+                sql.Append(col.Key)
+                   .Append(" = @")
+                   .Append(col.Key)
+                   .Append(",");
+
+                var p = cmd.CreateParameter();
+                p.ParameterName = "@" + col.Key;
+                p.Value = col.Value;
+                cmd.Parameters.Add(p);
+            }
+            sql.Remove(sql.Length - 1, 1);
+           
+            if (ri.Columns.Count > 1)
+                sql.Append(" WHERE 1=1");
+
+            foreach (var kv in ri.Columns)
+            {
+                sql.Append(" AND ")
+                   .Append(kv.Key)
+                   .Append(" = @")
+                   .Append(kv.Key);
+
+                var p = cmd.CreateParameter();
+                p.ParameterName = "@" + kv.Key;
+                p.Value = kv.Value;
+                cmd.Parameters.Add(p);
+            }
+
+            cmd.CommandText = sql.ToString();
+            cmd.Connection = _conn;
+            cmd.ExecuteNonQuery();
+
         }
 
         public void Delete(IRowIdentifier ri)
@@ -360,7 +401,6 @@ namespace DataCloner.DataAccess
             }
             else
             {
-
                 //From signed to CLR data type
                 switch (strType)
                 {

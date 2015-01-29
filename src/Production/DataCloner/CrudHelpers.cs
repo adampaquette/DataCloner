@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using DataCloner.DataAccess;
-using DataCloner.DataClasse.Cache;
-using DataCloner.Framework.GeneralExtensionHelper;
+﻿using DataCloner.DataAccess;
+using DataCloner.DataClasse;
 
 namespace DataCloner
 {
