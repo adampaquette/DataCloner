@@ -210,6 +210,9 @@ namespace DataCloner.DataAccess
 
         public void Update(IRowIdentifier ri, ColumnsWithValue values)
         {
+            if (ri.Columns.Count() == 0)
+                throw new ArgumentNullException("You must specify at least one column in the row identifier.");
+
             var cmd = _conn.CreateCommand();
             var sql = new StringBuilder("UPDATE ");
             sql.Append(ri.Database)
@@ -230,27 +233,24 @@ namespace DataCloner.DataAccess
                 cmd.Parameters.Add(p);
             }
             sql.Remove(sql.Length - 1, 1);
-           
-            if (ri.Columns.Count > 1)
-                sql.Append(" WHERE 1=1");
+            sql.Append(" WHERE ");
 
             foreach (var kv in ri.Columns)
             {
-                sql.Append(" AND ")
-                   .Append(kv.Key)
+                sql.Append(kv.Key)
                    .Append(" = @")
-                   .Append(kv.Key);
+                   .Append(kv.Key)
+                   .Append(" AND ");
 
                 var p = cmd.CreateParameter();
                 p.ParameterName = "@" + kv.Key;
                 p.Value = kv.Value;
                 cmd.Parameters.Add(p);
             }
+            sql.Remove(sql.Length - 5, 5);
 
             cmd.CommandText = sql.ToString();
-            cmd.Connection = _conn;
             cmd.ExecuteNonQuery();
-
         }
 
         public void Delete(IRowIdentifier ri)
@@ -261,7 +261,7 @@ namespace DataCloner.DataAccess
                .Append(".")
                .Append(ri.Table);
 
-            if (ri.Columns.Count > 1)
+            if (ri.Columns.Count > 0)
                 sql.Append(" WHERE 1=1");
 
             foreach (var kv in ri.Columns)
@@ -278,7 +278,6 @@ namespace DataCloner.DataAccess
             }
 
             cmd.CommandText = sql.ToString();
-            cmd.Connection = _conn;
             cmd.ExecuteNonQuery();
         }
 

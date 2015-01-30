@@ -8,6 +8,8 @@ using System.Data.SQLite;
 using DataCloner.DataAccess;
 using DataCloner.DataClasse.Cache;
 using DataCloner.PlugIn;
+using DataCloner.Framework;
+using DataCloner.Framework.GeneralExtensionHelper;
 
 namespace DataCloner.DataClasse
 {
@@ -22,6 +24,7 @@ namespace DataCloner.DataClasse
     {
         public IRowIdentifier sourceBaseRowStartPoint { get; set; }
         public IRowIdentifier sourceFKRowStartPoint { get; set; }
+        public IForeignKey foreignKey { get; set; }
     }
 
     public class Cloner
@@ -154,7 +157,7 @@ namespace DataCloner.DataClasse
                                 Database = fk.DatabaseTo,
                                 Schema = fk.SchemaTo,
                                 Table = fk.TableTo,
-                                Columns = table.BuildFKFromDataRow(fk, currentRow)
+                                Columns = table.BuildKeyFromDerivativeDataRow(fk, currentRow)
                             };
 
                             //On ne copie pas la ligne si la table est statique
@@ -187,8 +190,16 @@ namespace DataCloner.DataClasse
                                     //On ajoute une tâche pour réassigner la FK "correctement", une fois que toute la chaîne aura été enregistrée.
                                     _circularKeyJobs.Add(new CircularKeyJob()
                                     {
-                                        sourceBaseRowStartPoint = riSource,
-                                        sourceFKRowStartPoint = riFK
+                                        sourceBaseRowStartPoint = new RowIdentifier
+                                        {
+                                            ServerId = riSource.ServerId,
+                                            Database = riSource.Database,
+                                            Schema = riSource.Schema,
+                                            Table = riSource.Table,
+                                            Columns = table.BuildPKFromDataRow(currentRow)
+                                        },
+                                        sourceFKRowStartPoint = riFK,
+                                        foreignKey = fk
                                     });
                                 }
                                 else
@@ -300,22 +311,63 @@ namespace DataCloner.DataClasse
 
         private void UpdateCircularReferences()
         {
-            while (_circularKeyJobs.Count() > 1)
+            foreach (var job in _circularKeyJobs)
             {
-                var job = _circularKeyJobs[0];
+                TableSchema baseTable = job.sourceBaseRowStartPoint.GetTable();
+                TableSchema fkTable = job.sourceFKRowStartPoint.GetTable();
+                object[] pkDestinationRow = _keyRelationships.GetKey(job.sourceBaseRowStartPoint);
+                object[] keyDestinationFKRow = _keyRelationships.GetKey(job.sourceFKRowStartPoint);
 
-                var destinationRow = _keyRelationships.GetKey(job.sourceBaseRowStartPoint);
-                var destinationFKRow = _keyRelationships.GetKey(job.sourceFKRowStartPoint);
-
-                var serverDst = ServerMap[new ServerIdentifier
+                var serverDstBaseTable = ServerMap[new ServerIdentifier
                 {
                     ServerId = job.sourceBaseRowStartPoint.ServerId,
                     Database = job.sourceBaseRowStartPoint.Database,
                     Schema = job.sourceBaseRowStartPoint.Schema
                 }];
 
-                QueryDispatcher.GetQueryHelper(serverDst.ServerId).Update(null, null);
+                var serverDstFKTable = ServerMap[new ServerIdentifier
+                {
+                    ServerId = job.sourceFKRowStartPoint.ServerId,
+                    Database = job.sourceFKRowStartPoint.Database,
+                    Schema = job.sourceFKRowStartPoint.Schema
+                }];
+
+                if (job.foreignKey.Columns.Length != keyDestinationFKRow.Length)
+                    throw new Exception("The foreign key defenition is not matching with the values.");
+
+                var fk = new ColumnsWithValue();
+                for (int i = 0; i < job.foreignKey.Columns.Length; i++)
+                {
+                    var colName = job.foreignKey.Columns[i].NameTo;
+                    var value = keyDestinationFKRow[i];
+
+                    fk.Add(colName, value);
+                }
+
+                var riBaseDestination  = new RowIdentifier
+                {
+                    ServerId = serverDstBaseTable.ServerId,
+                    Database = serverDstBaseTable.Database,
+                    Schema = serverDstBaseTable.Schema,
+                    Table = job.sourceBaseRowStartPoint.Table,
+                    Columns = baseTable.BuildPKFromRawKey(pkDestinationRow)
+                };
+
+                var riFKDestination = new RowIdentifier
+                {
+                    ServerId = serverDstFKTable.ServerId,
+                    Database = serverDstFKTable.Database,
+                    Schema = serverDstFKTable.Schema,
+                    Table = job.sourceFKRowStartPoint.Table,
+                    Columns = fk
+                };
+
+                var fkDestinationDataRow = riFKDestination.Select();
+                var modifiedFk = fkTable.BuildKeyFromFkDataRow(job.foreignKey, fkDestinationDataRow[0]);
+
+                QueryDispatcher.GetQueryHelper(serverDstBaseTable.ServerId).Update(riBaseDestination, modifiedFk);
             }
+            _circularKeyJobs.Clear();
         }
     }
 }

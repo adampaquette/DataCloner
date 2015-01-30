@@ -40,15 +40,26 @@ namespace DataCloner.DataClasse.Cache
             return pk.ToArray();
         }
 
-        public ColumnsWithValue BuildFKFromDataRow(IForeignKey fk, object[] row)
+        public ColumnsWithValue BuildKeyFromDerivativeDataRow(IForeignKey fk, object[] row)
         {
-            var colFK = new ColumnsWithValue();
+            var fkValues = new ColumnsWithValue();
             for (int j = 0; j < fk.Columns.Length; j++)
             {
                 int posTblSource = ColumnsDefinition.IndexOf(c => c.Name == fk.Columns[j].NameFrom);
-                colFK.Add(fk.Columns[j].NameTo, row[posTblSource]);
+                fkValues.Add(fk.Columns[j].NameTo, row[posTblSource]);
             }
-            return colFK;
+            return fkValues;
+        }
+
+        public ColumnsWithValue BuildKeyFromFkDataRow(IForeignKey fk, object[] row)
+        {
+            var fkValues = new ColumnsWithValue();
+            foreach (var col in fk.Columns)
+            {
+                var posFkTable = ColumnsDefinition.IndexOf(c => c.Name == col.NameTo);
+                fkValues.Add(col.NameFrom, row[posFkTable]);
+            }
+            return fkValues;
         }
 
         public object[] BuildRawPKFromDataRow(object[] row)
