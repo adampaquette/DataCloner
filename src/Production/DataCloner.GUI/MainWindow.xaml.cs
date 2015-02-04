@@ -32,7 +32,7 @@ namespace DataCloner.GUI
 
         public MainWindow()
         {
-            InitializeComponent();
+            //InitializeComponent();
             
             _serversMaps = Extensions.LoadXml<ServersMapsXml>("serversMaps.config");
             
