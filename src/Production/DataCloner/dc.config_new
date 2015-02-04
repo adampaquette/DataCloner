@@ -1,0 +1,38 @@
+<Configuration>
+    <ConnectionStrings>
+        <add Id="1" Name="UNI" ProviderName="MySql.Data.MySqlClient" ConnectionString="server=localhost;user id=root; password=toor; database=DataclonerTestDatabase; pooling=true" />
+		<add Id="2" Name="FON" ProviderName="MySql.Data.MySqlClient" ConnectionString="server=localhost;user id=root; password=toor; database=DataclonerTestDatabase; pooling=true" />
+    </ConnectionStrings>
+	<Templates>
+		<ServerModifier id="1" templateId="1" sameAsTemplateId="1">
+			<DatabaseModifier Name="db" templateId="1" sameAsTemplateId="1">
+				<SchemaModifier Name="dbo" templateId="1" sameAsTemplateId="1">
+					<TableModifier Name="table1" IsStatic="true">
+						<DerivativeTables GlobalAccess="forced" Cascade="true">
+							<Table serverId="1" database="db" schema="dbo" table="tbl3" Access="Forced" Cascade="true"/>
+							<Table serverId="1" database="db" schema="dbo" table="tbl3"  Access="Forced" Cascade="false"/>     
+							<Table serverId="1" database="db" schema="dbo" table="tbl3"  Access="NotSet" Cascade="false"/>    
+						</DerivativeTables>
+						<ForeignKeys>
+							<Add ServerId="1" Database="db1" Schema="dbo" Table="table1">
+								<Collumn NameFrom="col1" NameTo="col1" />
+								<Collumn NameFrom="col2" NameTo="col2" />
+							</Add>
+							<Remove>
+								<Collumn Name="col3" />
+							</Remove>                    
+						</ForeignKeys>
+						<DataBuilders>
+							<Collumn Name="col1" BuilderName="Client.Builder.CreatePK" />
+						</DataBuilders>
+					</TableModifier>
+				</SchemaModifier>
+			</DatabaseModifier>
+		</ServerModifier>
+	</Templates>
+    <Modifiers>
+		<ServerModifier sameAsTemplateId="1" />
+		<ServerModifier id="2" sameAsTemplateId="1" />
+    </Modifiers> 
+</Configuration>
+
