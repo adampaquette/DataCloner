@@ -94,7 +94,7 @@ namespace DataCloner.DataAccess
             _providers = new Dictionary<short, IQueryHelper>();
 
             foreach (Connection conn in conns)
-                _providers.Add(conn.Id, QueryHelperFactory.GetQueryHelper(conn.ProviderName, conn.ConnectionString, conn.Id, Cache));
+                _providers.Add(conn.Id, QueryHelperFactory.GetQueryHelper(conn.ProviderName, conn.ConnectionString, conn.Id));
         }
 
         public static IDbConnection GetConnection(IServerIdentifier server)

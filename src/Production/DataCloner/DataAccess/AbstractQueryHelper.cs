@@ -14,7 +14,6 @@ namespace DataCloner.DataAccess
     {
         private readonly DbProviderFactory _factory;
         private readonly IDbConnection _conn;
-        private readonly Cache _cache;
         private readonly Int16 _serverIdCtx;
         private readonly string _sqlGetDatabasesName;
         private readonly string _sqlGetColumns;
@@ -23,7 +22,7 @@ namespace DataCloner.DataAccess
         private readonly string _sqlGetLastInsertedPk;
         private readonly string _sqlEnforceIntegrityCheck;
 
-        public AbstractQueryHelper(string providerName, string connectionString, Int16 serverId, Cache cache,
+        public AbstractQueryHelper(string providerName, string connectionString, Int16 serverId,
             string sqlGetDatabasesName, string sqlGetColumns, string sqlGetForeignKeys, string sqlGetUniqueKeys,
             string sqlGetLastInsertedPk, string sqlEnforceIntegrityCheck)
         {
@@ -32,7 +31,6 @@ namespace DataCloner.DataAccess
             _conn.ConnectionString = connectionString;
             _conn.Open();
 
-            _cache = cache;
             _serverIdCtx = serverId;
 
             _sqlGetDatabasesName = sqlGetDatabasesName;
