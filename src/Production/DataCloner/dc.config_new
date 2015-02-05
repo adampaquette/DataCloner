@@ -9,12 +9,16 @@
 				<SchemaModifier Name="dbo" templateId="1" sameAsTemplateId="1">
 					<TableModifier Name="table1" IsStatic="true">
 						<DerivativeTables GlobalAccess="forced" Cascade="true">
-							<Table serverId="1" database="db" schema="dbo" table="tbl3" Access="Forced" Cascade="true"/>
-							<Table serverId="1" database="db" schema="dbo" table="tbl3" Access="Forced" Cascade="false"/>     
-							<Table serverId="1" database="db" schema="dbo" table="tbl3" Access="NotSet" Cascade="false"/>    
+							<Table serverId="1" database="db" schema="dbo" table="tbl1" Access="Forced" Cascade="true"/>
+							<Table serverId="1" database="db" schema="dbo" table="tbl2" Access="Denied" Cascade="false"/>     
+							<Table serverId="{$SourceContext}" database="{$SourceContext}" schema="{$SourceContext}" table="tbl3" Access="NotSet" Cascade="false"/>    
 						</DerivativeTables>
 						<ForeignKeys>
-							<Add ServerId="1" Database="db1" Schema="dbo" Table="table1">
+							<Add ServerId="1" Database="db1" Schema="dbo" Table="table2">
+								<Collumn NameFrom="col1" NameTo="col1" />
+								<Collumn NameFrom="col2" NameTo="col2" />
+							</Add>
+							<Add ServerId="{$DestinationContext}" Database="{$DestinationContext}" Schema="{$DestinationContext}" Table="table2">
 								<Collumn NameFrom="col1" NameTo="col1" />
 								<Collumn NameFrom="col2" NameTo="col2" />
 							</Add>
@@ -31,7 +35,7 @@
 		</ServerModifier>
     </ModifiersTemplates>
 	<ClonerConfigurations>
-		<ClonerConfiguration Name="Default">
+		<ClonerConfiguration Name="Default" Description="Configuration par défaut">		
 			<Modifiers>
 				<ServerModifier sameAsTemplateId="1" />
 				<ServerModifier id="2" sameAsTemplateId="1" />
