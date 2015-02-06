@@ -1,0 +1,46 @@
+Tout ce qui est à l'intérieur du TableModifier peut utiliser {$SourceContext} et ???{$DestinationContext}.
+Le nom des templates TableModifier, SchemaModifier, DatabaseModifier et ServerModifier peuvent être overridés.
+
+Mettre la configuration de tout ce qui ne change pas dans les template et ajouter ce qui manque directement dans les configurations.
+
+Ajouter des variables dynamiques dans les templates qui seront évaluées par les ClonerConfiguration.
+
+<Configuration>
+    <ConnectionStrings>
+        <add Id="1" Name="UNI" ProviderName="MySql.Data.MySqlClient" ConnectionString="server=localhost;user id=root; password=toor; database=DataclonerTestDatabase; pooling=true" />
+		<add Id="2" Name="FON" ProviderName="MySql.Data.MySqlClient" ConnectionString="server=localhost;user id=root; password=toor; database=DataclonerTestDatabase; pooling=true" />
+    </ConnectionStrings>
+	<ModifiersTemplates>
+		<ServerModifier id="1" templateId="1">
+			<DatabaseModifier Name="PGIScbl" templateId="1">
+				<SchemaModifier Name="dbo" templateId="1">
+					<TableModifier Name="Transmission" IsStatic="true">
+						<DerivativeTables GlobalAccess="forced" Cascade="true">  
+							<Table serverId="{$SourceContext}" database="{$SourceContext}" schema="{$SourceContext}" table="Demande" Access="NotSet" Cascade="false"/>    
+						</DerivativeTables>
+						<ForeignKeys>
+							<Add ServerId="{$SourceContext}" Database="SIEBELDB" Schema="{$SourceContext}" Table="S_SRV_REQ">
+								<Collumn NameFrom="NoReferenceTransmission" NameTo="SR_NUM" />
+							</Add>                
+						</ForeignKeys>
+						<DataBuilders>
+							<Collumn Name="col1" BuilderName="Client.Builder.CreatePK" />
+						</DataBuilders>
+					</TableModifier>
+				</SchemaModifier>
+			</DatabaseModifier>
+		</ServerModifier>
+    </ModifiersTemplates>
+	<ClonerConfigurations>
+		<ClonerConfiguration id="1" Name="Default" Description="Configuration par défaut">	
+			<Variables>
+				<Var Name="{$db1}" Value=""/>
+			</Variables>
+			<Modifiers>
+				<ServerModifier useTemplateId="1" />
+				<ServerModifier id="2" useTemplateId="1" />
+			</Modifiers> 
+		</ClonerConfiguration>
+	</ClonerConfigurations>
+</Configuration>
+	
