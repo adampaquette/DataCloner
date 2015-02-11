@@ -21,7 +21,7 @@ namespace DataCloner.DataAccess
         public static void Initialize(string cacheName = Cache.CacheName)
         {
             string fullCacheName = cacheName + Cache.Extension;
-            string fullConfigName = cacheName + ConfigurationXml.Extension;
+            string fullConfigName = cacheName + Configuration.Extension;
             bool cacheIsGood = false;
 
             Cache = new Cache();
@@ -55,33 +55,36 @@ namespace DataCloner.DataAccess
             //Rebuild cache
             if (!cacheIsGood)
             {
-                var config = ConfigurationXml.Load(fullConfigName);
+                var config = Configuration.Load(fullConfigName);
                 Cache.ConfigFileHash = hashConfigFile;
 
-                //Copy connection strings
-                foreach (var cs in config.ConnectionStrings)
-                    Cache.ConnectionStrings.Add(new Connection(cs.Id, cs.ProviderName, cs.ConnectionString, cs.SameConfigAsId));
-
-                InitProviders(Cache.ConnectionStrings);
-
-                //Start fetching each server
-                foreach (var cs in config.ConnectionStrings)
+                foreach (var app in config.Applications)
                 {
-                    IQueryHelper provider = _providers[cs.Id];
+                    //Copy connection strings
+                    foreach (var cs in app.ConnectionStrings)
+                        Cache.ConnectionStrings.Add(new DataClasse.Cache.Connection(cs.Id, cs.ProviderName, cs.ConnectionString, cs.SameConfigAsId));
 
-                    foreach (var database in provider.GetDatabasesName())
+                    InitProviders(Cache.ConnectionStrings);
+
+                    //Start fetching each server
+                    foreach (var cs in app.ConnectionStrings)
                     {
-                        provider.GetColumns(Cache.DatabasesSchema.LoadColumns, database);
-                        provider.GetForeignKeys(Cache.DatabasesSchema.LoadForeignKeys, database);
-                        provider.GetUniqueKeys(Cache.DatabasesSchema.LoadUniqueKeys, database);
-                    }
-                }
-                Cache.DatabasesSchema.FinalizeCache(config);
+                        IQueryHelper provider = _providers[cs.Id];
 
-                //Save cache
-                var fsCache = new FileStream(fullCacheName, FileMode.Create);
-                Cache.Serialize(fsCache);
-                fsCache.Close();
+                        foreach (var database in provider.GetDatabasesName())
+                        {
+                            provider.GetColumns(Cache.DatabasesSchema.LoadColumns, database);
+                            provider.GetForeignKeys(Cache.DatabasesSchema.LoadForeignKeys, database);
+                            provider.GetUniqueKeys(Cache.DatabasesSchema.LoadUniqueKeys, database);
+                        }
+                    }
+                    Cache.DatabasesSchema.FinalizeCache(app.);
+
+                    //Save cache
+                    var fsCache = new FileStream(fullCacheName, FileMode.Create);
+                    Cache.Serialize(fsCache);
+                    fsCache.Close();
+                }
             }
         }
 
@@ -89,11 +92,11 @@ namespace DataCloner.DataAccess
         /// Récupération des providers qui seront utilisés pour effectuer les requêtes
         /// </summary>
         /// <param name="config"></param>
-        private static void InitProviders(List<Connection> conns)
+        private static void InitProviders(List<DataClasse.Cache.Connection> conns)
         {
             _providers = new Dictionary<short, IQueryHelper>();
 
-            foreach (Connection conn in conns)
+            foreach (DataClasse.Cache.Connection conn in conns)
                 _providers.Add(conn.Id, QueryHelperFactory.GetQueryHelper(conn.ProviderName, conn.ConnectionString, conn.Id));
         }
 

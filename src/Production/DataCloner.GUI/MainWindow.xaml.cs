@@ -27,14 +27,14 @@ namespace DataCloner.GUI
         private const string FILE_EXTENSION = ".dca";
         private const string FILTER = "Datacloner archive (.dca)|*.dca";
 
-        private ServersMapsXml _serversMaps;
+        private ServersMaps _serversMaps;
         private Cloner cloner = new Cloner();
 
         public MainWindow()
         {
             //InitializeComponent();
             
-            _serversMaps = Extensions.LoadXml<ServersMapsXml>("serversMaps.config");
+            _serversMaps = Extensions.LoadXml<ServersMaps>("serversMaps.config");
             
             //Combobox source
             var listSources =  _serversMaps.Maps.Select(m => m.nameFrom).Distinct().ToList();

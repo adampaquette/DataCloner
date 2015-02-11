@@ -60,6 +60,9 @@ Règles
 			</ClonerConfigurations>
 			<ServersMaps>
 				<Map nameFrom="PROD" nameTo="UNI" usableConfigs="1,2,3">
+					<Variables>
+						<Var Name="" Value=""/>
+					<Variables>
 					<Road ServerSrc="1" DatabaseSrc="PGIS" SchemaSrc="" 
 						  ServerDst="3" DatabaseDst="PGIS" SchemaDst=""/>
 					<Road ServerSrc="2" DatabaseSrc="Ariel" SchemaSrc="" 

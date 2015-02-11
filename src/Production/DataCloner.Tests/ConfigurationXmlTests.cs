@@ -18,30 +18,30 @@ namespace DataCloner.Tests
 {
     public class ConfigurationXmlTests
     {
-        private ConfigurationXml _config;
+        private Configuration _config;
 
         public ConfigurationXmlTests()
         {
-            _config = new ConfigurationXml();
+            _config = new Configuration();
 
-            var cs = new ConnectionXml(1, "PROD", "DataCloner.DataAccess.QueryProviderMySql", "server=localhost;user id=root; password=cdxsza; database=mysql; pooling=false", 1);
-            var cs2 = new ConnectionXml(2, "UNI", "DataCloner.DataAccess.QueryProviderMySql", "server=localhost;user id=root; password=cdxsza; database=mysql; pooling=false", 1);
+            var cs = new DataClasse.Configuration.Connection(1, "PROD", "DataCloner.DataAccess.QueryProviderMySql", "server=localhost;user id=root; password=cdxsza; database=mysql; pooling=false", 1);
+            var cs2 = new DataClasse.Configuration.Connection(2, "UNI", "DataCloner.DataAccess.QueryProviderMySql", "server=localhost;user id=root; password=cdxsza; database=mysql; pooling=false", 1);
             _config.ConnectionStrings.Add(cs);
             _config.ConnectionStrings.Add(cs2);
 
-            var dataColumnBuilder1 = new TableModifiersXml.DataColumnBuilderXml()
+            var dataColumnBuilder1 = new Modifiers.DataBuilder()
             {
                 BuilderName = "Client.Builder.CreatePK",
                 Name = "col1"
             };
 
-            var dataColumnBuilder2 = new TableModifiersXml.DataColumnBuilderXml()
+            var dataColumnBuilder2 = new Modifiers.DataBuilder()
             {
                 BuilderName = "Client.Builder.CreateNAS",
                 Name = "col4"
             };
 
-            var derivativeTable1 = new TableModifiersXml.DerivativeSubTableXml()
+            var derivativeTable1 = new Modifiers.DerivativeSubTable()
             {
                 ServerId = 1,
                 Database = "db",
@@ -50,20 +50,20 @@ namespace DataCloner.Tests
                 Access = DerivativeTableAccess.Denied
             };
 
-            var fkAdd1 = new TableModifiersXml.ForeignKeyAddXml()
+            var fkAdd1 = new Modifiers.ForeignKeyAdd()
             {
                 ServerId = 1,
                 Database = "db",
                 Schema = "dbo",
                 Table = "table55",
-                Columns = new List<TableModifiersXml.ForeignKeyColumnXml>()
+                Columns = new List<Modifiers.ForeignKeyColumn>()
                 { 
-                    new TableModifiersXml.ForeignKeyColumnXml()
+                    new Modifiers.ForeignKeyColumn()
                     {
                         NameFrom = "col1", 
                         NameTo = "col1"
                     },
-                    new TableModifiersXml.ForeignKeyColumnXml()
+                    new Modifiers.ForeignKeyColumn()
                     {
                         NameFrom = "col2", 
                         NameTo = "col2"
@@ -71,22 +71,22 @@ namespace DataCloner.Tests
                 }
             };
 
-            var fkRemove = new TableModifiersXml.ForeignKeyRemoveXml()
+            var fkRemove = new Modifiers.ForeignKeyRemove()
             {
-                Columns = new List<TableModifiersXml.ForeignKeyRemoveColumnXml>
+                Columns = new List<Modifiers.ForeignKeyRemoveColumn>
                 {
-                    new TableModifiersXml.ForeignKeyRemoveColumnXml
+                    new Modifiers.ForeignKeyRemoveColumn
                     {
                         Name = "col3"
                     },
-                    new TableModifiersXml.ForeignKeyRemoveColumnXml
+                    new Modifiers.ForeignKeyRemoveColumn
                     {
                         Name = "col4"
                     }
                 }
             };
 
-            var table1 = new TableModifiersXml.TableModifierXml();
+            var table1 = new Modifiers.TableModifier();
             table1.Name = "table1";
             table1.IsStatic = false;
             table1.DataBuilders.Add(dataColumnBuilder1);
@@ -96,22 +96,22 @@ namespace DataCloner.Tests
             table1.ForeignKeys.ForeignKeyAdd.Add(fkAdd1);
             table1.ForeignKeys.ForeignKeyRemove.Add(fkRemove);
 
-            var schema1 = new TableModifiersXml.SchemaXml()
+            var schema1 = new Modifiers.SchemaModifier()
             {
                 Name = "dbo",
-                Tables = new List<TableModifiersXml.TableModifierXml>() { table1 }
+                Tables = new List<Modifiers.TableModifier>() { table1 }
             };
 
-            var database1 = new TableModifiersXml.DatabaseXml()
+            var database1 = new Modifiers.DatabaseModifier()
             {
                 Name = "db",
-                Schemas = new List<TableModifiersXml.SchemaXml>() { schema1 }
+                Schemas = new List<Modifiers.SchemaModifier>() { schema1 }
             };
 
-            var server1 = new TableModifiersXml.ServerXml()
+            var server1 = new Modifiers.ServerModifier()
             {
                 Id = 1,
-                Databases = new List<TableModifiersXml.DatabaseXml>() { database1 }
+                Databases = new List<Modifiers.DatabaseModifier>() { database1 }
             };
 
             _config.TableModifiers.Servers.Add(server1);
@@ -125,7 +125,7 @@ namespace DataCloner.Tests
             Assert.DoesNotThrow(() =>
             {
                 _config.Save(fileName);
-                var configLoaded = ConfigurationXml.Load(fileName);
+                var configLoaded = Configuration.Load(fileName);
             });
 
             File.Delete(fileName);
@@ -134,8 +134,8 @@ namespace DataCloner.Tests
         [Fact]
         public void ConnectionStringServerIdInvalid()
         {
-            var config = new ConfigurationXml();
-            config.ConnectionStrings.Add(new ConnectionXml(0, "", "", "", 0));
+            var config = new Configuration();
+            config.ConnectionStrings.Add(new DataClasse.Configuration.Connection(0, "", "", "", 0));
 
             Assert.Throws(typeof(InvalidDataException), () => { config.Validate(); });
         }
@@ -143,8 +143,8 @@ namespace DataCloner.Tests
         [Fact]
         public void ConnectionStringNotFoundFromSameConfigAsId()
         {
-            var config = new ConfigurationXml();
-            config.ConnectionStrings.Add(new ConnectionXml(1, "", "", "", 2));
+            var config = new Configuration();
+            config.ConnectionStrings.Add(new DataClasse.Configuration.Connection(1, "", "", "", 2));
 
             Assert.Throws(typeof(InvalidDataException), () => { config.Validate(); });
         }

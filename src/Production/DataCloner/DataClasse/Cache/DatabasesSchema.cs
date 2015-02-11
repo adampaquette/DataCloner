@@ -424,7 +424,7 @@ namespace DataCloner.DataClasse.Cache
         /// </summary>
         /// <param name="config"></param>
         /// <remarks>La configuration utilisateur des FK doit avoir été fusionnée à la cache avant la création des tables dérivées.</remarks>
-        private void GenerateDerivativeTables(ConfigurationXml config)
+        private void GenerateDerivativeTables(Configuration.Configuration config)
         {
             foreach (var server in _dic)
             {
@@ -470,7 +470,7 @@ namespace DataCloner.DataClasse.Cache
             }
         }
 
-        private void MergeFKConfig(ConfigurationXml config)
+        private void MergeFKConfig(Configuration.Configuration config)
         {
             foreach (var server in _dic)
             {
@@ -545,7 +545,7 @@ namespace DataCloner.DataClasse.Cache
             }
         }
 
-        private void MergeCacheAndUserConfig(ConfigurationXml config)
+        private void MergeCacheAndUserConfig(Configuration.Configuration config)
         {
             foreach (var server in _dic)
             {
@@ -615,7 +615,7 @@ namespace DataCloner.DataClasse.Cache
         /// </summary>
         /// <param name="config"></param>
         /// <remarks>Le schéma de la BD doit préalablement avoir été obtenu. GetColumns() et GetForeignKeys()</remarks>
-        public void FinalizeCache(ConfigurationXml config)
+        public void FinalizeCache(Configuration.Configuration config)
         {
             GenerateCommands();
             MergeFKConfig(config);

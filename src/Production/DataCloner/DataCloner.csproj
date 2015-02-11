@@ -93,7 +93,9 @@
     <Compile Include="DataAccess\QueryHelperFactory.cs" />
     <Compile Include="DataAccess\QueryHelperMySQL.cs" />
     <Compile Include="DataClasse\Cache\ITableSchema.cs" />
-    <Compile Include="DataClasse\Configuration\ServerMapsXml.cs" />
+    <Compile Include="DataClasse\Configuration\Application.cs" />
+    <Compile Include="DataClasse\Configuration\ClonerConfiguration.cs" />
+    <Compile Include="DataClasse\Configuration\Map.cs" />
     <Compile Include="DataClasse\ColumnsWithValue.cs" />
     <Compile Include="DataClasse\KeyRelationship.cs" />
     <Compile Include="DataClasse\Cache\DatabasesSchema.cs" />
@@ -119,9 +121,9 @@
     <Compile Include="DataClasse\IIdentifier.cs" />
     <Compile Include="DataAccess\IQueryHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="DataClasse\Configuration\ConfigurationXml.cs" />
-    <Compile Include="DataClasse\Configuration\ConnectionXml.cs" />
-    <Compile Include="DataClasse\Configuration\TableModifiersXml.cs" />
+    <Compile Include="DataClasse\Configuration\Configuration.cs" />
+    <Compile Include="DataClasse\Configuration\Connection.cs" />
+    <Compile Include="DataClasse\Configuration\Modifiers.cs" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">

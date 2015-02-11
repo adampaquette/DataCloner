@@ -50,9 +50,7 @@ namespace Class
             //}
 
             //Server maps
-            var sm = new ServersMapsXml();
-
-            var r1 = new ServersMapsXml.RoadXml
+            var r1 = new Road
             {
                 ServerSrc = 3,
                 DatabaseSrc = "db1",
@@ -62,7 +60,7 @@ namespace Class
                 SchemaDst = ""
             };
 
-            var r2 = new ServersMapsXml.RoadXml
+            var r2 = new Road
             {
                 ServerSrc = 2,
                 DatabaseSrc = "db1",
@@ -72,14 +70,12 @@ namespace Class
                 SchemaDst = ""
             };
 
-            var map = new ServersMapsXml.MapXml
+            var map = new Map
             {
                 nameFrom = "PROD",
                 nameTo = "UNE",
-                Roads = new List<ServersMapsXml.RoadXml> { r1, r2 }
+                Roads = new List<Road> { r1, r2 }
             };
-
-            sm.Maps.Add(map);
 
             //Cache
             DatabasesSchema ct = new DatabasesSchema();
@@ -134,14 +130,14 @@ namespace Class
                 DatabaseTo = "db",
                 SchemaTo = "dbo",
                 TableTo = "TABLE2",
-                Columns = new ForeignKeyColumn[] { new ForeignKeyColumn() { NameFrom = "COL1", NameTo = "COL1" } }
+                Columns = new DataCloner.DataClasse.Cache.ForeignKeyColumn[] { new DataCloner.DataClasse.Cache.ForeignKeyColumn() { NameFrom = "COL1", NameTo = "COL1" } }
             });
 
             ct.Add(1, "db1", "dbo", table);
             ct.Add(1, "db2", "dbo", table);
 
             Cache config = new Cache();
-            config.ConnectionStrings = new List<Connection> { new Connection { Id = 1, ConnectionString = "", ProviderName = "", SameConfigAsId = 0 } };
+            config.ConnectionStrings = new List<DataCloner.DataClasse.Cache.Connection> { new DataCloner.DataClasse.Cache.Connection { Id = 1, ConnectionString = "", ProviderName = "", SameConfigAsId = 0 } };
             config.ConfigFileHash = "";
             config.DatabasesSchema = ct;
 
@@ -154,7 +150,7 @@ namespace Class
 
             ar.Save(outputFile);
 
-            string strsm = sm.SerializeXml();
+            string strsm = map.SerializeXml();
 
             var archive = DataArchive.Load(outputFile, "decompressedArchive");
         }
@@ -205,9 +201,7 @@ namespace Class
 
         public static void ServerMapTest()
         {
-            var sm = new ServersMapsXml();
-
-            var r1 = new ServersMapsXml.RoadXml
+            var r1 = new Road
             {
                 ServerSrc = 3,
                 DatabaseSrc = "db1",
@@ -217,7 +211,7 @@ namespace Class
                 SchemaDst = ""
             };
 
-            var r2 = new ServersMapsXml.RoadXml
+            var r2 = new Road
             {
                 ServerSrc = 2,
                 DatabaseSrc = "db1",
@@ -227,22 +221,19 @@ namespace Class
                 SchemaDst = ""
             };
 
-            var map = new ServersMapsXml.MapXml
+            var map = new Map
             {
                 nameFrom = "PROD",
                 nameTo = "UNE",
-                Roads = new List<ServersMapsXml.RoadXml> { r1, r2 }
+                Roads = new List<Road> { r1, r2 }
             };
 
-            sm.Maps.Add(map);
+            string strSM = map.SerializeXml();
+            var destrSM = strSM.DeserializeXml<Map>();
 
-            string strSM = sm.SerializeXml();
-            var destrSM = strSM.DeserializeXml<ServersMapsXml>();
-
-            sm.SaveXml("serversmaps.config");
-            var smloaded = Extensions.LoadXml<ServersMapsXml>("serversmaps.config");
+            map.SaveXml("serversmaps.config");
+            var smloaded = Extensions.LoadXml<Map>("serversmaps.config");
         }
-
 
 #endif
     }
