@@ -137,7 +137,7 @@ namespace Class
             ct.Add(1, "db2", "dbo", table);
 
             Cache config = new Cache();
-            config.ConnectionStrings = new List<DataCloner.DataClasse.Cache.Connection> { new DataCloner.DataClasse.Cache.Connection { Id = 1, ConnectionString = "", ProviderName = "", SameConfigAsId = 0 } };
+            config.ConnectionStrings = new List<DataCloner.DataClasse.Cache.Connection> { new DataCloner.DataClasse.Cache.Connection { Id = 1, ConnectionString = "", ProviderName = ""} };
             config.ConfigFileHash = "";
             config.DatabasesSchema = ct;
 

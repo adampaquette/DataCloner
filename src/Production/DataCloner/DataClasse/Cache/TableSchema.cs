@@ -5,7 +5,6 @@ using System.Data;
 using System.IO;
 
 using DataCloner.Framework;
-using DataCloner.Framework.GeneralExtensionHelper;
 using DataCloner.DataAccess;
 
 namespace DataCloner.DataClasse.Cache
@@ -391,20 +390,17 @@ namespace DataCloner.DataClasse.Cache
     {
         internal static TableSchema GetTable(this IForeignKey fk)
         {
-            return QueryDispatcher.Cache.DatabasesSchema.GetTable(
-                Impersonate(fk.ServerIdTo), fk.DatabaseTo, fk.SchemaTo, fk.TableTo);
+            return QueryDispatcher.Cache.DatabasesSchema.GetTable(fk.ServerIdTo, fk.DatabaseTo, fk.SchemaTo, fk.TableTo);
         }
 
         internal static TableSchema GetTable(this IDerivativeTable dt)
         {
-            return QueryDispatcher.Cache.DatabasesSchema.GetTable(
-                Impersonate(dt.ServerId), dt.Database, dt.Schema, dt.Table);
+            return QueryDispatcher.Cache.DatabasesSchema.GetTable(dt.ServerId, dt.Database, dt.Schema, dt.Table);
         }
 
         internal static TableSchema GetTable(this ITableIdentifier dt)
         {
-            return QueryDispatcher.Cache.DatabasesSchema.GetTable(
-                Impersonate(dt.ServerId), dt.Database, dt.Schema, dt.Table);
+            return QueryDispatcher.Cache.DatabasesSchema.GetTable(dt.ServerId, dt.Database, dt.Schema, dt.Table);
         }
     }
 }

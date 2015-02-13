@@ -27,38 +27,18 @@ namespace DataCloner.GUI
         private const string FILE_EXTENSION = ".dca";
         private const string FILTER = "Datacloner archive (.dca)|*.dca";
 
-        private ServersMaps _serversMaps;
+        
         private Cloner cloner = new Cloner();
 
         public MainWindow()
         {
-            //InitializeComponent();
-            
-            _serversMaps = Extensions.LoadXml<ServersMaps>("serversMaps.config");
-            
-            //Combobox source
-            var listSources =  _serversMaps.Maps.Select(m => m.nameFrom).Distinct().ToList();
-            listSources.Insert(0, FILE_ELEMENT);
-            cbServerSource.ItemsSource = listSources;
+           
+        
         }
 
         private void cbServerSource_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            cbServerDestination.ItemsSource = _serversMaps.Maps.Where(m=>m.nameFrom == cbServerSource.SelectedValue.ToString())
-                                                               .Select(m => m.nameTo).Distinct().ToList();
-
-            //File selected
-            if (cbServerSource.SelectedIndex == 0)
-            {
-                var dlg = new OpenFileDialog();
-                dlg.DefaultExt = FILE_EXTENSION;
-                dlg.Filter = FILTER;
-                if (dlg.ShowDialog() == true)
-                {
-                    string fileName = dlg.FileName;
-                }
-            }
-        }
+              }
 
         private void cbServerDestination_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -79,20 +59,20 @@ namespace DataCloner.GUI
 
         private void btnExec_Click(object sender, RoutedEventArgs e)
         {
-            var selectedMap = _serversMaps.Maps.FirstOrDefault(m => m.nameFrom == cbServerSource.SelectedValue.ToString() &&
-                                                                    m.nameTo == cbServerDestination.SelectedValue.ToString());
-            cloner.ServerMap = selectedMap;
-            cloner.Initialize();
+            //var selectedMap = _serversMaps.Maps.FirstOrDefault(m => m.nameFrom == cbServerSource.SelectedValue.ToString() &&
+            //                                                        m.nameTo == cbServerDestination.SelectedValue.ToString());
+            //cloner.ServerMap = selectedMap;
+            //cloner.Initialize();
 
-            ////Basic test : 1 row
-            var source = new RowIdentifier();
-            source.ServerId = 1;
-            source.Database = "sakila";
-            source.Schema = "";
-            source.Table = "actor";
-            source.Columns.Add("actor_id", 1);
+            //////Basic test : 1 row
+            //var source = new RowIdentifier();
+            //source.ServerId = 1;
+            //source.Database = "sakila";
+            //source.Schema = "";
+            //source.Table = "actor";
+            //source.Columns.Add("actor_id", 1);
 
-            //cloner.SqlTraveler(source, true, false);
+            ////cloner.SqlTraveler(source, true, false);
         }
     }
 }

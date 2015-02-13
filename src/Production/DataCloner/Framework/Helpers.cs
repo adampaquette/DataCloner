@@ -33,19 +33,4 @@ namespace DataCloner.Framework
             }
         }
     }
-
-    internal static class GeneralExtensionHelper
-    {
-        /// <summary>
-        /// Impersonnification du schéma
-        /// </summary>
-        /// <param name="serverId"></param>
-        internal static Int16 Impersonate(Int16 serverId)
-        {
-            Int16 id = QueryDispatcher.Cache.ConnectionStrings.Where(c => c.Id == serverId).First().SameConfigAsId;
-            if (id > 0)
-                return id;
-            return serverId;
-        }
-    }
 }

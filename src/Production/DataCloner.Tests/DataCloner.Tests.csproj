@@ -52,7 +52,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="CachedTableTests.cs" />
-    <Compile Include="ConfigurationXmlTests.cs" />
+    <Compile Include="ConfigurationTests.cs" />
     <Compile Include="ExtensionsTests.cs" />
     <Compile Include="FastActivatorTests.cs" />
     <Compile Include="KeyRelationshipTests.cs" />

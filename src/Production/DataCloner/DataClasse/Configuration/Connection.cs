@@ -14,17 +14,14 @@ namespace DataCloner.DataClasse.Configuration
         public string ProviderName { get; set; }
         [XmlAttribute]
         public string ConnectionString { get; set; }
-        [XmlAttribute]
-        public Int16 SameConfigAsId { get; set; }
 
         public Connection() { }
-        public Connection(Int16 id, string name, string providerName, string connectionString, Int16 sameConfigAsId)
+        public Connection(Int16 id, string name, string providerName, string connectionString)
         {
             Id = id;
             Name = name;
             ProviderName = providerName;
             ConnectionString = connectionString;
-            SameConfigAsId = sameConfigAsId;
         }
     }
 }

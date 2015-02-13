@@ -62,7 +62,7 @@ namespace DataCloner.DataAccess
                 {
                     //Copy connection strings
                     foreach (var cs in app.ConnectionStrings)
-                        Cache.ConnectionStrings.Add(new DataClasse.Cache.Connection(cs.Id, cs.ProviderName, cs.ConnectionString, cs.SameConfigAsId));
+                        Cache.ConnectionStrings.Add(new DataClasse.Cache.Connection(cs.Id, cs.ProviderName, cs.ConnectionString));
 
                     InitProviders(Cache.ConnectionStrings);
 
@@ -78,7 +78,7 @@ namespace DataCloner.DataAccess
                             provider.GetUniqueKeys(Cache.DatabasesSchema.LoadUniqueKeys, database);
                         }
                     }
-                    Cache.DatabasesSchema.FinalizeCache(app.);
+                    //TODO : Cache.DatabasesSchema.FinalizeCache(app.);
 
                     //Save cache
                     var fsCache = new FileStream(fullCacheName, FileMode.Create);

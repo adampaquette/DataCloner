@@ -75,7 +75,7 @@ namespace DataCloner.Tests
                 DatabaseTo = "db",
                 SchemaTo = "dbo",
                 TableTo = "TABLE2",
-                Columns = new ForeignKeyColumn[] { new ForeignKeyColumn() { NameFrom = "COL1", NameTo = "COL1" } }
+                Columns = new DataClasse.Cache.ForeignKeyColumn[] { new DataClasse.Cache.ForeignKeyColumn() { NameFrom = "COL1", NameTo = "COL1" } }
             });
 
             _cache.Add(1, "db1", "dbo", _table);

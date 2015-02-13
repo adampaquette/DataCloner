@@ -8,15 +8,13 @@ namespace DataCloner.DataClasse.Cache
         public Int16 Id { get; set; }
         public string ProviderName { get; set; }
         public string ConnectionString { get; set; }
-        public Int16 SameConfigAsId { get; set; }
 
         public Connection() { }
-        public Connection(Int16 id, string providerName, string connectionString, Int16 sameConfigAsId)
+        public Connection(Int16 id, string providerName, string connectionString)
         {
             Id = id;
             ProviderName = providerName;
             ConnectionString = connectionString;
-            SameConfigAsId = sameConfigAsId;
         }
 
         public void Serialize(Stream stream)
@@ -34,7 +32,6 @@ namespace DataCloner.DataClasse.Cache
             stream.Write(Id);
             stream.Write(ProviderName);
             stream.Write(ConnectionString);
-            stream.Write(SameConfigAsId);
         }  
 
         public static Connection Deserialize(BinaryReader stream)
@@ -44,7 +41,6 @@ namespace DataCloner.DataClasse.Cache
                 Id = stream.ReadInt16(),
                 ProviderName = stream.ReadString(),
                 ConnectionString = stream.ReadString(),
-                SameConfigAsId = stream.ReadInt16()
             };
         }
     }

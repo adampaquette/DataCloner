@@ -12,5 +12,12 @@ namespace DataCloner.DataClasse.Configuration
         public List<Connection> ConnectionStrings { get; set; }
         public List<ClonerConfiguration> ClonerConfigurations { get; set; }
         public List<Map> Maps { get; set; }
+
+        public Application()
+        {
+            ConnectionStrings = new List<Connection>();
+            ClonerConfigurations = new List<ClonerConfiguration>();
+            Maps = new List<Map>();
+        }
     }
 }

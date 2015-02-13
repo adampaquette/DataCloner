@@ -8,8 +8,6 @@ using System.Data.SQLite;
 using DataCloner.DataAccess;
 using DataCloner.DataClasse.Cache;
 using DataCloner.PlugIn;
-using DataCloner.Framework;
-using DataCloner.Framework.GeneralExtensionHelper;
 
 namespace DataCloner.DataClasse
 {
@@ -301,8 +299,7 @@ namespace DataCloner.DataClasse
                 {
                     Id = (short)id,
                     ConnectionString = String.Format("Data Source={0};Version=3;", fullFilePath),
-                    ProviderName = "SQLite",
-                    SameConfigAsId = 0
+                    ProviderName = "SQLite"
                 });
 
                 //_dispatcher.CreateDatabaseFromCache(null, null);
