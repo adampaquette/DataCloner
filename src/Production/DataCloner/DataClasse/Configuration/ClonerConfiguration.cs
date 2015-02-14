@@ -4,6 +4,7 @@ using System.Xml.Serialization;
 
 namespace DataCloner.DataClasse.Configuration
 {
+    [Serializable]
     public class ClonerConfiguration
     {
         [XmlAttribute]

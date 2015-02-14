@@ -137,7 +137,7 @@ namespace Class
             ct.Add(1, "db2", "dbo", table);
 
             Cache config = new Cache();
-            config.ConnectionStrings = new List<DataCloner.DataClasse.Cache.Connection> { new DataCloner.DataClasse.Cache.Connection { Id = 1, ConnectionString = "", ProviderName = ""} };
+            config.ConnectionStrings = new List<DataCloner.DataClasse.Cache.Connection> { new DataCloner.DataClasse.Cache.Connection { Id = 1, ConnectionString = "", ProviderName = "" } };
             config.ConfigFileHash = "";
             config.DatabasesSchema = ct;
 
@@ -157,18 +157,14 @@ namespace Class
 
         public static void DataclonerTest1()
         {
-            var dc = new Cloner();
             RowIdentifier source = new RowIdentifier();
 
-            //Map serveur source / destination
-            dc.ServerMap.Add(new ServerIdentifier { ServerId = 1, Database = "dataclonertestdatabase", Schema = "" },
-                             new ServerIdentifier { ServerId = 1, Database = "dataclonertestdatabase", Schema = "" });
-            dc.ServerMap.Add(new ServerIdentifier { ServerId = 1, Database = "sakila", Schema = "" },
-                             new ServerIdentifier { ServerId = 1, Database = "sakila", Schema = "" });
-
-            //dc.Initialize();
+            var dc = new Cloner
+            {
+                Config = Configuration.Load(Configuration.CONFIG_FILE_NAME), 
+                EnforceIntegrity = false
+            };
             dc.Logger += msg => Console.WriteLine(msg);
-            dc.EnforceIntegrity = false;
 
             //source.Columns.Clear();
             //source.ServerId = 1;
@@ -186,7 +182,7 @@ namespace Class
             source.Schema = "";
             source.Table = "customer";
             source.Columns.Add("customer_id", 1);
-            dc.SqlTraveler(source, true);
+            dc.Clone("TestApp", "testMySQL", "testMySQL", null, source, true);
 
             //Console.WriteLine("==============");
 

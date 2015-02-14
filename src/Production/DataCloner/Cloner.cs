@@ -6,18 +6,10 @@ using System.Linq;
 using System.Text;
 
 using DataCloner.DataAccess;
-using DataCloner.DataClasse;
 using DataCloner.DataClasse.Cache;
 
 namespace DataCloner.DataClasse
 {
-    public struct ServerIdentifier
-    {
-        public Int16 ServerId { get; set; }
-        public string Database { get; set; }
-        public string Schema { get; set; }
-    }
-
     internal class CircularKeyJob
     {
         public IRowIdentifier sourceBaseRowStartPoint { get; set; }
@@ -33,7 +25,7 @@ namespace DataCloner.DataClasse
         private KeyRelationship _keyRelationships;
         private List<CircularKeyJob> _circularKeyJobs;
 
-        public Dictionary<ServerIdentifier, ServerIdentifier> ServerMap { get; set; }
+        public Configuration.Configuration Config { get; set; }
         public bool SaveToFile { get; set; }
         public string SavePath { get; set; }
         public bool EnforceIntegrity { get; set; }
@@ -42,15 +34,17 @@ namespace DataCloner.DataClasse
 
         public Cloner()
         {
-            ServerMap = new Dictionary<ServerIdentifier, ServerIdentifier>();
             _keyRelationships = new KeyRelationship();
             _circularKeyJobs = new List<CircularKeyJob>();
         }
 
-        public IRowIdentifier SqlTraveler(string application, string mapFrom, string mapTo, int? configId, 
-                                          IRowIdentifier riSource, bool getDerivatives)
+        public IRowIdentifier Clone(string application, string mapFrom, string mapTo, int? configId, 
+                                    IRowIdentifier riSource, bool getDerivatives)
         {
-            Cache.Cache.InitCache(application, mapFrom, mapTo, configId);
+            if (Config == null)
+                throw new ArgumentNullException("Config");
+
+            Cache.Cache.InitCache(Config, application, mapFrom, mapTo, configId);
 
             riSource.EnforceIntegrityCheck(EnforceIntegrity);
             var riReturn = SqlTraveler(riSource, getDerivatives, false, 0, new Stack<IRowIdentifier>());
@@ -67,7 +61,7 @@ namespace DataCloner.DataClasse
             var table = riSource.GetTable();
             var fks = table.ForeignKeys;
             var autoIncrementPK = table.ColumnsDefinition.Where(c => c.IsAutoIncrement && c.IsPrimary).Any();
-            var serverDst = ServerMap[new ServerIdentifier
+            var serverDst = Cache.Cache.Current.ServerMap[new ServerIdentifier
             {
                 ServerId = riSource.ServerId,
                 Database = riSource.Database,
@@ -270,7 +264,7 @@ namespace DataCloner.DataClasse
         private void CreateDatabasesFiles()
         {
             string folderPath = Path.Combine(Path.GetDirectoryName(SavePath), TEMP_FOLDER_NAME);
-            int nbFileToCreate = ServerMap.Select(r => r.Value.ServerId).Distinct().Count();
+            int nbFileToCreate = Cache.Cache.Current.ServerMap.Select(r => r.Value.ServerId).Distinct().Count();
             int lastIdUsed = _cache.ConnectionStrings.Max(cs => cs.Id);
 
             if (!Directory.Exists(folderPath))
@@ -306,14 +300,14 @@ namespace DataCloner.DataClasse
                 object[] pkDestinationRow = _keyRelationships.GetKey(job.sourceBaseRowStartPoint);
                 object[] keyDestinationFKRow = _keyRelationships.GetKey(job.sourceFKRowStartPoint);
 
-                var serverDstBaseTable = ServerMap[new ServerIdentifier
+                var serverDstBaseTable = Cache.Cache.Current.ServerMap[new ServerIdentifier
                 {
                     ServerId = job.sourceBaseRowStartPoint.ServerId,
                     Database = job.sourceBaseRowStartPoint.Database,
                     Schema = job.sourceBaseRowStartPoint.Schema
                 }];
 
-                var serverDstFKTable = ServerMap[new ServerIdentifier
+                var serverDstFKTable = Cache.Cache.Current.ServerMap[new ServerIdentifier
                 {
                     ServerId = job.sourceFKRowStartPoint.ServerId,
                     Database = job.sourceFKRowStartPoint.Database,

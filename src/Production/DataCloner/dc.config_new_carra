@@ -61,7 +61,10 @@ Règles
 			<CloneMaps>
 				<Map nameFrom="PROD" nameTo="UNI" usableConfigs="1,2,3">
 					<Variables>
-						<Var Name="" Value=""/>
+						<Var Name="ServerSrc1" Value="1"/>
+						<Var Name="ServerSrc2" Value="2"/>
+						<Var Name="DatabaseSrc1" Value="3"/>
+						<Var Name="DatabaseSrc2" Value="3"/>
 					</Variables>
 					<Road ServerSrc="1" DatabaseSrc="PGIS" SchemaSrc="" 
 						  ServerDst="3" DatabaseDst="PGIS" SchemaDst=""/>

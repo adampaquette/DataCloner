@@ -93,6 +93,7 @@
     <Compile Include="DataAccess\QueryHelperFactory.cs" />
     <Compile Include="DataAccess\QueryHelperMySQL.cs" />
     <Compile Include="DataClasse\Cache\ITableSchema.cs" />
+    <Compile Include="DataClasse\Cache\ServerIdentifier.cs" />
     <Compile Include="DataClasse\Configuration\Application.cs" />
     <Compile Include="DataClasse\Configuration\ClonerConfiguration.cs" />
     <Compile Include="DataClasse\Configuration\Map.cs" />

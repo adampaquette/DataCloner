@@ -4,6 +4,7 @@ using System.Xml.Serialization;
 
 namespace DataCloner.DataClasse.Configuration
 {
+    [Serializable]
     public class ServerModifier
     {
         [XmlAttribute]
@@ -23,6 +24,7 @@ namespace DataCloner.DataClasse.Configuration
         }
     }
 
+    [Serializable]
     public class DatabaseModifier
     {
         [XmlAttribute]
@@ -42,6 +44,7 @@ namespace DataCloner.DataClasse.Configuration
         }
     }
 
+    [Serializable]
     public class SchemaModifier
     {
         [XmlAttribute]
@@ -61,6 +64,7 @@ namespace DataCloner.DataClasse.Configuration
         }
     }
 
+    [Serializable]
     public class TableModifier
     {
         [XmlAttribute]
@@ -80,6 +84,7 @@ namespace DataCloner.DataClasse.Configuration
         }
     }
 
+    [Serializable]
     public class DataBuilder
     {
         [XmlAttribute]
@@ -90,6 +95,7 @@ namespace DataCloner.DataClasse.Configuration
         public DataBuilder() { }
     }
 
+    [Serializable]
     public class DerativeTable
     {
         [XmlAttribute]
@@ -105,6 +111,7 @@ namespace DataCloner.DataClasse.Configuration
         }
     }
 
+    [Serializable]
     public class DerivativeSubTable
     {
         [XmlAttribute]
@@ -123,6 +130,7 @@ namespace DataCloner.DataClasse.Configuration
         public DerivativeSubTable() { }
     }
 
+    [Serializable]
     public class ForeignKeys
     {
         [XmlElement("Add")]
@@ -137,6 +145,7 @@ namespace DataCloner.DataClasse.Configuration
         }
     }
 
+    [Serializable]
     public class ForeignKeyAdd
     {
         [XmlAttribute]
@@ -157,6 +166,7 @@ namespace DataCloner.DataClasse.Configuration
         }
     }
 
+    [Serializable]
     public class ForeignKeyColumn
     {
         [XmlAttribute]
@@ -167,6 +177,7 @@ namespace DataCloner.DataClasse.Configuration
         public ForeignKeyColumn() { }
     }
 
+    [Serializable]
     public class ForeignKeyRemove
     {
         [XmlElement("Column")]
@@ -175,6 +186,7 @@ namespace DataCloner.DataClasse.Configuration
         public ForeignKeyRemove() { }
     }
 
+    [Serializable]
     public class ForeignKeyRemoveColumn
     {
         [XmlAttribute]

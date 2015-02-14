@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Xml.Serialization;
 using System.Collections.Generic;
+using DataCloner.DataClasse.Cache;
 
 namespace DataCloner.DataClasse.Configuration
 {
+    [Serializable]
     public class Map
     {
         [XmlAttribute]
@@ -38,6 +40,7 @@ namespace DataCloner.DataClasse.Configuration
         }
     }
 
+    [Serializable]
     public class Road
     {
         [XmlAttribute]
@@ -54,6 +57,7 @@ namespace DataCloner.DataClasse.Configuration
         public string SchemaDst { get; set; }
     }
 
+    [Serializable]
     public class Variable
     {
         [XmlAttribute]

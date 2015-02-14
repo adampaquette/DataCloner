@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 namespace DataCloner.DataClasse.Configuration
 {
+    [Serializable]
     public class Application
     {
         [XmlAttribute]

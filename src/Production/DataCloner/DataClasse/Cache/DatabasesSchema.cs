@@ -16,6 +16,7 @@ namespace DataCloner.DataClasse.Cache
     /// <remarks>Optimisé pour la lecture et non pour l'écriture!</remarks>
     internal sealed class DatabasesSchema
     {
+        //ServerId / Database / Schema -> TableSchema[]
         private Dictionary<Int16, Dictionary<string, Dictionary<string, TableSchema[]>>> _dic =
             new Dictionary<Int16, Dictionary<string, Dictionary<string, TableSchema[]>>>();
 
@@ -332,6 +333,19 @@ namespace DataCloner.DataClasse.Cache
             }
         }
 
+        /// <summary>
+        /// Termine la construction de la cache.
+        /// </summary>
+        /// <param name="config"></param>
+        /// <remarks>Le schéma de la BD doit préalablement avoir été obtenu. GetColumns() et GetForeignKeys()</remarks>
+        public void FinalizeCache(Configuration.ClonerConfiguration config)
+        {
+            GenerateCommands();
+            MergeFKConfig(config);
+            GenerateDerivativeTables();
+            MergeCacheAndUserConfig(config);
+        }
+
         private void GenerateCommands()
         {
             foreach (var server in _dic)
@@ -402,9 +416,8 @@ namespace DataCloner.DataClasse.Cache
         /// <summary>
         /// Génène les tables dérivées depuis les FK.
         /// </summary>
-        /// <param name="config"></param>
         /// <remarks>La configuration utilisateur des FK doit avoir été fusionnée à la cache avant la création des tables dérivées.</remarks>
-        private void GenerateDerivativeTables(Configuration.ClonerConfiguration config)
+        private void GenerateDerivativeTables()
         {
             foreach (var server in _dic)
             {
@@ -452,6 +465,9 @@ namespace DataCloner.DataClasse.Cache
 
         private void MergeFKConfig(Configuration.ClonerConfiguration config)
         {
+            if (config == null)
+                return;
+
             foreach (var server in _dic)
             {
                 var serConfig = config.Servers.Find(s => s.Id == server.Key);
@@ -527,6 +543,9 @@ namespace DataCloner.DataClasse.Cache
 
         private void MergeCacheAndUserConfig(Configuration.ClonerConfiguration config)
         {
+            if (config == null)
+                return;
+
             foreach (var server in _dic)
             {
                 var serConfig = config.Servers.Find(s => s.Id == server.Key);
@@ -588,19 +607,6 @@ namespace DataCloner.DataClasse.Cache
                     }
                 }
             }
-        }
-
-        /// <summary>
-        /// Termine la construction de la cache.
-        /// </summary>
-        /// <param name="config"></param>
-        /// <remarks>Le schéma de la BD doit préalablement avoir été obtenu. GetColumns() et GetForeignKeys()</remarks>
-        public void FinalizeCache(Configuration.ClonerConfiguration config)
-        {
-            GenerateCommands();
-            MergeFKConfig(config);
-            GenerateDerivativeTables(config);
-            MergeCacheAndUserConfig(config);
         }
 
         public void Serialize(Stream stream)
