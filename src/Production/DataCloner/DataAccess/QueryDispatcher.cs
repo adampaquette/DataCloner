@@ -15,8 +15,7 @@ namespace DataCloner.DataAccess
 {
     internal static class QueryDispatcher
     {
-        public static Cache Cache { get; set; }
-        private static Dictionary<Int16, IQueryHelper> _providers;
+        private static Dictionary<Int16, IQueryHelper> _providers = null;
 
         public static IDbConnection GetConnection(IServerIdentifier server)
         {
@@ -38,9 +37,12 @@ namespace DataCloner.DataAccess
             return _providers[server];
         }
 
-        public static void CreateDatabaseFromCache(ServerIdentifier source, ServerIdentifier destination)
+        public static void InitProviders(List<DataClasse.Cache.Connection> conns)
         {
+            _providers = new Dictionary<short, IQueryHelper>();
 
+            foreach (DataClasse.Cache.Connection conn in conns)
+                _providers.Add(conn.Id, QueryHelperFactory.GetQueryHelper(conn.ProviderName, conn.ConnectionString, conn.Id));
         }
 
         public static void Dispose()

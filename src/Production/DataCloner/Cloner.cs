@@ -1,18 +1,13 @@
 ﻿using System;
-using System.Linq;
-using System.IO;
-using System.Text;
 using System.Collections.Generic;
 using System.Data.SQLite;
+using System.IO;
+using System.Linq;
+using System.Text;
 
 using DataCloner.DataAccess;
+using DataCloner.DataClasse;
 using DataCloner.DataClasse.Cache;
-using DataCloner.PlugIn;
-
-using Murmur;
-using System.Security.Cryptography;
-using System.Runtime.Serialization.Formatters.Binary;
-using DataCloner.DataClasse.Configuration;
 
 namespace DataCloner.DataClasse
 {
@@ -32,13 +27,11 @@ namespace DataCloner.DataClasse
 
     public class Cloner
     {
-        private const string CONFIG_FILE_NAME = "dc.config";
         private const string TEMP_FOLDER_NAME = "temp";
 
-        private DatabasesSchema _cacheTable;
+        private Cache.Cache _cache;
         private KeyRelationship _keyRelationships;
         private List<CircularKeyJob> _circularKeyJobs;
-        private static Dictionary<Int16, IQueryHelper> _providers;
 
         public Dictionary<ServerIdentifier, ServerIdentifier> ServerMap { get; set; }
         public bool SaveToFile { get; set; }
@@ -50,122 +43,15 @@ namespace DataCloner.DataClasse
         public Cloner()
         {
             ServerMap = new Dictionary<ServerIdentifier, ServerIdentifier>();
-        }
-
-        public void Initialize(string application, string mapFrom, string mapTo, int? configId)
-        {
-            _cacheTable = InitCache(application, mapFrom, mapTo, configId);
-
             _keyRelationships = new KeyRelationship();
             _circularKeyJobs = new List<CircularKeyJob>();
-
-            if (ServerMap == null)
-                throw new Exception("ServerMap is not defined! Links source and destination.");
-
-            if (SaveToFile)
-                CreateDatabasesFiles();
         }
 
-        private DatabasesSchema InitCache(string application, string mapFrom, string mapTo, int? configId)
+        public IRowIdentifier SqlTraveler(string application, string mapFrom, string mapTo, int? configId, 
+                                          IRowIdentifier riSource, bool getDerivatives)
         {
-            if (String.IsNullOrWhiteSpace(mapFrom)) throw new ArgumentNullException(nameof(mapFrom));
-            if (String.IsNullOrWhiteSpace(mapTo)) throw new ArgumentNullException(nameof(mapTo));
-            if (!File.Exists(CONFIG_FILE_NAME))
-                throw new FileNotFoundException("The configuration file doesn't exist!");
+            Cache.Cache.InitCache(application, mapFrom, mapTo, configId);
 
-            string cacheFileName = mapFrom + "_" + mapTo;
-            if (configId != null)
-                cacheFileName += "_" + configId.ToString();
-            cacheFileName += ".cache";
-
-            //Hash the selected map and the cloner configuration to see if it match the lasted builded cache
-            var config = Configuration.Configuration.Load(CONFIG_FILE_NAME);
-            var app = config?.Applications.Where(a => a.Name == application).FirstOrDefault();
-            if (app == null)
-                throw new KeyNotFoundException(String.Format("There is no configuration for the application name '{0}'.", application));
-
-            var map = app.Maps.Where(m => m.From == mapFrom && m.To == mapTo).FirstOrDefault();
-            if (map == null)
-                throw new KeyNotFoundException(String.Format(
-                    "There is no map where attribute From='{0}' and To='{1}' in the configuration for the application name '{2}'.",
-                    mapFrom, mapTo, application));
-
-            //Get binary view 
-            var configData = new MemoryStream();
-            var bf = new BinaryFormatter();
-            bf.Serialize(configData, map);
-
-            ClonerConfiguration clonerConfig = null;
-
-            if (map.UsableConfigs.Split(',').ToList().Contains(configId.ToString()))
-            {
-                clonerConfig = app.ClonerConfigurations.Where(c => c.Id == configId).FirstOrDefault();
-                if (clonerConfig == null)
-                    throw new KeyNotFoundException(String.Format(
-                        "There is no cloner configuration '{0}' in the configuration for the application name '{1}'.",
-                        clonerConfig, application));
-
-                bf.Serialize(configData, clonerConfig);
-            }
-
-            //Hash user config
-            HashAlgorithm murmur = MurmurHash.Create32(managed: false);
-            string configHash = Encoding.Default.GetString(murmur.ComputeHash(configData));
-
-            var cache = Cache.Cache.Load(cacheFileName, configHash);
-            if (cache != null)
-            {
-                InitProviders(cache.ConnectionStrings);
-            }
-            else
-            {
-                //Rebuild cache
-                cache = new Cache.Cache();
-                cache.ConfigFileHash = configHash;
-
-                //Copy connection strings
-                foreach (var cs in app.ConnectionStrings)
-                    cache.ConnectionStrings.Add(new DataClasse.Cache.Connection(cs.Id, cs.ProviderName, cs.ConnectionString));
-
-                InitProviders(cache.ConnectionStrings);
-
-                //Start fetching each server
-                foreach (var cs in app.ConnectionStrings)
-                {
-                    IQueryHelper provider = _providers[cs.Id];
-
-                    foreach (var database in provider.GetDatabasesName())
-                    {
-                        provider.GetColumns(cache.DatabasesSchema.LoadColumns, database);
-                        provider.GetForeignKeys(cache.DatabasesSchema.LoadForeignKeys, database);
-                        provider.GetUniqueKeys(cache.DatabasesSchema.LoadUniqueKeys, database);
-                    }
-                }
-
-                if (clonerConfig != null)
-                    cache.DatabasesSchema.FinalizeCache(clonerConfig);
-
-                //Save cache
-                cache.Save(cacheFileName);    
-            }
-            return cache?.DatabasesSchema;
-        }
-
-
-        /// <summary>
-        /// Récupération des providers qui seront utilisés pour effectuer les requêtes
-        /// </summary>
-        /// <param name="config"></param>
-        private static void InitProviders(List<DataClasse.Cache.Connection> conns)
-        {
-            _providers = new Dictionary<short, IQueryHelper>();
-
-            foreach (DataClasse.Cache.Connection conn in conns)
-                _providers.Add(conn.Id, QueryHelperFactory.GetQueryHelper(conn.ProviderName, conn.ConnectionString, conn.Id));
-        }
-
-        public IRowIdentifier SqlTraveler(IRowIdentifier riSource, bool getDerivatives)
-        {
             riSource.EnforceIntegrityCheck(EnforceIntegrity);
             var riReturn = SqlTraveler(riSource, getDerivatives, false, 0, new Stack<IRowIdentifier>());
 
@@ -385,7 +271,7 @@ namespace DataCloner.DataClasse
         {
             string folderPath = Path.Combine(Path.GetDirectoryName(SavePath), TEMP_FOLDER_NAME);
             int nbFileToCreate = ServerMap.Select(r => r.Value.ServerId).Distinct().Count();
-            int lastIdUsed = QueryDispatcher.Cache.ConnectionStrings.Max(cs => cs.Id);
+            int lastIdUsed = _cache.ConnectionStrings.Max(cs => cs.Id);
 
             if (!Directory.Exists(folderPath))
                 Directory.CreateDirectory(folderPath);
@@ -400,7 +286,7 @@ namespace DataCloner.DataClasse
                 SQLiteConnection.CreateFile(fullFilePath);
 
                 //Crer la string de connection
-                QueryDispatcher.Cache.ConnectionStrings.Add(new Cache.Connection
+                _cache.ConnectionStrings.Add(new Cache.Connection
                 {
                     Id = (short)id,
                     ConnectionString = String.Format("Data Source={0};Version=3;", fullFilePath),

@@ -9,8 +9,7 @@ namespace DataCloner.DataClasse.Configuration
     [XmlRoot("Configuration")]
     public class Configuration
     {
-        public const string ConfigName = "dc";
-        public const string Extension = ".config";
+        public const string CONFIG_FILE_NAME = "dc.config";
 
         public List<Application> Applications { get; set; }
 

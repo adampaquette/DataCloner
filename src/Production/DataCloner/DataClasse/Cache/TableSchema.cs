@@ -390,17 +390,17 @@ namespace DataCloner.DataClasse.Cache
     {
         internal static TableSchema GetTable(this IForeignKey fk)
         {
-            return QueryDispatcher.Cache.DatabasesSchema.GetTable(fk.ServerIdTo, fk.DatabaseTo, fk.SchemaTo, fk.TableTo);
+            return Cache.Current.DatabasesSchema.GetTable(fk.ServerIdTo, fk.DatabaseTo, fk.SchemaTo, fk.TableTo);
         }
 
         internal static TableSchema GetTable(this IDerivativeTable dt)
         {
-            return QueryDispatcher.Cache.DatabasesSchema.GetTable(dt.ServerId, dt.Database, dt.Schema, dt.Table);
+            return Cache.Current.DatabasesSchema.GetTable(dt.ServerId, dt.Database, dt.Schema, dt.Table);
         }
 
         internal static TableSchema GetTable(this ITableIdentifier dt)
         {
-            return QueryDispatcher.Cache.DatabasesSchema.GetTable(dt.ServerId, dt.Database, dt.Schema, dt.Table);
+            return Cache.Current.DatabasesSchema.GetTable(dt.ServerId, dt.Database, dt.Schema, dt.Table);
         }
     }
 }
