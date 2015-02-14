@@ -7,9 +7,14 @@ namespace DataCloner.DataClasse.Configuration
     public class Map
     {
         [XmlAttribute]
-        public string nameFrom { get; set; }
+        public string From { get; set; }
         [XmlAttribute]
-        public string nameTo { get; set; }
+        public string To { get; set; }
+        [XmlAttribute]
+        public string UsableConfigs { get; set; }
+        [XmlElement("Var")]
+        public List<Variable> Variables { get; set; }
+
         [XmlElement("Road")]
         public List<Road> Roads { get; set; }
 
@@ -48,4 +53,12 @@ namespace DataCloner.DataClasse.Configuration
         [XmlAttribute]
         public string SchemaDst { get; set; }
     }
+
+    public class Variable
+    {
+        [XmlAttribute]
+        public string Name { get; set; }
+        [XmlAttribute]
+        public string Value { get; set; }
+    }        
 }

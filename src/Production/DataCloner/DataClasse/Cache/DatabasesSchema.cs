@@ -19,24 +19,6 @@ namespace DataCloner.DataClasse.Cache
         private Dictionary<Int16, Dictionary<string, Dictionary<string, TableSchema[]>>> _dic =
             new Dictionary<Int16, Dictionary<string, Dictionary<string, TableSchema[]>>>();
 
-        //public bool Contains(Int32 server, string database, string schema, string tableFrom, DerivativeTable tableTo)
-        //{
-        //    database = database.ToLower();
-        //    schema = schema.ToLower();
-        //    tableFrom = tableFrom.ToLower();
-        //    tableTo.Database = tableTo.Database.ToLower();
-        //    tableTo.Schema = tableTo.Schema.ToLower();
-        //    tableTo.Table = tableTo.Table.ToLower();
-
-        //    if (_dic.ContainsKey(server) &&
-        //        _dic[server].ContainsKey(database) &&
-        //        _dic[server][database].ContainsKey(schema) &&
-        //        _dic[server][database][schema].ContainsKey(tableFrom) &&
-        //        _dic[server][database][schema][tableFrom].Contains(tableTo))
-        //        return true;
-        //    return false;
-        //}
-
         public TableSchema GetTable(Int16 server, string database, string schema, string table)
         {
             if (_dic.ContainsKey(server) &&
@@ -422,7 +404,7 @@ namespace DataCloner.DataClasse.Cache
         /// </summary>
         /// <param name="config"></param>
         /// <remarks>La configuration utilisateur des FK doit avoir été fusionnée à la cache avant la création des tables dérivées.</remarks>
-        private void GenerateDerivativeTables(Configuration.Configuration config)
+        private void GenerateDerivativeTables(Configuration.ClonerConfiguration config)
         {
             foreach (var server in _dic)
             {
@@ -468,144 +450,144 @@ namespace DataCloner.DataClasse.Cache
             }
         }
 
-        private void MergeFKConfig(Configuration.Configuration config)
+        private void MergeFKConfig(Configuration.ClonerConfiguration config)
         {
-            //foreach (var server in _dic)
-            //{
-            //    var serConfig = config.TableModifiers.Servers.Find(s => s.Id == server.Key);
-            //    if (serConfig != null)
-            //    {
-            //        foreach (var database in server.Value)
-            //        {
-            //            var dbConfig = serConfig.Databases.Find(d => d.Name == database.Key);
-            //            if (dbConfig != null)
-            //            {
-            //                foreach (var schema in database.Value)
-            //                {
-            //                    var scheConfig = dbConfig.Schemas.Find(s => s.Name == schema.Key);
-            //                    if (scheConfig != null)
-            //                    {
-            //                        foreach (var table in schema.Value)
-            //                        {
-            //                            var tblConfig = scheConfig.Tables.Find(t => t.Name == table.Name);
-            //                            if (tblConfig != null)
-            //                            {
-            //                                //On affecte les changements de la configuration
+            foreach (var server in _dic)
+            {
+                var serConfig = config.Servers.Find(s => s.Id == server.Key);
+                if (serConfig != null)
+                {
+                    foreach (var database in server.Value)
+                    {
+                        var dbConfig = serConfig.Databases.Find(d => d.Name == database.Key);
+                        if (dbConfig != null)
+                        {
+                            foreach (var schema in database.Value)
+                            {
+                                var scheConfig = dbConfig.Schemas.Find(s => s.Name == schema.Key);
+                                if (scheConfig != null)
+                                {
+                                    foreach (var table in schema.Value)
+                                    {
+                                        var tblConfig = scheConfig.Tables.Find(t => t.Name == table.Name);
+                                        if (tblConfig != null)
+                                        {
+                                            //On affecte les changements de la configuration
 
-            //                                //On supprime les clefs
-            //                                foreach (var fkConfig in tblConfig.ForeignKeys.ForeignKeyRemove)
-            //                                {
-            //                                    foreach (var colConfig in fkConfig.Columns)
-            //                                    {
-            //                                        for (int j = 0; j < table.ForeignKeys.Count(); j++)
-            //                                        {
-            //                                            var fk = table.ForeignKeys[j];
+                                            //On supprime les clefs
+                                            foreach (var fkConfig in tblConfig.ForeignKeys.ForeignKeyRemove)
+                                            {
+                                                foreach (var colConfig in fkConfig.Columns)
+                                                {
+                                                    for (int j = 0; j < table.ForeignKeys.Count(); j++)
+                                                    {
+                                                        var fk = table.ForeignKeys[j];
 
-            //                                            for (int i = 0; i < fk.Columns.Count(); i++)
-            //                                            {
-            //                                                if (fk.Columns[i].NameFrom == colConfig.Name)
-            //                                                {
-            //                                                    fk.Columns.RemoveAt(i);
-            //                                                    i--;
+                                                        for (int i = 0; i < fk.Columns.Count(); i++)
+                                                        {
+                                                            if (fk.Columns[i].NameFrom == colConfig.Name)
+                                                            {
+                                                                fk.Columns.RemoveAt(i);
+                                                                i--;
 
-            //                                                    if (fk.Columns.Count() == 0)
-            //                                                    {
-            //                                                        table.ForeignKeys.RemoveAt(j);
-            //                                                        j--;
-            //                                                    }
-            //                                                }
-            //                                            }
-            //                                        }
-            //                                    }
-            //                                }
+                                                                if (fk.Columns.Count() == 0)
+                                                                {
+                                                                    table.ForeignKeys.RemoveAt(j);
+                                                                    j--;
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
 
-            //                                //On ajoute les clefs
-            //                                foreach (var fkConfig in tblConfig.ForeignKeys.ForeignKeyAdd)
-            //                                {
-            //                                    var newFK = new ForeignKey
-            //                                    {
-            //                                        ServerIdTo = fkConfig.ServerId,
-            //                                        DatabaseTo = fkConfig.Database,
-            //                                        SchemaTo = fkConfig.Schema,
-            //                                        TableTo = fkConfig.Table,
-            //                                        Columns = (from fk in fkConfig.Columns select new ForeignKeyColumn { NameFrom = fk.NameFrom, NameTo = fk.NameTo }).ToArray()
-            //                                    };
+                                            //On ajoute les clefs
+                                            foreach (var fkConfig in tblConfig.ForeignKeys.ForeignKeyAdd)
+                                            {
+                                                var newFK = new ForeignKey
+                                                {
+                                                    ServerIdTo = fkConfig.ServerId,
+                                                    DatabaseTo = fkConfig.Database,
+                                                    SchemaTo = fkConfig.Schema,
+                                                    TableTo = fkConfig.Table,
+                                                    Columns = (from fk in fkConfig.Columns select new ForeignKeyColumn { NameFrom = fk.NameFrom, NameTo = fk.NameTo }).ToArray()
+                                                };
 
-            //                                    table.ForeignKeys.Add(newFK);
-            //                                }
-            //                            }
-            //                        }
-            //                    }
-            //                }
-            //            }
-            //        }
-            //    }
-            //}
+                                                table.ForeignKeys.Add(newFK);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
 
-        private void MergeCacheAndUserConfig(Configuration.Configuration config)
+        private void MergeCacheAndUserConfig(Configuration.ClonerConfiguration config)
         {
-            //foreach (var server in _dic)
-            //{
-            //    var serConfig = config.TableModifiers.Servers.Find(s => s.Id == server.Key);
-            //    if (serConfig != null)
-            //    {
-            //        foreach (var database in server.Value)
-            //        {
-            //            var dbConfig = serConfig.Databases.Find(d => d.Name == database.Key);
-            //            if (dbConfig != null)
-            //            {
-            //                foreach (var schema in database.Value)
-            //                {
-            //                    var scheConfig = dbConfig.Schemas.Find(s => s.Name == schema.Key);
-            //                    if (scheConfig != null)
-            //                    {
-            //                        foreach (var table in schema.Value)
-            //                        {
-            //                            var tblConfig = scheConfig.Tables.Find(t => t.Name == table.Name);
-            //                            if (tblConfig != null)
-            //                            {
-            //                                //On affecte les changements de la configuration
-            //                                table.IsStatic = tblConfig.IsStatic;
+            foreach (var server in _dic)
+            {
+                var serConfig = config.Servers.Find(s => s.Id == server.Key);
+                if (serConfig != null)
+                {
+                    foreach (var database in server.Value)
+                    {
+                        var dbConfig = serConfig.Databases.Find(d => d.Name == database.Key);
+                        if (dbConfig != null)
+                        {
+                            foreach (var schema in database.Value)
+                            {
+                                var scheConfig = dbConfig.Schemas.Find(s => s.Name == schema.Key);
+                                if (scheConfig != null)
+                                {
+                                    foreach (var table in schema.Value)
+                                    {
+                                        var tblConfig = scheConfig.Tables.Find(t => t.Name == table.Name);
+                                        if (tblConfig != null)
+                                        {
+                                            //On affecte les changements de la configuration
+                                            table.IsStatic = tblConfig.IsStatic;
 
-            //                                //Derivative tables
-            //                                var globalAccess = tblConfig.DerativeTablesConfig.GlobalAccess;
-            //                                var globalCascade = tblConfig.DerativeTablesConfig.Cascade;
+                                            //Derivative tables
+                                            var globalAccess = tblConfig.DerativeTables.GlobalAccess;
+                                            var globalCascade = tblConfig.DerativeTables.Cascade;
 
-            //                                foreach (var derivTbl in table.DerivativeTables)
-            //                                {
-            //                                    var derivTblConfig = tblConfig.DerativeTablesConfig.DerativeTables.Where(t =>
-            //                                                                    t.ServerId == derivTbl.ServerId &&
-            //                                                                    t.Database == derivTbl.Database &&
-            //                                                                    t.Schema == derivTbl.Schema &&
-            //                                                                    t.Table == derivTbl.Table).FirstOrDefault();
-            //                                    if (derivTblConfig != null)
-            //                                    {
-            //                                        derivTbl.Access = derivTblConfig.Access;
-            //                                        derivTbl.Cascade = derivTblConfig.Cascade;
-            //                                    }
-            //                                    else
-            //                                    {
-            //                                        derivTbl.Access = globalAccess;
-            //                                        derivTbl.Cascade = globalCascade;
-            //                                    }
-            //                                }
+                                            foreach (var derivTbl in table.DerivativeTables)
+                                            {
+                                                var derivTblConfig = tblConfig.DerativeTables.DerativeSubTables.Where(t =>
+                                                                                t.ServerId == derivTbl.ServerId &&
+                                                                                t.Database == derivTbl.Database &&
+                                                                                t.Schema == derivTbl.Schema &&
+                                                                                t.Table == derivTbl.Table).FirstOrDefault();
+                                                if (derivTblConfig != null)
+                                                {
+                                                    derivTbl.Access = derivTblConfig.Access;
+                                                    derivTbl.Cascade = derivTblConfig.Cascade;
+                                                }
+                                                else
+                                                {
+                                                    derivTbl.Access = globalAccess;
+                                                    derivTbl.Cascade = globalCascade;
+                                                }
+                                            }
 
-            //                                //Data builder
-            //                                foreach (var builderCol in tblConfig.DataBuilders)
-            //                                {
-            //                                    var col = table.ColumnsDefinition.Where(c => c.Name == builderCol.Name).FirstOrDefault();
-            //                                    if (col != null)
-            //                                        col.BuilderName = builderCol.BuilderName;
-            //                                }
-            //                            }
-            //                        }
-            //                    }
-            //                }
-            //            }
-            //        }
-            //    }
-            //}
+                                            //Data builder
+                                            foreach (var builderCol in tblConfig.DataBuilders)
+                                            {
+                                                var col = table.ColumnsDefinition.Where(c => c.Name == builderCol.Name).FirstOrDefault();
+                                                if (col != null)
+                                                    col.BuilderName = builderCol.BuilderName;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -613,7 +595,7 @@ namespace DataCloner.DataClasse.Cache
         /// </summary>
         /// <param name="config"></param>
         /// <remarks>Le schéma de la BD doit préalablement avoir été obtenu. GetColumns() et GetForeignKeys()</remarks>
-        public void FinalizeCache(Configuration.Configuration config)
+        public void FinalizeCache(Configuration.ClonerConfiguration config)
         {
             GenerateCommands();
             MergeFKConfig(config);

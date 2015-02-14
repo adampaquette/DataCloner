@@ -57,6 +57,7 @@ namespace DataCloner.Tests
                     }
                 }
             };
+
             table1.ForeignKeys.ForeignKeyAdd.Add(new ForeignKeyAdd()
             {
                 ServerId = 1,
@@ -92,7 +93,7 @@ namespace DataCloner.Tests
                     }
                 }
             });
-            
+
             var server1 = new ServerModifier()
             {
                 Id = 1,
@@ -122,6 +123,30 @@ namespace DataCloner.Tests
             };
 
             app.ClonerConfigurations.Add(clonerConfig);
+
+            app.Maps = new List<Map>()
+            {
+                new Map()
+                {
+                     From = "UNI",
+                     To = "FON",
+                     UsableConfigs = "1,2",
+                     Variables = new List<Variable>()
+                     {
+                         new Variable(){ Name = "", Value=""}
+                     },
+                     Roads = new List<Road>()
+                     {
+                         new Road()
+                         {
+                             ServerSrc = 1, SchemaSrc = "dbo", DatabaseSrc = "myDB",
+                             ServerDst = 1, SchemaDst = "dbo", DatabaseDst = "myDB"
+                         }
+                     }
+                }
+            };
+
+
             _config.Applications.Add(app);
         }
 

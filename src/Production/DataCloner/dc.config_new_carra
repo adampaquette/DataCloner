@@ -58,11 +58,11 @@ Règles
 					</Modifiers> 
 				</ClonerConfiguration>
 			</ClonerConfigurations>
-			<ServersMaps>
+			<CloneMaps>
 				<Map nameFrom="PROD" nameTo="UNI" usableConfigs="1,2,3">
 					<Variables>
 						<Var Name="" Value=""/>
-					<Variables>
+					</Variables>
 					<Road ServerSrc="1" DatabaseSrc="PGIS" SchemaSrc="" 
 						  ServerDst="3" DatabaseDst="PGIS" SchemaDst=""/>
 					<Road ServerSrc="2" DatabaseSrc="Ariel" SchemaSrc="" 
@@ -84,7 +84,7 @@ Règles
 					<Road ServerSrc="5" DatabaseSrc="PGIS" SchemaSrc="" />
 					<Road ServerSrc="5" DatabaseSrc="Ariel" SchemaSrc="" />
 				</Map>
-			</ServersMaps>
+			</CloneMaps>
 		</Application>
 	</Applications>
 </Configuration>

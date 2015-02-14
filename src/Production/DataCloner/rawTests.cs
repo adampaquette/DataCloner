@@ -72,8 +72,8 @@ namespace Class
 
             var map = new Map
             {
-                nameFrom = "PROD",
-                nameTo = "UNE",
+                From = "PROD",
+                To = "UNE",
                 Roads = new List<Road> { r1, r2 }
             };
 
@@ -166,7 +166,7 @@ namespace Class
             dc.ServerMap.Add(new ServerIdentifier { ServerId = 1, Database = "sakila", Schema = "" },
                              new ServerIdentifier { ServerId = 1, Database = "sakila", Schema = "" });
 
-            dc.Initialize();
+            //dc.Initialize();
             dc.Logger += msg => Console.WriteLine(msg);
             dc.EnforceIntegrity = false;
 
@@ -223,8 +223,8 @@ namespace Class
 
             var map = new Map
             {
-                nameFrom = "PROD",
-                nameTo = "UNE",
+                From = "PROD",
+                To = "UNE",
                 Roads = new List<Road> { r1, r2 }
             };
 

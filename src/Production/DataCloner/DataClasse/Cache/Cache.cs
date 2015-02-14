@@ -1,5 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
 using System.IO;
+using System.Text;
+using System.Security.Cryptography;
+
+using DataCloner.DataClasse;
+using DataCloner.DataClasse.Cache;
+using DataCloner.DataClasse.Configuration;
+
+using Murmur;
 
 namespace DataCloner.DataClasse.Cache
 {
@@ -58,6 +68,38 @@ namespace DataCloner.DataClasse.Cache
             config.DatabasesSchema = DatabasesSchema.Deserialize(stream);
 
             return config;
+        }
+
+        public static Cache Load(string cacheFile, string configHash)
+        {
+            Cache cache = null;
+            bool cacheIsGood = false;
+
+            //Check if cached file match with config file version
+            if (File.Exists(cacheFile))
+            {
+                using (var fsCache = new FileStream(cacheFile, FileMode.Open))
+                using (var brCache = new BinaryReader(fsCache))
+                {
+                    var fileHash = brCache.ReadString();
+                    cacheIsGood = fileHash == configHash;
+
+                    if (cacheIsGood)
+                    {
+                        cache = new Cache();
+                        cache.ConfigFileHash = fileHash;
+                        Cache.DeserializeBody(brCache, cache); //Load cache            
+                    }
+                }
+            }
+            return cache;
+        }
+
+        public void Save(string path)
+        {
+            var fsCache = new FileStream(path, FileMode.Create);
+            this.Serialize(fsCache);
+            fsCache.Close();
         }
     }
 }
