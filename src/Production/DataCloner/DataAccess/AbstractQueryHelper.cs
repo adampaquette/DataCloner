@@ -13,6 +13,7 @@ namespace DataCloner.DataAccess
     internal class AbstractQueryHelper : IQueryHelper
     {
         private readonly DbProviderFactory _factory;
+        private readonly Cache _cache;
         private readonly IDbConnection _conn;
         private readonly Int16 _serverIdCtx;
         private readonly string _sqlGetDatabasesName;
@@ -22,11 +23,12 @@ namespace DataCloner.DataAccess
         private readonly string _sqlGetLastInsertedPk;
         private readonly string _sqlEnforceIntegrityCheck;
 
-        public AbstractQueryHelper(string providerName, string connectionString, Int16 serverId,
+        public AbstractQueryHelper(Cache cache, string providerName, string connectionString, Int16 serverId,
             string sqlGetDatabasesName, string sqlGetColumns, string sqlGetForeignKeys, string sqlGetUniqueKeys,
             string sqlGetLastInsertedPk, string sqlEnforceIntegrityCheck)
         {
             _factory = DbProviderFactories.GetFactory(providerName);
+            _cache = cache;
             _conn = _factory.CreateConnection();
             _conn.ConnectionString = connectionString;
             _conn.Open();
@@ -136,12 +138,12 @@ namespace DataCloner.DataAccess
             cmd.ExecuteNonQuery();
         }
 
-        public object[][] Select(IRowIdentifier ri)
+        public object[][] Select(IRowIdentifier row)
         {
             List<object[]> rows = new List<object[]>();
-            TableSchema schema = ri.GetTable();
+            TableSchema schema = _cache.GetTable(row);
             StringBuilder query = new StringBuilder(schema.SelectCommand);
-            int nbParams = ri.Columns.Count;
+            int nbParams = row.Columns.Count;
 
             using (var cmd = _conn.CreateCommand())
             {
@@ -151,12 +153,12 @@ namespace DataCloner.DataAccess
 
                 for (int i = 0; i < nbParams; i++)
                 {
-                    string paramName = ri.Columns.ElementAt(i).Key;
+                    string paramName = row.Columns.ElementAt(i).Key;
                     query.Append(paramName).Append(" = @").Append(paramName);
 
                     var p = cmd.CreateParameter();
                     p.ParameterName = "@" + paramName;
-                    p.Value = ri.Columns.ElementAt(i).Value;
+                    p.Value = row.Columns.ElementAt(i).Value;
                     cmd.Parameters.Add(p);
 
                     if (i < nbParams - 1)
@@ -181,9 +183,9 @@ namespace DataCloner.DataAccess
             return null;
         }
 
-        public void Insert(ITableIdentifier ti, object[] row)
+        public void Insert(ITableIdentifier table, object[] row)
         {
-            TableSchema schema = ti.GetTable();
+            TableSchema schema = _cache.GetTable(table);
             if (schema.ColumnsDefinition.Count() != row.Length)
                 throw new Exception("The row doesn't correspond to schema!");
 
@@ -206,16 +208,16 @@ namespace DataCloner.DataAccess
             }
         }
 
-        public void Update(IRowIdentifier ri, ColumnsWithValue values)
+        public void Update(IRowIdentifier row, ColumnsWithValue values)
         {
-            if (ri.Columns.Count() == 0)
+            if (row.Columns.Count() == 0)
                 throw new ArgumentNullException("You must specify at least one column in the row identifier.");
 
             var cmd = _conn.CreateCommand();
             var sql = new StringBuilder("UPDATE ");
-            sql.Append(ri.Database)
+            sql.Append(row.Database)
                .Append(".")
-               .Append(ri.Table)
+               .Append(row.Table)
                .Append(" SET ");
 
             foreach (var col in values)
@@ -233,7 +235,7 @@ namespace DataCloner.DataAccess
             sql.Remove(sql.Length - 1, 1);
             sql.Append(" WHERE ");
 
-            foreach (var kv in ri.Columns)
+            foreach (var kv in row.Columns)
             {
                 sql.Append(kv.Key)
                    .Append(" = @")
@@ -251,18 +253,18 @@ namespace DataCloner.DataAccess
             cmd.ExecuteNonQuery();
         }
 
-        public void Delete(IRowIdentifier ri)
+        public void Delete(IRowIdentifier row)
         {
             var cmd = _conn.CreateCommand();
             var sql = new StringBuilder("DELETE FROM ");
-            sql.Append(ri.Database)
+            sql.Append(row.Database)
                .Append(".")
-               .Append(ri.Table);
+               .Append(row.Table);
 
-            if (ri.Columns.Count > 0)
+            if (row.Columns.Count > 0)
                 sql.Append(" WHERE 1=1");
 
-            foreach (var kv in ri.Columns)
+            foreach (var kv in row.Columns)
             {
                 sql.Append(" AND ")
                    .Append(kv.Key)

@@ -13,58 +13,45 @@ using Murmur;
 
 namespace DataCloner.DataAccess
 {
-    internal static class QueryDispatcher
+    internal class QueryDispatcher
     {
-        private static Dictionary<Int16, IQueryHelper> _providers = null;
+        private Dictionary<Int16, IQueryHelper> _providers = null;
 
-        public static IDbConnection GetConnection(IServerIdentifier server)
+        public IDbConnection GetConnection(IServerIdentifier server)
         {
             return _providers[server.ServerId].Connection;
         }
 
-        public static IDbConnection GetConnection(Int16 server)
+        public IDbConnection GetConnection(Int16 server)
         {
             return _providers[server].Connection;
         }
 
-        public static IQueryHelper GetQueryHelper(IServerIdentifier server)
+        public IQueryHelper GetQueryHelper(IServerIdentifier server)
         {
             return _providers[server.ServerId];
         }
 
-        public static IQueryHelper GetQueryHelper(Int16 server)
+        public IQueryHelper GetQueryHelper(Int16 server)
         {
             return _providers[server];
         }
 
-        public static void InitProviders(List<DataClasse.Cache.Connection> conns)
+        public void InitProviders(Cache cache)
         {
             _providers = new Dictionary<short, IQueryHelper>();
 
-            foreach (DataClasse.Cache.Connection conn in conns)
-                _providers.Add(conn.Id, QueryHelperFactory.GetQueryHelper(conn.ProviderName, conn.ConnectionString, conn.Id));
+            foreach (DataClasse.Cache.Connection conn in cache.ConnectionStrings)
+                _providers.Add(conn.Id, QueryHelperFactory.GetQueryHelper(cache, conn.ProviderName, conn.ConnectionString, conn.Id));
         }
 
-        public static void Dispose()
+        public void Dispose()
         {
             //TODO : IDISPOSABLE
             foreach (var conn in _providers)
             {
                 conn.Value.Dispose();
             }
-        }
-    }
-
-    internal static class QueryDispatcherExtensions
-    {
-        public static IDbConnection GetConnection(this IServerIdentifier server)
-        {
-            return QueryDispatcher.GetQueryHelper(server).Connection;
-        }
-
-        public static IQueryHelper GetQueryHelper(this IServerIdentifier server)
-        {
-            return QueryDispatcher.GetQueryHelper(server);
         }
     }
 }

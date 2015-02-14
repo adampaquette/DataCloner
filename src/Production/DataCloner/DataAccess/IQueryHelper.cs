@@ -20,10 +20,10 @@ namespace DataCloner.DataAccess
         void GetUniqueKeys(UniqueKeyReader reader, string database);
         object GetLastInsertedPk();
         void EnforceIntegrityCheck(bool active);
-        object[][] Select(IRowIdentifier ri);
-        void Insert(ITableIdentifier ti, object[] row);
-        void Update(IRowIdentifier riDictionary, ColumnsWithValue values);
-        void Delete(IRowIdentifier ri);
+        object[][] Select(IRowIdentifier row);
+        void Insert(ITableIdentifier table, object[] row);
+        void Update(IRowIdentifier row, ColumnsWithValue values);
+        void Delete(IRowIdentifier row);
         void SqlTypeToDbType(string fullType, out DbType type, out string size);
     }
 }

@@ -385,22 +385,4 @@ namespace DataCloner.DataClasse.Cache
             return Table.GetHashCode();
         }
     }
-
-    internal static class TableDefExtensions
-    {
-        internal static TableSchema GetTable(this IForeignKey fk)
-        {
-            return Cache.Current.DatabasesSchema.GetTable(fk.ServerIdTo, fk.DatabaseTo, fk.SchemaTo, fk.TableTo);
-        }
-
-        internal static TableSchema GetTable(this IDerivativeTable dt)
-        {
-            return Cache.Current.DatabasesSchema.GetTable(dt.ServerId, dt.Database, dt.Schema, dt.Table);
-        }
-
-        internal static TableSchema GetTable(this ITableIdentifier dt)
-        {
-            return Cache.Current.DatabasesSchema.GetTable(dt.ServerId, dt.Database, dt.Schema, dt.Table);
-        }
-    }
 }

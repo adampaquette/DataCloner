@@ -65,8 +65,8 @@ namespace DataCloner.DataAccess
 
         private const string _SQL_ENFORCE_INTEGRITY_CHECK = "SET UNIQUE_CHECKS=@ACTIVE; SET FOREIGN_KEY_CHECKS=@ACTIVE;";
 
-        public QueryHelperMySql(string connectionString, Int16 serverId)
-            : base(ProviderName, connectionString, serverId, _SQL_GET_DATABASES_NAME,
+        public QueryHelperMySql(Cache cache, string connectionString, Int16 serverId)
+            : base(cache, ProviderName, connectionString, serverId, _SQL_GET_DATABASES_NAME,
                    _SQL_GET_COLUMNS, _SQL_GET_FOREIGN_KEY, _SQL_GET_UNIQUE_KEY, _SQL_GET_LAST_INSERTED_PK, 
                    _SQL_ENFORCE_INTEGRITY_CHECK)
         {

@@ -22,7 +22,6 @@ namespace DataCloner.DataClasse.Cache
         public Dictionary<ServerIdentifier, ServerIdentifier> ServerMap { get; set; }
         public List<Connection> ConnectionStrings { get; set; }
         public DatabasesSchema DatabasesSchema { get; set; }
-        public static Cache Current { get; set; }
 
         public Cache()
         {
@@ -118,7 +117,7 @@ namespace DataCloner.DataClasse.Cache
             fsCache.Close();
         }
 
-        public static void InitCache(Configuration.Configuration config, string application, string mapFrom, string mapTo, int? configId)
+        public static Cache InitCache(QueryDispatcher dispatcher, Configuration.Configuration config, string application, string mapFrom, string mapTo, int? configId)
         {
             if (config == null) throw new ArgumentNullException(nameof(config));
             if (String.IsNullOrWhiteSpace(mapFrom)) throw new ArgumentNullException(nameof(mapFrom));
@@ -163,14 +162,15 @@ namespace DataCloner.DataClasse.Cache
             HashAlgorithm murmur = MurmurHash.Create32(managed: false);
             string configHash = Encoding.Default.GetString(murmur.ComputeHash(configData));
 
-            Current = Cache.Load(cacheFileName, configHash);
-            if (Current != null)
-                QueryDispatcher.InitProviders(Current.ConnectionStrings);
+            var cache =  Cache.Load(cacheFileName, configHash);
+            if (cache != null)
+                dispatcher.InitProviders(cache);
             else
-                Current = BuildCache(clonerConfig, cacheFileName, app, map, configHash);
+                cache = BuildCache(dispatcher, clonerConfig, cacheFileName, app, map, configHash);
+            return cache;
         }
 
-        private static Cache BuildCache(ClonerConfiguration clonerConfig, string cacheFileName, Application app, Map map, string configHash)
+        private static Cache BuildCache(QueryDispatcher dispatcher, ClonerConfiguration clonerConfig, string cacheFileName, Application app, Map map, string configHash)
         {
             //Rebuild cache
             Cache cache = new Cache();
@@ -181,12 +181,12 @@ namespace DataCloner.DataClasse.Cache
             foreach (var cs in app.ConnectionStrings)
                 cache.ConnectionStrings.Add(new Connection(cs.Id, cs.ProviderName, cs.ConnectionString));
 
-            QueryDispatcher.InitProviders(cache.ConnectionStrings);
+            dispatcher.InitProviders(cache);
 
             //Start fetching each server
             foreach (var cs in app.ConnectionStrings)
             {
-                IQueryHelper provider = QueryDispatcher.GetQueryHelper(cs.Id);
+                IQueryHelper provider = dispatcher.GetQueryHelper(cs.Id);
 
                 foreach (var database in provider.GetDatabasesName())
                 {
