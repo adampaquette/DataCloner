@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using DataCloner.DataAccess;
 using DataCloner.DataClasse;
@@ -13,45 +14,80 @@ namespace DataCloner.Tests
 {
     public class ClonerTests
     {
+        private readonly Cache _cache;
+        private readonly Cloner _cloner;
+        private readonly IQueryHelper _queryHelper;
+        private readonly IQueryDispatcher _queryDispatcher;
+
         public ClonerTests()
         {
+            _cache = CreateCache();
 
+            _queryHelper = Substitute.For<IQueryHelper>();
+            _queryHelper.Select(NewRi(0, "", "", "customer", new ColumnsWithValue { { "pk", 1 } }))
+                        .Returns(new object[][] {new object[] {1,2,3} });
+
+            _queryDispatcher = Substitute.For<IQueryDispatcher>();
+            _queryDispatcher.GetQueryHelper(0).Returns(_queryHelper);
+
+            _cloner = new Cloner(_queryDispatcher, (a, b, c, d, e, f) => _cache);
+            _cloner.Config = new Configuration();
+        }
+
+        public static IRowIdentifier NewRi(Int16 serverId, string database,
+            string schema, string table, ColumnsWithValue cols)
+        {
+            return new RowIdentifier
+            {
+                ServerId = serverId,
+                Database = database,
+                Schema = schema,
+                Table = table,
+                Columns = cols
+            };
+        }
+
+        [Fact]
+        public void TestFakeObjectsInitializedForCloner()
+        {
+            var row = NewRi(0, "", "", "customer", new ColumnsWithValue {{"id", 1}});
+            var result = _queryDispatcher.Select(row);
+
+            _queryDispatcher.Received();
+            _queryDispatcher.Received().GetQueryHelper(Arg.Any<short>());
+            _queryDispatcher.Received().GetQueryHelper(0);
+
+            _queryHelper.Received().Select(Arg.Any<IRowIdentifier>());
+            _queryHelper.Received().Select(NewRi(0, "", "", "customer", new ColumnsWithValue { { "id", 1 } }));
         }
 
         [Fact]
         public void BasicTest()
         {
-            var cache = new Cache();
-            cache.ServerMap.Add(new ServerIdentifier { ServerId = 1, Database = "bd", Schema = ""},
-                                new ServerIdentifier { ServerId = 1, Database = "bd", Schema = ""});
+            var source = NewRi(0, "", "", "customer", new ColumnsWithValue { { "id", 1 } });
+            _cloner.Clone(null, null, null, null, source, true);
 
-            var queryHelper = Substitute.For<IQueryHelper>();
-            queryHelper.Select(new RowIdentifier{ServerId = 1, Database = "bd", Schema = "", Table = "tbl1",
-                Columns = new ColumnsWithValue { { "pk", 1 } }})
-                .Returns(new[] { new object[] {1,1} });
+            _queryDispatcher.Received();
+            _queryHelper.Received();
+            _queryHelper.Received().Select(Arg.Any<IRowIdentifier>());
+            _queryHelper.Received().Select(NewRi(0, "", "", "customer", new ColumnsWithValue { { "id", 1 } }));
+        }
 
-            var dispatcher = Substitute.For<IQueryDispatcher>();
-            dispatcher.GetQueryHelper(1).Returns(new QueryHelperMySql(cache, null, 1));
-
-            dispatcher.GetQueryHelper(1);
-            dispatcher.Received().GetQueryHelper(1);
-
-            var dc = new Cloner(dispatcher)
+        private static Cache CreateCache()
+        {
+            var customerTable = new TableSchema();
+            customerTable.Name = "customer";
+            customerTable.ColumnsDefinition = new[]
             {
-                Config = null,
-                EnforceIntegrity = false
+                new ColumnDefinition {Name = "pk", IsPrimary = true, Type = DbType.Int32},
+                new ColumnDefinition {Name = "name", Type = DbType.String, Size = "20"}
             };
-            dc.Logger += Console.WriteLine;
 
-            var source = new RowIdentifier();
-            source.Columns.Clear();
-            source.ServerId = 1;
-            source.Database = "sakila";
-            source.Schema = "";
-            source.Table = "customer";
-            source.Columns.Add("customer_id", 1);
-            dc.Clone("TestApp", "testMySQL", "testMySQL", null, source, true);
-
+            var cache = new Cache();
+            cache.ServerMap.Add(new ServerIdentifier { Database = "", Schema = "" },
+                                new ServerIdentifier { Database = "", Schema = "" });
+            cache.DatabasesSchema.Add(0, "", "", customerTable);
+            return cache;
         }
     }
 }

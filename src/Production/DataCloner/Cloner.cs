@@ -7,7 +7,9 @@ using System.Text;
 using DataCloner.DataAccess;
 using DataCloner.DataClasse;
 using DataCloner.DataClasse.Cache;
-using DataCloner.PlugIn;
+using DataCloner.DataClasse.Configuration;
+using Connection = DataCloner.DataClasse.Cache.Connection;
+using DataBuilder = DataCloner.PlugIn.DataBuilder;
 
 namespace DataCloner
 {
@@ -23,11 +25,12 @@ namespace DataCloner
         private const string TempFolderName = "temp";
 
         private Cache _cache;
-        private IQueryDispatcher _dispatcher;
+        private readonly IQueryDispatcher _dispatcher;
+        private readonly Cache.CacheInitialiser _cacheInitialiser;
         private readonly KeyRelationship _keyRelationships;
         private readonly List<CircularKeyJob> _circularKeyJobs;
 
-        public DataClasse.Configuration.Configuration Config { get; set; }
+        public Configuration Config { get; set; }
         public bool SaveToFile { get; set; }
         public string SavePath { get; set; }
         public bool EnforceIntegrity { get; set; }
@@ -39,23 +42,27 @@ namespace DataCloner
             _keyRelationships = new KeyRelationship();
             _circularKeyJobs = new List<CircularKeyJob>();
             _dispatcher = new QueryDispatcher();
+            _cacheInitialiser = Cache.Init;
         }
 
-        internal Cloner(IQueryDispatcher dispatcher)
+        internal Cloner(IQueryDispatcher dispatcher, Cache.CacheInitialiser cacheInit)
         {
+            if (dispatcher == null) throw new ArgumentNullException("dispatcher");
+            if (cacheInit == null) throw new ArgumentNullException("cacheInit");
+
             _keyRelationships = new KeyRelationship();
             _circularKeyJobs = new List<CircularKeyJob>();
-
             _dispatcher = dispatcher;
+            _cacheInitialiser = cacheInit;
         }
 
-        public IRowIdentifier Clone(string application, string mapFrom, string mapTo, int? configId, 
+        public IRowIdentifier Clone(string application, string mapFrom, string mapTo, int? configId,
                                     IRowIdentifier riSource, bool getDerivatives)
         {
             if (Config == null)
                 throw new NullReferenceException("Config");
 
-            _cache = Cache.Init(_dispatcher, Config, application, mapFrom, mapTo, configId);
+            _cache = _cacheInitialiser(_dispatcher, Config, application, mapFrom, mapTo, configId);
             _dispatcher[riSource].EnforceIntegrityCheck(EnforceIntegrity);
             var riReturn = SqlTraveler(riSource, getDerivatives, false, 0, new Stack<IRowIdentifier>());
 

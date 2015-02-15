@@ -54,7 +54,7 @@ namespace DataCloner.DataClasse.Cache
 
         public static Cache Deserialize(BinaryReader stream)
         {
-            var config = new Cache {ConfigFileHash = stream.ReadString()};
+            var config = new Cache { ConfigFileHash = stream.ReadString() };
 
             DeserializeBody(stream, config);
 
@@ -93,7 +93,7 @@ namespace DataCloner.DataClasse.Cache
 
                     if (fileHash == configHash)
                     {
-                        cache = new Cache {ConfigFileHash = fileHash};
+                        cache = new Cache { ConfigFileHash = fileHash };
                         DeserializeBody(brCache, cache);
                     }
                 }
@@ -108,6 +108,9 @@ namespace DataCloner.DataClasse.Cache
             fsCache.Close();
         }
 
+        internal delegate Cache CacheInitialiser(
+            IQueryDispatcher dispatcher, Configuration.Configuration config, string application, 
+            string mapFrom, string mapTo, int? configId);
         public static Cache Init(IQueryDispatcher dispatcher, Configuration.Configuration config, string application, string mapFrom, string mapTo, int? configId)
         {
             if (config == null) throw new ArgumentNullException(nameof(config));
@@ -153,7 +156,7 @@ namespace DataCloner.DataClasse.Cache
             HashAlgorithm murmur = MurmurHash.Create32(managed: false);
             var configHash = Encoding.Default.GetString(murmur.ComputeHash(configData));
 
-            var cache =  Load(cacheFileName, configHash);
+            var cache = Load(cacheFileName, configHash);
             if (cache != null)
                 dispatcher.InitProviders(cache);
             else
@@ -164,7 +167,7 @@ namespace DataCloner.DataClasse.Cache
         private static Cache BuildCache(IQueryDispatcher dispatcher, ClonerConfiguration clonerConfig, string cacheFileName, Application app, Map map, string configHash)
         {
             //Rebuild cache
-            var cache = new Cache {ConfigFileHash = configHash, ServerMap = map};
+            var cache = new Cache { ConfigFileHash = configHash, ServerMap = map };
 
             //Copy connection strings
             foreach (var cs in app.ConnectionStrings)
