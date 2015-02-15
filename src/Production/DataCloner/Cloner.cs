@@ -23,7 +23,7 @@ namespace DataCloner
         private const string TempFolderName = "temp";
 
         private Cache _cache;
-        private QueryDispatcher _dispatcher;
+        private IQueryDispatcher _dispatcher;
         private readonly KeyRelationship _keyRelationships;
         private readonly List<CircularKeyJob> _circularKeyJobs;
 
@@ -38,15 +38,22 @@ namespace DataCloner
         {
             _keyRelationships = new KeyRelationship();
             _circularKeyJobs = new List<CircularKeyJob>();
+            _dispatcher = new QueryDispatcher();
+        }
+
+        internal Cloner(IQueryDispatcher dispatcher)
+        {
+            _keyRelationships = new KeyRelationship();
+            _circularKeyJobs = new List<CircularKeyJob>();
+
+            _dispatcher = dispatcher;
         }
 
         public IRowIdentifier Clone(string application, string mapFrom, string mapTo, int? configId, 
                                     IRowIdentifier riSource, bool getDerivatives)
         {
             if (Config == null)
-                throw new ArgumentNullException("configId");
-
-            _dispatcher = new QueryDispatcher();
+                throw new NullReferenceException("Config");
 
             _cache = Cache.Init(_dispatcher, Config, application, mapFrom, mapTo, configId);
             _dispatcher[riSource].EnforceIntegrityCheck(EnforceIntegrity);

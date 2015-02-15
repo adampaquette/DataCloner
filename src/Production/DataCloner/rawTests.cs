@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using DataCloner.Archive;
 using DataCloner.DataClasse;
 using DataCloner.DataClasse.Cache;

@@ -11,7 +11,7 @@ using Murmur;
 
 namespace DataCloner.DataClasse.Cache
 {
-    internal class Cache
+    internal sealed class Cache
     {
         public string ConfigFileHash { get; set; }
         public Dictionary<ServerIdentifier, ServerIdentifier> ServerMap { get; set; }
@@ -108,7 +108,7 @@ namespace DataCloner.DataClasse.Cache
             fsCache.Close();
         }
 
-        public static Cache Init(QueryDispatcher dispatcher, Configuration.Configuration config, string application, string mapFrom, string mapTo, int? configId)
+        public static Cache Init(IQueryDispatcher dispatcher, Configuration.Configuration config, string application, string mapFrom, string mapTo, int? configId)
         {
             if (config == null) throw new ArgumentNullException(nameof(config));
             if (String.IsNullOrWhiteSpace(mapFrom)) throw new ArgumentNullException(nameof(mapFrom));
@@ -161,7 +161,7 @@ namespace DataCloner.DataClasse.Cache
             return cache;
         }
 
-        private static Cache BuildCache(QueryDispatcher dispatcher, ClonerConfiguration clonerConfig, string cacheFileName, Application app, Map map, string configHash)
+        private static Cache BuildCache(IQueryDispatcher dispatcher, ClonerConfiguration clonerConfig, string cacheFileName, Application app, Map map, string configHash)
         {
             //Rebuild cache
             var cache = new Cache {ConfigFileHash = configHash, ServerMap = map};

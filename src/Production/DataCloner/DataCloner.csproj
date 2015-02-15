@@ -90,6 +90,7 @@
     <Compile Include="Archive\DataArchive.cs" />
     <Compile Include="CrudHelpers.cs" />
     <Compile Include="DataAccess\AbstractQueryHelper.cs" />
+    <Compile Include="DataAccess\IQueryDispatcher.cs" />
     <Compile Include="DataAccess\QueryDispatcherExtensions.cs" />
     <Compile Include="DataAccess\QueryHelperFactory.cs" />
     <Compile Include="DataAccess\QueryHelperMySQL.cs" />

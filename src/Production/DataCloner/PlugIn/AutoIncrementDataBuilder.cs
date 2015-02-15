@@ -20,7 +20,10 @@ namespace DataCloner.PlugIn
         {
             var cmd = conn.CreateCommand();
             cmd.CommandText = String.Format("SELECT MAX({0})+1 FROM {1}.{2}", column.Name, database, table.Name);
-            return cmd.ExecuteScalar();
+            conn.Open();
+            var result = cmd.ExecuteScalar();
+            conn.Close();
+            return result;
         }
     }
 }

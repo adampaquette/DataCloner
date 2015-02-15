@@ -28,7 +28,6 @@ namespace DataCloner.DataAccess
             _cache = cache;
             Connection = factory.CreateConnection();
             Connection.ConnectionString = connectionString;
-            Connection.Open();
 
             _serverIdCtx = serverId;
 
@@ -51,11 +50,13 @@ namespace DataCloner.DataAccess
             using (var cmd = Connection.CreateCommand())
             {
                 cmd.CommandText = _sqlGetDatabasesName;
+                Connection.Open();
                 using (var r = cmd.ExecuteReader())
                 {
                     while (r.Read())
                         databases.Add(r.GetString(0));
                 }
+                Connection.Close();
             }
             return databases.ToArray();
         }
@@ -71,8 +72,10 @@ namespace DataCloner.DataAccess
                 p.Value = database;
                 cmd.Parameters.Add(p);
 
+                Connection.Open();
                 using (var r = cmd.ExecuteReader())
                     reader(r, _serverIdCtx, database, SqlTypeToDbType);
+                Connection.Close();
             }
         }
 
@@ -87,8 +90,10 @@ namespace DataCloner.DataAccess
                 p.Value = database;
                 cmd.Parameters.Add(p);
 
+                Connection.Open();
                 using (var r = cmd.ExecuteReader())
                     reader(r, _serverIdCtx, database);
+                Connection.Close();
             }
         }
 
@@ -103,8 +108,10 @@ namespace DataCloner.DataAccess
                 p.Value = database;
                 cmd.Parameters.Add(p);
 
+                Connection.Open();
                 using (var r = cmd.ExecuteReader())
                     reader(r, _serverIdCtx, database);
+                Connection.Close();
             }
         }
 
@@ -112,7 +119,11 @@ namespace DataCloner.DataAccess
         {
             var cmd = Connection.CreateCommand();
             cmd.CommandText = _sqlGetLastInsertedPk;
-            return cmd.ExecuteScalar();
+
+            Connection.Open();
+            var result = cmd.ExecuteScalar();
+            Connection.Close();
+            return result;
         }
 
         public void EnforceIntegrityCheck(bool active)
@@ -126,7 +137,10 @@ namespace DataCloner.DataAccess
             cmd.Parameters.Add(p);
 
             cmd.CommandText = _sqlEnforceIntegrityCheck;
+
+            Connection.Open();
             cmd.ExecuteNonQuery();
+            Connection.Close();
         }
 
         public object[][] Select(IRowIdentifier row)
@@ -158,6 +172,7 @@ namespace DataCloner.DataAccess
                 cmd.CommandText = query.ToString();
 
                 //Exec query
+                Connection.Open();
                 using (var r = cmd.ExecuteReader())
                 {
                     while (r.Read())
@@ -167,6 +182,7 @@ namespace DataCloner.DataAccess
                         rows.Add(values);
                     }
                 }
+                Connection.Close();
             }
 
             return rows.ToArray();
@@ -193,7 +209,9 @@ namespace DataCloner.DataAccess
                 cmd.CommandText = schema.InsertCommand;
 
                 //Exec query
+                Connection.Open();
                 cmd.ExecuteNonQuery();
+                Connection.Close();
             }
         }
 
@@ -239,7 +257,10 @@ namespace DataCloner.DataAccess
             sql.Remove(sql.Length - 5, 5);
 
             cmd.CommandText = sql.ToString();
+
+            Connection.Open();
             cmd.ExecuteNonQuery();
+            Connection.Close();
         }
 
         public void Delete(IRowIdentifier row)
@@ -267,7 +288,10 @@ namespace DataCloner.DataAccess
             }
 
             cmd.CommandText = sql.ToString();
+
+            Connection.Open();
             cmd.ExecuteNonQuery();
+            Connection.Close();
         }
 
         public void Dispose()
