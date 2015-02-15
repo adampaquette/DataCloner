@@ -24,11 +24,12 @@ namespace DataCloner.Tests
             _cache = CreateCache();
 
             _queryHelper = Substitute.For<IQueryHelper>();
-            _queryHelper.Select(NewRi(0, "", "", "customer", new ColumnsWithValue { { "pk", 1 } }))
-                        .Returns(new object[][] {new object[] {1,2,3} });
+            _queryHelper.Select(NewRi(0, "", "", "customer", new ColumnsWithValue { { "id", 1 } }))
+                        .Returns(new[] { new object[] { 1, 2, 3 } });
 
             _queryDispatcher = Substitute.For<IQueryDispatcher>();
             _queryDispatcher.GetQueryHelper(0).Returns(_queryHelper);
+            _queryDispatcher.GetQueryHelper(Arg.Is<IRowIdentifier>(r => r.ServerId == 0)).Returns(_queryHelper);
 
             _cloner = new Cloner(_queryDispatcher, (a, b, c, d, e, f) => _cache);
             _cloner.Config = new Configuration();
@@ -47,18 +48,41 @@ namespace DataCloner.Tests
             };
         }
 
+
         [Fact]
-        public void TestFakeObjectsInitializedForCloner()
+        public void QueryDispatcherCalledWithRowIdentifierFromExtensionReturnData()
         {
-            var row = NewRi(0, "", "", "customer", new ColumnsWithValue {{"id", 1}});
+            var row = NewRi(0, "", "", "customer", new ColumnsWithValue { { "id", 1 } });
             var result = _queryDispatcher.Select(row);
 
-            _queryDispatcher.Received();
-            _queryDispatcher.Received().GetQueryHelper(Arg.Any<short>());
-            _queryDispatcher.Received().GetQueryHelper(0);
+            _queryDispatcher.Received().GetQueryHelper(row);
+            _queryHelper.Received().Select(row);
 
-            _queryHelper.Received().Select(Arg.Any<IRowIdentifier>());
-            _queryHelper.Received().Select(NewRi(0, "", "", "customer", new ColumnsWithValue { { "id", 1 } }));
+            Assert.Equal(new[] { new object[] { 1, 2, 3 } }, result);
+        }
+
+        [Fact]
+        public void QueryDispatcherCalledWithRowIdentifierReturnData()
+        {
+            var row = NewRi(0, "", "", "customer", new ColumnsWithValue { { "id", 1 } });
+            var result = _queryDispatcher.GetQueryHelper(row).Select(row);
+
+            _queryDispatcher.Received().GetQueryHelper(row);
+            _queryHelper.Received().Select(row);
+
+            Assert.Equal(new[] { new object[] { 1, 2, 3 } }, result);
+        }
+
+        [Fact]
+        public void QueryDispatcherCalledWithIntegerReturnGoodData()
+        {
+            var row = NewRi(0, "", "", "customer", new ColumnsWithValue { { "id", 1 } });
+            var result = _queryDispatcher.GetQueryHelper(0).Select(row);
+
+            _queryDispatcher.Received().GetQueryHelper(row.ServerId);
+            _queryHelper.Received().Select(row);
+
+            Assert.Equal(new[] { new object[] { 1, 2, 3 } }, result);
         }
 
         [Fact]
