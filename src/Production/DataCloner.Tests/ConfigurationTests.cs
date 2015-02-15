@@ -1,44 +1,34 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-
-using DataCloner;
-using DataCloner.DataAccess;
-using DataCloner.DataClasse;
 using DataCloner.DataClasse.Configuration;
 using DataCloner.Framework;
-
-using Class;
 using Xunit;
 
 namespace DataCloner.Tests
 {
     public class ConfigurationTests
     {
-        private Configuration _config;
+        private readonly Configuration _config;
 
         public ConfigurationTests()
         {
             _config = new Configuration();
 
-            var app = new Application();
-            app.Name = "MainApp";
+            var app = new Application {Name = "MainApp"};
             app.ConnectionStrings.Add(new Connection(1, "PROD", "DataCloner.DataAccess.QueryProviderMySql", "server=localhost;user id=root; password=cdxsza; database=mysql; pooling=false"));
             app.ConnectionStrings.Add(new Connection(2, "UNI", "DataCloner.DataAccess.QueryProviderMySql", "server=localhost;user id=root; password=cdxsza; database=mysql; pooling=false"));
 
-            var table1 = new TableModifier()
+            var table1 = new TableModifier
             {
                 Name = "table1",
                 IsStatic = false,
                 DataBuilders = new List<DataBuilder>
                 {
-                    new DataBuilder()
+                    new DataBuilder
                     {
                         BuilderName = "Client.Builder.CreatePK",
                         Name = "col1"
-                    },
+                    }
                 },
                 DerativeTables = new DerativeTable
                 {
@@ -46,7 +36,7 @@ namespace DataCloner.Tests
                     Cascade = true,
                     DerativeSubTables = new List<DerivativeSubTable>
                     {
-                        new DerivativeSubTable()
+                        new DerivativeSubTable
                         {
                             ServerId = 1,
                             Database = "db",
@@ -58,20 +48,20 @@ namespace DataCloner.Tests
                 }
             };
 
-            table1.ForeignKeys.ForeignKeyAdd.Add(new ForeignKeyAdd()
+            table1.ForeignKeys.ForeignKeyAdd.Add(new ForeignKeyAdd
             {
                 ServerId = 1,
                 Database = "db",
                 Schema = "dbo",
                 Table = "table55",
-                Columns = new List<ForeignKeyColumn>()
+                Columns = new List<ForeignKeyColumn>
                 {
-                    new ForeignKeyColumn()
+                    new ForeignKeyColumn
                     {
                         NameFrom = "col1",
                         NameTo = "col1"
                     },
-                    new ForeignKeyColumn()
+                    new ForeignKeyColumn
                     {
                         NameFrom = "col2",
                         NameTo = "col2"
@@ -79,7 +69,7 @@ namespace DataCloner.Tests
                 }
             });
 
-            table1.ForeignKeys.ForeignKeyRemove.Add(new ForeignKeyRemove()
+            table1.ForeignKeys.ForeignKeyRemove.Add(new ForeignKeyRemove
             {
                 Columns = new List<ForeignKeyRemoveColumn>
                 {
@@ -94,27 +84,27 @@ namespace DataCloner.Tests
                 }
             });
 
-            var server1 = new ServerModifier()
+            var server1 = new ServerModifier
             {
                 Id = 1,
-                Databases = new List<DatabaseModifier>()
+                Databases = new List<DatabaseModifier>
                 {
-                    new DatabaseModifier()
+                    new DatabaseModifier
                     {
                         Name = "db",
-                        Schemas = new List<SchemaModifier>()
+                        Schemas = new List<SchemaModifier>
                         {
-                            new SchemaModifier()
+                            new SchemaModifier
                             {
                                 Name = "dbo",
-                                Tables = new List<TableModifier>() { table1 }
+                                Tables = new List<TableModifier> { table1 }
                             }
                         }
                     }
                 }
             };
 
-            var clonerConfig = new ClonerConfiguration()
+            var clonerConfig = new ClonerConfiguration
             {
                 Id = 1,
                 Name = "Basic clone",
@@ -124,20 +114,20 @@ namespace DataCloner.Tests
 
             app.ClonerConfigurations.Add(clonerConfig);
 
-            app.Maps = new List<Map>()
+            app.Maps = new List<Map>
             {
-                new Map()
+                new Map
                 {
                      From = "UNI",
                      To = "FON",
                      UsableConfigs = "1,2",
-                     Variables = new List<Variable>()
+                     Variables = new List<Variable>
                      {
-                         new Variable(){ Name = "", Value=""}
+                         new Variable { Name = "", Value=""}
                      },
-                     Roads = new List<Road>()
+                     Roads = new List<Road>
                      {
-                         new Road()
+                         new Road
                          {
                              ServerSrc = 1, SchemaSrc = "dbo", DatabaseSrc = "myDB",
                              ServerDst = 1, SchemaDst = "dbo", DatabaseDst = "myDB"
@@ -153,7 +143,7 @@ namespace DataCloner.Tests
         [Fact]
         public void SaveLoadConfigFile()
         {
-            string fileName = "dcSaveLoadConfigFile.config";
+            const string fileName = "dcSaveLoadConfigFile.config";
 
             Assert.DoesNotThrow(() =>
             {

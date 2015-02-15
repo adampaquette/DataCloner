@@ -1,18 +1,13 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
-using System.Data;
 using System.IO;
-using System.Text;
-using System.Security.Cryptography;
-
-using DataCloner.DataClasse;
-using DataCloner.DataClasse.Cache;
-using DataCloner.DataClasse.Configuration;
-
-using Murmur;
+using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Security.Cryptography;
+using System.Text;
 using DataCloner.DataAccess;
+using DataCloner.DataClasse.Configuration;
+using Murmur;
 
 namespace DataCloner.DataClasse.Cache
 {
@@ -59,25 +54,24 @@ namespace DataCloner.DataClasse.Cache
 
         public static Cache Deserialize(BinaryReader stream)
         {
-            var config = new Cache();
-            config.ConfigFileHash = stream.ReadString();
+            var config = new Cache {ConfigFileHash = stream.ReadString()};
 
-            Cache.DeserializeBody(stream, config);
+            DeserializeBody(stream, config);
 
             return config;
         }
 
         public static Cache DeserializeBody(BinaryReader stream, Cache config)
         {
-            int nbServerMap = stream.ReadInt32();
-            for (int i = 0; i < nbServerMap; i++)
+            var nbServerMap = stream.ReadInt32();
+            for (var i = 0; i < nbServerMap; i++)
             {
                 var src = ServerIdentifier.Deserialize(stream);
                 var dst = ServerIdentifier.Deserialize(stream);
                 config.ServerMap.Add(src, dst);
             }
-            int nbConnection = stream.ReadInt32();
-            for (int i = 0; i < nbConnection; i++)
+            var nbConnection = stream.ReadInt32();
+            for (var i = 0; i < nbConnection; i++)
                 config.ConnectionStrings.Add(Connection.Deserialize(stream));
 
             config.DatabasesSchema = DatabasesSchema.Deserialize(stream);
@@ -88,7 +82,6 @@ namespace DataCloner.DataClasse.Cache
         public static Cache Load(string cacheFile, string configHash)
         {
             Cache cache = null;
-            bool cacheIsGood = false;
 
             //Check if cached file match with config file version
             if (File.Exists(cacheFile))
@@ -97,13 +90,11 @@ namespace DataCloner.DataClasse.Cache
                 using (var brCache = new BinaryReader(fsCache))
                 {
                     var fileHash = brCache.ReadString();
-                    cacheIsGood = fileHash == configHash;
 
-                    if (cacheIsGood)
+                    if (fileHash == configHash)
                     {
-                        cache = new Cache();
-                        cache.ConfigFileHash = fileHash;
-                        Cache.DeserializeBody(brCache, cache);
+                        cache = new Cache {ConfigFileHash = fileHash};
+                        DeserializeBody(brCache, cache);
                     }
                 }
             }
@@ -113,11 +104,11 @@ namespace DataCloner.DataClasse.Cache
         public void Save(string path)
         {
             var fsCache = new FileStream(path, FileMode.Create);
-            this.Serialize(fsCache);
+            Serialize(fsCache);
             fsCache.Close();
         }
 
-        public static Cache InitCache(QueryDispatcher dispatcher, Configuration.Configuration config, string application, string mapFrom, string mapTo, int? configId)
+        public static Cache Init(QueryDispatcher dispatcher, Configuration.Configuration config, string application, string mapFrom, string mapTo, int? configId)
         {
             if (config == null) throw new ArgumentNullException(nameof(config));
             if (String.IsNullOrWhiteSpace(mapFrom)) throw new ArgumentNullException(nameof(mapFrom));
@@ -125,17 +116,17 @@ namespace DataCloner.DataClasse.Cache
 
             ClonerConfiguration clonerConfig = null;
 
-            string cacheFileName = application + " _" + mapFrom + "-" + mapTo;
+            var cacheFileName = application + " _" + mapFrom + "-" + mapTo;
             if (configId != null)
-                cacheFileName += "_" + configId.ToString();
+                cacheFileName += "_" + configId;
             cacheFileName += ".cache";
 
             //Hash the selected map and the cloner configuration to see if it match the lasted builded cache
-            var app = config?.Applications.Where(a => a.Name == application).FirstOrDefault();
+            var app = config.Applications.FirstOrDefault(a => a.Name == application);
             if (app == null)
                 throw new KeyNotFoundException(String.Format("There is no configuration for the application name '{0}'.", application));
 
-            var map = app.Maps.Where(m => m.From == mapFrom && m.To == mapTo).FirstOrDefault();
+            var map = app.Maps.FirstOrDefault(m => m.From == mapFrom && m.To == mapTo);
             if (map == null)
                 throw new KeyNotFoundException(String.Format(
                     "There is no map where attribute From='{0}' and To='{1}' in the configuration for the application name '{2}'.",
@@ -148,11 +139,11 @@ namespace DataCloner.DataClasse.Cache
 
             if (map.UsableConfigs != null && map.UsableConfigs.Split(',').ToList().Contains(configId.ToString()))
             {
-                clonerConfig = app.ClonerConfigurations.Where(c => c.Id == configId).FirstOrDefault();
+                clonerConfig = app.ClonerConfigurations.FirstOrDefault(c => c.Id == configId);
                 if (clonerConfig == null)
                     throw new KeyNotFoundException(String.Format(
                         "There is no cloner configuration '{0}' in the configuration for the application name '{1}'.",
-                        clonerConfig, application));
+                        configId, application));
 
                 bf.Serialize(configData, clonerConfig);
             }
@@ -160,9 +151,9 @@ namespace DataCloner.DataClasse.Cache
 
             //Hash user config
             HashAlgorithm murmur = MurmurHash.Create32(managed: false);
-            string configHash = Encoding.Default.GetString(murmur.ComputeHash(configData));
+            var configHash = Encoding.Default.GetString(murmur.ComputeHash(configData));
 
-            var cache =  Cache.Load(cacheFileName, configHash);
+            var cache =  Load(cacheFileName, configHash);
             if (cache != null)
                 dispatcher.InitProviders(cache);
             else
@@ -173,9 +164,7 @@ namespace DataCloner.DataClasse.Cache
         private static Cache BuildCache(QueryDispatcher dispatcher, ClonerConfiguration clonerConfig, string cacheFileName, Application app, Map map, string configHash)
         {
             //Rebuild cache
-            Cache cache = new Cache();
-            cache.ConfigFileHash = configHash;
-            cache.ServerMap = map;
+            var cache = new Cache {ConfigFileHash = configHash, ServerMap = map};
 
             //Copy connection strings
             foreach (var cs in app.ConnectionStrings)
@@ -186,7 +175,7 @@ namespace DataCloner.DataClasse.Cache
             //Start fetching each server
             foreach (var cs in app.ConnectionStrings)
             {
-                IQueryHelper provider = dispatcher.GetQueryHelper(cs.Id);
+                var provider = dispatcher.GetQueryHelper(cs.Id);
 
                 foreach (var database in provider.GetDatabasesName())
                 {

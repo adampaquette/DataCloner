@@ -36,11 +36,11 @@ namespace DataCloner.DataClasse.Cache
 
         public static Connection Deserialize(BinaryReader stream)
         {
-            return new Connection()
+            return new Connection
             {
                 Id = stream.ReadInt16(),
                 ProviderName = stream.ReadString(),
-                ConnectionString = stream.ReadString(),
+                ConnectionString = stream.ReadString()
             };
         }
     }

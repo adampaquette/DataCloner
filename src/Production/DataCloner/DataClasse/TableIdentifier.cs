@@ -23,7 +23,7 @@ namespace DataCloner.DataClasse
 
         int IEqualityComparer<ITableIdentifier>.GetHashCode(ITableIdentifier obj)
         {
-            return (obj.ServerId.ToString() + obj.Database + obj.Schema + obj.Table).GetHashCode();
+            return (obj.ServerId + obj.Database + obj.Schema + obj.Table).GetHashCode();
         }
     }
 }

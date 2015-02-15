@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Data;
-
 using DataCloner.DataClasse;
 
 namespace DataCloner.DataAccess

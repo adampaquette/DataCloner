@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-
-using DataCloner.DataAccess;
 
 namespace DataCloner.Framework
 {
     public class StructuralEqualityComparer<T> : IEqualityComparer<T>
     {
-        private static StructuralEqualityComparer<T> defaultComparer;
+        private static StructuralEqualityComparer<T> _defaultComparer;
 
         public bool Equals(T x, T y)
         {
@@ -23,14 +19,7 @@ namespace DataCloner.Framework
 
         public static StructuralEqualityComparer<T> Default
         {
-            get
-            {
-                if (defaultComparer == null)
-                {
-                    defaultComparer = new StructuralEqualityComparer<T>();
-                }
-                return defaultComparer;
-            }
+            get { return _defaultComparer ?? (_defaultComparer = new StructuralEqualityComparer<T>()); }
         }
     }
 }

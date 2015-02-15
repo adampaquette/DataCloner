@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Text;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-using System.Collections.Generic;
 using System.Linq;
-
+using System.Text;
 using DataCloner.DataClasse;
 using DataCloner.DataClasse.Cache;
 
@@ -12,9 +11,7 @@ namespace DataCloner.DataAccess
 {
     internal class AbstractQueryHelper : IQueryHelper
     {
-        private readonly DbProviderFactory _factory;
         private readonly Cache _cache;
-        private readonly IDbConnection _conn;
         private readonly Int16 _serverIdCtx;
         private readonly string _sqlGetDatabasesName;
         private readonly string _sqlGetColumns;
@@ -27,11 +24,11 @@ namespace DataCloner.DataAccess
             string sqlGetDatabasesName, string sqlGetColumns, string sqlGetForeignKeys, string sqlGetUniqueKeys,
             string sqlGetLastInsertedPk, string sqlEnforceIntegrityCheck)
         {
-            _factory = DbProviderFactories.GetFactory(providerName);
+            var factory = DbProviderFactories.GetFactory(providerName);
             _cache = cache;
-            _conn = _factory.CreateConnection();
-            _conn.ConnectionString = connectionString;
-            _conn.Open();
+            Connection = factory.CreateConnection();
+            Connection.ConnectionString = connectionString;
+            Connection.Open();
 
             _serverIdCtx = serverId;
 
@@ -43,21 +40,15 @@ namespace DataCloner.DataAccess
             _sqlEnforceIntegrityCheck = sqlEnforceIntegrityCheck;
         }
 
-        public IDbConnection Connection
-        {
-            get { return _conn; }
-        }
+        public IDbConnection Connection { get; }
 
-        public DbEngine Engine
-        {
-            get { return DbEngine.MySql; }
-        }
+        public DbEngine Engine => DbEngine.MySql;
 
         public string[] GetDatabasesName()
         {
-            List<string> databases = new List<string>();
+            var databases = new List<string>();
 
-            using (var cmd = _conn.CreateCommand())
+            using (var cmd = Connection.CreateCommand())
             {
                 cmd.CommandText = _sqlGetDatabasesName;
                 using (var r = cmd.ExecuteReader())
@@ -71,7 +62,7 @@ namespace DataCloner.DataAccess
 
         public void GetColumns(ColumnReader reader, string database)
         {
-            using (var cmd = _conn.CreateCommand())
+            using (var cmd = Connection.CreateCommand())
             {
                 cmd.CommandText = _sqlGetColumns;
 
@@ -87,7 +78,7 @@ namespace DataCloner.DataAccess
 
         public void GetForeignKeys(ForeignKeyReader reader, string database)
         {
-            using (var cmd = _conn.CreateCommand())
+            using (var cmd = Connection.CreateCommand())
             {
                 cmd.CommandText = _sqlGetForeignKeys;
 
@@ -103,7 +94,7 @@ namespace DataCloner.DataAccess
 
         public void GetUniqueKeys(UniqueKeyReader reader, string database)
         {
-            using (var cmd = _conn.CreateCommand())
+            using (var cmd = Connection.CreateCommand())
             {
                 cmd.CommandText = _sqlGetUniqueKeys;
 
@@ -119,14 +110,14 @@ namespace DataCloner.DataAccess
 
         public object GetLastInsertedPk()
         {
-            var cmd = _conn.CreateCommand();
+            var cmd = Connection.CreateCommand();
             cmd.CommandText = _sqlGetLastInsertedPk;
             return cmd.ExecuteScalar();
         }
 
         public void EnforceIntegrityCheck(bool active)
         {
-            var cmd = _conn.CreateCommand();
+            var cmd = Connection.CreateCommand();
 
             var p = cmd.CreateParameter();
             p.ParameterName = "@ACTIVE";
@@ -140,20 +131,20 @@ namespace DataCloner.DataAccess
 
         public object[][] Select(IRowIdentifier row)
         {
-            List<object[]> rows = new List<object[]>();
-            TableSchema schema = _cache.GetTable(row);
-            StringBuilder query = new StringBuilder(schema.SelectCommand);
-            int nbParams = row.Columns.Count;
+            var rows = new List<object[]>();
+            var schema = _cache.GetTable(row);
+            var query = new StringBuilder(schema.SelectCommand);
+            var nbParams = row.Columns.Count;
 
-            using (var cmd = _conn.CreateCommand())
+            using (var cmd = Connection.CreateCommand())
             {
                 //Build query / params
                 if (nbParams > 0)
                     query.Append(" WHERE ");
 
-                for (int i = 0; i < nbParams; i++)
+                for (var i = 0; i < nbParams; i++)
                 {
-                    string paramName = row.Columns.ElementAt(i).Key;
+                    var paramName = row.Columns.ElementAt(i).Key;
                     query.Append(paramName).Append(" = @").Append(paramName);
 
                     var p = cmd.CreateParameter();
@@ -171,28 +162,26 @@ namespace DataCloner.DataAccess
                 {
                     while (r.Read())
                     {
-                        object[] values = new object[r.FieldCount];
+                        var values = new object[r.FieldCount];
                         r.GetValues(values);
                         rows.Add(values);
                     }
                 }
             }
 
-            if (rows != null)
-                return rows.ToArray();
-            return null;
+            return rows.ToArray();
         }
 
         public void Insert(ITableIdentifier table, object[] row)
         {
-            TableSchema schema = _cache.GetTable(table);
+            var schema = _cache.GetTable(table);
             if (schema.ColumnsDefinition.Count() != row.Length)
                 throw new Exception("The row doesn't correspond to schema!");
 
-            using (var cmd = _conn.CreateCommand())
+            using (var cmd = Connection.CreateCommand())
             {
                 //Add params
-                for (int i = 0; i < schema.ColumnsDefinition.Count(); i++)
+                for (var i = 0; i < schema.ColumnsDefinition.Count(); i++)
                 {
                     if (schema.ColumnsDefinition[i].IsAutoIncrement) continue;
 
@@ -204,16 +193,16 @@ namespace DataCloner.DataAccess
                 cmd.CommandText = schema.InsertCommand;
 
                 //Exec query
-                var r = cmd.ExecuteNonQuery();
+                cmd.ExecuteNonQuery();
             }
         }
 
         public void Update(IRowIdentifier row, ColumnsWithValue values)
         {
-            if (row.Columns.Count() == 0)
+            if (!row.Columns.Any())
                 throw new ArgumentNullException("You must specify at least one column in the row identifier.");
 
-            var cmd = _conn.CreateCommand();
+            var cmd = Connection.CreateCommand();
             var sql = new StringBuilder("UPDATE ");
             sql.Append(row.Database)
                .Append(".")
@@ -255,7 +244,7 @@ namespace DataCloner.DataAccess
 
         public void Delete(IRowIdentifier row)
         {
-            var cmd = _conn.CreateCommand();
+            var cmd = Connection.CreateCommand();
             var sql = new StringBuilder("DELETE FROM ");
             sql.Append(row.Database)
                .Append(".")
@@ -337,9 +326,9 @@ namespace DataCloner.DataAccess
         public virtual void SqlTypeToDbType(string fullType, out DbType type, out string size)
         {
             fullType = fullType.ToLower();
-            int startPosLength = fullType.IndexOf("(");
-            int endPosLength = fullType.IndexOf(")");
-            string[] values = fullType.Split(' ');
+            var startPosLength = fullType.IndexOf("(", StringComparison.Ordinal);
+            var endPosLength = fullType.IndexOf(")", StringComparison.Ordinal);
+            var values = fullType.Split(' ');
             string strType;
             string[] descriptorValues = null;
             //int length;

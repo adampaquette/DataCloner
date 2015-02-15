@@ -1,5 +1,4 @@
 ﻿using System;
-
 using DataCloner.DataClasse.Cache;
 
 namespace DataCloner.DataAccess
@@ -8,11 +7,11 @@ namespace DataCloner.DataAccess
     {
         public const string ProviderName = "MySql.Data.MySqlClient";
 
-        private const string _SQL_GET_DATABASES_NAME =
+        private const string SqlGetDatabasesName =
         "SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA " +
         "WHERE SCHEMA_NAME NOT IN ('information_schema','performance_schema','mysql');";
         
-        private const string _SQL_GET_COLUMNS = 
+        private const string SqlGetColumns = 
         "SELECT " +
             "'' AS SHEMA," +
             "TABLE_NAME," +
@@ -28,7 +27,7 @@ namespace DataCloner.DataAccess
             "TABLE_NAME," +
             "ORDINAL_POSITION;";
 
-        private const string _SQL_GET_FOREIGN_KEY =
+        private const string SqlGetForeignKey =
         "SELECT " +
             "'' AS 'Schema'," +
             "TC.TABLE_NAME," +
@@ -46,7 +45,7 @@ namespace DataCloner.DataAccess
             "TC.TABLE_NAME," +
             "TC.CONSTRAINT_NAME;";
 
-        private const string _SQL_GET_UNIQUE_KEY =
+        private const string SqlGetUniqueKey =
         "SELECT " +
             "'' AS 'Schema'," +
             "TC.TABLE_NAME," +
@@ -61,14 +60,14 @@ namespace DataCloner.DataAccess
             "TC.TABLE_NAME," +
             "TC.CONSTRAINT_NAME;";
 
-        private const string _SQL_GET_LAST_INSERTED_PK = "SELECT LAST_INSERT_ID();";
+        private const string SqlGetLastInsertedPk = "SELECT LAST_INSERT_ID();";
 
-        private const string _SQL_ENFORCE_INTEGRITY_CHECK = "SET UNIQUE_CHECKS=@ACTIVE; SET FOREIGN_KEY_CHECKS=@ACTIVE;";
+        private const string SqlEnforceIntegrityCheck = "SET UNIQUE_CHECKS=@ACTIVE; SET FOREIGN_KEY_CHECKS=@ACTIVE;";
 
         public QueryHelperMySql(Cache cache, string connectionString, Int16 serverId)
-            : base(cache, ProviderName, connectionString, serverId, _SQL_GET_DATABASES_NAME,
-                   _SQL_GET_COLUMNS, _SQL_GET_FOREIGN_KEY, _SQL_GET_UNIQUE_KEY, _SQL_GET_LAST_INSERTED_PK, 
-                   _SQL_ENFORCE_INTEGRITY_CHECK)
+            : base(cache, ProviderName, connectionString, serverId, SqlGetDatabasesName,
+                   SqlGetColumns, SqlGetForeignKey, SqlGetUniqueKey, SqlGetLastInsertedPk, 
+                   SqlEnforceIntegrityCheck)
         {
 
         }      

@@ -4,29 +4,30 @@ using System.Data.SQLite;
 using System.IO;
 using System.Linq;
 using System.Text;
-
 using DataCloner.DataAccess;
+using DataCloner.DataClasse;
 using DataCloner.DataClasse.Cache;
+using DataCloner.PlugIn;
 
-namespace DataCloner.DataClasse
+namespace DataCloner
 {
     internal class CircularKeyJob
     {
-        public IRowIdentifier sourceBaseRowStartPoint { get; set; }
-        public IRowIdentifier sourceFKRowStartPoint { get; set; }
-        public IForeignKey foreignKey { get; set; }
+        public IRowIdentifier SourceBaseRowStartPoint { get; set; }
+        public IRowIdentifier SourceFkRowStartPoint { get; set; }
+        public IForeignKey ForeignKey { get; set; }
     }
 
     public class Cloner
     {
-        private const string TEMP_FOLDER_NAME = "temp";
+        private const string TempFolderName = "temp";
 
-        private Cache.Cache _cache;
+        private Cache _cache;
         private QueryDispatcher _dispatcher;
-        private KeyRelationship _keyRelationships;
-        private List<CircularKeyJob> _circularKeyJobs;
+        private readonly KeyRelationship _keyRelationships;
+        private readonly List<CircularKeyJob> _circularKeyJobs;
 
-        public Configuration.Configuration Config { get; set; }
+        public DataClasse.Configuration.Configuration Config { get; set; }
         public bool SaveToFile { get; set; }
         public string SavePath { get; set; }
         public bool EnforceIntegrity { get; set; }
@@ -43,12 +44,12 @@ namespace DataCloner.DataClasse
                                     IRowIdentifier riSource, bool getDerivatives)
         {
             if (Config == null)
-                throw new ArgumentNullException("Config");
+                throw new ArgumentNullException("configId");
 
             _dispatcher = new QueryDispatcher();
 
-            _cache = Cache.Cache.InitCache(_dispatcher, Config, application, mapFrom, mapTo, configId);
-            _dispatcher.GetQueryHelper(riSource).EnforceIntegrityCheck(EnforceIntegrity);
+            _cache = Cache.Init(_dispatcher, Config, application, mapFrom, mapTo, configId);
+            _dispatcher[riSource].EnforceIntegrityCheck(EnforceIntegrity);
             var riReturn = SqlTraveler(riSource, getDerivatives, false, 0, new Stack<IRowIdentifier>());
 
             UpdateCircularReferences();
@@ -59,25 +60,24 @@ namespace DataCloner.DataClasse
         private IRowIdentifier SqlTraveler(IRowIdentifier riSource, bool getDerivatives, bool shouldReturnFk, int level, Stack<IRowIdentifier> rowsGenerating)
         {
             //var srcRows = riSource.Select();
-            var srcRows = _dispatcher.GetQueryHelper(riSource).Select(riSource);
-            int nbRows = srcRows.Length;
+            var srcRows = _dispatcher.Select(riSource);
+            var nbRows = srcRows.Length;
             var table = _cache.GetTable(riSource);
-            var fks = table.ForeignKeys;
-            var autoIncrementPK = table.ColumnsDefinition.Where(c => c.IsAutoIncrement && c.IsPrimary).Any();
+            var autoIncrementPk = table.ColumnsDefinition.Any(c => c.IsAutoIncrement && c.IsPrimary);
             var serverDst = _cache.ServerMap[new ServerIdentifier
             {
                 ServerId = riSource.ServerId,
                 Database = riSource.Database,
                 Schema = riSource.Schema
             }];
-            var riReturn = new RowIdentifier()
+            var riReturn = new RowIdentifier
             {
                 ServerId = serverDst.ServerId,
                 Database = serverDst.Database,
                 Schema = serverDst.Schema,
                 Table = riSource.Table
             };
-            var tiDestination = new TableIdentifier()
+            var tiDestination = new TableIdentifier
             {
                 ServerId = serverDst.ServerId,
                 Database = serverDst.Database,
@@ -85,6 +85,144 @@ namespace DataCloner.DataClasse
                 Table = riSource.Table
             };
 
+            LogRow(riSource, level);
+
+            if (shouldReturnFk && nbRows > 1)
+                throw new Exception("The foreignkey is not unique!");
+
+            //For each row
+            for (var i = 0; i < nbRows; i++)
+            {
+                var currentRow = srcRows[i];
+                var srcKey = table.BuildRawPkFromDataRow(currentRow);
+
+                //Si ligne déjà enregistrée
+                var dstKey = _keyRelationships.GetKey(serverDst.ServerId, serverDst.Database, serverDst.Schema, riSource.Table, srcKey);
+                if (dstKey != null)
+                {
+                    if (shouldReturnFk)
+                    {
+                        //Construit la pk de retour
+                        riReturn.Columns = table.BuildPkFromRawKey(dstKey);
+                        return riReturn;
+                    }
+                    continue;
+                }
+                var destinationRow = (object[])currentRow.Clone();
+                foreach (var fk in table.ForeignKeys)
+                {
+                    //On skip si la FK est null
+                    var fkValue = table.BuildRawFkFromDataRow(fk, currentRow);
+                    if (fkValue.Contains(DBNull.Value))
+                        continue;
+
+                    //Si le foreignkey est déjà dans la table de destination, on l'utilise
+                    var fkDst = _keyRelationships.GetKey(fk.ServerIdTo, fk.DatabaseTo, fk.SchemaTo, fk.TableTo, fkValue);
+                    if (fkDst != null)
+                        table.SetFkInDatarow(fk, fkDst, destinationRow);
+                    else
+                    {
+                        var fkDestinationExists = false;
+                        var fkTable = _cache.GetTable(fk);
+                        var riFk = new RowIdentifier
+                        {
+                            ServerId = fk.ServerIdTo,
+                            Database = fk.DatabaseTo,
+                            Schema = fk.SchemaTo,
+                            Table = fk.TableTo,
+                            Columns = table.BuildKeyFromDerivativeDataRow(fk, currentRow)
+                        };
+
+                        //On ne copie pas la ligne si la table est statique
+                        if (fkTable.IsStatic)
+                        {
+                            //var fkRow = riFK.Select();
+                            var fkRow = _dispatcher.Select(riFk);
+                            fkDestinationExists = fkRow.Length == 1;
+
+                            //Si la ligne existe déjà, on l'utilise
+                            if (fkRow.Length > 1)
+                                throw new Exception("The FK is not unique.");
+                            if (fkDestinationExists)
+                            {
+                                //Sauve la clef
+                                var colFkObj = fkTable.BuildRawPkFromDataRow(fkRow[0]);
+                                _keyRelationships.SetKey(fk.ServerIdTo, fk.DatabaseTo, fk.SchemaTo, fk.TableTo, colFkObj, colFkObj);
+                            }
+                        }
+
+                        //La FK n'existe pas, on la crer
+                        if (!fkDestinationExists)
+                        {
+                            //Si référence circulaire
+                            if (rowsGenerating.Contains(riFk))
+                            {
+                                //Affecte la FK à 1 pour les contraintes NOT NULL. EnforceIntegrity doit être désactivé.
+                                var nullFk = Enumerable.Repeat<object>(1, fk.Columns.Length).ToArray();
+                                table.SetFkInDatarow(fk, nullFk, destinationRow);
+
+                                //On ajoute une tâche pour réassigner la FK "correctement", une fois que toute la chaîne aura été enregistrée.
+                                _circularKeyJobs.Add(new CircularKeyJob
+                                {
+                                    SourceBaseRowStartPoint = new RowIdentifier
+                                    {
+                                        ServerId = riSource.ServerId,
+                                        Database = riSource.Database,
+                                        Schema = riSource.Schema,
+                                        Table = riSource.Table,
+                                        Columns = table.BuildPkFromDataRow(currentRow)
+                                    },
+                                    SourceFkRowStartPoint = riFk,
+                                    ForeignKey = fk
+                                });
+                            }
+                            else
+                            {
+                                //Crer la ligne et ses dépendances
+                                rowsGenerating.Push(riFk);
+                                var riNewFk = SqlTraveler(riFk, false, true, level + 1, rowsGenerating);
+                                rowsGenerating.Pop();
+
+                                //La FK (ou unique constraint) n'est pas necessairement la PK donc on réobtient la ligne car
+                                //SqlTraveler retourne toujours la PK.
+                                var newFkRow = _dispatcher.Select(riNewFk);
+
+                                //Affecte la clef
+                                table.SetFkFromDatarowInDatarow(fkTable, fk, newFkRow, destinationRow);
+                            }
+                        }
+                    }
+                }
+
+                //Générer les colonnes qui ont été marquées dans la configuration dataBuilder 
+                DataBuilder.BuildDataFromTable(_dispatcher.GetQueryHelper(tiDestination), tiDestination.Database, table, destinationRow);
+
+                //La ligne de destination est prète à l'enregistrement
+                //tiDestination.Insert(destinationRow);
+                _dispatcher.Insert(tiDestination, destinationRow);
+
+                //Sauve la PK dans la cache
+                dstKey = autoIncrementPk ? new[] { _dispatcher[serverDst.ServerId].GetLastInsertedPk() } : table.BuildRawPkFromDataRow(destinationRow);
+                _keyRelationships.SetKey(riSource.ServerId, riSource.Database, riSource.Schema, riSource.Table, srcKey, dstKey);
+
+                //Ajouter les colonnes de contrainte unique dans _keyRelationships
+                //...
+
+                //On affecte la valeur de retour
+                if (shouldReturnFk)
+                {
+                    riReturn.Columns = table.BuildPkFromRawKey(dstKey);
+                }
+
+                //On clone les lignes des tables dépendantes
+                GetDerivatives(table, currentRow, getDerivatives, level);
+            }
+
+            return riReturn;
+        }
+
+        private void LogRow(IRowIdentifier riSource, int level)
+        {
             if (Logger != null)
             {
                 var sb = new StringBuilder(new string(' ', 3 * level));
@@ -95,197 +233,51 @@ namespace DataCloner.DataClasse
                 sb.Append(")");
                 Logger(sb.ToString());
             }
-
-            if (shouldReturnFk && nbRows > 1)
-                throw new Exception("The foreignkey is not unique!");
-
-            //For each row
-            for (int i = 0; i < nbRows; i++)
-            {
-                var currentRow = srcRows[i];
-                var srcKey = table.BuildRawPKFromDataRow(currentRow);
-                object[] dstKey;
-
-                //Si ligne déjà enregistrée
-                dstKey = _keyRelationships.GetKey(serverDst.ServerId, serverDst.Database, serverDst.Schema, riSource.Table, srcKey);
-                if (dstKey != null)
-                {
-                    if (shouldReturnFk)
-                    {
-                        //Construit la pk de retour
-                        riReturn.Columns = table.BuildPKFromRawKey(dstKey);
-                        return riReturn;
-                    }
-                    else
-                        continue;
-                }
-                else
-                {
-                    var destinationRow = (object[])currentRow.Clone();
-                    foreach (var fk in table.ForeignKeys)
-                    {
-                        //On skip si la FK est null
-                        var fkValue = table.BuildRawFKFromDataRow(fk, currentRow);
-                        if (fkValue.Contains(DBNull.Value))
-                            continue;
-
-                        //Si le foreignkey est déjà dans la table de destination, on l'utilise
-                        var fkDst = _keyRelationships.GetKey(fk.ServerIdTo, fk.DatabaseTo, fk.SchemaTo, fk.TableTo, fkValue);
-                        if (fkDst != null)
-                            table.SetFKInDatarow(fk, fkDst, destinationRow);
-                        else
-                        {
-                            var fkDestinationExists = false;
-                            var fkTable = _cache.GetTable(fk);
-                            var riFK = new RowIdentifier()
-                            {
-                                ServerId = fk.ServerIdTo,
-                                Database = fk.DatabaseTo,
-                                Schema = fk.SchemaTo,
-                                Table = fk.TableTo,
-                                Columns = table.BuildKeyFromDerivativeDataRow(fk, currentRow)
-                            };
-
-                            //On ne copie pas la ligne si la table est statique
-                            if (fkTable.IsStatic)
-                            {
-                                //var fkRow = riFK.Select();
-                                var fkRow = _dispatcher.Select(riFK);
-                                fkDestinationExists = fkRow.Length == 1;
-
-                                //Si la ligne existe déjà, on l'utilise
-                                if (fkRow.Length > 1)
-                                    throw new Exception("The FK is not unique.");
-                                else if (fkDestinationExists)
-                                {
-                                    //Sauve la clef
-                                    var colFkObj = fkTable.BuildRawPKFromDataRow(fkRow[0]);
-                                    _keyRelationships.SetKey(fk.ServerIdTo, fk.DatabaseTo, fk.SchemaTo, fk.TableTo, colFkObj, colFkObj);
-                                }
-                            }
-
-                            //La FK n'existe pas, on la crer
-                            if (!fkDestinationExists)
-                            {
-                                //Si référence circulaire
-                                if (rowsGenerating.Contains(riFK))
-                                {
-                                    //Affecte la FK à 1 pour les contraintes NOT NULL. EnforceIntegrity doit être désactivé.
-                                    var nullFK = Enumerable.Repeat<object>(1, fk.Columns.Length).ToArray();
-                                    table.SetFKInDatarow(fk, nullFK, destinationRow);
-
-                                    //On ajoute une tâche pour réassigner la FK "correctement", une fois que toute la chaîne aura été enregistrée.
-                                    _circularKeyJobs.Add(new CircularKeyJob()
-                                    {
-                                        sourceBaseRowStartPoint = new RowIdentifier
-                                        {
-                                            ServerId = riSource.ServerId,
-                                            Database = riSource.Database,
-                                            Schema = riSource.Schema,
-                                            Table = riSource.Table,
-                                            Columns = table.BuildPKFromDataRow(currentRow)
-                                        },
-                                        sourceFKRowStartPoint = riFK,
-                                        foreignKey = fk
-                                    });
-                                }
-                                else
-                                {
-                                    //Crer la ligne et ses dépendances
-                                    rowsGenerating.Push(riFK);
-                                    var riNewFK = SqlTraveler(riFK, false, true, level + 1, rowsGenerating);
-                                    rowsGenerating.Pop();
-
-                                    //La FK (ou unique constraint) n'est pas necessairement la PK donc on réobtient la ligne car
-                                    //SqlTraveler retourne toujours une la PK.
-                                    var newFKRow = _dispatcher.Select(riNewFK);
-
-                                    //Affecte la clef
-                                    table.SetFKFromDatarowInDatarow(fkTable, fk, newFKRow, destinationRow);
-                                }
-                            }
-                        }
-                    }
-
-                    //Générer les colonnes qui ont été marquées dans la configuration dataBuilder 
-                    PlugIn.DataBuilder.BuildDataFromTable(_dispatcher.GetQueryHelper(tiDestination), tiDestination.Database, table, destinationRow);
-
-                    //La ligne de destination est prète à l'enregistrement
-                    //tiDestination.Insert(destinationRow);
-                    _dispatcher.Insert(tiDestination, destinationRow);
-
-                    //Sauve la PK dans la cache
-                    if (autoIncrementPK)
-                        dstKey = new object[] { _dispatcher.GetQueryHelper(serverDst.ServerId).GetLastInsertedPk() };
-                    else
-                        dstKey = table.BuildRawPKFromDataRow(destinationRow);
-                    _keyRelationships.SetKey(riSource.ServerId, riSource.Database, riSource.Schema, riSource.Table, srcKey, dstKey);
-
-                    //Ajouter les colonnes de contrainte unique dans _keyRelationships
-                    //...
-
-                    //On affecte la valeur de retour
-                    if (shouldReturnFk)
-                    {
-                        riReturn.Columns = table.BuildPKFromRawKey(dstKey);
-                    }
-
-                    //On clone les lignes des tables dépendantes
-                    GetDerivatives(table, currentRow, getDerivatives, level);
-                }
-            }
-
-            return riReturn;
         }
 
         private void GetDerivatives(TableSchema table, object[] sourceRow, bool getDerivatives, int level)
         {
-            IEnumerable<IDerivativeTable> derivativeTable;
-
-            if (getDerivatives)
-                derivativeTable = table.DerivativeTables;
-            else
-                derivativeTable = table.DerivativeTables.Where(t => t.Access == DerivativeTableAccess.Forced);
+            var derivativeTable = getDerivatives ? table.DerivativeTables : table.DerivativeTables.Where(t => t.Access == DerivativeTableAccess.Forced);
 
             foreach (var dt in derivativeTable)
             {
-                var cachedDT = _cache.GetTable(dt);
+                var cachedDt = _cache.GetTable(dt);
                 if (dt.Access == DerivativeTableAccess.Forced && dt.Cascade)
                     getDerivatives = true;
 
-                var riDT = new RowIdentifier
+                var riDt = new RowIdentifier
                 {
                     ServerId = dt.ServerId,
                     Database = dt.Database,
                     Schema = dt.Schema,
                     Table = dt.Table,
-                    Columns = table.BuildDerivativePK(cachedDT, sourceRow)
+                    Columns = table.BuildDerivativePk(cachedDt, sourceRow)
                 };
 
-                SqlTraveler(riDT, getDerivatives, false, level + 1, new Stack<IRowIdentifier>());
+                SqlTraveler(riDt, getDerivatives, false, level + 1, new Stack<IRowIdentifier>());
             }
         }
 
         private void CreateDatabasesFiles()
         {
-            string folderPath = Path.Combine(Path.GetDirectoryName(SavePath), TEMP_FOLDER_NAME);
-            int nbFileToCreate = _cache.ServerMap.Select(r => r.Value.ServerId).Distinct().Count();
+            var folderPath = Path.Combine(Path.GetDirectoryName(SavePath), TempFolderName);
+            var nbFileToCreate = _cache.ServerMap.Select(r => r.Value.ServerId).Distinct().Count();
             int lastIdUsed = _cache.ConnectionStrings.Max(cs => cs.Id);
 
             if (!Directory.Exists(folderPath))
                 Directory.CreateDirectory(folderPath);
 
-            for (int i = 0; i < nbFileToCreate; i++)
+            for (var i = 0; i < nbFileToCreate; i++)
             {
-                int id = lastIdUsed + i + 1;
-                string fileName = id.ToString() + ".sqlite";
-                string fullFilePath = Path.Combine(folderPath, fileName);
+                var id = lastIdUsed + i + 1;
+                var fileName = id + ".sqlite";
+                var fullFilePath = Path.Combine(folderPath, fileName);
 
                 //Crer le fichier
                 SQLiteConnection.CreateFile(fullFilePath);
 
                 //Crer la string de connection
-                _cache.ConnectionStrings.Add(new Cache.Connection
+                _cache.ConnectionStrings.Add(new Connection
                 {
                     Id = (short)id,
                     ConnectionString = String.Format("Data Source={0};Version=3;", fullFilePath),
@@ -300,33 +292,33 @@ namespace DataCloner.DataClasse
         {
             foreach (var job in _circularKeyJobs)
             {
-                TableSchema baseTable = _cache.GetTable(job.sourceBaseRowStartPoint);
-                TableSchema fkTable = _cache.GetTable(job.sourceFKRowStartPoint);
-                object[] pkDestinationRow = _keyRelationships.GetKey(job.sourceBaseRowStartPoint);
-                object[] keyDestinationFKRow = _keyRelationships.GetKey(job.sourceFKRowStartPoint);
+                var baseTable = _cache.GetTable(job.SourceBaseRowStartPoint);
+                var fkTable = _cache.GetTable(job.SourceFkRowStartPoint);
+                var pkDestinationRow = _keyRelationships.GetKey(job.SourceBaseRowStartPoint);
+                var keyDestinationFkRow = _keyRelationships.GetKey(job.SourceFkRowStartPoint);
 
                 var serverDstBaseTable = _cache.ServerMap[new ServerIdentifier
                 {
-                    ServerId = job.sourceBaseRowStartPoint.ServerId,
-                    Database = job.sourceBaseRowStartPoint.Database,
-                    Schema = job.sourceBaseRowStartPoint.Schema
+                    ServerId = job.SourceBaseRowStartPoint.ServerId,
+                    Database = job.SourceBaseRowStartPoint.Database,
+                    Schema = job.SourceBaseRowStartPoint.Schema
                 }];
 
-                var serverDstFKTable = _cache.ServerMap[new ServerIdentifier
+                var serverDstFkTable = _cache.ServerMap[new ServerIdentifier
                 {
-                    ServerId = job.sourceFKRowStartPoint.ServerId,
-                    Database = job.sourceFKRowStartPoint.Database,
-                    Schema = job.sourceFKRowStartPoint.Schema
+                    ServerId = job.SourceFkRowStartPoint.ServerId,
+                    Database = job.SourceFkRowStartPoint.Database,
+                    Schema = job.SourceFkRowStartPoint.Schema
                 }];
 
-                if (job.foreignKey.Columns.Length != keyDestinationFKRow.Length)
+                if (job.ForeignKey.Columns.Length != keyDestinationFkRow.Length)
                     throw new Exception("The foreign key defenition is not matching with the values.");
 
                 var fk = new ColumnsWithValue();
-                for (int i = 0; i < job.foreignKey.Columns.Length; i++)
+                for (var i = 0; i < job.ForeignKey.Columns.Length; i++)
                 {
-                    var colName = job.foreignKey.Columns[i].NameTo;
-                    var value = keyDestinationFKRow[i];
+                    var colName = job.ForeignKey.Columns[i].NameTo;
+                    var value = keyDestinationFkRow[i];
 
                     fk.Add(colName, value);
                 }
@@ -336,23 +328,23 @@ namespace DataCloner.DataClasse
                     ServerId = serverDstBaseTable.ServerId,
                     Database = serverDstBaseTable.Database,
                     Schema = serverDstBaseTable.Schema,
-                    Table = job.sourceBaseRowStartPoint.Table,
-                    Columns = baseTable.BuildPKFromRawKey(pkDestinationRow)
+                    Table = job.SourceBaseRowStartPoint.Table,
+                    Columns = baseTable.BuildPkFromRawKey(pkDestinationRow)
                 };
 
-                var riFKDestination = new RowIdentifier
+                var riFkDestination = new RowIdentifier
                 {
-                    ServerId = serverDstFKTable.ServerId,
-                    Database = serverDstFKTable.Database,
-                    Schema = serverDstFKTable.Schema,
-                    Table = job.sourceFKRowStartPoint.Table,
+                    ServerId = serverDstFkTable.ServerId,
+                    Database = serverDstFkTable.Database,
+                    Schema = serverDstFkTable.Schema,
+                    Table = job.SourceFkRowStartPoint.Table,
                     Columns = fk
                 };
 
-                var fkDestinationDataRow = _dispatcher.Select(riFKDestination);
-                var modifiedFk = fkTable.BuildKeyFromFkDataRow(job.foreignKey, fkDestinationDataRow[0]);
+                var fkDestinationDataRow = _dispatcher.Select(riFkDestination);
+                var modifiedFk = fkTable.BuildKeyFromFkDataRow(job.ForeignKey, fkDestinationDataRow[0]);
 
-                _dispatcher.GetQueryHelper(serverDstBaseTable.ServerId).Update(riBaseDestination, modifiedFk);
+                _dispatcher[serverDstBaseTable.ServerId].Update(riBaseDestination, modifiedFk);
             }
             _circularKeyJobs.Clear();
         }

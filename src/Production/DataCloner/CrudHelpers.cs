@@ -1,7 +1,4 @@
-﻿using DataCloner.DataAccess;
-using DataCloner.DataClasse;
-
-namespace DataCloner
+﻿namespace DataCloner
 {
     //internal static class CrudHelpers
     //{

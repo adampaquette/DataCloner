@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Data;
 using System.IO;
-
+using System.Linq;
 using DataCloner.Framework;
-using DataCloner.DataAccess;
 
 namespace DataCloner.DataClasse.Cache
 {
@@ -22,18 +20,18 @@ namespace DataCloner.DataClasse.Cache
 
         public TableSchema()
         {
-            DerivativeTables = new DerivativeTable[] { };
-            ForeignKeys = new ForeignKey[] { };
-            UniqueKeys = new UniqueKey[] { };
-            ColumnsDefinition = new ColumnDefinition[] { };
+            DerivativeTables = new IDerivativeTable[] { };
+            ForeignKeys = new IForeignKey[] { };
+            UniqueKeys = new IUniqueKey[] { };
+            ColumnsDefinition = new IColumnDefinition[] { };
         }
 
-        public object[] BuildRawFKFromDataRow(IForeignKey fk, object[] row)
+        public object[] BuildRawFkFromDataRow(IForeignKey fk, object[] row)
         {
             var pk = new List<object>();
-            for (int j = 0; j < fk.Columns.Length; j++)
+            for (var j = 0; j < fk.Columns.Length; j++)
             {
-                int posTblSource = ColumnsDefinition.IndexOf(c => c.Name == fk.Columns[j].NameFrom);
+                var posTblSource = ColumnsDefinition.IndexOf(c => c.Name == fk.Columns[j].NameFrom);
                 pk.Add(row[posTblSource]);
             }
             return pk.ToArray();
@@ -42,9 +40,9 @@ namespace DataCloner.DataClasse.Cache
         public ColumnsWithValue BuildKeyFromDerivativeDataRow(IForeignKey fk, object[] row)
         {
             var fkValues = new ColumnsWithValue();
-            for (int j = 0; j < fk.Columns.Length; j++)
+            for (var j = 0; j < fk.Columns.Length; j++)
             {
-                int posTblSource = ColumnsDefinition.IndexOf(c => c.Name == fk.Columns[j].NameFrom);
+                var posTblSource = ColumnsDefinition.IndexOf(c => c.Name == fk.Columns[j].NameFrom);
                 fkValues.Add(fk.Columns[j].NameTo, row[posTblSource]);
             }
             return fkValues;
@@ -61,10 +59,10 @@ namespace DataCloner.DataClasse.Cache
             return fkValues;
         }
 
-        public object[] BuildRawPKFromDataRow(object[] row)
+        public object[] BuildRawPkFromDataRow(object[] row)
         {
             var pk = new List<object>();
-            for (int i = 0; i < ColumnsDefinition.Length; i++)
+            for (var i = 0; i < ColumnsDefinition.Length; i++)
             {
                 if (ColumnsDefinition[i].IsPrimary)
                     pk.Add(row[i]);
@@ -72,10 +70,10 @@ namespace DataCloner.DataClasse.Cache
             return pk.ToArray();
         }
 
-        public ColumnsWithValue BuildPKFromDataRow(object[] row)
+        public ColumnsWithValue BuildPkFromDataRow(object[] row)
         {
             var pk = new ColumnsWithValue();
-            for (int i = 0; i < ColumnsDefinition.Length; i++)
+            for (var i = 0; i < ColumnsDefinition.Length; i++)
             {
                 if (ColumnsDefinition[i].IsPrimary)
                     pk.Add(ColumnsDefinition[i].Name, row[i]);
@@ -83,7 +81,7 @@ namespace DataCloner.DataClasse.Cache
             return pk;
         }
 
-        public ColumnsWithValue BuildPKFromRawKey(object[] key)
+        public ColumnsWithValue BuildPkFromRawKey(object[] key)
         {
             var pkColumns = ColumnsDefinition.Where(c => c.IsPrimary).ToArray();
 
@@ -91,7 +89,7 @@ namespace DataCloner.DataClasse.Cache
                 throw new Exception("The key doesn't correspond to table defenition.");
 
             var pk = new ColumnsWithValue();
-            for (int i = 0; i < pkColumns.Count(); i++)
+            for (var i = 0; i < pkColumns.Count(); i++)
                 pk.Add(pkColumns[i].Name, key[i]);
             return pk;
         }
@@ -99,11 +97,11 @@ namespace DataCloner.DataClasse.Cache
         /// <summary>
         /// //On trouve la position de chaque colonne pour affecter la valeur de destination.
         /// </summary>
-        public void SetFKInDatarow(IForeignKey fkDefinition, object[] fkData, object[] destinationRow)
+        public void SetFkInDatarow(IForeignKey fkDefinition, object[] fkData, object[] destinationRow)
         {
-            for (int j = 0; j < fkDefinition.Columns.Length; j++)
+            for (var j = 0; j < fkDefinition.Columns.Length; j++)
             {
-                for (int k = 0; k < ColumnsDefinition.Length; k++)
+                for (var k = 0; k < ColumnsDefinition.Length; k++)
                 {
                     if (fkDefinition.Columns[j].NameFrom == ColumnsDefinition[k].Name)
                         destinationRow[k] = fkData[j];
@@ -111,77 +109,75 @@ namespace DataCloner.DataClasse.Cache
             }
         }
 
-        public void SetFKFromDatarowInDatarow(TableSchema fkTable, IForeignKey fk, object[][] sourceRow, object[] destinationRow)
+        public void SetFkFromDatarowInDatarow(TableSchema fkTable, IForeignKey fk, object[][] sourceRow, object[] destinationRow)
         {
-            for (int j = 0; j < fk.Columns.Length; j++)
+            foreach (var col in fk.Columns)
             {
-                int posTblSourceFK = ColumnsDefinition.IndexOf(c => c.Name == fk.Columns[j].NameFrom);
-                int posTblDestinationPK = fkTable.ColumnsDefinition.IndexOf(c => c.Name == fk.Columns[j].NameTo);
+                int posTblSourceFk = ColumnsDefinition.IndexOf(c => c.Name == col.NameFrom);
+                int posTblDestinationPk = fkTable.ColumnsDefinition.IndexOf(c => c.Name == col.NameTo);
 
-                destinationRow[posTblSourceFK] = sourceRow[0][posTblDestinationPK];
+                destinationRow[posTblSourceFk] = sourceRow[0][posTblDestinationPk];
             }
         }
 
-        public void SetPKFromKey(ref object[] row, object[] key)
+        public void SetPkFromKey(ref object[] row, object[] key)
         {
-            var nbPKColumns = ColumnsDefinition.Where(c => c.IsPrimary).Count();
+            var nbPkColumns = ColumnsDefinition.Count(c => c.IsPrimary);
             var nbCols = ColumnsDefinition.Count();
 
-            if (key.Length != nbPKColumns)
+            if (key.Length != nbPkColumns)
                 throw new Exception("The key doesn't correspond to table defenition.");
             if (row.Length != nbCols)
                 throw new Exception("The row doesn't correspond to table defenition.");
 
             var pkIndex = 0;
-            for (int i = 0; i < nbCols; i++)
+            for (var i = 0; i < nbCols; i++)
             {
                 if (ColumnsDefinition[i].IsPrimary)
                 {
                     row[i] = key[pkIndex];
                     pkIndex++;
-                    if (pkIndex == nbPKColumns)
+                    if (pkIndex == nbPkColumns)
                         break;
                 }
             }
         }
 
-        public  ColumnsWithValue BuildDerivativePK(ITableSchema derivativeTable, object[] sourceRow)
+        public  ColumnsWithValue BuildDerivativePk(ITableSchema derivativeTable, object[] sourceRow)
         {
-            var colPKSrc = new ColumnsWithValue();
-            var colPKDst = new ColumnsWithValue();
+            var colPkSrc = new ColumnsWithValue();
+            var colPkDst = new ColumnsWithValue();
 
-            for (int j = 0; j < ColumnsDefinition.Length; j++)
+            for (var j = 0; j < ColumnsDefinition.Length; j++)
             {
                 if (ColumnsDefinition[j].IsPrimary)
-                    colPKSrc.Add(ColumnsDefinition[j].Name, sourceRow[j]);
+                    colPkSrc.Add(ColumnsDefinition[j].Name, sourceRow[j]);
             }
 
             //FK qui pointent vers la table courante
             foreach (var fk in derivativeTable.ForeignKeys.Where(k=>k.TableTo == Name))
             {
-                bool isGoodFK = true;
-                foreach (var col in fk.Columns)
-                {
-                    if (!colPKSrc.ContainsKey(col.NameTo))
-                        isGoodFK = false;
-                }
-
-                if (isGoodFK)
+                //Toutes les colonnes doivent correspondre
+                if (!fk.Columns.Any(c => !colPkSrc.ContainsKey(c.NameTo)))
                 {
                     foreach (var col in fk.Columns)
-                        colPKDst.Add(col.NameFrom, colPKSrc[col.NameTo]);
+                        colPkDst.Add(col.NameFrom, colPkSrc[col.NameTo]);
                     break;
                 }
             }
-            return colPKDst;
+            if(!colPkDst.Any())
+                throw new Exception(String.Format(
+                    "A problem append with the cache. The derivative table '{0}' dosen't have a foreign key to the table '{1}'.", 
+                    derivativeTable.Name, Name));
+            return colPkDst;
         }
 
         public override bool Equals(object obj)
         {
-            TableSchema t = obj as TableSchema;
+            var t = obj as TableSchema;
             if (t == null)
                 return false;
-            return t.Equals(Name);
+            return t.Name.Equals(Name);
         }
 
         public override int GetHashCode()
@@ -201,14 +197,14 @@ namespace DataCloner.DataClasse.Cache
 
         public void Serialize(BinaryWriter stream)
         {
-            Int32 nbRows = DerivativeTables.Length;
+            var nbRows = DerivativeTables.Length;
             stream.Write(Name ?? "");
             stream.Write(IsStatic);
             stream.Write(SelectCommand ?? "");
             stream.Write(InsertCommand ?? "");
 
             stream.Write(nbRows);
-            for (int i = 0; i < nbRows; i++)
+            for (var i = 0; i < nbRows; i++)
             {
                 stream.Write(DerivativeTables[i].ServerId);
                 stream.Write(DerivativeTables[i].Database);
@@ -220,16 +216,16 @@ namespace DataCloner.DataClasse.Cache
 
             nbRows = ForeignKeys.Length;
             stream.Write(nbRows);
-            for (int i = 0; i < nbRows; i++)
+            for (var i = 0; i < nbRows; i++)
             {
                 stream.Write(ForeignKeys[i].ServerIdTo);
                 stream.Write(ForeignKeys[i].DatabaseTo);
                 stream.Write(ForeignKeys[i].SchemaTo);
                 stream.Write(ForeignKeys[i].TableTo);
 
-                Int32 nbCol = ForeignKeys[i].Columns.Length;
+                var nbCol = ForeignKeys[i].Columns.Length;
                 stream.Write(nbCol);
-                for (int j = 0; j < nbCol; j++)
+                for (var j = 0; j < nbCol; j++)
                 {
                     stream.Write(ForeignKeys[i].Columns[j].NameFrom);
                     stream.Write(ForeignKeys[i].Columns[j].NameTo);
@@ -238,7 +234,7 @@ namespace DataCloner.DataClasse.Cache
 
             nbRows = ColumnsDefinition.Length;
             stream.Write(nbRows);
-            for (int i = 0; i < nbRows; i++)
+            for (var i = 0; i < nbRows; i++)
             {
                 stream.Write(ColumnsDefinition[i].Name);
                 stream.Write((Int32)ColumnsDefinition[i].Type);
@@ -252,7 +248,6 @@ namespace DataCloner.DataClasse.Cache
 
         public static TableSchema Deserialize(BinaryReader stream)
         {
-            Int32 nbRows, nbRows2;
             var t = new TableSchema();
             var dtList = new List<DerivativeTable>();
             var fkList = new List<ForeignKey>();
@@ -263,10 +258,10 @@ namespace DataCloner.DataClasse.Cache
             t.SelectCommand = stream.ReadString();
             t.InsertCommand = stream.ReadString();
 
-            nbRows = stream.ReadInt32();
-            for (int i = 0; i < nbRows; i++)
+            var nbRows = stream.ReadInt32();
+            for (var i = 0; i < nbRows; i++)
             {
-                dtList.Add(new DerivativeTable()
+                dtList.Add(new DerivativeTable
                 {
                     ServerId = stream.ReadInt16(),
                     Database = stream.ReadString(),
@@ -278,22 +273,22 @@ namespace DataCloner.DataClasse.Cache
             }
 
             nbRows = stream.ReadInt32();
-            for (int i = 0; i < nbRows; i++)
+            for (var i = 0; i < nbRows; i++)
             {
                 var fkColList = new List<ForeignKeyColumn>();
 
-                ForeignKey fk = new ForeignKey()
+                var fk = new ForeignKey
                 {
                     ServerIdTo = stream.ReadInt16(),
                     DatabaseTo = stream.ReadString(),
                     SchemaTo = stream.ReadString(),
-                    TableTo = stream.ReadString(),
+                    TableTo = stream.ReadString()
                 };
 
-                nbRows2 = stream.ReadInt32();
-                for (int j = 0; j < nbRows2; j++)
+                var nbRows2 = stream.ReadInt32();
+                for (var j = 0; j < nbRows2; j++)
                 {
-                    fkColList.Add(new ForeignKeyColumn()
+                    fkColList.Add(new ForeignKeyColumn
                     {
                         NameFrom = stream.ReadString(),
                         NameTo = stream.ReadString()
@@ -305,9 +300,9 @@ namespace DataCloner.DataClasse.Cache
             }
 
             nbRows = stream.ReadInt32();
-            for (int i = 0; i < nbRows; i++)
+            for (var i = 0; i < nbRows; i++)
             {
-                schemaColList.Add(new ColumnDefinition()
+                schemaColList.Add(new ColumnDefinition
                 {
                     Name = stream.ReadString(),
                     Type = (DbType)stream.ReadInt32(),
@@ -370,14 +365,13 @@ namespace DataCloner.DataClasse.Cache
 
         public override bool Equals(object obj)
         {
-            DerivativeTable tableToObj = obj as DerivativeTable;
+            var tableToObj = obj as DerivativeTable;
             if (tableToObj == null)
                 return false;
-            else
-                return ServerId.Equals(tableToObj.ServerId) &&
-                    Database.Equals(tableToObj.Database) &&
-                    Schema.Equals(tableToObj.Schema) &&
-                    Table.Equals(tableToObj.Table);
+            return ServerId.Equals(tableToObj.ServerId) &&
+                   Database.Equals(tableToObj.Database) &&
+                   Schema.Equals(tableToObj.Schema) &&
+                   Table.Equals(tableToObj.Table);
         }
 
         public override int GetHashCode()

@@ -91,8 +91,6 @@ namespace DataCloner.DataClasse.Configuration
         public string Name { get; set; }
         [XmlAttribute]
         public string BuilderName { get; set; }
-
-        public DataBuilder() { }
     }
 
     [Serializable]
@@ -126,8 +124,6 @@ namespace DataCloner.DataClasse.Configuration
         public DerivativeTableAccess Access { get; set; }
         [XmlAttribute]
         public bool Cascade { get; set; }
-
-        public DerivativeSubTable() { }
     }
 
     [Serializable]
@@ -173,8 +169,6 @@ namespace DataCloner.DataClasse.Configuration
         public string NameFrom { get; set; }
         [XmlAttribute]
         public string NameTo { get; set; }
-
-        public ForeignKeyColumn() { }
     }
 
     [Serializable]
@@ -182,8 +176,6 @@ namespace DataCloner.DataClasse.Configuration
     {
         [XmlElement("Column")]
         public List<ForeignKeyRemoveColumn> Columns { get; set; }
-
-        public ForeignKeyRemove() { }
     }
 
     [Serializable]
@@ -191,7 +183,5 @@ namespace DataCloner.DataClasse.Configuration
     {
         [XmlAttribute]
         public string Name { get; set; }
-
-        public ForeignKeyRemoveColumn() { }
     }
 }

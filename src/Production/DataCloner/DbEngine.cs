@@ -4,10 +4,10 @@
     {
         None,
         SqlServer,
-        SqlServerCE,
+        SqlServerCe,
         MySql,
-        PostgreSQL,
+        PostgreSql,
         Oracle,
-        SQLite
+        SqLite
     }
 }

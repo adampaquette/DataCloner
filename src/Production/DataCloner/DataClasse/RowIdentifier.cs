@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace DataCloner.DataClasse
 {
@@ -17,27 +18,16 @@ namespace DataCloner.DataClasse
 
         public bool Equals(IRowIdentifier obj)
         {
-            if ((object)obj == null)
+            if (ServerId != obj?.ServerId || Database != obj.Database || Schema != obj.Schema || Table != obj.Table)
                 return false;
 
-            if (ServerId != obj.ServerId || Database != obj.Database || Schema != obj.Schema || Table != obj.Table)
-                return false;
-
-            foreach (var col in Columns)
-            {
-                if (!obj.Columns.ContainsKey(col.Key) || !obj.Columns[col.Key].Equals(col.Value))
-                    return false;
-            }
-            return true;
+            return Columns.All(col => obj.Columns.ContainsKey(col.Key) && obj.Columns[col.Key].Equals(col.Value));
         }
 
         public override bool Equals(object obj)
         {
-            if (obj == null)
-                return false;
-
             var row = obj as IRowIdentifier;
-            if ((object)row == null)
+            if (row == null)
                 return false;
 
             return row.Equals(this);

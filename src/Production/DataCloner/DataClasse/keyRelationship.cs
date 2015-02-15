@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using DataCloner.Framework;
 
-namespace DataCloner.DataClasse.Cache
+namespace DataCloner.DataClasse
 {
     /// <summary>
     /// Server / database / schema / table / primarykey source value = primarykey destination value
     /// </summary>
     internal sealed class KeyRelationship
     {
-        private Dictionary<Int16, Dictionary<string, Dictionary<string, Dictionary<string, Dictionary<object[], object[]>>>>> _dic = 
+        private readonly Dictionary<Int16, Dictionary<string, Dictionary<string, Dictionary<string, Dictionary<object[], object[]>>>>> _dic = 
             new Dictionary<Int16, Dictionary<string, Dictionary<string, Dictionary<string, Dictionary<object[], object[]>>>>>();
 
         public object[] GetKey(Int16 server, string database, string schema, string table, object[] keyValuesSource)
@@ -28,7 +27,7 @@ namespace DataCloner.DataClasse.Cache
         public object[] GetKey(IRowIdentifier sourceKey)
         {
             var rawKey = new object[sourceKey.Columns.Count];
-            for(int i=0; i<sourceKey.Columns.Count; i++)
+            for(var i=0; i<sourceKey.Columns.Count; i++)
                 rawKey[i] = sourceKey.Columns.ElementAt(i).Value;
 
             return GetKey(sourceKey.ServerId, sourceKey.Database, sourceKey.Schema, sourceKey.Table, rawKey);
@@ -50,8 +49,7 @@ namespace DataCloner.DataClasse.Cache
 
             if (_dic[server][database][schema][table].ContainsKey(keyValuesSource))
                 throw new ArgumentException("Key already exist!");
-            else
-                _dic[server][database][schema][table][keyValuesSource] = keyValuesDestination;           
+            _dic[server][database][schema][table][keyValuesSource] = keyValuesDestination;
         }   
     }    
 }

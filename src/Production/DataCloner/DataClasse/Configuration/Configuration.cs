@@ -8,7 +8,7 @@ namespace DataCloner.DataClasse.Configuration
     [Serializable]
     public class Configuration
     {
-        public const string CONFIG_FILE_NAME = "dc.config";
+        public const string ConfigFileName = "dc.config";
 
         public List<Application> Applications { get; set; }
 

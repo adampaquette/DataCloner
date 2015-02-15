@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Xml.Serialization;
 using System.Collections.Generic;
+using System.Xml.Serialization;
 using DataCloner.DataClasse.Cache;
 
 namespace DataCloner.DataClasse.Configuration

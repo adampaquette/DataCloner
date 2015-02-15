@@ -55,7 +55,7 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>Class.main</StartupObject>
+    <StartupObject>DataCloner.EntryPoint</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="LZ4">

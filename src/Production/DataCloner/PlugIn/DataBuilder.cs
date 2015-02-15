@@ -1,22 +1,23 @@
 ﻿using System;
-using System.Data;
 using System.Collections.Generic;
-
-using DataCloner.Framework;
-using DataCloner.DataClasse.Cache;
+using System.Data;
 using DataCloner.DataAccess;
+using DataCloner.DataClasse.Cache;
+using DataCloner.Framework;
 
 namespace DataCloner.PlugIn
 {
     internal static class DataBuilder
     {
-        private static Dictionary<string, IDataBuilder> _cachedBuilders;
+        private static readonly Dictionary<string, IDataBuilder> CachedBuilders;
 
         static DataBuilder()
         {
-            _cachedBuilders = new Dictionary<string, IDataBuilder>();
-            _cachedBuilders.Add("AutoIncrementDataBuilder", new AutoIncrementDataBuilder());
-            _cachedBuilders.Add("StringDataBuilder", new StringDataBuilder());
+            CachedBuilders = new Dictionary<string, IDataBuilder>
+            {
+                {"AutoIncrementDataBuilder", new AutoIncrementDataBuilder()},
+                {"StringDataBuilder", new StringDataBuilder()}
+            };
         }
 
         public static void BuildDataFromTable(IQueryHelper queryHelper, string database, ITableSchema table, object[] dataRow)
@@ -27,9 +28,9 @@ namespace DataCloner.PlugIn
                     table.Name, table.ColumnsDefinition.Length, dataRow.Length));
 
             //TODO : REGROUPER LES PK ENSEMBLE CAR SI LA LIGNE per exemple 1-1 existe, il ne faut pas générer 2-2 mais 1-2.
-            for (int i = 0; i < table.ColumnsDefinition.Length; i++)
+            for (var i = 0; i < table.ColumnsDefinition.Length; i++)
             {
-                bool mustGenerate = false;
+                var mustGenerate = false;
                 var col = table.ColumnsDefinition[i];
                 IDataBuilder builder = null;
 
@@ -37,14 +38,14 @@ namespace DataCloner.PlugIn
                 {
                     mustGenerate = true;
 
-                    if (!_cachedBuilders.ContainsKey(col.BuilderName))
+                    if (!CachedBuilders.ContainsKey(col.BuilderName))
                     {
-                        Type t = Type.GetType(col.BuilderName);
+                        var t = Type.GetType(col.BuilderName);
                         builder = FastActivator.CreateInstance(t) as IDataBuilder;
-                        _cachedBuilders.Add(col.BuilderName, builder);
+                        CachedBuilders.Add(col.BuilderName, builder);
                     }
                     else
-                        builder = _cachedBuilders[col.BuilderName];
+                        builder = CachedBuilders[col.BuilderName];
                 }
                 else if ((col.IsPrimary && !col.IsAutoIncrement && !col.IsForeignKey) || col.IsUniqueKey)
                 {
@@ -62,14 +63,14 @@ namespace DataCloner.PlugIn
                         case DbType.UInt16:
                         case DbType.UInt32:
                         case DbType.UInt64:
-                            builder = _cachedBuilders["AutoIncrementDataBuilder"]; 
+                            builder = CachedBuilders["AutoIncrementDataBuilder"]; 
                             break;
                         case DbType.AnsiString:
                         case DbType.AnsiStringFixedLength:
                         case DbType.Guid:
                         case DbType.String:
                         case DbType.StringFixedLength:
-                            builder = _cachedBuilders["StringDataBuilder"];
+                            builder = CachedBuilders["StringDataBuilder"];
                             break;
                         default:
                             throw new NotSupportedException(
@@ -84,8 +85,7 @@ namespace DataCloner.PlugIn
                     if (builder == null)
                         throw new NullReferenceException(
                             String.Format("Builder '{0}' for column '{1}' is not found. Watch configuration file.", col.BuilderName, col.Name));
-                    else
-                        dataRow[i] = builder.BuildData(queryHelper.Connection, queryHelper.Engine, database, table, col);
+                    dataRow[i] = builder.BuildData(queryHelper.Connection, queryHelper.Engine, database, table, col);
                 }
             }
         }

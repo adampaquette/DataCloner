@@ -28,11 +28,11 @@ namespace DataCloner.DataClasse.Cache
 
         public static ServerIdentifier Deserialize(BinaryReader stream)
         {
-            return new ServerIdentifier()
+            return new ServerIdentifier
             {
                 ServerId = stream.ReadInt16(),
                 Database = stream.ReadString(),
-                Schema = stream.ReadString(),
+                Schema = stream.ReadString()
             };
         }
     }

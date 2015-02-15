@@ -11,10 +11,10 @@
                 <TranslateTransform/>
             </TransformGroup>
         </Grid.RenderTransform>
-        <Button Name="btnExec" Content="Exécuter" HorizontalAlignment="Right" Margin="0,0,10,10" VerticalAlignment="Bottom" Width="121" Height="34" 
+        <Button Name="BtnExec" Content="Exécuter" HorizontalAlignment="Right" Margin="0,0,10,10" VerticalAlignment="Bottom" Width="121" Height="34" 
                  Click="btnExec_Click" />
         <Label Content="Source : " HorizontalAlignment="Left" Margin="10,10,0,0" Width="99" Height="29" VerticalAlignment="Top"/>
-        <ComboBox Name="cbServerSource" HorizontalAlignment="Left" Margin="10,39,0,0" VerticalAlignment="Top" Width="120" ItemsSource="{Binding Mode=OneWay}"
+        <ComboBox Name="CbServerSource" HorizontalAlignment="Left" Margin="10,39,0,0" VerticalAlignment="Top" Width="120" ItemsSource="{Binding Mode=OneWay}"
                    SelectionChanged="cbServerSource_SelectionChanged">
             <ComboBox.ItemTemplate>
                 <DataTemplate>
@@ -24,7 +24,7 @@
         </ComboBox>
 
         <Label Content="Destination : " HorizontalAlignment="Left" Margin="10,76,0,0" Width="117" Height="29" VerticalAlignment="Top"/>
-        <ComboBox Name="cbServerDestination" HorizontalAlignment="Left" Margin="10,105,0,0" VerticalAlignment="Top" Width="120" ItemsSource="{Binding Mode=OneWay}" 
+        <ComboBox Name="CbServerDestination" HorizontalAlignment="Left" Margin="10,105,0,0" VerticalAlignment="Top" Width="120" ItemsSource="{Binding Mode=OneWay}" 
                    SelectionChanged="cbServerDestination_SelectionChanged">
             <ComboBox.ItemTemplate>
                 <DataTemplate>

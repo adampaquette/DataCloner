@@ -1,28 +1,17 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
 using System.Data;
-using System.Security.Cryptography;
-using System.Diagnostics;
-
-using DataCloner.DataAccess;
+using DataCloner.Archive;
 using DataCloner.DataClasse;
 using DataCloner.DataClasse.Cache;
 using DataCloner.DataClasse.Configuration;
 using DataCloner.Framework;
-using DataCloner;
-using DataCloner.Archive;
+using Connection = DataCloner.DataClasse.Cache.Connection;
+using ForeignKeyColumn = DataCloner.DataClasse.Cache.ForeignKeyColumn;
 
-using System.Data.SQLite;
-
-using Murmur;
-
-namespace Class
+namespace DataCloner
 {
-    public class main
+    public class EntryPoint
     {
         static int Main(string[] args)
         {
@@ -37,7 +26,7 @@ namespace Class
 
         public static void ArchiveTest()
         {
-            string outputFile = "compressed.dca";
+            const string outputFile = "compressed.dca";
             //var inputFiles = new List<string>{ "dc.cache","System.Data.SQLite.xml", "MySql.Data.dll"};
             //var archiveDescription = "Individu de type 1A ayant deux certificats.";
 
@@ -78,15 +67,16 @@ namespace Class
             };
 
             //Cache
-            DatabasesSchema ct = new DatabasesSchema();
-            TableSchema table = new TableSchema();
+            var ct = new DatabasesSchema();
+            var table = new TableSchema
+            {
+                Name = "table1",
+                IsStatic = false,
+                SelectCommand = "SELECT * FROM TABLE1",
+                InsertCommand = "INSERT INTO TABLE1 VALUES(@COL1, @COL2)"
+            };
 
-            table.Name = "table1";
-            table.IsStatic = false;
-            table.SelectCommand = "SELECT * FROM TABLE1";
-            table.InsertCommand = "INSERT INTO TABLE1 VALUES(@COL1, @COL2)";
-
-            table.ColumnsDefinition = table.ColumnsDefinition.Add(new ColumnDefinition()
+            table.ColumnsDefinition = table.ColumnsDefinition.Add(new ColumnDefinition
             {
                 Name = "COL1",
                 Type = DbType.Int32,
@@ -95,7 +85,8 @@ namespace Class
                 IsAutoIncrement = true,
                 BuilderName = ""
             });
-            table.ColumnsDefinition = table.ColumnsDefinition.Add(new ColumnDefinition()
+
+            table.ColumnsDefinition = table.ColumnsDefinition.Add(new ColumnDefinition
             {
                 Name = "COL2",
                 Type = DbType.Int32,
@@ -105,7 +96,7 @@ namespace Class
                 BuilderName = "Builder.NASBuilder"
             });
 
-            table.DerivativeTables = table.DerivativeTables.Add(new DerivativeTable()
+            table.DerivativeTables = table.DerivativeTables.Add(new DerivativeTable
             {
                 ServerId = 1,
                 Database = "db",
@@ -114,7 +105,8 @@ namespace Class
                 Access = DerivativeTableAccess.Forced,
                 Cascade = true
             });
-            table.DerivativeTables = table.DerivativeTables.Add(new DerivativeTable()
+
+            table.DerivativeTables = table.DerivativeTables.Add(new DerivativeTable
             {
                 ServerId = 1,
                 Database = "db",
@@ -124,47 +116,52 @@ namespace Class
                 Cascade = false
             });
 
-            table.ForeignKeys = table.ForeignKeys.Add(new ForeignKey()
+            table.ForeignKeys = table.ForeignKeys.Add(new ForeignKey
             {
                 ServerIdTo = 2,
                 DatabaseTo = "db",
                 SchemaTo = "dbo",
                 TableTo = "TABLE2",
-                Columns = new DataCloner.DataClasse.Cache.ForeignKeyColumn[] { new DataCloner.DataClasse.Cache.ForeignKeyColumn() { NameFrom = "COL1", NameTo = "COL1" } }
+                Columns = new[] { new ForeignKeyColumn { NameFrom = "COL1", NameTo = "COL1" } }
             });
 
             ct.Add(1, "db1", "dbo", table);
             ct.Add(1, "db2", "dbo", table);
 
-            Cache config = new Cache();
-            config.ConnectionStrings = new List<DataCloner.DataClasse.Cache.Connection> { new DataCloner.DataClasse.Cache.Connection { Id = 1, ConnectionString = "", ProviderName = "" } };
-            config.ConfigFileHash = "";
-            config.DatabasesSchema = ct;
+            var config = new Cache
+            {
+                ConnectionStrings =
+                    new List<Connection> {new Connection {Id = 1, ConnectionString = "", ProviderName = ""}},
+                ConfigFileHash = "",
+                DatabasesSchema = ct
+            };
 
             //Créaton de l'archive
-            var ar = new DataArchive();
-            ar.Description = "aloll 1 un deux test test";
-            ar.Cache = config;
-            ar.OriginalQueries = new List<RowIdentifier>();
-            ar.Databases = new List<string> { "System.Data.SQLite.xml", "dc.cache" };
+            var ar = new DataArchive
+            {
+                Description = "aloll 1 un deux test test",
+                Cache = config,
+                OriginalQueries = new List<RowIdentifier>(),
+                Databases = new List<string> {"System.Data.SQLite.xml", "dc.cache"}
+            };
 
             ar.Save(outputFile);
 
-            string strsm = map.SerializeXml();
+            var strsm = map.SerializeXml();
 
             var archive = DataArchive.Load(outputFile, "decompressedArchive");
         }
 
         public static void DataclonerTest1()
         {
-            RowIdentifier source = new RowIdentifier();
+            var source = new RowIdentifier();
 
             var dc = new Cloner
             {
-                Config = Configuration.Load(Configuration.CONFIG_FILE_NAME), 
+                Config = Configuration.Load(Configuration.ConfigFileName), 
                 EnforceIntegrity = false
             };
-            dc.Logger += msg => Console.WriteLine(msg);
+            dc.Logger += Console.WriteLine;
 
             //source.Columns.Clear();
             //source.ServerId = 1;
@@ -224,8 +221,8 @@ namespace Class
                 Roads = new List<Road> { r1, r2 }
             };
 
-            string strSM = map.SerializeXml();
-            var destrSM = strSM.DeserializeXml<Map>();
+            var strSm = map.SerializeXml();
+            var destrSm = strSm.DeserializeXml<Map>();
 
             map.SaveXml("serversmaps.config");
             var smloaded = Extensions.LoadXml<Map>("serversmaps.config");

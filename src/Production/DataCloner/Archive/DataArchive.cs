@@ -1,18 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.IO;
-
+using System.IO.Compression;
+using System.Linq;
 using DataCloner.DataClasse;
 using DataCloner.DataClasse.Cache;
 using DataCloner.Framework;
+using LZ4;
 
 namespace DataCloner.Archive
 {
     internal class DataArchive
     {
-        private const int SIZE_OF_INT = sizeof(int);
-        private const int BUFFER_SIZE = 32768;
+        private const int SizeOfInt = sizeof(int);
+        private const int BufferSize = 32768;
 
         public string Description { get; set; }
         public List<RowIdentifier> OriginalQueries { get; set; }
@@ -27,15 +28,15 @@ namespace DataCloner.Archive
 
         public void Save(string path)
         {
-            string tempFile = path + ".tmp";
-            
+            var tempFile = path + ".tmp";
+
             //Création d'une archive non compressée
             SaveToBin(tempFile);
 
             //Compression
             using (var istream = new FileStream(tempFile, FileMode.Open))
             using (var ostream = new FileStream(path, FileMode.Create))
-            using (var lzStream = new LZ4.LZ4Stream(ostream, System.IO.Compression.CompressionMode.Compress))
+            using (var lzStream = new LZ4Stream(ostream, CompressionMode.Compress))
             {
                 istream.CopyTo(lzStream);
             }
@@ -50,20 +51,19 @@ namespace DataCloner.Archive
             if (!File.Exists(path))
                 throw new FileNotFoundException(path);
 
-            string tempFile = path + ".tmp";
-            DataArchive output;
+            var tempFile = path + ".tmp";
 
             //Decompression
             using (var istream = new FileStream(path, FileMode.Open))
             using (var ostream = new FileStream(tempFile, FileMode.Create))
-            using (var lzStream = new LZ4.LZ4Stream(istream, System.IO.Compression.CompressionMode.Decompress))
+            using (var lzStream = new LZ4Stream(istream, CompressionMode.Decompress))
             {
                 lzStream.CopyTo(ostream);
             }
 
             //Chargement de l'archive
-            output = LoadFromBin(tempFile, decompressedPath);
-            
+            var output = LoadFromBin(tempFile, decompressedPath);
+
             //Clean
             if (File.Exists(tempFile))
                 File.Delete(tempFile);
@@ -99,10 +99,10 @@ namespace DataCloner.Archive
                 bstream.Write(Databases.Count());
                 foreach (var filePath in Databases)
                 {
-                    string fileName = Path.GetFileName(filePath);
-                    FileInfo fi = new FileInfo(filePath);
+                    var fileName = Path.GetFileName(filePath);
+                    var fi = new FileInfo(filePath);
 
-                    bstream.Write(fileName);
+                    bstream.Write(fileName ?? "");
                     bstream.Write(fi.Length);
                     using (var istream = new FileStream(filePath, FileMode.Open))
                     {
@@ -121,32 +121,32 @@ namespace DataCloner.Archive
             {
                 //Archive description
                 archiveOut.Description = bstream.ReadString();
-                
+
                 //Queries
-                int nbQueries = bstream.ReadInt32();
-                for (int i = 0; i<nbQueries; i++)
+                var nbQueries = bstream.ReadInt32();
+                for (var i = 0; i < nbQueries; i++)
                     archiveOut.OriginalQueries.Add(bstream.ReadString().DeserializeXml<RowIdentifier>());
 
                 //Cache 
                 archiveOut.Cache = Cache.Deserialize(istream);
 
                 //Databases
-                int nbDatabases = bstream.ReadInt32();
-                for (int i = 0; i < nbDatabases; i++ )
+                var nbDatabases = bstream.ReadInt32();
+                for (var i = 0; i < nbDatabases; i++)
                 {
-                    string fileName = bstream.ReadString();
-                    string filePath = Path.Combine(decompressedPath, fileName);
-                    Int64 fileSize = bstream.ReadInt64();
+                    var fileName = bstream.ReadString();
+                    var filePath = Path.Combine(decompressedPath, fileName);
+                    var fileSize = bstream.ReadInt64();
                     if (fileSize > Int32.MaxValue)
                         throw new OverflowException(String.Format("File size for {0} is larger then 32 bit value.", fileName));
-                    Int32 fileSize32 = Convert.ToInt32(fileSize);
+                    var fileSize32 = Convert.ToInt32(fileSize);
 
-                    if(!Directory.Exists(decompressedPath))
+                    if (!Directory.Exists(decompressedPath))
                         Directory.CreateDirectory(decompressedPath);
 
                     using (var ostream = new FileStream(filePath, FileMode.Create))
                     {
-                        istream.CopyTo(ostream, BUFFER_SIZE, fileSize32);
+                        istream.CopyTo(ostream, BufferSize, fileSize32);
                     }
                     archiveOut.Databases.Add(filePath);
                 }
