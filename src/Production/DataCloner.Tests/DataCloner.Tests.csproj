@@ -62,9 +62,11 @@
     <Compile Include="ClonerTests.cs" />
     <Compile Include="ConfigurationTests.cs" />
     <Compile Include="ExtensionsTests.cs" />
+    <Compile Include="FakeBasicDatabase.cs" />
     <Compile Include="FastActivatorTests.cs" />
     <Compile Include="KeyRelationshipTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Tools.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
