@@ -84,5 +84,13 @@ namespace DataCloner.Tests
 
             return queryHelper;
         }
+
+        internal static IQueryDispatcher CreateServer(IQueryHelper queryHelper)
+        {
+            var queryDispatcher = Substitute.For<IQueryDispatcher>();
+            queryDispatcher.GetQueryHelper(0).Returns(queryHelper);
+            queryDispatcher.GetQueryHelper(Arg.Is<IRowIdentifier>(r => r.ServerId == 0)).Returns(queryHelper);
+            return queryDispatcher;
+        }
     }
 }

@@ -21,10 +21,7 @@ namespace DataCloner.Tests
             {
                 _cache = FakeBasicDatabase.CreateCache();
                 _queryHelper = FakeBasicDatabase.CreateData();
-
-                _queryDispatcher = Substitute.For<IQueryDispatcher>();
-                _queryDispatcher.GetQueryHelper(0).Returns(_queryHelper);
-                _queryDispatcher.GetQueryHelper(Arg.Is<IRowIdentifier>(r => r.ServerId == 0)).Returns(_queryHelper);
+                _queryDispatcher = FakeBasicDatabase.CreateServer(_queryHelper);
 
                 _cloner = new Cloner(_queryDispatcher, (a, b, c, d, e, f) => _cache);
                 _cloner.Config = new Configuration();
