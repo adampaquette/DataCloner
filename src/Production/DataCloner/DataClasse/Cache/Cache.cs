@@ -166,7 +166,6 @@ namespace DataCloner.DataClasse.Cache
 
         private static Cache BuildCache(IQueryDispatcher dispatcher, ClonerConfiguration clonerConfig, string cacheFileName, Application app, Map map, string configHash)
         {
-            //Rebuild cache
             var cache = new Cache { ConfigFileHash = configHash, ServerMap = map };
 
             //Copy connection strings

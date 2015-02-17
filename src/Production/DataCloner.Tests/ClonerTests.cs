@@ -63,7 +63,7 @@ namespace DataCloner.Tests
                 Assert.Equal(new[] {new object[] {1, 2, 3}}, result);
             }
 
-            [Fact]
+            //[Fact]
             public void BasicTest()
             {
                 var source = NewRi(0, "", "", "customer", new ColumnsWithValue {{"id", 1}});
