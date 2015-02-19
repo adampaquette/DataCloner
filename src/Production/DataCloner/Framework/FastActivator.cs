@@ -18,7 +18,7 @@ namespace DataCloner.Framework
             return GetConstructor(objType)();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Func<object> GetConstructor(Type objType)
         {
             Func<object> constructor;
@@ -30,7 +30,7 @@ namespace DataCloner.Framework
             return constructor;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static object BuildConstructorDelegate(Type objType, Type delegateType, Type[] argTypes)
         {
             var dynMethod = new DynamicMethod(DynamicMethodPrefix + objType.Name + "$" + argTypes.Length, objType, argTypes, objType);

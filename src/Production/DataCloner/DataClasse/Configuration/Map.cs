@@ -9,6 +9,8 @@ namespace DataCloner.DataClasse.Configuration
     public class Map
     {
         [XmlAttribute]
+        public int Id { get; set; }
+        [XmlAttribute]
         public string From { get; set; }
         [XmlAttribute]
         public string To { get; set; }

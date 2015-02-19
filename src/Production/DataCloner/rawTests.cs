@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Text;
 using DataCloner.Archive;
 using DataCloner.DataClasse;
 using DataCloner.DataClasse.Cache;
@@ -132,7 +133,7 @@ namespace DataCloner
             var config = new Cache
             {
                 ConnectionStrings =
-                    new List<Connection> {new Connection {Id = 1, ConnectionString = "", ProviderName = ""}},
+                    new List<Connection> { new Connection { Id = 1, ConnectionString = "", ProviderName = "" } },
                 ConfigFileHash = "",
                 DatabasesSchema = ct
             };
@@ -143,7 +144,7 @@ namespace DataCloner
                 Description = "aloll 1 un deux test test",
                 Cache = config,
                 OriginalQueries = new List<RowIdentifier>(),
-                Databases = new List<string> {"System.Data.SQLite.xml", "dc.cache"}
+                Databases = new List<string> { "System.Data.SQLite.xml", "dc.cache" }
             };
 
             ar.Save(outputFile);
@@ -159,10 +160,21 @@ namespace DataCloner
 
             var dc = new Cloner
             {
-                Config = Configuration.Load(Configuration.ConfigFileName), 
+                Config = Configuration.Load(Configuration.ConfigFileName),
                 EnforceIntegrity = false
             };
-            dc.Logger += Console.WriteLine;
+            dc.StatusChanged += (s, e) =>
+            {
+                var sb = new StringBuilder();
+                //sb.Append(e.Status.ToString()).Append(" : ").Append(Environment.NewLine);
+                sb.Append(new string(' ', 3 * e.Level));
+                sb.Append(e.SourceRow.Database).Append(".").Append(e.SourceRow.Schema).Append(".").Append(e.SourceRow.Table).Append(" : (");
+                foreach (var col in e.SourceRow.Columns)
+                    sb.Append(col.Key).Append("=").Append(col.Value).Append(", ");
+                sb.Remove(sb.Length - 2, 2);
+                sb.Append(")");
+                Console.WriteLine(sb.ToString());
+            };
 
             //source.Columns.Clear();
             //source.ServerId = 1;
@@ -180,7 +192,7 @@ namespace DataCloner
             source.Schema = "";
             source.Table = "customer";
             source.Columns.Add("customer_id", 1);
-            dc.Clone("TestApp", "testMySQL", "testMySQL", null, source, true);
+            dc.Clone("TestApp", 1, null, source, true);
 
             //Console.WriteLine("==============");
 

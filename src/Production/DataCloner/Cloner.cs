@@ -35,7 +35,7 @@ namespace DataCloner
         public string SavePath { get; set; }
         public bool EnforceIntegrity { get; set; }
 
-        public event Action<string> Logger;
+        public event StatusChangedEventHandler StatusChanged;
 
         public Cloner()
         {
@@ -56,13 +56,13 @@ namespace DataCloner
             _cacheInitialiser = cacheInit;
         }
 
-        public IRowIdentifier Clone(string application, string mapFrom, string mapTo, int? configId,
+        public IRowIdentifier Clone(string appName, int mapId, int? configId,
                                     IRowIdentifier riSource, bool getDerivatives)
         {
             if (Config == null)
                 throw new NullReferenceException("Config");
 
-            _cache = _cacheInitialiser(_dispatcher, Config, application, mapFrom, mapTo, configId);
+            _cache = _cacheInitialiser(_dispatcher, Config, appName, mapId, configId);
             _dispatcher[riSource].EnforceIntegrityCheck(EnforceIntegrity);
             var riReturn = SqlTraveler(riSource, getDerivatives, false, 0, new Stack<IRowIdentifier>());
 
@@ -99,7 +99,7 @@ namespace DataCloner
                 Table = riSource.Table
             };
 
-            LogRow(riSource, level);
+            LogStatusChanged(riSource, level);
 
             if (shouldReturnFk && nbRows > 1)
                 throw new Exception("The foreignkey is not unique!");
@@ -235,17 +235,12 @@ namespace DataCloner
             return riReturn;
         }
 
-        private void LogRow(IRowIdentifier riSource, int level)
+        private void LogStatusChanged(IRowIdentifier riSource, int level)
         {
-            if (Logger != null)
+            if (StatusChanged != null)
             {
-                var sb = new StringBuilder(new string(' ', 3 * level));
-                sb.Append(riSource.Database).Append(".").Append(riSource.Schema).Append(".").Append(riSource.Table).Append(" : (");
-                foreach (var col in riSource.Columns)
-                    sb.Append(col.Key).Append("=").Append(col.Value).Append(", ");
-                sb.Remove(sb.Length - 2, 2);
-                sb.Append(")");
-                Logger(sb.ToString());
+                var args = new StatusChangedEventArgs(Status.Cloning, 0, 0, riSource, level);
+                StatusChanged(this, args);
             }
         }
 

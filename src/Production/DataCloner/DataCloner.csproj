@@ -128,6 +128,7 @@
     <Compile Include="DataClasse\Configuration\Configuration.cs" />
     <Compile Include="DataClasse\Configuration\Connection.cs" />
     <Compile Include="DataClasse\Configuration\Modifiers.cs" />
+    <Compile Include="StatusChangedEvent.cs" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">

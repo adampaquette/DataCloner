@@ -27,7 +27,6 @@ namespace DataCloner.PlugIn
                     String.Format("The number of columns defined in the cached table {0} '{1}' is different from the current row '{2}'.",
                     table.Name, table.ColumnsDefinition.Length, dataRow.Length));
 
-            //TODO : REGROUPER LES PK ENSEMBLE CAR SI LA LIGNE per exemple 1-1 existe, il ne faut pas générer 2-2 mais 1-2.
             for (var i = 0; i < table.ColumnsDefinition.Length; i++)
             {
                 var mustGenerate = false;
@@ -52,6 +51,11 @@ namespace DataCloner.PlugIn
                     mustGenerate = true;
                     switch (col.Type)
                     {
+                        case DbType.Date:
+                        case DbType.DateTime:
+                        case DbType.DateTime2:
+                            dataRow[i] = DateTime.Now;
+                            continue;
                         case DbType.Byte:
                         case DbType.Decimal:
                         case DbType.Double:
@@ -63,7 +67,7 @@ namespace DataCloner.PlugIn
                         case DbType.UInt16:
                         case DbType.UInt32:
                         case DbType.UInt64:
-                            builder = CachedBuilders["AutoIncrementDataBuilder"]; 
+                            builder = CachedBuilders["AutoIncrementDataBuilder"];
                             break;
                         case DbType.AnsiString:
                         case DbType.AnsiStringFixedLength:

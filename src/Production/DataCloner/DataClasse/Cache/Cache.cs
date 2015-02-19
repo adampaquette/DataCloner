@@ -109,31 +109,31 @@ namespace DataCloner.DataClasse.Cache
         }
 
         internal delegate Cache CacheInitialiser(
-            IQueryDispatcher dispatcher, Configuration.Configuration config, string application, 
-            string mapFrom, string mapTo, int? configId);
-        public static Cache Init(IQueryDispatcher dispatcher, Configuration.Configuration config, string application, string mapFrom, string mapTo, int? configId)
+            IQueryDispatcher dispatcher, Configuration.Configuration config, string appName, int mapId, int? configId);
+        public static Cache Init(IQueryDispatcher dispatcher, Configuration.Configuration config, 
+                                 string appName, int mapId, int? configId)
         {
+            if (dispatcher == null) throw new ArgumentNullException(nameof(dispatcher));
             if (config == null) throw new ArgumentNullException(nameof(config));
-            if (String.IsNullOrWhiteSpace(mapFrom)) throw new ArgumentNullException(nameof(mapFrom));
-            if (String.IsNullOrWhiteSpace(mapTo)) throw new ArgumentNullException(nameof(mapTo));
-
+            if (String.IsNullOrWhiteSpace(appName)) throw new ArgumentNullException(nameof(appName));
+           
             ClonerConfiguration clonerConfig = null;
 
-            var cacheFileName = application + " _" + mapFrom + "-" + mapTo;
+            var appConfig = config.Applications.FirstOrDefault(a => a.Name == appName);
+            if(appConfig == null) throw new Exception(String.Format("Application '{0}' not found in configuration file!", appName));
+
+            var map = appConfig.Maps.FirstOrDefault(m => m.Id == mapId);
+            if (map == null) throw new Exception(String.Format("Map id '{0}' not found in configuration file for application '{1}'!", mapId, appName));
+
+            var cacheFileName = appName + " _" + map.From + "-" + map.To;
             if (configId != null)
                 cacheFileName += "_" + configId;
             cacheFileName += ".cache";
 
             //Hash the selected map and the cloner configuration to see if it match the lasted builded cache
-            var app = config.Applications.FirstOrDefault(a => a.Name == application);
+            var app = config.Applications.FirstOrDefault(a => a.Name == appName);
             if (app == null)
-                throw new KeyNotFoundException(String.Format("There is no configuration for the application name '{0}'.", application));
-
-            var map = app.Maps.FirstOrDefault(m => m.From == mapFrom && m.To == mapTo);
-            if (map == null)
-                throw new KeyNotFoundException(String.Format(
-                    "There is no map where attribute From='{0}' and To='{1}' in the configuration for the application name '{2}'.",
-                    mapFrom, mapTo, application));
+                throw new KeyNotFoundException(String.Format("There is no configuration for the appName name '{0}'.", appName));
 
             //Get binary view 
             var configData = new MemoryStream();
@@ -145,8 +145,8 @@ namespace DataCloner.DataClasse.Cache
                 clonerConfig = app.ClonerConfigurations.FirstOrDefault(c => c.Id == configId);
                 if (clonerConfig == null)
                     throw new KeyNotFoundException(String.Format(
-                        "There is no cloner configuration '{0}' in the configuration for the application name '{1}'.",
-                        configId, application));
+                        "There is no cloner configuration '{0}' in the configuration for the appName name '{1}'.",
+                        configId, appName));
 
                 bf.Serialize(configData, clonerConfig);
             }
