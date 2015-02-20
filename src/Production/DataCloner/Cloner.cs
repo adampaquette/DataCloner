@@ -24,13 +24,13 @@ namespace DataCloner
     {
         private const string TempFolderName = "temp";
 
-        private Cache _cache;
         private readonly IQueryDispatcher _dispatcher;
         private readonly Cache.CacheInitialiser _cacheInitialiser;
         private readonly KeyRelationship _keyRelationships;
         private readonly List<CircularKeyJob> _circularKeyJobs;
 
-        public Configuration Config { get; set; }
+        private Cache _cache;
+
         public bool SaveToFile { get; set; }
         public string SavePath { get; set; }
         public bool EnforceIntegrity { get; set; }
@@ -56,13 +56,13 @@ namespace DataCloner
             _cacheInitialiser = cacheInit;
         }
 
-        public IRowIdentifier Clone(string appName, int mapId, int? configId,
-                                    IRowIdentifier riSource, bool getDerivatives)
+        public void Setup(Application app, int mapId, int? configId)
         {
-            if (Config == null)
-                throw new NullReferenceException("Config");
+            _cacheInitialiser(_dispatcher, app, mapId, configId , ref _cache);
+        }
 
-            _cache = _cacheInitialiser(_dispatcher, Config, appName, mapId, configId);
+        public IRowIdentifier Clone(IRowIdentifier riSource, bool getDerivatives)
+        {
             _dispatcher[riSource].EnforceIntegrityCheck(EnforceIntegrity);
             var riReturn = SqlTraveler(riSource, getDerivatives, false, 0, new Stack<IRowIdentifier>());
 

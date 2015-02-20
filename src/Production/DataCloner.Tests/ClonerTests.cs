@@ -23,8 +23,11 @@ namespace DataCloner.Tests
                 _queryHelper = FakeBasicDatabase.CreateData();
                 _queryDispatcher = FakeBasicDatabase.CreateServer(_queryHelper);
 
-                _cloner = new Cloner(_queryDispatcher, (a, b, c, d, e) => _cache);
-                _cloner.Config = new Configuration();
+                _cloner = new Cloner(_queryDispatcher,
+                    delegate(IQueryDispatcher dispatcher, Application app, int id, int? configId, ref Cache cache)
+                    {
+                        cache = _cache;
+                    });
             }
 
             [Fact]
@@ -67,7 +70,7 @@ namespace DataCloner.Tests
             public void BasicTest()
             {
                 var source = NewRi(0, "", "", "customer", new ColumnsWithValue {{"id", 1}});
-                _cloner.Clone(null, 1, null, source, true);
+                _cloner.Clone(source, true);
 
                 _queryDispatcher.Received();
                 _queryHelper.Received();

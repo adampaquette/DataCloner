@@ -67,9 +67,9 @@ namespace DataCloner.Framework
 
         public static T DeserializeXml<T>(this string str)
         {
-            var xs = new XmlSerializer(typeof(T));
+            var xs = new XmlSerializer(typeof (T));
             var sr = new StringReader(str);
-            return (T)xs.Deserialize(sr);
+            return (T) xs.Deserialize(sr);
         }
 
         public static void SaveXml<T>(this T obj, string path)
@@ -85,10 +85,10 @@ namespace DataCloner.Framework
 
         public static T LoadXml<T>(string path)
         {
-            var xs = new XmlSerializer(typeof(T));
+            var xs = new XmlSerializer(typeof (T));
             if (!File.Exists(path)) return default(T);
             var fs = new FileStream(path, FileMode.Open);
-            var cReturn = (T)xs.Deserialize(fs);
+            var cReturn = (T) xs.Deserialize(fs);
             fs.Close();
             return cReturn;
         }
@@ -96,7 +96,13 @@ namespace DataCloner.Framework
         public static int IndexOf<T>(this IEnumerable<T> list, Predicate<T> condition)
         {
             var i = -1;
-            return list.Any(x => { i++; return condition(x); }) ? i : -1;
+            return list.Any(x =>
+            {
+                i++;
+                return condition(x);
+            })
+                ? i
+                : -1;
         }
 
         public static void CopyTo(this Stream source, Stream destination, int bufferSize, int count)
@@ -108,7 +114,13 @@ namespace DataCloner.Framework
             {
                 destination.Write(buffer, 0, read);
                 count -= read;
-            }        
+            }
+        }
+
+        public static int? ToNullableInt32(this string input)
+        {
+            int i;
+            return Int32.TryParse(input, out i) ? (int?)i : null;
         }
     }
 }
