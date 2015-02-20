@@ -58,7 +58,7 @@ namespace DataCloner
 
         public void Setup(Application app, int mapId, int? configId)
         {
-            _cacheInitialiser(_dispatcher, app, mapId, configId , ref _cache);
+            _cacheInitialiser(_dispatcher, app, mapId, configId, ref _cache);
         }
 
         public IRowIdentifier Clone(IRowIdentifier riSource, bool getDerivatives)
