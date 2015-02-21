@@ -50,6 +50,11 @@ namespace DataCloner.DataClasse
             if (_dic[server][database][schema][table].ContainsKey(keyValuesSource))
                 throw new ArgumentException("Key already exist!");
             _dic[server][database][schema][table][keyValuesSource] = keyValuesDestination;
-        }   
+        }
+
+        public void Clear()
+        {
+            _dic.Clear();
+        }
     }    
 }

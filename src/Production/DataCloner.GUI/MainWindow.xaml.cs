@@ -1,6 +1,5 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-using DataCloner.DataClasse;
 
 namespace DataCloner.GUI
 {

@@ -56,19 +56,64 @@ namespace DataCloner
             _cacheInitialiser = cacheInit;
         }
 
+        public void Clear()
+        {
+            _keyRelationships.Clear();
+            _circularKeyJobs.Clear();
+        }
+
         public void Setup(Application app, int mapId, int? configId)
         {
             _cacheInitialiser(_dispatcher, app, mapId, configId, ref _cache);
         }
 
-        public IRowIdentifier Clone(IRowIdentifier riSource, bool getDerivatives)
+        public List<IRowIdentifier> Clone(IRowIdentifier riSource, bool getDerivatives)
         {
             _dispatcher[riSource].EnforceIntegrityCheck(EnforceIntegrity);
-            var riReturn = SqlTraveler(riSource, getDerivatives, false, 0, new Stack<IRowIdentifier>());
+            SqlTraveler(riSource, getDerivatives, false, 0, new Stack<IRowIdentifier>());
 
             UpdateCircularReferences();
 
-            return riReturn;
+            return GetClonedRows(riSource);
+        }
+
+        private List<IRowIdentifier> GetClonedRows(IRowIdentifier riSource)
+        {
+            var clonedRows = new List<IRowIdentifier>();
+            var srcRows = _dispatcher.Select(riSource);
+            if (srcRows.Length > 0)
+            {
+                var table = _cache.GetTable(riSource);
+                var serverDst = _cache.ServerMap[new ServerIdentifier
+                {
+                    ServerId = riSource.ServerId,
+                    Database = riSource.Database,
+                    Schema = riSource.Schema
+                }];
+
+                foreach (var row in srcRows)
+                {
+                    var srcKey = table.BuildRawPkFromDataRow(row);
+                    var dstKey = _keyRelationships.GetKey(serverDst.ServerId, serverDst.Database, 
+                                                          serverDst.Schema, riSource.Table, srcKey);
+
+                    if (dstKey != null)
+                    {
+                        var riReturn = new RowIdentifier
+                        {
+                            ServerId = serverDst.ServerId,
+                            Database = serverDst.Database,
+                            Schema = serverDst.Schema,
+                            Table = riSource.Table
+                        };
+
+                        //Construit la pk de retour
+                        riReturn.Columns = table.BuildPkFromRawKey(dstKey);
+                        clonedRows.Add(riReturn);
+                    }
+                }
+            }
+            return clonedRows;
         }
 
         private IRowIdentifier SqlTraveler(IRowIdentifier riSource, bool getDerivatives, bool shouldReturnFk, int level, Stack<IRowIdentifier> rowsGenerating)
@@ -111,7 +156,8 @@ namespace DataCloner
                 var srcKey = table.BuildRawPkFromDataRow(currentRow);
 
                 //Si ligne déjà enregistrée
-                var dstKey = _keyRelationships.GetKey(serverDst.ServerId, serverDst.Database, serverDst.Schema, riSource.Table, srcKey);
+                var dstKey = _keyRelationships.GetKey(serverDst.ServerId, serverDst.Database, 
+                                                      serverDst.Schema, riSource.Table, srcKey);
                 if (dstKey != null)
                 {
                     if (shouldReturnFk)
