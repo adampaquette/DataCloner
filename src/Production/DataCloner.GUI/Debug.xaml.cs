@@ -109,11 +109,11 @@ namespace DataCloner.GUI
             TxtStatus.ScrollToEnd();
         }
 
-        private void BtnBuildAllCache_Click(object sender, RoutedEventArgs e)
+        private void BtnReloadConfigBuildAllCache_Click(object sender, RoutedEventArgs e)
         {
             TxtStatus.Text += "Building cache..." + Environment.NewLine;
-            var config = Configuration.Load(Configuration.ConfigFileName);
-            _dc.Setup(config.Applications[0], 1, null);
+            _config = Configuration.Load(Configuration.ConfigFileName);
+            _dc.Setup(_config.Applications[0], 1, null);
             TxtStatus.Text += "Building cache completed." + Environment.NewLine;
             TxtStatus.ScrollToEnd();
         }
