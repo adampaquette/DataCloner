@@ -20,6 +20,71 @@ namespace DataCloner.PlugIn
             };
         }
 
+        public static object BuildDataColumn(IQueryHelper queryHelper, string database, ITableSchema table, IColumnDefinition col)
+        {
+            IDataBuilder builder = null;
+            var mustGenerate = false;
+            
+            if (!string.IsNullOrWhiteSpace(col.BuilderName))
+            {
+                mustGenerate = true;
+
+                if (!CachedBuilders.ContainsKey(col.BuilderName))
+                {
+                    var t = Type.GetType(col.BuilderName);
+                    builder = FastActivator.CreateInstance(t) as IDataBuilder;
+                    CachedBuilders.Add(col.BuilderName, builder);
+                }
+                else
+                    builder = CachedBuilders[col.BuilderName];
+            }
+            else if (((col.IsPrimary && !col.IsAutoIncrement) || col.IsUniqueKey) && !col.IsForeignKey)
+            {
+                mustGenerate = true;
+                switch (col.Type)
+                {
+                    case DbType.Date:
+                    case DbType.DateTime:
+                    case DbType.DateTime2:
+                        return DateTime.Now;
+                    case DbType.Byte:
+                    case DbType.Decimal:
+                    case DbType.Double:
+                    case DbType.SByte:
+                    case DbType.Single:
+                    case DbType.Int16:
+                    case DbType.Int32:
+                    case DbType.Int64:
+                    case DbType.UInt16:
+                    case DbType.UInt32:
+                    case DbType.UInt64:
+                        builder = CachedBuilders["AutoIncrementDataBuilder"];
+                        break;
+                    case DbType.AnsiString:
+                    case DbType.AnsiStringFixedLength:
+                    case DbType.Guid:
+                    case DbType.String:
+                    case DbType.StringFixedLength:
+                        builder = CachedBuilders["StringDataBuilder"];
+                        break;
+                    default:
+                        throw new NotSupportedException(
+                            String.Format("The generation of the key failed. Please specify a databuilder in the configuration for {0}.{1}.{2}",
+                            database, table, col.Name));
+                }
+            }
+
+            //Generate data
+            if (mustGenerate)
+            {
+                if (builder == null)
+                    throw new NullReferenceException(
+                        String.Format("Builder '{0}' for column '{1}' is not found. Watch configuration file.", col.BuilderName, col.Name));
+                return builder.BuildData(queryHelper.Connection, queryHelper.Engine, database, table, col);
+            }
+            return null;
+        }
+
         public static void BuildDataFromTable(IQueryHelper queryHelper, string database, ITableSchema table, object[] dataRow)
         {
             if (table.ColumnsDefinition.Length != dataRow.Length)
@@ -29,68 +94,8 @@ namespace DataCloner.PlugIn
 
             for (var i = 0; i < table.ColumnsDefinition.Length; i++)
             {
-                var mustGenerate = false;
                 var col = table.ColumnsDefinition[i];
-                IDataBuilder builder = null;
-
-                if (!string.IsNullOrWhiteSpace(col.BuilderName))
-                {
-                    mustGenerate = true;
-
-                    if (!CachedBuilders.ContainsKey(col.BuilderName))
-                    {
-                        var t = Type.GetType(col.BuilderName);
-                        builder = FastActivator.CreateInstance(t) as IDataBuilder;
-                        CachedBuilders.Add(col.BuilderName, builder);
-                    }
-                    else
-                        builder = CachedBuilders[col.BuilderName];
-                }
-                else if ((col.IsPrimary && !col.IsAutoIncrement && !col.IsForeignKey) || col.IsUniqueKey)
-                {
-                    mustGenerate = true;
-                    switch (col.Type)
-                    {
-                        case DbType.Date:
-                        case DbType.DateTime:
-                        case DbType.DateTime2:
-                            dataRow[i] = DateTime.Now;
-                            continue;
-                        case DbType.Byte:
-                        case DbType.Decimal:
-                        case DbType.Double:
-                        case DbType.SByte:
-                        case DbType.Single:
-                        case DbType.Int16:
-                        case DbType.Int32:
-                        case DbType.Int64:
-                        case DbType.UInt16:
-                        case DbType.UInt32:
-                        case DbType.UInt64:
-                            builder = CachedBuilders["AutoIncrementDataBuilder"];
-                            break;
-                        case DbType.AnsiString:
-                        case DbType.AnsiStringFixedLength:
-                        case DbType.Guid:
-                        case DbType.String:
-                        case DbType.StringFixedLength:
-                            builder = CachedBuilders["StringDataBuilder"];
-                            break;
-                        default:
-                            throw new NotSupportedException(
-                                String.Format("The generation of the key failed. Please specify a databuilder in the configuration for {0}.{1}.{2}",
-                                database, table, col.Name));
-                    }
-                }
-
-                //Generate data
-                if (mustGenerate)
-                {
-                    if (builder == null)
-                        throw new NullReferenceException(
-                            String.Format("Builder '{0}' for column '{1}' is not found. Watch configuration file.", col.BuilderName, col.Name));
-                    dataRow[i] = builder.BuildData(queryHelper.Connection, queryHelper.Engine, database, table, col);
-                }
+                dataRow[i] = BuildDataColumn(queryHelper, database, table, col);
             }
         }
     }

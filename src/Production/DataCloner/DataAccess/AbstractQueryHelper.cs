@@ -215,6 +215,148 @@ namespace DataCloner.DataAccess
             }
         }
 
+        public void Insert(List<Cloner.RowToInsert> rows)
+        {
+            var sb = new StringBuilder();
+            using (var cmd = Connection.CreateCommand())
+            {
+                foreach (var row in rows)
+                {
+                    var schema = _cache.GetTable(row.DestinationTable);
+                    if (schema.ColumnsDefinition.Count() != row.DataRow.Length)
+                        throw new Exception("The row doesn't correspond to schema!");
+
+                    var sbInsert = new StringBuilder();
+                    var sbPostInsert = new StringBuilder();
+
+                    sbInsert.Append("INSERT INTO ").Append(row.TableSchema.Name).Append(" VALUES(");
+
+                    //Add params
+                    for (var i = 0; i < schema.ColumnsDefinition.Count(); i++)
+                    {
+                        var col = schema.ColumnsDefinition[i];
+
+                        //Pre insert variables
+                        if (((col.IsPrimary && !col.IsAutoIncrement) || col.IsUniqueKey) && !col.IsForeignKey)
+                        {
+                            var sqlVar = row.DataRow[i] as Cloner.SqlVariable;
+                            var sqlVarName = "@" + sqlVar.Id;
+
+                            var value = PlugIn.DataBuilder.BuildDataColumn(this, row.DestinationTable.Database, row.TableSchema, col);
+
+                            sb.Append("DECLARE ").Append(sqlVarName).Append(" varchar(max);\r\n");
+                            sb.Append("SET ").Append(sqlVarName).Append(" = '").Append(value).Append("';\r\n");
+
+                            sbInsert.Append(sqlVarName).Append(',');
+                        }
+                        //Post insert variable (auto generated primary key)
+                        else if (col.IsPrimary && col.IsAutoIncrement)
+                        {
+                            var sqlVar = row.DataRow[i] as Cloner.SqlVariable;
+                            var sqlVarName = "@" + sqlVar.Id;
+
+                            sbPostInsert.Append("DECLARE ").Append(sqlVarName).Append(" varchar(max);\r\n");
+                            sbPostInsert.Append("SET ").Append(sqlVarName).Append(" = LAST_INSERT_ID();\r\n");
+                        }
+                        //Normal variables
+                        else
+                        {
+                            var sqlVarName = "@" + schema.ColumnsDefinition[i].Name + row.StepId;
+                            var p = cmd.CreateParameter();
+                            p.ParameterName = sqlVarName;
+                            p.Value = row.DataRow[i];
+                            cmd.Parameters.Add(p);
+
+                            sbInsert.Append(sqlVarName).Append(",");
+                        }
+                    }
+                    sbInsert.Remove(sbInsert.Length - 1, 1);
+                    sbInsert.Append(");\r\n");
+
+                    sb.Append(sbInsert)
+                      .Append(sbPostInsert);
+                }
+
+                cmd.CommandText = sb.ToString();
+
+                //Exec query
+                Connection.Open();
+                cmd.ExecuteNonQuery();
+                Connection.Close();
+            }
+        }
+
+        //public void Insert(List<Cloner.RowToInsert> rows)
+        //{
+        //    var sb = new StringBuilder();
+        //    using (var cmd = Connection.CreateCommand())
+        //    {
+        //        foreach (var row in rows)
+        //        {
+        //            var schema = _cache.GetTable(row.DestinationTable);
+        //            if (schema.ColumnsDefinition.Count() != row.DataRow.Length)
+        //                throw new Exception("The row doesn't correspond to schema!");
+
+        //            var sbInsert = new StringBuilder();
+        //            var sbPostInsert = new StringBuilder();
+
+        //            sbInsert.Append("INSERT INTO ").Append(row.TableSchema.Name).Append(" VALUES(");
+
+        //            //Add params
+        //            for (var i = 0; i < schema.ColumnsDefinition.Count(); i++)
+        //            {
+        //                var col = schema.ColumnsDefinition[i];
+
+        //                //Pre insert variables
+        //                if (((col.IsPrimary && !col.IsAutoIncrement) || col.IsUniqueKey) && !col.IsForeignKey)
+        //                {
+        //                    var sqlVar = row.DataRow[i] as Cloner.SqlVariable;
+        //                    var sqlVarName = "@" + sqlVar.Id;
+
+        //                    var value = PlugIn.DataBuilder.BuildDataColumn(this, row.DestinationTable.Database, row.TableSchema, col);
+
+        //                    sb.Append("DECLARE ").Append(sqlVarName).Append(" varchar(max);\r\n");
+        //                    sb.Append("SET ").Append(sqlVarName).Append(" = '").Append(value).Append("';\r\n");
+
+        //                    sbInsert.Append(sqlVarName).Append(',');
+        //                }
+        //                //Post insert variable (auto generated primary key)
+        //                else if (col.IsPrimary && col.IsAutoIncrement)
+        //                {
+        //                    var sqlVar = row.DataRow[i] as Cloner.SqlVariable;
+        //                    var sqlVarName = "@" + sqlVar.Id;
+
+        //                    sbPostInsert.Append("DECLARE ").Append(sqlVarName).Append(" varchar(max);\r\n");
+        //                    sbPostInsert.Append("SET ").Append(sqlVarName).Append(" = LAST_INSERT_ID();\r\n");
+        //                }
+        //                //Normal variables
+        //                else
+        //                {
+        //                    var sqlVarName = "@" + schema.ColumnsDefinition[i].Name + row.StepId;
+        //                    var p = cmd.CreateParameter();
+        //                    p.ParameterName = sqlVarName;
+        //                    p.Value = row.DataRow[i];
+        //                    cmd.Parameters.Add(p);
+
+        //                    sbInsert.Append(sqlVarName).Append(",");
+        //                }
+        //            }
+        //            sbInsert.Remove(sbInsert.Length - 1, 1);
+        //            sbInsert.Append(");\r\n");
+
+        //            sb.Append(sbInsert)
+        //              .Append(sbPostInsert);
+        //        }
+
+        //        cmd.CommandText = sb.ToString();
+
+        //        //Exec query
+        //        Connection.Open();
+        //        cmd.ExecuteNonQuery();
+        //        Connection.Close();
+        //    }
+        //}
+
         public void Update(IRowIdentifier row, ColumnsWithValue values)
         {
             if (!row.Columns.Any())

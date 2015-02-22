@@ -6,20 +6,29 @@
         xmlns:local="clr-namespace:DataCloner.GUI"
         mc:Ignorable="d"
         Title="BetaTemplate" Height="494" Width="589" WindowStyle="None" ResizeMode="NoResize">
-    <Grid Background="#FFF9EDD1">
+    <Grid Background="#FFF9EDD1" Margin="0,0,-37,0">
         <Grid.RowDefinitions>
             <RowDefinition/>
         </Grid.RowDefinitions>
         <Rectangle Fill="#FFE8A303" Height="32" VerticalAlignment="Top"/>
         <TextBlock x:Name="TextBlock" HorizontalAlignment="Left" Margin="10,3,0,0" TextWrapping="Wrap" Text="DataCloner" VerticalAlignment="Top" Foreground="White" FontFamily="Rockwell Extra Bold" FontSize="21.333"/>
-        <Rectangle Fill="#FF2B81B5" HorizontalAlignment="Left" Height="462" Margin="0,32,0,0" VerticalAlignment="Top" Width="202"/>
-        <Rectangle Fill="#FF2A666E" HorizontalAlignment="Left" Height="38" Margin="0,150,0,0" VerticalAlignment="Top" Width="202"/>
-        <TextBlock x:Name="TextBlock1" HorizontalAlignment="Left" Height="29" Margin="10,159,0,0" TextWrapping="Wrap" Text="Configurations" VerticalAlignment="Top" Width="192" Foreground="White" FontSize="13.333"/>
-        <Rectangle Fill="#FFFBDC43" HorizontalAlignment="Left" Height="38" Margin="0,188,0,0" VerticalAlignment="Top" Width="202"/>
-        <TextBlock x:Name="TextBlock1Copy1" HorizontalAlignment="Left" Height="29" Margin="10,197,0,0" TextWrapping="Wrap" Text="Relations" VerticalAlignment="Top" Width="192" Foreground="Black" FontSize="13.333"/>
-        <Rectangle Fill="#FFF08223" HorizontalAlignment="Left" Height="38" Margin="0,226,0,0" VerticalAlignment="Top" Width="202"/>
-        <TextBlock x:Name="TextBlock1Copy2" HorizontalAlignment="Left" Height="29" Margin="10,235,0,0" TextWrapping="Wrap" Text="Clonage" VerticalAlignment="Top" Width="192" Foreground="Black" FontSize="13.333"/>
-        <Rectangle Fill="#FF55AC85" HorizontalAlignment="Left" Height="38" Margin="0,112,0,0" VerticalAlignment="Top" Width="202"/>
-        <TextBlock x:Name="TextBlock1Copy" HorizontalAlignment="Left" Height="29" Margin="10,121,0,0" TextWrapping="Wrap" Text="Sources de données" VerticalAlignment="Top" Width="192" Foreground="Black" FontSize="13.333"/>
+        <Rectangle Fill="#FF2B81B5" HorizontalAlignment="Left" Height="462" Margin="0,32,0,0" VerticalAlignment="Top" Width="156"/>
+        <Rectangle Fill="#FF2A666E" HorizontalAlignment="Left" Height="38" Margin="0,150,0,0" VerticalAlignment="Top" Width="156"/>
+        <TextBlock x:Name="TextBlock1" HorizontalAlignment="Left" Height="29" Margin="8,159,0,0" TextWrapping="Wrap" Text="Configurations" VerticalAlignment="Top" Width="148" Foreground="White" FontSize="13.333"/>
+        <Rectangle Fill="#FFFBDC43" HorizontalAlignment="Left" Height="38" Margin="0,188,0,0" VerticalAlignment="Top" Width="156"/>
+        <TextBlock x:Name="TextBlock1Copy1" HorizontalAlignment="Left" Height="29" Margin="8,197,0,0" TextWrapping="Wrap" Text="Relations" VerticalAlignment="Top" Width="148" Foreground="Black" FontSize="13.333"/>
+        <Rectangle Fill="#FFF08223" HorizontalAlignment="Left" Height="38" Margin="0,226,0,0" VerticalAlignment="Top" Width="156"/>
+        <TextBlock x:Name="TextBlock1Copy2" HorizontalAlignment="Left" Height="29" Margin="8,235,0,0" TextWrapping="Wrap" Text="Clonage" VerticalAlignment="Top" Width="148" Foreground="Black" FontSize="13.333"/>
+        <Rectangle Fill="#FF55AC85" HorizontalAlignment="Left" Height="38" Margin="0,112,0,0" VerticalAlignment="Top" Width="156"/>
+        <TextBlock x:Name="TextBlock1Copy" HorizontalAlignment="Left" Height="29" Margin="10,121,0,0" TextWrapping="Wrap" Text="Sources de données" VerticalAlignment="Top" Width="146" Foreground="Black" FontSize="13.333"/>
+        <DataGrid x:Name="dataGrid" HorizontalAlignment="Left" Margin="171,74,0,0" VerticalAlignment="Top" Height="76" Width="445">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Server"></DataGridTextColumn>
+                    <DataGridTextColumn Header="Database"></DataGridTextColumn>
+                    <DataGridTextColumn Header="Schema"></DataGridTextColumn>
+                    <DataGridTextColumn Header="Table"></DataGridTextColumn>
+                    <DataGridTextColumn Header="Columns"></DataGridTextColumn>
+                </DataGrid.Columns>    
+        </DataGrid>
     </Grid>
 </Window>

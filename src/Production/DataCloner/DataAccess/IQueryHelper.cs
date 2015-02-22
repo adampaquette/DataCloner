@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using DataCloner.DataClasse;
 
@@ -21,6 +22,7 @@ namespace DataCloner.DataAccess
         void EnforceIntegrityCheck(bool active);
         object[][] Select(IRowIdentifier row);
         void Insert(ITableIdentifier table, object[] row);
+        void Insert(List<Cloner.RowToInsert> rows);
         void Update(IRowIdentifier row, ColumnsWithValue values);
         void Delete(IRowIdentifier row);
         void SqlTypeToDbType(string fullType, out DbType type, out string size);

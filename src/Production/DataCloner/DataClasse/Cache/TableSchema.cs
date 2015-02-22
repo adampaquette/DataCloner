@@ -109,14 +109,14 @@ namespace DataCloner.DataClasse.Cache
             }
         }
 
-        public void SetFkFromDatarowInDatarow(TableSchema fkTable, IForeignKey fk, object[][] sourceRow, object[] destinationRow)
+        public void SetFkFromDatarowInDatarow(TableSchema fkTable, IForeignKey fk, object[] sourceRow, object[] destinationRow)
         {
             foreach (var col in fk.Columns)
             {
                 int posTblSourceFk = ColumnsDefinition.IndexOf(c => c.Name == col.NameFrom);
                 int posTblDestinationPk = fkTable.ColumnsDefinition.IndexOf(c => c.Name == col.NameTo);
 
-                destinationRow[posTblSourceFk] = sourceRow[0][posTblDestinationPk];
+                destinationRow[posTblSourceFk] = sourceRow[posTblDestinationPk];
             }
         }
 
