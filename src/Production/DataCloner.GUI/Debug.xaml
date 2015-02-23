@@ -74,11 +74,14 @@
                 <TextBox x:Name="TxtColumn" Height="23" Text="employeeNumber"/>
                 <Label x:Name="label5" Content="Value"/>
                 <TextBox x:Name="TxtValue" Height="23" Text="1188"/>
-                <Button x:Name="BtnClone" Content="Clone" Click="BtnClone_Click"/>
+                <StackPanel Orientation="Horizontal">
+                    <Button x:Name="BtnClone" Content="Clone" Click="BtnClone_Click" Margin="10,5" Width="70" />
+                    <Button x:Name="BtnForceClone" Content="Force Clone" Click="BtnForceClone_Click" Margin="10,5" Width="80" />
+                </StackPanel>
             </StackPanel>
         </GroupBox>
 
-        <Button x:Name="BtnBuildAllCache" Content="Reload config / Build all caches" Margin="0,330,10,0" VerticalAlignment="Top" Click="BtnReloadConfigBuildAllCache_Click" HorizontalAlignment="Right" Width="207"/>
+        <Button x:Name="BtnBuildAllCache" Content="Reload config / Build all caches" Margin="0,325,10,0" VerticalAlignment="Top" Click="BtnReloadConfigBuildAllCache_Click" HorizontalAlignment="Right" Width="207"/>
         <TextBox x:Name="TxtStatus" Margin="0,399,0,0" TextWrapping="NoWrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" />
         <TextBlock x:Name="textBlock" HorizontalAlignment="Left" Margin="10,378,0,0" TextWrapping="Wrap" Text="Log : " VerticalAlignment="Top"/>
         <Image Source="Resources/dbsettings.png" Margin="260,98,46,318"></Image>

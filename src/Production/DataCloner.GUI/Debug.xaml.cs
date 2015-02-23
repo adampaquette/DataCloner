@@ -82,7 +82,8 @@ namespace DataCloner.GUI
                 source.Table = paramsIn.Table;
                 source.Columns = paramsIn.Columns;
 
-                _dc.Clear();
+                if(paramsIn.ForceClone)
+                    _dc.Clear();
                 _dc.Setup(_config.Applications[0], 1, null);
                 paramsOut.ClonedRow = _dc.Clone(source, true);
 
@@ -131,6 +132,20 @@ namespace DataCloner.GUI
             });
         }
 
+        private void BtnForceClone_Click(object sender, RoutedEventArgs e)
+        {
+            TxtStatus.Text += "Cloning started" + Environment.NewLine;
+            _cloneWorker.RunWorkerAsync(new ClonerWorkerInputArgs
+            {
+                Server = TxtServer.Text,
+                Database = TxtDatabase.Text,
+                Schema = TxtSchema.Text,
+                Table = TxtTable.Text,
+                Columns = new ColumnsWithValue { { TxtColumn.Text, TxtValue.Text } },
+                ForceClone = true
+            });
+        }
+
         public class ClonerWorkerInputArgs
         {
             public string Server { get; set; }
@@ -138,6 +153,7 @@ namespace DataCloner.GUI
             public String Schema { get; set; }
             public String Table { get; set; }
             public ColumnsWithValue Columns { get; set; }
+            public bool ForceClone { get; set; }
         }
 
         public class ClonerWorkerOutputArgs

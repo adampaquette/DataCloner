@@ -21,6 +21,7 @@ namespace DataCloner
             //ArchiveTest();
             //ServerMapTest();
             DataclonerTest1();
+            //Console.ReadKey();
 #endif
             return 0;
         }
@@ -160,49 +161,59 @@ namespace DataCloner
 
             var dc = new Cloner();
             dc.EnforceIntegrity = false;
-            dc.StatusChanged += (s, e) =>
-            {
-                var sb = new StringBuilder();
-                //sb.Append(e.Status.ToString()).Append(" : ").Append(Environment.NewLine);
-                sb.Append(new string(' ', 3 * e.Level));
-                sb.Append(e.SourceRow.Database).Append(".").Append(e.SourceRow.Schema).Append(".").Append(e.SourceRow.Table).Append(" : (");
-                foreach (var col in e.SourceRow.Columns)
-                    sb.Append(col.Key).Append("=").Append(col.Value).Append(", ");
-                sb.Remove(sb.Length - 2, 2);
-                sb.Append(")");
-                Console.WriteLine(sb.ToString());
-            };
+            //dc.StatusChanged += (s, e) =>
+            //{
+            //    var sb = new StringBuilder();
+            //    //sb.Append(e.Status.ToString()).Append(" : ").Append(Environment.NewLine);
+            //    sb.Append(new string(' ', 3 * e.Level));
+            //    sb.Append(e.SourceRow.Database).Append(".").Append(e.SourceRow.Schema).Append(".").Append(e.SourceRow.Table).Append(" : (");
+            //    foreach (var col in e.SourceRow.Columns)
+            //        sb.Append(col.Key).Append("=").Append(col.Value).Append(", ");
+            //    sb.Remove(sb.Length - 2, 2);
+            //    sb.Append(")");
+            //    Console.WriteLine(sb.ToString());
+            //};
 
             var config = Configuration.Load(Configuration.ConfigFileName);
             dc.Setup(config.Applications[0], 1, null);
 
-            source.Columns.Clear();
-            source.ServerId = 1;
-            source.Database = "dataclonertestdatabase";
-            source.Schema = "";
-            source.Table = "employees";
-            source.Columns.Add("employeeNumber", 1188);
-            dc.Clone(source, true);
+            for (int i = 0; i < 3; i++)
+            {
+                DateTime start = DateTime.Now;
 
-            Console.WriteLine("==============");
+                Console.WriteLine("Cloning started");
 
-            source.Columns.Clear();
-            source.ServerId = 1;
-            source.Database = "sakila";
-            source.Schema = "";
-            source.Table = "customer";
-            source.Columns.Add("customer_id", 1);
-            dc.Clone(source, true);
+                source.Columns.Clear();
+                source.ServerId = 1;
+                source.Database = "dataclonertestdatabase";
+                source.Schema = "";
+                source.Table = "employees";
+                source.Columns.Add("employeeNumber", 1188);
+                dc.Clone(source, true);
 
-            Console.WriteLine("==============");
+                //Console.WriteLine("Done");
 
-            source.Columns.Clear();
-            source.ServerId = 1;
-            source.Database = "dataclonertestdatabase";
-            source.Schema = "";
-            source.Table = "employees";
-            source.Columns.Add("employeeNumber", 1370);
-            dc.Clone(source, true);
+                //source.Columns.Clear();
+                //source.ServerId = 1;
+                //source.Database = "sakila";
+                //source.Schema = "";
+                //source.Table = "customer";
+                //source.Columns.Add("customer_id", 1);
+                //dc.Clone(source, true);
+
+                //Console.WriteLine("Done");
+
+                //source.Columns.Clear();
+                //source.ServerId = 1;
+                //source.Database = "dataclonertestdatabase";
+                //source.Schema = "";
+                //source.Table = "employees";
+                //source.Columns.Add("employeeNumber", 1370);
+                //dc.Clone(source, true);
+
+                Console.WriteLine("Cloning completed in : " +
+                                  DateTime.Now.Subtract(start).ToString("hh':'mm':'ss'.'fff"));
+            }
         }
 
         public static void ServerMapTest()

@@ -20,11 +20,11 @@ namespace DataCloner.PlugIn
             };
         }
 
-        public static object BuildDataColumn(IQueryHelper queryHelper, string database, ITableSchema table, IColumnDefinition col)
+        public static object BuildDataColumn(IQueryHelper queryHelper, Int16 serverId, string database, string schema, ITableSchema table, IColumnDefinition col)
         {
             IDataBuilder builder = null;
             var mustGenerate = false;
-            
+
             if (!string.IsNullOrWhiteSpace(col.BuilderName))
             {
                 mustGenerate = true;
@@ -80,12 +80,12 @@ namespace DataCloner.PlugIn
                 if (builder == null)
                     throw new NullReferenceException(
                         String.Format("Builder '{0}' for column '{1}' is not found. Watch configuration file.", col.BuilderName, col.Name));
-                return builder.BuildData(queryHelper.Connection, queryHelper.Engine, database, table, col);
+                return builder.BuildData(queryHelper.Connection, queryHelper.Engine, serverId, database, schema, table, col);
             }
             return null;
         }
 
-        public static void BuildDataFromTable(IQueryHelper queryHelper, string database, ITableSchema table, object[] dataRow)
+        public static void BuildDataFromTable(IQueryHelper queryHelper, Int16 serverId, string database, string schema, ITableSchema table, object[] dataRow)
         {
             if (table.ColumnsDefinition.Length != dataRow.Length)
                 throw new ArgumentException(
@@ -95,8 +95,14 @@ namespace DataCloner.PlugIn
             for (var i = 0; i < table.ColumnsDefinition.Length; i++)
             {
                 var col = table.ColumnsDefinition[i];
-                dataRow[i] = BuildDataColumn(queryHelper, database, table, col);
+                dataRow[i] = BuildDataColumn(queryHelper, serverId, database, schema, table, col);
             }
+        }
+
+        public static void ClearCache()
+        {
+            foreach (var builder in CachedBuilders)
+                builder.Value.ClearCache();
         }
     }
 }

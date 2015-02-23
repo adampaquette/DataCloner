@@ -66,6 +66,7 @@ namespace DataCloner
             _keyRelationships.Clear();
             _circularKeyJobs.Clear();
             _rowsToInsert.Clear();
+            DataBuilder.ClearCache();
         }
 
         public void Setup(Application app, int mapId, int? configId)

@@ -1,32 +1,23 @@
 ﻿using System;
 using System.Data;
 using DataCloner.DataClasse.Cache;
+using DataCloner.Framework;
 
 namespace DataCloner.PlugIn
 {
     internal class StringDataBuilder : IDataBuilder
     {
-        public object BuildData(IDbConnection conn, DbEngine engine, string database, ITableSchema table, IColumnDefinition column)
+        public object BuildData(IDbConnection conn, DbEngine engine, Int16 serverId, string database, string schema, ITableSchema table, IColumnDefinition column)
         {
             int size;
             if (!Int32.TryParse(column.Size, out size))
                 size = 10;
 
-            return CreateString(size);
+            return KeyGenerator.GetUniqueKey(size);
         }
 
-        internal static string CreateString(int stringLength)
+        public void ClearCache()
         {
-            const string allowedChars = "ABCDEFGHJKLMNOPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz0123456789!@$?_-";
-            var chars = new char[stringLength];
-            var rd = new Random();
-
-            for (var i = 0; i < stringLength; i++)
-            {
-                chars[i] = allowedChars[rd.Next(0, allowedChars.Length)];
-            }
-
-            return new string(chars);
         }
     }
 }
