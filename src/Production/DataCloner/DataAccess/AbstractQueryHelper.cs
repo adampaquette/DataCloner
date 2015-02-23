@@ -215,7 +215,7 @@ namespace DataCloner.DataAccess
             }
         }
 
-        public void Insert(List<Cloner.RowToInsert> rows)
+        public void Insert(List<Cloner.ExecutionStep> rows)
         {
             var sb = new StringBuilder();
             using (var cmd = Connection.CreateCommand())

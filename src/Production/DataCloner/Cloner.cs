@@ -29,7 +29,7 @@ namespace DataCloner
         private readonly Cache.CacheInitialiser _cacheInitialiser;
         private readonly KeyRelationship _keyRelationships;
         private readonly List<CircularKeyJob> _circularKeyJobs;
-        private readonly List<RowToInsert> _rowsToInsert;
+        private readonly List<ExecutionStep> _executionPlan;
 
         private Cache _cache;
         private int _nextVariableId;
@@ -45,9 +45,9 @@ namespace DataCloner
         {
             _keyRelationships = new KeyRelationship();
             _circularKeyJobs = new List<CircularKeyJob>();
+            _executionPlan = new List<ExecutionStep>();
             _dispatcher = new QueryDispatcher();
             _cacheInitialiser = Cache.Init;
-            _rowsToInsert = new List<RowToInsert>();
         }
 
         internal Cloner(IQueryDispatcher dispatcher, Cache.CacheInitialiser cacheInit)
@@ -57,6 +57,7 @@ namespace DataCloner
 
             _keyRelationships = new KeyRelationship();
             _circularKeyJobs = new List<CircularKeyJob>();
+            _executionPlan = new List<ExecutionStep>();
             _dispatcher = dispatcher;
             _cacheInitialiser = cacheInit;
         }
@@ -65,8 +66,8 @@ namespace DataCloner
         {
             _keyRelationships.Clear();
             _circularKeyJobs.Clear();
-            _rowsToInsert.Clear();
-            DataBuilder.ClearCache();
+            _executionPlan.Clear();
+            DataBuilder.ClearBuildersCache();
         }
 
         public void Setup(Application app, int mapId, int? configId)
@@ -77,9 +78,9 @@ namespace DataCloner
         public List<IRowIdentifier> Clone(IRowIdentifier riSource, bool getDerivatives)
         {
             _dispatcher[riSource].EnforceIntegrityCheck(EnforceIntegrity);
-            SqlTraveler(riSource, getDerivatives, false, 0, new Stack<IRowIdentifier>());
+            BuildExecutionPlan(riSource, getDerivatives, false, 0, new Stack<IRowIdentifier>());
 
-            GenerateSqlInsertScript(_rowsToInsert);
+            GenerateSqlInsertScript(_executionPlan);
 
             UpdateCircularReferences();
 
@@ -125,14 +126,21 @@ namespace DataCloner
             return clonedRows;
         }
 
-        private IRowIdentifier SqlTraveler(IRowIdentifier riSource, bool getDerivatives, bool shouldReturnFk, int level,
-                                           Stack<IRowIdentifier> rowsGenerating)
+        /// <summary>
+        /// Build execution plan for the specific source row to be able to clone blazing fast.
+        /// </summary>
+        /// <param name="riSource">Identify a single or multiples rows to clone.</param>
+        /// <param name="getDerivatives">Specify if we clone data related to the input(s) line(s) from other tables.</param>
+        /// <param name="shouldReturnFk">Indicate that a source row should only return a single line.</param>
+        /// <param name="level">Current recursion level.</param>
+        /// <param name="rowsGenerating">Current stack to handle circular foreign keys.</param>
+        /// <returns>Always return the primary key of the source row, same if the value queried is a foreign key.</returns>
+        private IRowIdentifier BuildExecutionPlan(IRowIdentifier riSource, bool getDerivatives, bool shouldReturnFk, int level,
+                                                  Stack<IRowIdentifier> rowsGenerating)
         {
-            //var srcRows = riSource.Select();
             var srcRows = _dispatcher.Select(riSource);
             var nbRows = srcRows.Length;
             var table = _cache.GetTable(riSource);
-            var autoIncrementPk = table.ColumnsDefinition.Any(c => c.IsAutoIncrement && c.IsPrimary);
             var serverDst = _cache.ServerMap[new ServerIdentifier
             {
                 ServerId = riSource.ServerId,
@@ -186,7 +194,7 @@ namespace DataCloner
                     if (fkValue.Contains(DBNull.Value))
                         continue;
 
-                    //Si le foreignkey est déjà dans la table de destination, on l'utilise
+                    //Si la foreignkey est déjà dans la table de destination, on l'utilise
                     var fkDst = _keyRelationships.GetKey(fk.ServerIdTo, fk.DatabaseTo, fk.SchemaTo, fk.TableTo, fkValue);
                     if (fkDst != null)
                         table.SetFkInDatarow(fk, fkDst, destinationRow);
@@ -206,7 +214,6 @@ namespace DataCloner
                         //On ne copie pas la ligne si la table est statique
                         if (fkTable.IsStatic)
                         {
-                            //var fkRow = riFK.Select();
                             var fkRow = _dispatcher.Select(riFk);
                             fkDestinationExists = fkRow.Length == 1;
 
@@ -250,7 +257,7 @@ namespace DataCloner
                             {
                                 //Crer la ligne et ses dépendances
                                 rowsGenerating.Push(riFk);
-                                var riNewFk = SqlTraveler(riFk, false, true, level + 1, rowsGenerating);
+                                var riNewFk = BuildExecutionPlan(riFk, false, true, level + 1, rowsGenerating);
                                 rowsGenerating.Pop();
 
                                 var newFkRow = GetDataRow(riNewFk);
@@ -306,18 +313,18 @@ namespace DataCloner
             return riReturn;
         }
 
-        private RowToInsert GetDataRow(IRowIdentifier riNewFk)
+        private ExecutionStep GetDataRow(IRowIdentifier riNewFk)
         {
             if(riNewFk == null)
                 throw new ArgumentNullException(nameof(riNewFk));
             if (!riNewFk.Columns.Any())
-                throw new Exception("SqlTraveler failed to return a foreign key value.");
+                throw new Exception("BuildExecutionPlan failed to return a foreign key value.");
 
             //La FK (ou unique constraint) n'est pas necessairement la PK donc on réobtient la ligne car
-            //SqlTraveler retourne toujours la PK.
-            RowToInsert newFkRow = null;
+            //BuildExecutionPlan retourne toujours la PK.
+            ExecutionStep newFkRow = null;
             var varId = (riNewFk.Columns.Values.First() as SqlVariable).Id;
-            foreach (var row in _rowsToInsert)
+            foreach (var row in _executionPlan)
             {
                 if (row.PostInsertAutoIncrementVariable?.Id == varId)
                 {
@@ -336,7 +343,7 @@ namespace DataCloner
         private object[] AppendRowToInsert(IRowIdentifier riSource, TableIdentifier tiDestination, TableSchema table,
                                            object[] destinationRow, object[] srcKey)
         {
-            var rowToInsert = new RowToInsert
+            var rowToInsert = new ExecutionStep
             {
                 StepId = _nextStepId++,
                 SourceTable = riSource,
@@ -368,7 +375,7 @@ namespace DataCloner
             }
 
             rowToInsert.DataRow = destinationRow;
-            _rowsToInsert.Add(rowToInsert);
+            _executionPlan.Add(rowToInsert);
 
             //Sauve la PK dans la cache
             var dstKey = table.BuildRawPkFromDataRow(destinationRow);
@@ -383,7 +390,7 @@ namespace DataCloner
             //public IColumnDefinition ColumnDefinition { get; set; }
         }
 
-        public class RowToInsert
+        public class ExecutionStep
         {
             public Int32 StepId { get; set; }
             public List<SqlVariable> PreInsertVariable { get; set; }
@@ -393,7 +400,7 @@ namespace DataCloner
             public ITableIdentifier DestinationTable { get; set; }
             public object[] DataRow { get; set; }
 
-            public RowToInsert()
+            public ExecutionStep()
             {
                 PreInsertVariable = new List<SqlVariable>();
             }
@@ -427,7 +434,7 @@ namespace DataCloner
                     Columns = table.BuildDerivativePk(cachedDt, sourceRow)
                 };
 
-                SqlTraveler(riDt, getDerivatives, false, level + 1, new Stack<IRowIdentifier>());
+                BuildExecutionPlan(riDt, getDerivatives, false, level + 1, new Stack<IRowIdentifier>());
             }
         }
 
@@ -522,7 +529,7 @@ namespace DataCloner
             _circularKeyJobs.Clear();
         }
 
-        private void GenerateSqlInsertScript(List<RowToInsert> rows)
+        private void GenerateSqlInsertScript(List<ExecutionStep> rows)
         {
             //TODO : SPLIT LES ROWSTOINSERT PAR CONNECTION
             _dispatcher.GetQueryHelper(1).Insert(rows);

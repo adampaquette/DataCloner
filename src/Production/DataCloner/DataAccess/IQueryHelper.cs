@@ -22,7 +22,7 @@ namespace DataCloner.DataAccess
         void EnforceIntegrityCheck(bool active);
         object[][] Select(IRowIdentifier row);
         void Insert(ITableIdentifier table, object[] row);
-        void Insert(List<Cloner.RowToInsert> rows);
+        void Insert(List<Cloner.ExecutionStep> rows);
         void Update(IRowIdentifier row, ColumnsWithValue values);
         void Delete(IRowIdentifier row);
         void SqlTypeToDbType(string fullType, out DbType type, out string size);

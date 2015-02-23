@@ -99,7 +99,7 @@ namespace DataCloner.PlugIn
             }
         }
 
-        public static void ClearCache()
+        public static void ClearBuildersCache()
         {
             foreach (var builder in CachedBuilders)
                 builder.Value.ClearCache();

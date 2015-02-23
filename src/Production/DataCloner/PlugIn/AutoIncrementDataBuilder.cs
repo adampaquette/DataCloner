@@ -76,6 +76,7 @@ namespace DataCloner.PlugIn
 
         public void ClearCache()
         {
+            _autoIncrementCache.Clear();
         }
     }
 }
