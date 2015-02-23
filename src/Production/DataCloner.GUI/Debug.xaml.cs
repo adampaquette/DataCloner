@@ -63,6 +63,9 @@ namespace DataCloner.GUI
                 sbLog.Append(Environment.NewLine);
                 TxtStatus.Text += sbLog.ToString();
                 TxtStatus.ScrollToEnd();
+
+                BtnClone.IsEnabled = true;
+                BtnForceClone.IsEnabled = true;
             };
             _cloneWorker.ProgressChanged += (s, e) =>
             {
@@ -130,6 +133,8 @@ namespace DataCloner.GUI
                 Table = TxtTable.Text,
                 Columns = new ColumnsWithValue { { TxtColumn.Text, TxtValue.Text } }
             });
+            BtnClone.IsEnabled = false;
+            BtnForceClone.IsEnabled = false;
         }
 
         private void BtnForceClone_Click(object sender, RoutedEventArgs e)
@@ -144,6 +149,8 @@ namespace DataCloner.GUI
                 Columns = new ColumnsWithValue { { TxtColumn.Text, TxtValue.Text } },
                 ForceClone = true
             });
+            BtnClone.IsEnabled = false;
+            BtnForceClone.IsEnabled = false;
         }
 
         public class ClonerWorkerInputArgs

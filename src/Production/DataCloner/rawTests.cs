@@ -177,7 +177,7 @@ namespace DataCloner
             var config = Configuration.Load(Configuration.ConfigFileName);
             dc.Setup(config.Applications[0], 1, null);
 
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < 5; i++)
             {
                 DateTime start = DateTime.Now;
 
@@ -201,15 +201,15 @@ namespace DataCloner
                 //source.Columns.Add("customer_id", 1);
                 //dc.Clone(source, true);
 
-                //Console.WriteLine("Done");
+                Console.WriteLine("Done");
 
-                //source.Columns.Clear();
-                //source.ServerId = 1;
-                //source.Database = "dataclonertestdatabase";
-                //source.Schema = "";
-                //source.Table = "employees";
-                //source.Columns.Add("employeeNumber", 1370);
-                //dc.Clone(source, true);
+                source.Columns.Clear();
+                source.ServerId = 1;
+                source.Database = "dataclonertestdatabase";
+                source.Schema = "";
+                source.Table = "employees";
+                source.Columns.Add("employeeNumber", 1370);
+                dc.Clone(source, true);
 
                 Console.WriteLine("Cloning completed in : " +
                                   DateTime.Now.Subtract(start).ToString("hh':'mm':'ss'.'fff"));

@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="clr-namespace:DataCloner.GUI"
         x:Class="DataCloner.GUI.Debug"
-        Title="Debug" Height="599.7" Width="468" Background="Chartreuse" Foreground="#003300">
+        Title="Debug" Height="600" Width="468" Background="Chartreuse" Foreground="#003300" ResizeMode="CanResizeWithGrip">
     <Window.Resources>
         <BorderGapMaskConverter x:Key="BorderGapMaskConverter"/>
         <Style TargetType="{x:Type Label}">
@@ -80,10 +80,9 @@
                 </StackPanel>
             </StackPanel>
         </GroupBox>
-
-        <Button x:Name="BtnBuildAllCache" Content="Reload config / Build all caches" Margin="0,325,10,0" VerticalAlignment="Top" Click="BtnReloadConfigBuildAllCache_Click" HorizontalAlignment="Right" Width="207"/>
+        <Button x:Name="BtnBuildAllCache" Content="Reload config / Build all caches" Margin="229,326,0,0" VerticalAlignment="Top" Click="BtnReloadConfigBuildAllCache_Click" HorizontalAlignment="Left" Width="207"/>
         <TextBox x:Name="TxtStatus" Margin="0,399,0,0" TextWrapping="NoWrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" />
-        <TextBlock x:Name="textBlock" HorizontalAlignment="Left" Margin="10,378,0,0" TextWrapping="Wrap" Text="Log : " VerticalAlignment="Top"/>
-        <Image Source="Resources/dbsettings.png" Margin="260,98,46,318"></Image>
+        <TextBlock x:Name="BlkLog" HorizontalAlignment="Left" Margin="10,378,0,0" TextWrapping="Wrap" Text="Log : " VerticalAlignment="Top"/>
+        <Image Source="Resources/dbsettings.png" Margin="260,98,0,0" HorizontalAlignment="Left" Width="154" Height="153" VerticalAlignment="Top"/>
     </Grid>
 </Window>
