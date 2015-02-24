@@ -269,8 +269,12 @@ namespace DataCloner
                     }
                 }
 
-                /*NEW ALGO PERFO*/
-                dstKey = AppendRowToInsert(riSource, tiDestination, table, destinationRow, srcKey);
+                var step = CreateExecutionStep(riSource, tiDestination, table, destinationRow);
+                _executionPlan.Add(step);
+
+                //Sauve la PK dans la cache
+                dstKey = table.BuildRawPkFromDataRow(step.DataRow);
+                _keyRelationships.SetKey(riSource.ServerId, riSource.Database, riSource.Schema, riSource.Table, srcKey, dstKey);
 
                 //Ajouter les colonnes de contrainte unique dans _keyRelationships
                 //...
@@ -280,31 +284,6 @@ namespace DataCloner
                 {
                     riReturn.Columns = table.BuildPkFromRawKey(dstKey);
                 }
-
-                /**************************************************************************************
-                ////Générer les colonnes qui ont été marquées dans la configuration dataBuilder 
-                //DataBuilder.BuildDataFromTable(_dispatcher.GetQueryHelper(tiDestination), tiDestination.Database, table, destinationRow);
-
-                ////La ligne de destination est prète à l'enregistrement
-                ////tiDestination.Insert(destinationRow);
-                //_dispatcher.Insert(tiDestination, destinationRow);
-
-                ////Sauve la PK dans la cache
-                //if (autoIncrementPk)
-                //    dstKey = new[] { _dispatcher[serverDst.ServerId].GetLastInsertedPk() };
-                //else
-                //    dstKey = table.BuildRawPkFromDataRow(destinationRow);
-                //_keyRelationships.SetKey(riSource.ServerId, riSource.Database, riSource.Schema, riSource.Table, srcKey, dstKey);
-
-                ////Ajouter les colonnes de contrainte unique dans _keyRelationships
-                ////...
-
-                ////On affecte la valeur de retour
-                //if (shouldReturnFk)
-                //{
-                //    riReturn.Columns = table.BuildPkFromRawKey(dstKey);
-                //}
-                ************************************************************************************/
 
                 //On clone les lignes des tables dépendantes
                 GetDerivatives(table, currentRow, getDerivatives, level);
@@ -322,28 +301,13 @@ namespace DataCloner
 
             //La FK (ou unique constraint) n'est pas necessairement la PK donc on réobtient la ligne car
             //BuildExecutionPlan retourne toujours la PK.
-            ExecutionStep newFkRow = null;
             var varId = (riNewFk.Columns.Values.First() as SqlVariable).Id;
-            foreach (var row in _executionPlan)
-            {
-                if (row.PostInsertAutoIncrementVariable?.Id == varId)
-                {
-                    newFkRow = row;
-                    break;
-                }
-                if (row.PreInsertVariable.Any(v => v.Id == varId))
-                {
-                    newFkRow = row;
-                    break;
-                }
-            }
-            return newFkRow;
+            return _executionPlan.FirstOrDefault(r => r.Variables.Any(v => v.Id == varId));
         }
 
-        private object[] AppendRowToInsert(IRowIdentifier riSource, TableIdentifier tiDestination, TableSchema table,
-                                           object[] destinationRow, object[] srcKey)
+        private ExecutionStep CreateExecutionStep(IRowIdentifier riSource, TableIdentifier tiDestination, TableSchema table, object[] destinationRow)
         {
-            var rowToInsert = new ExecutionStep
+            var step = new ExecutionStep
             {
                 StepId = _nextStepId++,
                 SourceTable = riSource,
@@ -356,45 +320,34 @@ namespace DataCloner
             {
                 var colName = col.Name;
 
-                if (((col.IsPrimary && !col.IsAutoIncrement) || col.IsUniqueKey) && !col.IsForeignKey)
-                {
-                    var sqlVar = new SqlVariable {Id = _nextVariableId++};
-                    rowToInsert.PreInsertVariable.Add(sqlVar);
+                var valueToGenerate = ((col.IsPrimary && !col.IsAutoIncrement) || col.IsUniqueKey) && !col.IsForeignKey;
+                var pkToGenerate = col.IsPrimary && col.IsAutoIncrement;
 
-                    int pos = table.ColumnsDefinition.IndexOf(c => c.Name == colName);
-                    destinationRow[pos] = sqlVar;
-                }
-                else if (col.IsPrimary && col.IsAutoIncrement)
+                if ( valueToGenerate | pkToGenerate)
                 {
                     var sqlVar = new SqlVariable {Id = _nextVariableId++};
-                    rowToInsert.PostInsertAutoIncrementVariable = sqlVar;
+                    step.Variables.Add(sqlVar);
 
                     int pos = table.ColumnsDefinition.IndexOf(c => c.Name == colName);
                     destinationRow[pos] = sqlVar;
                 }
             }
 
-            rowToInsert.DataRow = destinationRow;
-            _executionPlan.Add(rowToInsert);
-
-            //Sauve la PK dans la cache
-            var dstKey = table.BuildRawPkFromDataRow(destinationRow);
-            _keyRelationships.SetKey(riSource.ServerId, riSource.Database, riSource.Schema, riSource.Table, srcKey, dstKey);
-            return dstKey;
+            step.DataRow = destinationRow;
+            return step;
         }
 
         public class SqlVariable
         {
             public Int32 Id { get; set; }
-            //public object Value { get; set; }
+            public object Value { get; set; }
             //public IColumnDefinition ColumnDefinition { get; set; }
         }
 
         public class ExecutionStep
         {
             public Int32 StepId { get; set; }
-            public List<SqlVariable> PreInsertVariable { get; set; }
-            public SqlVariable PostInsertAutoIncrementVariable { get; set; }
+            public List<SqlVariable> Variables { get; set; }
             public ITableSchema TableSchema { get; set; }
             public ITableIdentifier SourceTable { get; set; }
             public ITableIdentifier DestinationTable { get; set; }
@@ -402,7 +355,7 @@ namespace DataCloner
 
             public ExecutionStep()
             {
-                PreInsertVariable = new List<SqlVariable>();
+                Variables = new List<SqlVariable>();
             }
         }
 

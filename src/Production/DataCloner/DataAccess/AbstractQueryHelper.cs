@@ -240,19 +240,14 @@ namespace DataCloner.DataAccess
                     {
                         var col = schema.ColumnsDefinition[i];
 
-                        //Pre insert variables
+                        //Variable à générer
                         if (((col.IsPrimary && !col.IsAutoIncrement) || col.IsUniqueKey) && !col.IsForeignKey)
                         {
                             var sqlVar = row.DataRow[i] as Cloner.SqlVariable;
-                            var sqlVarName = "@" + sqlVar.Id;
+                            sqlVar.Value = PlugIn.DataBuilder.BuildDataColumn(this, row.DestinationTable.ServerId, row.DestinationTable.Database,
+                                                                              row.DestinationTable.Schema, row.TableSchema, col);
 
-                            var value = PlugIn.DataBuilder.BuildDataColumn(this, row.DestinationTable.ServerId, row.DestinationTable.Database,
-                                                                           row.DestinationTable.Schema, row.TableSchema, col);
-
-                            //sb.Append("DECLARE ").Append(sqlVarName).Append(" varchar(max);\r\n");
-                            sb.Append("SET ").Append(sqlVarName).Append(" = '").Append(value).Append("';\r\n");
-
-                            sbInsert.Append(sqlVarName).Append(',');
+                            sbInsert.Append("'").Append(sqlVar.Value).Append("',");
                         }
                         //Post insert variable (auto generated primary key)
                         else if (col.IsPrimary && col.IsAutoIncrement)
@@ -269,10 +264,7 @@ namespace DataCloner.DataAccess
                             var sqlVar = row.DataRow[i] as Cloner.SqlVariable;
                             //On fait référence à une variable
                             if (sqlVar != null)
-                            {
-                                var sqlVarName = "@" + sqlVar.Id;
-                                sbInsert.Append(sqlVarName).Append(",");
-                            }
+                                sbInsert.Append("'").Append(sqlVar.Value).Append("',");
                             //C'est une valeur brute
                             else
                             {
