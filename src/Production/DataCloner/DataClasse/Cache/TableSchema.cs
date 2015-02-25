@@ -113,8 +113,8 @@ namespace DataCloner.DataClasse.Cache
         {
             foreach (var col in fk.Columns)
             {
-                int posTblSourceFk = ColumnsDefinition.IndexOf(c => c.Name == col.NameFrom);
-                int posTblDestinationPk = fkTable.ColumnsDefinition.IndexOf(c => c.Name == col.NameTo);
+                var posTblSourceFk = ColumnsDefinition.IndexOf(c => c.Name == col.NameFrom);
+                var posTblDestinationPk = fkTable.ColumnsDefinition.IndexOf(c => c.Name == col.NameTo);
 
                 destinationRow[posTblSourceFk] = sourceRow[posTblDestinationPk];
             }

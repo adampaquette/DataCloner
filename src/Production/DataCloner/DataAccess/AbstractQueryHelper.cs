@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using DataCloner.DataClasse;
 using DataCloner.DataClasse.Cache;
+using DataCloner.PlugIn;
 
 namespace DataCloner.DataAccess
 {
@@ -184,7 +185,6 @@ namespace DataCloner.DataAccess
                 }
                 Connection.Close();
             }
-
             return rows.ToArray();
         }
 
@@ -210,12 +210,16 @@ namespace DataCloner.DataAccess
 
                 //Exec query
                 Connection.Open();
-                cmd.ExecuteNonQuery();
+                using (var transaction = Connection.BeginTransaction())
+                {
+                    cmd.ExecuteNonQuery();
+                    transaction.Commit();
+                }
                 Connection.Close();
             }
         }
 
-        public void Insert(List<Cloner.ExecutionStep> rows)
+        public void Insert(List<ExecutionStep> rows)
         {
             var sb = new StringBuilder();
             using (var cmd = Connection.CreateCommand())
@@ -235,7 +239,7 @@ namespace DataCloner.DataAccess
                             .Append(row.TableSchema.Name)
                             .Append(" VALUES(");
 
-                    //Add params
+                    //Pour chaque colonne
                     for (var i = 0; i < schema.ColumnsDefinition.Count(); i++)
                     {
                         var col = schema.ColumnsDefinition[i];
@@ -243,8 +247,8 @@ namespace DataCloner.DataAccess
                         //Variable à générer
                         if (((col.IsPrimary && !col.IsAutoIncrement) || col.IsUniqueKey) && !col.IsForeignKey)
                         {
-                            var sqlVar = row.DataRow[i] as Cloner.SqlVariable;
-                            sqlVar.Value = PlugIn.DataBuilder.BuildDataColumn(this, row.DestinationTable.ServerId, row.DestinationTable.Database,
+                            var sqlVar = row.DataRow[i] as SqlVariable;
+                            sqlVar.Value = DataBuilder.BuildDataColumn(this, row.DestinationTable.ServerId, row.DestinationTable.Database,
                                                                               row.DestinationTable.Schema, row.TableSchema, col);
 
                             sbInsert.Append("'").Append(sqlVar.Value).Append("',");
@@ -252,7 +256,7 @@ namespace DataCloner.DataAccess
                         //Post insert variable (auto generated primary key)
                         else if (col.IsPrimary && col.IsAutoIncrement)
                         {
-                            var sqlVar = row.DataRow[i] as Cloner.SqlVariable;
+                            var sqlVar = row.DataRow[i] as SqlVariable;
                             var sqlVarName = "@" + sqlVar.Id;
 
                             //sbPostInsert.Append("DECLARE ").Append(sqlVarName).Append(" varchar(max);\r\n");
@@ -261,7 +265,7 @@ namespace DataCloner.DataAccess
                         //Normal variables
                         else
                         {
-                            var sqlVar = row.DataRow[i] as Cloner.SqlVariable;
+                            var sqlVar = row.DataRow[i] as SqlVariable;
                             //On fait référence à une variable
                             if (sqlVar != null)
                                 sbInsert.Append("'").Append(sqlVar.Value).Append("',");
@@ -342,7 +346,11 @@ namespace DataCloner.DataAccess
             cmd.CommandText = sql.ToString();
 
             Connection.Open();
-            cmd.ExecuteNonQuery();
+            using (var transaction = Connection.BeginTransaction())
+            {
+                cmd.ExecuteNonQuery();
+                transaction.Commit();
+            }
             Connection.Close();
         }
 
@@ -373,7 +381,11 @@ namespace DataCloner.DataAccess
             cmd.CommandText = sql.ToString();
 
             Connection.Open();
-            cmd.ExecuteNonQuery();
+            using (var transaction = Connection.BeginTransaction())
+            {
+                cmd.ExecuteNonQuery();
+                transaction.Commit();
+            }
             Connection.Close();
         }
 

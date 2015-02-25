@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Data.SQLite;
 using System.IO;
 using System.Linq;
-using System.Text;
+using System.Threading.Tasks;
 using DataCloner.DataAccess;
 using DataCloner.DataClasse;
 using DataCloner.DataClasse.Cache;
@@ -14,13 +14,6 @@ using DataBuilder = DataCloner.PlugIn.DataBuilder;
 
 namespace DataCloner
 {
-    internal class CircularKeyJob
-    {
-        public IRowIdentifier SourceBaseRowStartPoint { get; set; }
-        public IRowIdentifier SourceFkRowStartPoint { get; set; }
-        public IForeignKey ForeignKey { get; set; }
-    }
-
     public class Cloner
     {
         private const string TempFolderName = "temp";
@@ -114,11 +107,11 @@ namespace DataCloner
                             ServerId = serverDst.ServerId,
                             Database = serverDst.Database,
                             Schema = serverDst.Schema,
-                            Table = riSource.Table
+                            Table = riSource.Table,
+                            Columns = table.BuildPkFromRawKey(dstKey)
                         };
 
                         //Construit la pk de retour
-                        riReturn.Columns = table.BuildPkFromRawKey(dstKey);
                         clonedRows.Add(riReturn);
                     }
                 }
@@ -294,7 +287,7 @@ namespace DataCloner
 
         private ExecutionStep GetDataRow(IRowIdentifier riNewFk)
         {
-            if(riNewFk == null)
+            if (riNewFk == null)
                 throw new ArgumentNullException(nameof(riNewFk));
             if (!riNewFk.Columns.Any())
                 throw new Exception("BuildExecutionPlan failed to return a foreign key value.");
@@ -305,12 +298,12 @@ namespace DataCloner
             return _executionPlan.FirstOrDefault(r => r.Variables.Any(v => v.Id == varId));
         }
 
-        private ExecutionStep CreateExecutionStep(IRowIdentifier riSource, TableIdentifier tiDestination, TableSchema table, object[] destinationRow)
+        private ExecutionStep CreateExecutionStep(ITableIdentifier tiSource, ITableIdentifier tiDestination, ITableSchema table, object[] destinationRow)
         {
             var step = new ExecutionStep
             {
                 StepId = _nextStepId++,
-                SourceTable = riSource,
+                SourceTable = tiSource,
                 DestinationTable = tiDestination,
                 TableSchema = table
             };
@@ -323,40 +316,18 @@ namespace DataCloner
                 var valueToGenerate = ((col.IsPrimary && !col.IsAutoIncrement) || col.IsUniqueKey) && !col.IsForeignKey;
                 var pkToGenerate = col.IsPrimary && col.IsAutoIncrement;
 
-                if ( valueToGenerate | pkToGenerate)
+                if (valueToGenerate | pkToGenerate)
                 {
-                    var sqlVar = new SqlVariable {Id = _nextVariableId++};
+                    var sqlVar = new SqlVariable { Id = _nextVariableId++ };
                     step.Variables.Add(sqlVar);
 
-                    int pos = table.ColumnsDefinition.IndexOf(c => c.Name == colName);
+                    var pos = table.ColumnsDefinition.IndexOf(c => c.Name == colName);
                     destinationRow[pos] = sqlVar;
                 }
             }
 
             step.DataRow = destinationRow;
             return step;
-        }
-
-        public class SqlVariable
-        {
-            public Int32 Id { get; set; }
-            public object Value { get; set; }
-            //public IColumnDefinition ColumnDefinition { get; set; }
-        }
-
-        public class ExecutionStep
-        {
-            public Int32 StepId { get; set; }
-            public List<SqlVariable> Variables { get; set; }
-            public ITableSchema TableSchema { get; set; }
-            public ITableIdentifier SourceTable { get; set; }
-            public ITableIdentifier DestinationTable { get; set; }
-            public object[] DataRow { get; set; }
-
-            public ExecutionStep()
-            {
-                Variables = new List<SqlVariable>();
-            }
         }
 
         private void LogStatusChanged(IRowIdentifier riSource, int level)
@@ -484,8 +455,18 @@ namespace DataCloner
 
         private void GenerateSqlInsertScript(List<ExecutionStep> rows)
         {
-            //TODO : SPLIT LES ROWSTOINSERT PAR CONNECTION
-            _dispatcher.GetQueryHelper(1).Insert(rows);
+            var stepsByConnection = new Dictionary<Int16, List<ExecutionStep>>();
+
+            foreach (var row in rows)
+            {
+                var connId = row.DestinationTable.ServerId;
+                if (!stepsByConnection.ContainsKey(connId))
+                    stepsByConnection.Add(connId, new List<ExecutionStep>());
+
+                stepsByConnection[connId].Add(row);
+            }
+
+            Parallel.ForEach(stepsByConnection, a => _dispatcher.GetQueryHelper(a.Key).Insert(a.Value));
         }
     }
 }

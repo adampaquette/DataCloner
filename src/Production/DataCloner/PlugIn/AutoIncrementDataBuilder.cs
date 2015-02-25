@@ -31,7 +31,7 @@ namespace DataCloner.PlugIn
 
         private static void IncrementNumber(string cacheId)
         {
-            Type t = _autoIncrementCache[cacheId].GetType();
+            var t = _autoIncrementCache[cacheId].GetType();
             if (t == typeof(Int16))
             {
                 var n = (Int16)_autoIncrementCache[cacheId];

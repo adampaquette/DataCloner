@@ -97,13 +97,16 @@
     <Compile Include="DataClasse\Cache\CacheExtensions.cs" />
     <Compile Include="DataClasse\Cache\ITableSchema.cs" />
     <Compile Include="DataClasse\Cache\ServerIdentifier.cs" />
+    <Compile Include="DataClasse\CircularKeyJob.cs" />
     <Compile Include="DataClasse\Configuration\Application.cs" />
     <Compile Include="DataClasse\Configuration\ClonerConfiguration.cs" />
     <Compile Include="DataClasse\Configuration\Map.cs" />
     <Compile Include="DataClasse\ColumnsWithValue.cs" />
+    <Compile Include="DataClasse\ExecutionStep.cs" />
     <Compile Include="DataClasse\KeyRelationship.cs" />
     <Compile Include="DataClasse\Cache\DatabasesSchema.cs" />
     <Compile Include="DataClasse\Cache\TableSchema.cs" />
+    <Compile Include="DataClasse\SqlVariable.cs" />
     <Compile Include="DbEngine.cs" />
     <Compile Include="DerivativeTableAccess.cs" />
     <Compile Include="Framework\FastActivator.cs" />

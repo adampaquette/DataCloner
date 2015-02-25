@@ -17,7 +17,7 @@ namespace DataCloner.Framework
                 crypto.GetNonZeroBytes(data);
             }
             var result = new StringBuilder(maxSize);
-            foreach (byte b in data)
+            foreach (var b in data)
                 result.Append(Chars[b % (Chars.Length)]);
 
             return result.ToString();

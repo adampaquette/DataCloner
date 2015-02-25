@@ -7,9 +7,7 @@ using System.Security.Cryptography;
 using System.Text;
 using DataCloner.DataAccess;
 using DataCloner.DataClasse.Configuration;
-using DataCloner.Framework;
 using Murmur;
-using MySql.Data.MySqlClient.Authentication;
 
 namespace DataCloner.DataClasse.Cache
 {
