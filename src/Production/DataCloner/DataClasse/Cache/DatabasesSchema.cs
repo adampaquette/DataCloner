@@ -293,8 +293,7 @@ namespace DataCloner.DataClasse.Cache
                 {
                     Name = reader.GetString(2),
                     IsPrimary = reader.GetBoolean(4),
-                    IsForeignKey = reader.GetBoolean(5),
-                    IsAutoIncrement = reader.GetBoolean(6)
+                    IsAutoIncrement = reader.GetBoolean(5)
                 };
                 DbType type;
                 string size;
@@ -340,7 +339,7 @@ namespace DataCloner.DataClasse.Cache
                         {
                             var table = schema.Value[i];
                             var sbInsert = new StringBuilder("INSERT INTO ");
-                            var sbSelect = new StringBuilder("SELECT ");
+							var sbSelect = new StringBuilder("SELECT ");
 
                             sbInsert.Append(database.Key);
                             if (!string.IsNullOrEmpty(schema.Key))
@@ -376,7 +375,7 @@ namespace DataCloner.DataClasse.Cache
                                         sbInsert.Append(",");
                                 }
                             }
-                            sbInsert.Append(")");
+                            sbInsert.Append(");");
 
                             //Finalisation du select
                             sbSelect.Append(" FROM ")
@@ -384,7 +383,8 @@ namespace DataCloner.DataClasse.Cache
                             if (!string.IsNullOrEmpty(schema.Key))
                                 sbSelect.Append(".").Append(schema.Key);
                             sbSelect.Append(".")
-                                    .Append(table.Name);
+                                    .Append(table.Name)
+									.Append(";");
 
                             table.InsertCommand = sbInsert.ToString();
                             table.SelectCommand = sbSelect.ToString();

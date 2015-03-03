@@ -237,10 +237,20 @@ namespace DataCloner.DataAccess
                             .Append(row.DestinationTable.Database)
                             .Append(".")
                             .Append(row.TableSchema.Name)
-                            .Append(" VALUES(");
+							.Append("(");
 
-                    //Pour chaque colonne
-                    for (var i = 0; i < schema.ColumnsDefinition.Count(); i++)
+					//Nom des colonnes
+					for (var i = 0; i < schema.ColumnsDefinition.Count(); i++)
+					{
+						var col = schema.ColumnsDefinition[i];
+						if (!col.IsAutoIncrement)
+							sbInsert.Append(col.Name).Append(",");
+					}
+					sbInsert.Remove(sbInsert.Length - 1, 1);
+					sbInsert.Append(")VALUES(");
+
+					//Valeurs des colonnes
+					for (var i = 0; i < schema.ColumnsDefinition.Count(); i++)
                     {
                         var col = schema.ColumnsDefinition[i];
 

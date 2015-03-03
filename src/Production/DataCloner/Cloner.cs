@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.SQLite;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,6 +10,7 @@ using DataCloner.DataClasse.Configuration;
 using DataCloner.Framework;
 using Connection = DataCloner.DataClasse.Cache.Connection;
 using DataBuilder = DataCloner.PlugIn.DataBuilder;
+using System.Data.SQLite;
 
 namespace DataCloner
 {
@@ -75,7 +75,7 @@ namespace DataCloner
 
             GenerateSqlInsertScript(_executionPlan);
 
-            UpdateCircularReferences();
+            //UpdateCircularReferences();
 
             return GetClonedRows(riSource);
         }
@@ -364,32 +364,32 @@ namespace DataCloner
 
         private void CreateDatabasesFiles()
         {
-            var folderPath = Path.Combine(Path.GetDirectoryName(SavePath), TempFolderName);
-            var nbFileToCreate = _cache.ServerMap.Select(r => r.Value.ServerId).Distinct().Count();
-            int lastIdUsed = _cache.ConnectionStrings.Max(cs => cs.Id);
+            //var folderPath = Path.Combine(Path.GetDirectoryName(SavePath), TempFolderName);
+            //var nbFileToCreate = _cache.ServerMap.Select(r => r.Value.ServerId).Distinct().Count();
+            //int lastIdUsed = _cache.ConnectionStrings.Max(cs => cs.Id);
 
-            if (!Directory.Exists(folderPath))
-                Directory.CreateDirectory(folderPath);
+            //if (!Directory.Exists(folderPath))
+            //    Directory.CreateDirectory(folderPath);
 
-            for (var i = 0; i < nbFileToCreate; i++)
-            {
-                var id = lastIdUsed + i + 1;
-                var fileName = id + ".sqlite";
-                var fullFilePath = Path.Combine(folderPath, fileName);
+            //for (var i = 0; i < nbFileToCreate; i++)
+            //{
+            //    var id = lastIdUsed + i + 1;
+            //    var fileName = id + ".sqlite";
+            //    var fullFilePath = Path.Combine(folderPath, fileName);
 
-                //Crer le fichier
-                SQLiteConnection.CreateFile(fullFilePath);
+            //    //Crer le fichier
+            //    SQLiteConnection.CreateFile(fullFilePath);
 
-                //Crer la string de connection
-                _cache.ConnectionStrings.Add(new Connection
-                {
-                    Id = (short)id,
-                    ConnectionString = String.Format("Data Source={0};Version=3;", fullFilePath),
-                    ProviderName = "SQLite"
-                });
+            //    //Crer la string de connection
+            //    _cache.ConnectionStrings.Add(new Connection
+            //    {
+            //        Id = (short)id,
+            //        ConnectionString = String.Format("Data Source={0};Version=3;", fullFilePath),
+            //        ProviderName = "SQLite"
+            //    });
 
-                //_dispatcher.CreateDatabaseFromCache(null, null);
-            }
+            //    //_dispatcher.CreateDatabaseFromCache(null, null);
+            //}
         }
 
         private void UpdateCircularReferences()

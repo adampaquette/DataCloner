@@ -181,35 +181,35 @@ namespace DataCloner
 
                 Console.WriteLine("Cloning started");
 
-                source.Columns.Clear();
-                source.ServerId = 1;
-                source.Database = "dataclonertestdatabase";
-                source.Schema = "";
-                source.Table = "employees";
-                source.Columns.Add("employeeNumber", 1188);
-                dc.Clone(source, true);
+				//source.Columns.Clear();
+				//source.ServerId = 1;
+				//source.Database = "dataclonertestdatabase";
+				//source.Schema = "";
+				//source.Table = "employees";
+				//source.Columns.Add("employeeNumber", 1188);
+				//dc.Clone(source, true);
 
-                //Console.WriteLine("Done");
+				//Console.WriteLine("Done");
 
-                //source.Columns.Clear();
-                //source.ServerId = 1;
-                //source.Database = "sakila";
-                //source.Schema = "";
-                //source.Table = "customer";
-                //source.Columns.Add("customer_id", 1);
-                //dc.Clone(source, true);
+				source.Columns.Clear();
+				source.ServerId = 1;
+				source.Database = "sakila";
+				source.Schema = "";
+				source.Table = "customer";
+				source.Columns.Add("customer_id", 1);
+				dc.Clone(source, true);
 
-                //Console.WriteLine("Done");
+				//Console.WriteLine("Done");
 
-                //source.Columns.Clear();
-                //source.ServerId = 1;
-                //source.Database = "dataclonertestdatabase";
-                //source.Schema = "";
-                //source.Table = "employees";
-                //source.Columns.Add("employeeNumber", 1370);
-                //dc.Clone(source, true);
+				//source.Columns.Clear();
+				//source.ServerId = 1;
+				//source.Database = "dataclonertestdatabase";
+				//source.Schema = "";
+				//source.Table = "employees";
+				//source.Columns.Add("employeeNumber", 1370);
+				//dc.Clone(source, true);
 
-                Console.WriteLine("Cloning completed in : " +
+				Console.WriteLine("Cloning completed in : " +
                                   DateTime.Now.Subtract(start).ToString("hh':'mm':'ss'.'fff"));
             }
         }

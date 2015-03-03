@@ -2,7 +2,6 @@
 using DataCloner.DataClasse;
 using DataCloner.DataClasse.Cache;
 using DataCloner.DataClasse.Configuration;
-using DataCloner.Tests.Tools;
 using NSubstitute;
 using Xunit;
 
@@ -33,7 +32,7 @@ namespace DataCloner.Tests
             [Fact]
             public void QueryDispatcherCalledWithRowIdentifierFromExtensionReturnData()
             {
-                var row = NewRi(0, "", "", "customer", new ColumnsWithValue {{"id", 1}});
+                var row = Tools.NewRi(0, "", "", "customer", new ColumnsWithValue {{"id", 1}});
                 var result = _queryDispatcher.Select(row);
 
                 _queryDispatcher.Received().GetQueryHelper(row);
@@ -45,7 +44,7 @@ namespace DataCloner.Tests
             [Fact]
             public void QueryDispatcherCalledWithRowIdentifierReturnData()
             {
-                var row = NewRi(0, "", "", "customer", new ColumnsWithValue {{"id", 1}});
+                var row = Tools.NewRi(0, "", "", "customer", new ColumnsWithValue {{"id", 1}});
                 var result = _queryDispatcher.GetQueryHelper(row).Select(row);
 
                 _queryDispatcher.Received().GetQueryHelper(row);
@@ -57,7 +56,7 @@ namespace DataCloner.Tests
             [Fact]
             public void QueryDispatcherCalledWithIntegerReturnData()
             {
-                var row = NewRi(0, "", "", "customer", new ColumnsWithValue {{"id", 1}});
+                var row = Tools.NewRi(0, "", "", "customer", new ColumnsWithValue {{"id", 1}});
                 var result = _queryDispatcher.GetQueryHelper(0).Select(row);
 
                 _queryDispatcher.Received().GetQueryHelper(row.ServerId);
@@ -69,13 +68,13 @@ namespace DataCloner.Tests
             //[Fact]
             public void BasicTest()
             {
-                var source = NewRi(0, "", "", "customer", new ColumnsWithValue {{"id", 1}});
+                var source = Tools.NewRi(0, "", "", "customer", new ColumnsWithValue {{"id", 1}});
                 _cloner.Clone(source, true);
 
                 _queryDispatcher.Received();
                 _queryHelper.Received();
                 _queryHelper.Received().Select(Arg.Any<IRowIdentifier>());
-                _queryHelper.Received().Select(NewRi(0, "", "", "customer", new ColumnsWithValue {{"id", 1}}));
+                _queryHelper.Received().Select(Tools.NewRi(0, "", "", "customer", new ColumnsWithValue {{"id", 1}}));
             }
         }
     }
