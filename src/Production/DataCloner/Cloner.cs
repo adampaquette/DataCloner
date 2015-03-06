@@ -70,8 +70,11 @@ namespace DataCloner
 
         public List<IRowIdentifier> Clone(IRowIdentifier riSource, bool getDerivatives)
         {
-            _dispatcher[riSource].EnforceIntegrityCheck(EnforceIntegrity);
-            BuildExecutionPlan(riSource, getDerivatives, false, 0, new Stack<IRowIdentifier>());
+			var rowsGenerating = new Stack<IRowIdentifier>();
+            rowsGenerating.Push(riSource);
+
+			_dispatcher[riSource].EnforceIntegrityCheck(EnforceIntegrity);
+			BuildExecutionPlan(riSource, getDerivatives, false, 0, rowsGenerating);
 
             GenerateSqlInsertScript(_executionPlan);
 
@@ -339,9 +342,19 @@ namespace DataCloner
             }
         }
 
-        private void GetDerivatives(TableSchema table, object[] sourceRow, bool getDerivatives, int level)
-        {
-            var derivativeTable = getDerivatives ? table.DerivativeTables : table.DerivativeTables.Where(t => t.Access == DerivativeTableAccess.Forced);
+		private void LogDerivativeStep( int level)
+		{
+			if (StatusChanged != null)
+			{
+				var args = new StatusChangedEventArgs(Status.FetchingDerivatives, 0, 0, null, level);
+				StatusChanged(this, args);
+			}
+		}
+
+		private void GetDerivatives(TableSchema table, object[] sourceRow, bool getDerivatives, int level)
+		{
+			LogDerivativeStep(level + 1);
+			var derivativeTable = getDerivatives ? table.DerivativeTables : table.DerivativeTables.Where(t => t.Access == DerivativeTableAccess.Forced);
 
             foreach (var dt in derivativeTable)
             {

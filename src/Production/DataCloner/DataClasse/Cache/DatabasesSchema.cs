@@ -383,8 +383,7 @@ namespace DataCloner.DataClasse.Cache
                             if (!string.IsNullOrEmpty(schema.Key))
                                 sbSelect.Append(".").Append(schema.Key);
                             sbSelect.Append(".")
-                                    .Append(table.Name)
-									.Append(";");
+                                    .Append(table.Name);
 
                             table.InsertCommand = sbInsert.ToString();
                             table.SelectCommand = sbSelect.ToString();

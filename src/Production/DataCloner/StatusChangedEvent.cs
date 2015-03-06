@@ -25,6 +25,7 @@ namespace DataCloner
     public enum Status
     {
         BuildingCache,
-        Cloning
+        Cloning,
+		FetchingDerivatives
     }
 }

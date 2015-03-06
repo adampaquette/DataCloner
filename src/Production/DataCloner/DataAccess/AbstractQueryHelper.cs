@@ -277,19 +277,26 @@ namespace DataCloner.DataAccess
                         {
                             var sqlVar = row.DataRow[i] as SqlVariable;
                             //On fait référence à une variable
-                            if (sqlVar != null)
-                                sbInsert.Append("'").Append(sqlVar.Value).Append("',");
-                            //C'est une valeur brute
-                            else
-                            {
-                                var sqlVarName = "@" + schema.ColumnsDefinition[i].Name + row.StepId;
-                                var p = cmd.CreateParameter();
-                                p.ParameterName = sqlVarName;
-                                p.Value = row.DataRow[i];
-                                cmd.Parameters.Add(p);
+	                        if (sqlVar != null)
+	                        {
+								//Si variable auto-généré
+								if(sqlVar.Value == null)
+									sbInsert.Append("@").Append(sqlVar.Id).Append(",");
+								//Sinon variable déjà générée
+								else
+									sbInsert.Append("'").Append(sqlVar.Value).Append("',");
+	                        }
+	                        //C'est une valeur brute
+	                        else
+	                        {
+		                        var sqlVarName = "@" + schema.ColumnsDefinition[i].Name + row.StepId;
+		                        var p = cmd.CreateParameter();
+		                        p.ParameterName = sqlVarName;
+		                        p.Value = row.DataRow[i];
+		                        cmd.Parameters.Add(p);
 
-                                sbInsert.Append(sqlVarName).Append(",");
-                            }
+		                        sbInsert.Append(sqlVarName).Append(",");
+	                        }
                         }
                     }
                     sbInsert.Remove(sbInsert.Length - 1, 1);
