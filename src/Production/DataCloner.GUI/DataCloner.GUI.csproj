@@ -41,6 +41,7 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -61,11 +62,8 @@
     <Compile Include="Debug.xaml.cs">
       <DependentUpon>Debug.xaml</DependentUpon>
     </Compile>
-    <Compile Include="MainWindow - Copy.xaml.cs">
-      <DependentUpon>MainWindow - Copy.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="tab.xaml.cs">
-      <DependentUpon>tab.xaml</DependentUpon>
+    <Compile Include="MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
     <Page Include="BetaTemplate - Copy.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -79,14 +77,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="MainWindow - Copy.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="MainWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -97,11 +87,7 @@
     <Compile Include="BetaTemplate.xaml.cs">
       <DependentUpon>BetaTemplate.xaml</DependentUpon>
     </Compile>
-    <Compile Include="MainWindow.xaml.cs">
-      <DependentUpon>MainWindow.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Page Include="tab.xaml">
+    <Page Include="MainWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -145,6 +131,15 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\dbsettings.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\settings48.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\data111.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\seo1.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

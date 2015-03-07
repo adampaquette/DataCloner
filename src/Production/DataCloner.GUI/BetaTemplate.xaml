@@ -18,9 +18,9 @@
         <TextBlock x:Name="TextBlock1Copy2" HorizontalAlignment="Left" Height="29" Margin="10,235,0,0" TextWrapping="Wrap" Text="Clonage" VerticalAlignment="Top" Width="192" Foreground="Black" FontSize="13.333"/>
         <Rectangle Fill="#FF55AC85" HorizontalAlignment="Left" Height="38" Margin="0,112,0,0" VerticalAlignment="Top" Width="202"/>
         <TextBlock x:Name="TextBlock1Copy" HorizontalAlignment="Left" Height="29" Margin="10,121,0,0" TextWrapping="Wrap" Text="Sources de données" VerticalAlignment="Top" Width="192" Foreground="Black" FontSize="13.333"/>
-        <Image x:Name="Image" HorizontalAlignment="Left" Height="38" Margin="153,155,0,0" VerticalAlignment="Top" Width="30" Source="C:\Users\adam\Downloads\icons\database11.png"/>
-        <Image x:Name="Image1" HorizontalAlignment="Left" Height="28" Margin="153,117,0,0" VerticalAlignment="Top" Width="30"  Source="C:\Users\adam\Downloads\icons\database13.png"/>
-        <Image x:Name="ImageCopy" HorizontalAlignment="Left" Height="33" Margin="152,229,0,0" VerticalAlignment="Top" Width="30" Source="C:\Users\adam\Downloads\icons\entry3.png"/>
-        <Image x:Name="Image1Copy" HorizontalAlignment="Left" Height="28" Margin="153,193,0,0" VerticalAlignment="Top" Width="30"  Source="C:\Users\adam\Downloads\icons\viral.png" RenderTransformOrigin="0.467,0.464"/>
+        <Image x:Name="Image" HorizontalAlignment="Left" Height="38" Margin="153,155,0,0" VerticalAlignment="Top" Width="30" />
+        <Image x:Name="Image1" HorizontalAlignment="Left" Height="28" Margin="153,117,0,0" VerticalAlignment="Top" Width="30"  />
+        <Image x:Name="ImageCopy" HorizontalAlignment="Left" Height="33" Margin="152,229,0,0" VerticalAlignment="Top" Width="30" />
+        <Image x:Name="Image1Copy" HorizontalAlignment="Left" Height="28" Margin="153,193,0,0" VerticalAlignment="Top" Width="30"   RenderTransformOrigin="0.467,0.464"/>
     </Grid>
 </Window>

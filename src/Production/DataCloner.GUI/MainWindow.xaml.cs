@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using System.Collections.Generic;
+using System.Security.AccessControl;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace DataCloner.GUI
@@ -12,7 +14,14 @@ namespace DataCloner.GUI
         
         private Cloner _cloner = new Cloner();
 
-        private void cbServerSource_SelectionChanged(object sender, SelectionChangedEventArgs e)
+	    public MainWindow()
+	    {
+			
+
+		}
+
+
+	    private void cbServerSource_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
         }
 
