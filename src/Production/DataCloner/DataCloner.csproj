@@ -110,11 +110,14 @@
     <Compile Include="DataClasse\Configuration\ClonerConfiguration.cs" />
     <Compile Include="DataClasse\Configuration\Map.cs" />
     <Compile Include="DataClasse\ColumnsWithValue.cs" />
-    <Compile Include="DataClasse\ExecutionStep.cs" />
+    <Compile Include="DataClasse\ExecutionPlan.cs" />
+    <Compile Include="DataClasse\IExecutionStep.cs" />
+    <Compile Include="DataClasse\InsertStep.cs" />
     <Compile Include="DataClasse\KeyRelationship.cs" />
     <Compile Include="DataClasse\Cache\DatabasesSchema.cs" />
     <Compile Include="DataClasse\Cache\TableSchema.cs" />
     <Compile Include="DataClasse\SqlVariable.cs" />
+    <Compile Include="DataClasse\UpdateStep.cs" />
     <Compile Include="DbEngine.cs" />
     <Compile Include="DerivativeTableAccess.cs" />
     <Compile Include="Framework\FastActivator.cs" />

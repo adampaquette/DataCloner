@@ -22,7 +22,7 @@ namespace DataCloner
         private readonly Cache.CacheInitialiser _cacheInitialiser;
         private readonly KeyRelationship _keyRelationships;
         private readonly List<CircularKeyJob> _circularKeyJobs;
-        private readonly List<ExecutionStep> _executionPlan;
+        private readonly Dictionary<Int16, ExecutionPlan> _executionPlanByServer;
 
         private Cache _cache;
         private int _nextVariableId;
@@ -38,7 +38,7 @@ namespace DataCloner
         {
             _keyRelationships = new KeyRelationship();
             _circularKeyJobs = new List<CircularKeyJob>();
-            _executionPlan = new List<ExecutionStep>();
+	        _executionPlanByServer = new Dictionary<short, ExecutionPlan>();
             _dispatcher = new QueryDispatcher();
             _cacheInitialiser = Cache.Init;
         }
@@ -50,7 +50,7 @@ namespace DataCloner
 
             _keyRelationships = new KeyRelationship();
             _circularKeyJobs = new List<CircularKeyJob>();
-            _executionPlan = new List<ExecutionStep>();
+            _executionPlanByServer = new Dictionary<short, ExecutionPlan>();
             _dispatcher = dispatcher;
             _cacheInitialiser = cacheInit;
         }
@@ -59,7 +59,7 @@ namespace DataCloner
         {
             _keyRelationships.Clear();
             _circularKeyJobs.Clear();
-            _executionPlan.Clear();
+            _executionPlanByServer.Clear();
             DataBuilder.ClearBuildersCache();
         }
 
@@ -76,7 +76,7 @@ namespace DataCloner
 			_dispatcher[riSource].EnforceIntegrityCheck(EnforceIntegrity);
 			BuildExecutionPlan(riSource, getDerivatives, false, 0, rowsGenerating);
 
-            GenerateSqlInsertScript(_executionPlan);
+            ExecutePlan(_executionPlanByServer);
 
             //UpdateCircularReferences();
 
@@ -125,7 +125,7 @@ namespace DataCloner
         /// <summary>
         /// Build execution plan for the specific source row to be able to clone blazing fast.
         /// </summary>
-        /// <param name="riSource">Identify a single or multiples rows to clone.</param>
+        /// <param name="riSource">Identify a single or multiples plan to clone.</param>
         /// <param name="getDerivatives">Specify if we clone data related to the input(s) line(s) from other tables.</param>
         /// <param name="shouldReturnFk">Indicate that a source row should only return a single line.</param>
         /// <param name="level">Current recursion level.</param>
@@ -259,16 +259,16 @@ namespace DataCloner
                                 var newFkRow = GetDataRow(riNewFk);
 
                                 //Affecte la clef
-                                table.SetFkFromDatarowInDatarow(fkTable, fk, newFkRow.DataRow, destinationRow);
+                                table.SetFkFromDatarowInDatarow(fkTable, fk, newFkRow, destinationRow);
                             }
                         }
                     }
                 }
 
                 var step = CreateExecutionStep(riSource, tiDestination, table, destinationRow);
-                _executionPlan.Add(step);
+				AddInsertStep(step);
 
-                //Sauve la PK dans la cache
+	            //Sauve la PK dans la cache
                 dstKey = table.BuildRawPkFromDataRow(step.DataRow);
                 _keyRelationships.SetKey(riSource.ServerId, riSource.Database, riSource.Schema, riSource.Table, srcKey, dstKey);
 
@@ -288,7 +288,23 @@ namespace DataCloner
             return riReturn;
         }
 
-        private ExecutionStep GetDataRow(IRowIdentifier riNewFk)
+	    private void AddInsertStep(InsertStep step)
+	    {
+		    var connId = step.DestinationTable.ServerId;
+		    if (!_executionPlanByServer.ContainsKey(connId))
+			    _executionPlanByServer.Add(connId, new ExecutionPlan());
+		    _executionPlanByServer[connId].InsertSteps.Add(step);
+	    }
+
+		private void AddUpdateStep(UpdateStep step)
+		{
+			var connId = step.DestinationTable.ServerId;
+			if (!_executionPlanByServer.ContainsKey(connId))
+				_executionPlanByServer.Add(connId, new ExecutionPlan());
+			_executionPlanByServer[connId].UpdateSteps.Add(step);
+		}
+
+		private object[] GetDataRow(IRowIdentifier riNewFk)
         {
             if (riNewFk == null)
                 throw new ArgumentNullException(nameof(riNewFk));
@@ -298,12 +314,19 @@ namespace DataCloner
             //La FK (ou unique constraint) n'est pas necessairement la PK donc on réobtient la ligne car
             //BuildExecutionPlan retourne toujours la PK.
             var varId = (riNewFk.Columns.Values.First() as SqlVariable).Id;
-            return _executionPlan.FirstOrDefault(r => r.Variables.Any(v => v.Id == varId));
+
+	        foreach (var plan in _executionPlanByServer)
+	        {
+		        var dr = plan.Value.InsertSteps.FirstOrDefault(r => r.Variables.Any(v => v.Id == varId));
+		        if (dr != null)
+			        return dr.DataRow;
+	        }
+	        throw new Exception();
         }
 
-        private ExecutionStep CreateExecutionStep(ITableIdentifier tiSource, ITableIdentifier tiDestination, ITableSchema table, object[] destinationRow)
+        private InsertStep CreateExecutionStep(ITableIdentifier tiSource, ITableIdentifier tiDestination, ITableSchema table, object[] destinationRow)
         {
-            var step = new ExecutionStep
+            var step = new InsertStep
             {
                 StepId = _nextStepId++,
                 SourceTable = tiSource,
@@ -458,28 +481,25 @@ namespace DataCloner
                     Columns = fk
                 };
 
-                var fkDestinationDataRow = _dispatcher.Select(riFkDestination);
-                var modifiedFk = fkTable.BuildKeyFromFkDataRow(job.ForeignKey, fkDestinationDataRow[0]);
+				var fkDestinationDataRow = GetDataRow(riFkDestination); 
+				var modifiedFk = fkTable.BuildKeyFromFkDataRow(job.ForeignKey, fkDestinationDataRow);
 
-                _dispatcher[serverDstBaseTable.ServerId].Update(riBaseDestination, modifiedFk);
+				var step = new UpdateStep()
+				{
+					StepId = _nextStepId++,
+					DestinationRow =  riBaseDestination,
+					ForeignKey = modifiedFk,
+					DestinationTable = riFkDestination
+				};
+
+				AddUpdateStep(step);
             }
             _circularKeyJobs.Clear();
         }
 
-        private void GenerateSqlInsertScript(List<ExecutionStep> rows)
+	    private void ExecutePlan(Dictionary<Int16, ExecutionPlan> planByServer)
         {
-            var stepsByConnection = new Dictionary<Int16, List<ExecutionStep>>();
-
-            foreach (var row in rows)
-            {
-                var connId = row.DestinationTable.ServerId;
-                if (!stepsByConnection.ContainsKey(connId))
-                    stepsByConnection.Add(connId, new List<ExecutionStep>());
-
-                stepsByConnection[connId].Add(row);
-            }
-
-            Parallel.ForEach(stepsByConnection, a => _dispatcher.GetQueryHelper(a.Key).Insert(a.Value));
+            Parallel.ForEach(planByServer, a => _dispatcher.GetQueryHelper(a.Key).Execute(a.Value));
         }
     }
 }

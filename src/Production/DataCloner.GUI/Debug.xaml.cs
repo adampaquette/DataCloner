@@ -101,16 +101,28 @@ namespace DataCloner.GUI
 
         public void StatusChanged_event(object sender, StatusChangedEventArgs e)
         {
-            var sb = new StringBuilder();
-            sb.Append(new string(' ', 3 * e.Level));
-            sb.Append(e.SourceRow.Database).Append(".").Append(e.SourceRow.Schema).Append(".").Append(e.SourceRow.Table).Append(" : (");
-            foreach (var col in e.SourceRow.Columns)
-                sb.Append(col.Key).Append("=").Append(col.Value).Append(", ");
-            sb.Remove(sb.Length - 2, 2);
-            sb.Append(")").Append(Environment.NewLine);
+	        if (e.Status == Status.Cloning)
+	        {
+		        var sb = new StringBuilder();
+		        sb.Append(new string(' ', 3*e.Level));
+		        sb.Append(e.SourceRow.Database)
+			        .Append(".")
+			        .Append(e.SourceRow.Schema)
+			        .Append(".")
+			        .Append(e.SourceRow.Table)
+			        .Append(" : (");
+		        foreach (var col in e.SourceRow.Columns)
+			        sb.Append(col.Key).Append("=").Append(col.Value).Append(", ");
+		        sb.Remove(sb.Length - 2, 2);
+		        sb.Append(")").Append(Environment.NewLine);
 
-            TxtStatus.Text += sb.ToString();
-            TxtStatus.ScrollToEnd();
+		        TxtStatus.Text += sb.ToString();
+		        TxtStatus.ScrollToEnd();
+	        }
+			else if (e.Status == Status.FetchingDerivatives)
+			{
+				Console.WriteLine(new string(' ', 3 * e.Level) + "=================================");
+			}
         }
 
         private void BtnReloadConfigBuildAllCache_Click(object sender, RoutedEventArgs e)
