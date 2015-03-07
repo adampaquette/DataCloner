@@ -192,7 +192,7 @@ namespace DataCloner.DataAccess
 		{
 			var schema = _cache.GetTable(table);
 			if (schema.ColumnsDefinition.Count() != row.Length)
-				throw new Exception("The row doesn't correspond to schema!");
+				throw new Exception("The step doesn't correspond to schema!");
 
 			using (var cmd = Connection.CreateCommand())
 			{
@@ -225,14 +225,7 @@ namespace DataCloner.DataAccess
 			using (var cmd = Connection.CreateCommand())
 			{
 				foreach (var step in plan.InsertSteps)
-				{
-					var schema = _cache.GetTable(step.DestinationTable);
-					if (schema.ColumnsDefinition.Count() != step.DataRow.Length)
-						throw new Exception("The row doesn't correspond to schema!");
-
-					GemerateInsertStatment(step, schema, cmd, query);
-				}
-
+					GemerateInsertStatment(step, cmd, query);
 				foreach (var step in plan.UpdateSteps)
 					GemerateUpdateStatment(step, cmd, query);
 
@@ -249,15 +242,19 @@ namespace DataCloner.DataAccess
 			}
 		}
 
-		internal void GemerateInsertStatment(InsertStep row, TableSchema schema, IDbCommand cmd, StringBuilder sql)
+		internal void GemerateInsertStatment(InsertStep step, IDbCommand cmd, StringBuilder sql)
 		{
+			var schema = _cache.GetTable(step.DestinationTable);
+			if (schema.ColumnsDefinition.Count() != step.DataRow.Length)
+				throw new Exception("The step doesn't correspond to schema!");
+
 			var sbInsert = new StringBuilder();
 			var sbPostInsert = new StringBuilder();
 
 			sbInsert.Append("INSERT INTO ")
-				.Append(row.DestinationTable.Database)
+				.Append(step.DestinationTable.Database)
 				.Append(".")
-				.Append(row.TableSchema.Name)
+				.Append(step.TableSchema.Name)
 				.Append("(");
 
 			//Nom des colonnes
@@ -278,16 +275,16 @@ namespace DataCloner.DataAccess
 				//Variable à générer
 				if (((col.IsPrimary && !col.IsAutoIncrement) || col.IsUniqueKey) && !col.IsForeignKey)
 				{
-					var sqlVar = row.DataRow[i] as SqlVariable;
-					sqlVar.Value = DataBuilder.BuildDataColumn(this, row.DestinationTable.ServerId, row.DestinationTable.Database,
-						row.DestinationTable.Schema, row.TableSchema, col);
+					var sqlVar = step.DataRow[i] as SqlVariable;
+					sqlVar.Value = DataBuilder.BuildDataColumn(this, step.DestinationTable.ServerId, step.DestinationTable.Database,
+						step.DestinationTable.Schema, step.TableSchema, col);
 
 					sbInsert.Append("'").Append(sqlVar.Value).Append("',");
 				}
 				//Post insert variable (auto generated primary key)
 				else if (col.IsPrimary && col.IsAutoIncrement)
 				{
-					var sqlVar = row.DataRow[i] as SqlVariable;
+					var sqlVar = step.DataRow[i] as SqlVariable;
 					var sqlVarName = "@" + sqlVar.Id;
 
 					//sbPostInsert.Append("DECLARE ").Append(sqlVarName).Append(" varchar(max);\r\n");
@@ -296,7 +293,7 @@ namespace DataCloner.DataAccess
 				//Normal variables
 				else
 				{
-					var sqlVar = row.DataRow[i] as SqlVariable;
+					var sqlVar = step.DataRow[i] as SqlVariable;
 					//On fait référence à une variable
 					if (sqlVar != null)
 					{
@@ -310,10 +307,10 @@ namespace DataCloner.DataAccess
 					//C'est une valeur brute
 					else
 					{
-						var sqlVarName = "@" + schema.ColumnsDefinition[i].Name + row.StepId;
+						var sqlVarName = "@" + schema.ColumnsDefinition[i].Name + step.StepId;
 						var p = cmd.CreateParameter();
 						p.ParameterName = sqlVarName;
-						p.Value = row.DataRow[i];
+						p.Value = step.DataRow[i];
 						cmd.Parameters.Add(p);
 
 						sbInsert.Append(sqlVarName).Append(",");
@@ -330,7 +327,7 @@ namespace DataCloner.DataAccess
 		public void GemerateUpdateStatment(UpdateStep step, IDbCommand cmd, StringBuilder sql)
 		{
 			if (!step.DestinationRow.Columns.Any())
-				throw new ArgumentNullException("You must specify at least one column in the row identifier.");
+				throw new ArgumentNullException("You must specify at least one column in the step identifier.");
 
 			sql.Append("UPDATE ")
 			   .Append(step.DestinationRow.Database)
@@ -343,10 +340,11 @@ namespace DataCloner.DataAccess
 				sql.Append(col.Key)
 				   .Append(" = @")
 				   .Append(col.Key)
+				   .Append(step.StepId)
 				   .Append(",");
 
 				var p = cmd.CreateParameter();
-				p.ParameterName = "@" + col.Key;
+				p.ParameterName = "@" + col.Key + step.StepId;
 				p.Value = col.Value;
 				cmd.Parameters.Add(p);
 			}
@@ -358,20 +356,22 @@ namespace DataCloner.DataAccess
 				sql.Append(kv.Key)
 				   .Append(" = @")
 				   .Append(kv.Key)
+				   .Append(step.StepId)
 				   .Append(" AND ");
 
 				var p = cmd.CreateParameter();
-				p.ParameterName = "@" + kv.Key;
+				p.ParameterName = "@" + kv.Key + step.StepId;
 				p.Value = kv.Value;
 				cmd.Parameters.Add(p);
 			}
 			sql.Remove(sql.Length - 5, 5);
+			sql.Append(";\r\n");
 		}
 
 		public void Update(IRowIdentifier row, ColumnsWithValue values)
 		{
 			if (!row.Columns.Any())
-				throw new ArgumentNullException("You must specify at least one column in the row identifier.");
+				throw new ArgumentNullException("You must specify at least one column in the step identifier.");
 
 			var cmd = Connection.CreateCommand();
 			var sql = new StringBuilder("UPDATE ");

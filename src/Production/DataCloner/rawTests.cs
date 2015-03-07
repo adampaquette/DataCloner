@@ -169,22 +169,22 @@ namespace DataCloner
 			Console.WriteLine("Cloning started");
 
 			dc.Setup(config.Applications[0], 1, 1);
-			source.Columns.Clear();
-			source.ServerId = 1;
-			source.Database = "dataclonertestdatabase";
-			source.Schema = "";
-			source.Table = "customers";
-			source.Columns.Add("customerNumber", (int)103);
-			dc.Clone(source, true);
+			//source.Columns.Clear();
+			//source.ServerId = 1;
+			//source.Database = "dataclonertestdatabase";
+			//source.Schema = "";
+			//source.Table = "customers";
+			//source.Columns.Add("customerNumber", (int)103);
+			//dc.Clone(source, true);
 
-			dc.Setup(config.Applications[0], 1, null);
-			source.Columns.Clear();
-			source.ServerId = 1;
-			source.Database = "dataclonertestdatabase";
-			source.Schema = "";
-			source.Table = "customers";
-			source.Columns.Add("customerNumber", (int)103);
-			dc.Clone(source, true);
+			//dc.Setup(config.Applications[0], 1, null);
+			//source.Columns.Clear();
+			//source.ServerId = 1;
+			//source.Database = "dataclonertestdatabase";
+			//source.Schema = "";
+			//source.Table = "customers";
+			//source.Columns.Add("customerNumber", (int)103);
+			//dc.Clone(source, true);
 
 			//source.Columns.Clear();
 			//source.ServerId = 1;
@@ -196,13 +196,13 @@ namespace DataCloner
 
 			//Console.WriteLine("Done");
 
-			//source.Columns.Clear();
-			//source.ServerId = 1;
-			//source.Database = "sakila";
-			//source.Schema = "";
-			//source.Table = "customer";
-			//source.Columns.Add("customer_id", (int)1);
-			//dc.Clone(source, true);
+			source.Columns.Clear();
+			source.ServerId = 1;
+			source.Database = "sakila";
+			source.Schema = "";
+			source.Table = "customer";
+			source.Columns.Add("customer_id", (int)1);
+			dc.Clone(source, true);
 
 			////Référence circulaire basic
 			//source.Columns.Clear();
