@@ -1,7 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Security.AccessControl;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
+using DataCloner.DataClasse.Configuration;
 
 namespace DataCloner.GUI
 {
@@ -11,17 +14,45 @@ namespace DataCloner.GUI
         private const string FileExtension = ".dca";
         private const string Filter = "Datacloner archive (.dca)|*.dca";
 
-        
         private Cloner _cloner = new Cloner();
+		private Configuration _config = Configuration.Load(Configuration.ConfigFileName);
 
-	    public MainWindow()
+		public MainWindow()
 	    {
 			
 
 		}
 
+		private void Window_Loaded(object sender, RoutedEventArgs e)
+		{
+			cbApp.ItemsSource = _config.Applications;
 
-	    private void cbServerSource_SelectionChanged(object sender, SelectionChangedEventArgs e)
+			/*****************************************************************/
+			var conn1 = new Connection {ConnectionString = "", Id = 1, ProviderName = "", Name = "UNI"};
+			var lstConn = new List<Connection>{conn1};
+			var lstDatabases = new List<string>
+			{
+				"Sakila",
+				"DataClonerTestDatabases"
+			};
+			var lstSchemas = new List<string> {""};
+			var lstTables = new List<string> {"table1", "table2"};
+
+			var lstsourceCloneIdentifier = new List<sourceCloneIdentifier>
+			{
+				new sourceCloneIdentifier {ServerId = 1, Database = "Sakila", Schema = "", Table = "table1"}
+			};
+
+			dgcServer.ItemsSource = lstConn;
+			dgcDatabase.ItemsSource = lstDatabases;
+			dgcSchema.ItemsSource = lstSchemas;
+			dgcTable.ItemsSource = lstTables;
+			dataGrid.ItemsSource = lstsourceCloneIdentifier;
+
+
+		}
+
+		private void cbServerSource_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
         }
 
@@ -60,4 +91,12 @@ namespace DataCloner.GUI
             ////cloner.SqlTraveler(source, true, false);
         }
     }
+
+	public class sourceCloneIdentifier
+	{
+		public Int16 ServerId { get; set; }
+		public string Database { get; set; }
+		public string Schema { get; set; }
+		public string Table { get; set; }
+	}
 }

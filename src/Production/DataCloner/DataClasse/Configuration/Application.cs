@@ -7,7 +7,9 @@ namespace DataCloner.DataClasse.Configuration
     [Serializable]
     public class Application
     {
-        [XmlAttribute]
+		[XmlAttribute]
+		public Int16 Id { get; set; }
+		[XmlAttribute]
         public string Name { get; set; }
         [XmlArrayItem("add")]
         public List<Connection> ConnectionStrings { get; set; }

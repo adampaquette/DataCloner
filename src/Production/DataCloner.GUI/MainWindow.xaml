@@ -1,8 +1,10 @@
 ﻿<Window
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" x:Class="DataCloner.GUI.MainWindow"
-        Title="DataCloner GUI" Height="539.951" Width="543.259" MinHeight="440" MinWidth="530">
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" 
+		x:Class="DataCloner.GUI.MainWindow" Loaded="Window_Loaded"
+        Title="DataCloner GUI" Height="588" Width="645" MinHeight="588" MinWidth="645">
 	<Grid Background="#FFEEEBE6">
 		<TabControl BorderThickness="1 1 1 1" Margin="10" TabStripPlacement="Left" >
 			<TabControl.Resources>
@@ -52,7 +54,7 @@
 			<TabItem IsSelected="True">
 				<TabItem.Header>
 					<StackPanel Orientation="Vertical">
-						<Image Source="Resources/data111.png" Height="45" Width="auto"/>
+						<Image Source="Resources/database31.png" Height="45" Width="auto"/>
 						<TextBlock Text="Clônage" Margin="2,0,0,0" VerticalAlignment="Center" />
 					</StackPanel>
 				</TabItem.Header>
@@ -60,25 +62,61 @@
 					<Button x:Name="BtnExec" Content="Exécuter" HorizontalAlignment="Right" Margin="0,0,10,10" VerticalAlignment="Bottom" Width="121" Height="34" 
 						Click="btnExec_Click" />
 					<Label Content="Source : " Margin="10,57.96,0,0" Height="29" VerticalAlignment="Top" HorizontalAlignment="Left" Width="98.999"/>
-					<ComboBox x:Name="CbServerSource" Margin="10,86.96,0,0" VerticalAlignment="Top" ItemsSource="{Binding Mode=OneWay}"
-						SelectionChanged="cbServerSource_SelectionChanged" HorizontalAlignment="Left" Width="165">
+					<ComboBox x:Name="CbServerSource" Margin="10,87,0,0" VerticalAlignment="Top" ItemsSource="{Binding Mode=OneWay}"
+						SelectionChanged="cbServerSource_SelectionChanged" HorizontalAlignment="Left" Width="225">
 						<ComboBox.ItemTemplate>
 							<DataTemplate>
 								<TextBlock Text="{Binding}"/>
 							</DataTemplate>
 						</ComboBox.ItemTemplate>
 					</ComboBox>
-					<Label Content="Destination : " HorizontalAlignment="Right" Margin="0,57.96,58,0" Width="117" Height="29" VerticalAlignment="Top"/>
-					<ComboBox x:Name="CbServerDestination" Margin="0,86.96,10,0" VerticalAlignment="Top" ItemsSource="{Binding Mode=OneWay}" 
-						SelectionChanged="cbServerDestination_SelectionChanged" HorizontalAlignment="Right" Width="165">
+					<Label Content="Destination : " Margin="268,58,118,0" Height="29" VerticalAlignment="Top"/>
+					<ComboBox x:Name="CbServerDestination" Margin="268,87,0,0" VerticalAlignment="Top" ItemsSource="{Binding Mode=OneWay}" 
+						SelectionChanged="cbServerDestination_SelectionChanged" HorizontalAlignment="Left" Width="225">
 						<ComboBox.ItemTemplate>
 							<DataTemplate>
 								<TextBlock Text="{Binding}"/>
 							</DataTemplate>
 						</ComboBox.ItemTemplate>
 					</ComboBox>
-					<TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Type d'extraction : " VerticalAlignment="Top" Margin="10,10,0,0" d:LayoutOverrides="HorizontalAlignment"/>
-					<ComboBox Margin="10,30.96,10,0" VerticalAlignment="Top" Height="22"/>
+					<TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Type d'extraction : " VerticalAlignment="Top" Margin="268,10,0,0" RenderTransformOrigin="0.57,0.625"/>
+					<Label x:Name="label1" Content="Application :" Margin="10,5,0,0" Height="29" VerticalAlignment="Top" HorizontalAlignment="Left" Width="99"/>
+					<ComboBox x:Name="cbApp" Margin="10,31,0,0" VerticalAlignment="Top" Height="22"
+							  SelectedValuePath="Id"
+							  DisplayMemberPath="Name" HorizontalAlignment="Left" Width="225"/>
+					<ComboBox x:Name="cbExtractionType" Margin="268,31,0,0" VerticalAlignment="Top" Height="22" HorizontalAlignment="Left" Width="225"/>
+					<GroupBox x:Name="groupBox" Header="Source de données" Margin="10,126,10,0" Height="199" VerticalAlignment="Top">
+						<DataGrid x:Name="dataGrid" Margin="10,10,9,49" 
+								  AutoGenerateColumns="false"
+								  CanUserReorderColumns="False"
+								  CanUserResizeRows="False"
+								  VerticalGridLinesBrush="CornflowerBlue"
+								  HorizontalGridLinesBrush="CornflowerBlue"
+								  >
+							<DataGrid.Columns>
+								<DataGridComboBoxColumn x:Name="dgcServer" Header="Server" Width="*"
+														SelectedValueBinding="{Binding ServerId, Mode=TwoWay}" 
+														SelectedValuePath="Id"
+														DisplayMemberPath="Name">
+								</DataGridComboBoxColumn>
+								<DataGridComboBoxColumn x:Name="dgcDatabase" Header="Database" Width="*"
+														SelectedValueBinding="{Binding Database, Mode=TwoWay}"
+														DisplayMemberPath="{Binding Database}">
+
+								</DataGridComboBoxColumn>
+								<DataGridComboBoxColumn x:Name="dgcSchema" Header="Schema" Width="*"
+														SelectedValueBinding="{Binding Schema, Mode=TwoWay}"
+														DisplayMemberPath="{Binding Schema}">
+
+								</DataGridComboBoxColumn>
+								<DataGridComboBoxColumn x:Name="dgcTable" Header="Table" Width="*"
+														SelectedValueBinding="{Binding Table, Mode=TwoWay}"
+														DisplayMemberPath="{Binding Table}">
+
+								</DataGridComboBoxColumn>
+							</DataGrid.Columns>
+						</DataGrid>
+					</GroupBox>
 					<Slider Margin="10,0,10,154" VerticalAlignment="Bottom"/>
 					<ListView x:Name="lvResults" Margin="10,0,10,58" Height="91" VerticalAlignment="Bottom">
 						<ListView.View>
