@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using DataCloner.DataClasse.Configuration;
 using System.Linq;
+using System.Text;
 
 namespace DataCloner.GUI
 {
@@ -20,8 +21,8 @@ namespace DataCloner.GUI
 
 		public MainWindow()
 	    {
-			
-
+			_cloner.EnforceIntegrity = false;
+			_cloner.StatusChanged += OnStatusChanged;
 		}
 
 		private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -53,7 +54,26 @@ namespace DataCloner.GUI
 
 		}
 
-        private void btnExec_Click(object sender, RoutedEventArgs e)
+		private static void OnStatusChanged(object s, StatusChangedEventArgs e)
+		{
+			if (e.Status == Status.Cloning)
+			{
+				var sb = new StringBuilder();
+				sb.Append(new string(' ', 3 * e.Level));
+				sb.Append(e.SourceRow.Database).Append(".").Append(e.SourceRow.Schema).Append(".").Append(e.SourceRow.Table).Append(" : (");
+				foreach (var col in e.SourceRow.Columns)
+					sb.Append(col.Key).Append("=").Append(col.Value).Append(", ");
+				sb.Remove(sb.Length - 2, 2);
+				sb.Append(")");
+				Console.WriteLine(sb.ToString());
+			}
+			else if (e.Status == Status.FetchingDerivatives)
+			{
+				Console.WriteLine(new string(' ', 3 * e.Level) + "=================================");
+			}
+		}
+
+		private void btnExec_Click(object sender, RoutedEventArgs e)
         {
             //var selectedMap = _serversMaps.Maps.FirstOrDefault(m => m.nameFrom == cbServerSource.SelectedValue.ToString() &&
             //                                                        m.nameTo == cbServerDestination.SelectedValue.ToString());
@@ -91,11 +111,41 @@ namespace DataCloner.GUI
 
 		private void cbServerSource_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
-
+			var app = _config?.Applications.FirstOrDefault(a => a.Id == (Int16)cbApp.SelectedValue);
+			if (app != null)
+			{
+				var maps = app.Maps?.Where(m => m.UsableConfigs.Split(',').Contains(cbExtractionType.SelectedValue.ToString()));
+				if (maps != null)
+				{
+					var fromMap = maps.FirstOrDefault(m => m.From == cbServerSource.SelectedValue.ToString());
+					if (fromMap != null)
+					{
+						var mapsTo = maps.Where(
+								m => m.From == fromMap.From && m.UsableConfigs.Split(',').Contains(cbExtractionType.SelectedValue.ToString()));
+						cbServerDestination.ItemsSource = mapsTo;
+					}
+				}
+			}
 		}
 
 		private void cbServerDestination_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
+			var app = _config?.Applications.FirstOrDefault(a => a.Id == (Int16)cbApp.SelectedValue);
+			if (app != null)
+			{
+				var maps = app.Maps?.Where(m => m.UsableConfigs.Split(',').Contains(cbExtractionType.SelectedValue.ToString()));
+				if (maps != null)
+				{
+					var map = maps.FirstOrDefault(m => m.From == cbServerSource.SelectedValue.ToString() &&
+													   m.To == cbServerDestination.SelectedValue.ToString() &&
+													   m.UsableConfigs.Split(',').Contains(cbExtractionType.SelectedValue.ToString()));
+					if (map != null)
+					{
+						var configId = (Int16)cbExtractionType.SelectedValue;
+                        _cloner.Setup(app, map.Id, configId);
+					}
+				}
+			}
 		}
 	}
 
