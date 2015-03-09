@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using DataCloner.DataClasse.Configuration;
+using System.Linq;
 
 namespace DataCloner.GUI
 {
@@ -52,27 +53,6 @@ namespace DataCloner.GUI
 
 		}
 
-		private void cbServerSource_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-        }
-
-        private void cbServerDestination_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            //_cloner.SaveToFile = false;
-            
-            //if (CbServerDestination.SelectedValue.ToString() == FileElement)
-            //{
-            //    var dlg = new SaveFileDialog();
-            //    dlg.DefaultExt = FileExtension;
-            //    dlg.Filter = Filter ;
-            //    if (dlg.ShowDialog() == true)
-            //    {
-            //        _cloner.SaveToFile = true;
-            //        _cloner.SavePath = dlg.FileName;
-            //    }
-            //}
-        }
-
         private void btnExec_Click(object sender, RoutedEventArgs e)
         {
             //var selectedMap = _serversMaps.Maps.FirstOrDefault(m => m.nameFrom == cbServerSource.SelectedValue.ToString() &&
@@ -90,7 +70,34 @@ namespace DataCloner.GUI
 
             ////cloner.SqlTraveler(source, true, false);
         }
-    }
+
+	    private void CbApp_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+	    {
+		    var app = _config?.Applications.FirstOrDefault(a => a.Id == (Int16)cbApp.SelectedValue);
+		    if (app != null)
+			    cbExtractionType.ItemsSource = app.ClonerConfigurations;
+	    }
+
+	    private void CbExtractionType_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+	    {
+			var app = _config?.Applications.FirstOrDefault(a => a.Id == (Int16)cbApp.SelectedValue);
+		    if (app != null)
+		    {
+			    var maps = app.Maps?.Where(m => m.UsableConfigs.Split(',').Contains(cbExtractionType.SelectedValue.ToString()));
+				if(maps!=null)
+					cbServerSource.ItemsSource = maps;
+		    }
+	    }
+
+		private void cbServerSource_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+
+		}
+
+		private void cbServerDestination_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+		}
+	}
 
 	public class sourceCloneIdentifier
 	{

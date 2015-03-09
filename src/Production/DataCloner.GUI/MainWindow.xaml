@@ -62,29 +62,38 @@
 					<Button x:Name="BtnExec" Content="Exécuter" HorizontalAlignment="Right" Margin="0,0,10,10" VerticalAlignment="Bottom" Width="121" Height="34" 
 						Click="btnExec_Click" />
 					<Label Content="Source : " Margin="10,57.96,0,0" Height="29" VerticalAlignment="Top" HorizontalAlignment="Left" Width="98.999"/>
-					<ComboBox x:Name="CbServerSource" Margin="10,87,0,0" VerticalAlignment="Top" ItemsSource="{Binding Mode=OneWay}"
-						SelectionChanged="cbServerSource_SelectionChanged" HorizontalAlignment="Left" Width="225">
-						<ComboBox.ItemTemplate>
-							<DataTemplate>
-								<TextBlock Text="{Binding}"/>
-							</DataTemplate>
-						</ComboBox.ItemTemplate>
+					<ComboBox x:Name="cbServerSource" Margin="10,87,0,0" 
+							  VerticalAlignment="Top" 
+							  SelectedValuePath="From"
+							  DisplayMemberPath="From"
+							  SelectionChanged="cbServerSource_SelectionChanged" 
+							  HorizontalAlignment="Left" Width="225">
 					</ComboBox>
 					<Label Content="Destination : " Margin="268,58,118,0" Height="29" VerticalAlignment="Top"/>
-					<ComboBox x:Name="CbServerDestination" Margin="268,87,0,0" VerticalAlignment="Top" ItemsSource="{Binding Mode=OneWay}" 
-						SelectionChanged="cbServerDestination_SelectionChanged" HorizontalAlignment="Left" Width="225">
-						<ComboBox.ItemTemplate>
-							<DataTemplate>
-								<TextBlock Text="{Binding}"/>
-							</DataTemplate>
-						</ComboBox.ItemTemplate>
+					<ComboBox x:Name="cbServerDestination" Margin="268,87,0,0" 
+							  VerticalAlignment="Top"
+							  SelectedValuePath="To"
+							  DisplayMemberPath="To"
+							  SelectionChanged="cbServerDestination_SelectionChanged" 
+							  HorizontalAlignment="Left" Width="225">
 					</ComboBox>
 					<TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Type d'extraction : " VerticalAlignment="Top" Margin="268,10,0,0" RenderTransformOrigin="0.57,0.625"/>
 					<Label x:Name="label1" Content="Application :" Margin="10,5,0,0" Height="29" VerticalAlignment="Top" HorizontalAlignment="Left" Width="99"/>
-					<ComboBox x:Name="cbApp" Margin="10,31,0,0" VerticalAlignment="Top" Height="22"
+					<ComboBox x:Name="cbApp" Margin="10,31,0,0" 
+							  VerticalAlignment="Top" 
+							  Height="22"
 							  SelectedValuePath="Id"
-							  DisplayMemberPath="Name" HorizontalAlignment="Left" Width="225"/>
-					<ComboBox x:Name="cbExtractionType" Margin="268,31,0,0" VerticalAlignment="Top" Height="22" HorizontalAlignment="Left" Width="225"/>
+							  DisplayMemberPath="Name" 
+							  HorizontalAlignment="Left" 
+							  Width="225"
+							  SelectionChanged="CbApp_OnSelectionChanged" />
+					<ComboBox x:Name="cbExtractionType" 
+							  Margin="268,31,0,0" 
+							  VerticalAlignment="Top" Height="22" 
+							  HorizontalAlignment="Left" Width="225"
+							  SelectedValuePath="Id"
+							  DisplayMemberPath="Name"
+							  SelectionChanged="CbExtractionType_OnSelectionChanged"/>
 					<GroupBox x:Name="groupBox" Header="Source de données" Margin="10,126,10,0" Height="199" VerticalAlignment="Top">
 						<DataGrid x:Name="dataGrid" Margin="10,10,9,49" 
 								  AutoGenerateColumns="false"
