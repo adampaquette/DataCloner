@@ -8,17 +8,52 @@ namespace DataCloner.Tests
 {
     internal class FakeBasicDatabase
     {
-        internal static Cache CreateCache()
+        internal static Cache CreateDatabaseSchema()
         {
-            var city = new TableSchema
+			var house = new TableSchema
+			{
+				Name = "house",
+				ColumnsDefinition = new[]
+				{
+					new ColumnDefinition {Name = "id", IsPrimary = true, Type = DbType.Int32},
+					new ColumnDefinition {Name = "name", Type = DbType.String, Size = "20"},
+					new ColumnDefinition {Name = "cityId", IsForeignKey = true, Type = DbType.Int32}
+				},
+				ForeignKeys = new[]
+				{
+					new ForeignKey
+					{
+						ServerIdTo = 0,
+						DatabaseTo = "",
+						SchemaTo = "",
+						TableTo = "city",
+						Columns = new []{new ForeignKeyColumn {NameFrom = "cityId", NameTo = "id"} }
+					}
+				}
+			};
+
+			var city = new TableSchema
             {
                 Name = "city",
                 ColumnsDefinition = new[]
                 {
                     new ColumnDefinition {Name = "id", IsPrimary = true, Type = DbType.Int32},
-                    new ColumnDefinition {Name = "name", Type = DbType.String, Size = "20"}
-                }
-            };
+                    new ColumnDefinition {Name = "name", Type = DbType.String, Size = "20"},
+					new ColumnDefinition {Name = "stateId", IsForeignKey = true, Type = DbType.Int32}
+				},
+                ForeignKeys = new[]
+				{
+					new ForeignKey
+					{
+						ServerIdTo = 0,
+						DatabaseTo = "",
+						SchemaTo = "",
+						TableTo = "state",
+						Columns = new []{new ForeignKeyColumn {NameFrom = "stateId", NameTo = "id"} }
+					}
+				},
+				DerivativeTables = new[] { new DerivativeTable { ServerId = 0, Schema = "", Database = "", Table = "house" } }
+			};
 
             var state = new TableSchema
             {
@@ -27,7 +62,7 @@ namespace DataCloner.Tests
                 {
                     new ColumnDefinition {Name = "id", IsPrimary = true, Type = DbType.Int32},
                     new ColumnDefinition {Name = "name", Type = DbType.String, Size = "20"},
-                    new ColumnDefinition {Name = "cityId", IsForeignKey = true, Type = DbType.Int32}
+                    new ColumnDefinition {Name = "countryId", IsForeignKey = true, Type = DbType.Int32}
                 },
                 ForeignKeys = new[]
                 {
@@ -36,8 +71,8 @@ namespace DataCloner.Tests
                         ServerIdTo = 0,
                         DatabaseTo = "",
                         SchemaTo = "",
-                        TableTo = "city",
-                        Columns = new []{new ForeignKeyColumn {NameFrom = "cityId", NameTo = "id"} }
+                        TableTo = "country",
+                        Columns = new []{new ForeignKeyColumn {NameFrom = "countryId", NameTo = "id"} }
                     }
                 },
                 DerivativeTables = new[] { new DerivativeTable { ServerId = 0, Schema = "", Database = "", Table = "city" } }
@@ -49,40 +84,82 @@ namespace DataCloner.Tests
                 ColumnsDefinition = new[]
                 {
                     new ColumnDefinition {Name = "id", IsPrimary = true, Type = DbType.Int32},
-                    new ColumnDefinition {Name = "name", Type = DbType.String, Size = "20"},
-                    new ColumnDefinition {Name = "stateId", IsForeignKey = true, Type = DbType.Int32}
+                    new ColumnDefinition {Name = "name", Type = DbType.String, Size = "20"}
                 },
-                ForeignKeys = new[]
+                DerivativeTables = new[]
                 {
-                    new ForeignKey
-                    {
-                        ServerIdTo = 0,
-                        DatabaseTo = "",
-                        SchemaTo = "",
-                        TableTo = "state",
-                        Columns = new []{new ForeignKeyColumn {NameFrom = "stateId", NameTo = "id"} }
-                    }
-                },
-                DerivativeTables = new[] { new DerivativeTable { ServerId = 0, Schema = "", Database = "", Table = "contry" } }
+	                new DerivativeTable { ServerId = 0, Schema = "", Database = "", Table = "state" },
+					new DerivativeTable { ServerId = 0, Schema = "", Database = "", Table = "person" }
+				}
             };
 
-            var cache = new Cache();
+			var person = new TableSchema
+			{
+				Name = "person",
+				ColumnsDefinition = new[]
+				{
+					new ColumnDefinition {Name = "id", IsPrimary = true, Type = DbType.Int32},
+					new ColumnDefinition {Name = "name", Type = DbType.String, Size = "20"},
+					new ColumnDefinition {Name = "fatherId", IsForeignKey = true, IsUniqueKey = true, Type = DbType.Int32},
+					new ColumnDefinition {Name = "favoriteColorId", IsForeignKey = true, Type = DbType.Int32}
+				},
+				ForeignKeys = new[]
+				{
+					new ForeignKey
+					{
+						ServerIdTo = 0,
+						DatabaseTo = "",
+						SchemaTo = "",
+						TableTo = "color",
+						Columns = new []{new ForeignKeyColumn {NameFrom = "favoriteColorId", NameTo = "id"} }
+					},
+					new ForeignKey
+					{
+						ServerIdTo = 0,
+						DatabaseTo = "",
+						SchemaTo = "",
+						TableTo = "person",
+						Columns = new []{new ForeignKeyColumn {NameFrom = "fatherId", NameTo = "id"} }
+					}
+				},
+				DerivativeTables = new[] { new DerivativeTable { ServerId = 0, Schema = "", Database = "", Table = "color" } }
+			};
+
+			var color = new TableSchema
+			{
+				Name = "color",
+				ColumnsDefinition = new[]
+				{
+					new ColumnDefinition {Name = "id", IsPrimary = true, Type = DbType.Int32},
+					new ColumnDefinition {Name = "name", Type = DbType.String, Size = "20"}
+				},
+				IsStatic = true
+			};
+
+			var cache = new Cache();
             cache.ServerMap.Add(new ServerIdentifier { Database = "", Schema = "" },
-                new ServerIdentifier { Database = "", Schema = "" });
-            cache.DatabasesSchema.Add(0, "", "", city);
+								new ServerIdentifier { Database = "", Schema = "" });
+			cache.DatabasesSchema.Add(0, "", "", house);
+			cache.DatabasesSchema.Add(0, "", "", city);
             cache.DatabasesSchema.Add(0, "", "", state);
             cache.DatabasesSchema.Add(0, "", "", country);
+			cache.DatabasesSchema.Add(0, "", "", person);
+			cache.DatabasesSchema.Add(0, "", "", color);
 
-            return cache;
+			return cache;
         }
 
         internal static IQueryHelper CreateData()
         {
-            var queryHelper = Substitute.For<IQueryHelper>();
-            queryHelper.Select(Tools.NewRi(0, "", "", "customer", new ColumnsWithValue { { "id", 1 } }))
-                .Returns(new[] { new object[] { 1, 2, 3 } });
+            var db = Substitute.For<IQueryHelper>();
+            db.Select(Make.Ri0("color", new ColumnsWithValue { { "id", 1 } })).Returns(Make.Obj(1, "orange"));
+			db.Select(Make.Ri0("person", new ColumnsWithValue { { "id", 1 } })).Returns(Make.Obj(1, "joe", 1, 1));
+			db.Select(Make.Ri0("country", new ColumnsWithValue { { "id", 1 } })).Returns(Make.Obj(1));
+			db.Select(Make.Ri0("state", new ColumnsWithValue { { "id", 1 } })).Returns(Make.Obj(1));
+			db.Select(Make.Ri0("city", new ColumnsWithValue { { "id", 1 } })).Returns(Make.Obj(1));
+			db.Select(Make.Ri0("house", new ColumnsWithValue { { "id", 1 } })).Returns(Make.Obj(1));
 
-            return queryHelper;
+			return db;
         }
 
         internal static IQueryDispatcher CreateServer(IQueryHelper queryHelper)

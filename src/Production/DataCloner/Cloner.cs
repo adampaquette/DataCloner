@@ -24,7 +24,7 @@ namespace DataCloner
 		private readonly List<CircularKeyJob> _circularKeyJobs;
 		private readonly Dictionary<Int16, ExecutionPlan> _executionPlanByServer;
 
-		private Cache _cache;
+		public Cache _cache;
 		private int _nextVariableId;
 		private int _nextStepId;
 
@@ -70,6 +70,8 @@ namespace DataCloner
 
 		public List<IRowIdentifier> Clone(IRowIdentifier riSource, bool getDerivatives)
 		{
+			if(riSource == null) throw new ArgumentNullException("riSource");
+
 			var rowsGenerating = new Stack<IRowIdentifier>();
 			rowsGenerating.Push(riSource);
 

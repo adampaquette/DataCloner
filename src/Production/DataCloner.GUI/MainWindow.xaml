@@ -103,26 +103,23 @@
 								  HorizontalGridLinesBrush="CornflowerBlue"
 								  >
 							<DataGrid.Columns>
-								<DataGridComboBoxColumn x:Name="dgcServer" Header="Server" Width="*"
-														SelectedValueBinding="{Binding ServerId, Mode=TwoWay}" 
-														SelectedValuePath="Id"
-														DisplayMemberPath="Name">
+								<DataGridComboBoxColumn x:Name="dgcServer" Header="Server" Width="*">
 								</DataGridComboBoxColumn>
-								<DataGridComboBoxColumn x:Name="dgcDatabase" Header="Database" Width="*"
-														SelectedValueBinding="{Binding Database, Mode=TwoWay}"
+								<!--<DataGridComboBoxColumn x:Name="dgcDatabase" Header="Database" Width="*"
+														SelectedValueBinding="{Binding}"
 														DisplayMemberPath="{Binding Database}">
 
 								</DataGridComboBoxColumn>
 								<DataGridComboBoxColumn x:Name="dgcSchema" Header="Schema" Width="*"
-														SelectedValueBinding="{Binding Schema, Mode=TwoWay}"
+														SelectedValueBinding="{Binding}"
 														DisplayMemberPath="{Binding Schema}">
 
 								</DataGridComboBoxColumn>
 								<DataGridComboBoxColumn x:Name="dgcTable" Header="Table" Width="*"
-														SelectedValueBinding="{Binding Table, Mode=TwoWay}"
+														SelectedValueBinding="{Binding}"
 														DisplayMemberPath="{Binding Table}">
 
-								</DataGridComboBoxColumn>
+								</DataGridComboBoxColumn>-->
 							</DataGrid.Columns>
 						</DataGrid>
 					</GroupBox>

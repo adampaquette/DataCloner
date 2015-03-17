@@ -11,7 +11,7 @@ using Murmur;
 
 namespace DataCloner.DataClasse.Cache
 {
-    internal sealed class Cache
+    public sealed class Cache
     {
         public string ConfigFileHash { get; set; }
         public Dictionary<ServerIdentifier, ServerIdentifier> ServerMap { get; set; }

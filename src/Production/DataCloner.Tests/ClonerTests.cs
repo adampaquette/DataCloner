@@ -1,4 +1,5 @@
-﻿using DataCloner.DataAccess;
+﻿using System;
+using DataCloner.DataAccess;
 using DataCloner.DataClasse;
 using DataCloner.DataClasse.Cache;
 using DataCloner.DataClasse.Configuration;
@@ -7,75 +8,106 @@ using Xunit;
 
 namespace DataCloner.Tests
 {
-    public class ClonerTests
-    {
-        public class BasicClonerTests
-        {
-            private readonly Cache _cache;
-            private readonly Cloner _cloner;
-            private readonly IQueryHelper _queryHelper;
-            private readonly IQueryDispatcher _queryDispatcher;
+	public class ClonerTests
+	{
+		public class BasicClonerTests
+		{
+			private readonly Cache _cache;
+			private readonly Cloner _cloner;
+			private readonly IQueryHelper _queryHelper;
+			private readonly IQueryDispatcher _queryDispatcher;
 
-            public BasicClonerTests()
-            {
-                _cache = FakeBasicDatabase.CreateCache();
-                _queryHelper = FakeBasicDatabase.CreateData();
-                _queryDispatcher = FakeBasicDatabase.CreateServer(_queryHelper);
+			public BasicClonerTests()
+			{
+				_cache = FakeBasicDatabase.CreateDatabaseSchema();
+				_queryHelper = FakeBasicDatabase.CreateData();
+				_queryDispatcher = FakeBasicDatabase.CreateServer(_queryHelper);
 
-                _cloner = new Cloner(_queryDispatcher,
-                    delegate(IQueryDispatcher dispatcher, Application app, int id, int? configId, ref Cache cache)
-                    {
-                        cache = _cache;
-                    });
-            }
+				_cloner = new Cloner(_queryDispatcher, 
+					(IQueryDispatcher dispatcher, Application app, int id, int? configId, ref Cache cache) => cache = _cache);
+				_cloner.Setup(null, 0, null);
+			}
 
-            [Fact]
-            public void QueryDispatcherCalledWithRowIdentifierFromExtensionReturnData()
-            {
-                var row = Tools.NewRi(0, "", "", "customer", new ColumnsWithValue {{"id", 1}});
-                var result = _queryDispatcher.Select(row);
+			#region QueryDispatcher
 
-                _queryDispatcher.Received().GetQueryHelper(row);
-                _queryHelper.Received().Select(row);
+			[Fact]
+			public void QueryDispatcher_Select_CalledWithRowIdentifierReturnData()
+			{
+				var row = Make.Ri0("color", new ColumnsWithValue { { "id", 1 } });
+				var result = _queryDispatcher.Select(row);
 
-                Assert.Equal(new[] {new object[] {1, 2, 3}}, result);
-            }
+				_queryDispatcher.Received().GetQueryHelper(row);
+				_queryHelper.Received().Select(row);
 
-            [Fact]
-            public void QueryDispatcherCalledWithRowIdentifierReturnData()
-            {
-                var row = Tools.NewRi(0, "", "", "customer", new ColumnsWithValue {{"id", 1}});
-                var result = _queryDispatcher.GetQueryHelper(row).Select(row);
+				Assert.Equal(Make.Obj(1), result);
+			}
 
-                _queryDispatcher.Received().GetQueryHelper(row);
-                _queryHelper.Received().Select(row);
+			[Fact]
+			public void QueryDispatcher_GetQueryHelper_CalledWithRowIdentifierReturnData()
+			{
+				var row = Make.Ri0("color", new ColumnsWithValue { { "id", 1 } });
+				var result = _queryDispatcher.GetQueryHelper(row).Select(row);
 
-                Assert.Equal(new[] {new object[] {1, 2, 3}}, result);
-            }
+				_queryDispatcher.Received().GetQueryHelper(row);
+				_queryHelper.Received().Select(row);
 
-            [Fact]
-            public void QueryDispatcherCalledWithIntegerReturnData()
-            {
-                var row = Tools.NewRi(0, "", "", "customer", new ColumnsWithValue {{"id", 1}});
-                var result = _queryDispatcher.GetQueryHelper(0).Select(row);
+				Assert.Equal(Make.Obj(1), result);
+			}
 
-                _queryDispatcher.Received().GetQueryHelper(row.ServerId);
-                _queryHelper.Received().Select(row);
+			[Fact]
+			public void QueryDispatcher_GetQueryHelper_CalledWithIntegerReturnData()
+			{
+				var row = Make.Ri0("color", new ColumnsWithValue { { "id", 1 } });
+				var result = _queryDispatcher.GetQueryHelper(0).Select(row);
 
-                Assert.Equal(new[] {new object[] {1, 2, 3}}, result);
-            }
+				_queryDispatcher.Received().GetQueryHelper(row.ServerId);
+				_queryHelper.Received().Select(row);
 
-            //[Fact]
-            public void BasicTest()
-            {
-                var source = Tools.NewRi(0, "", "", "customer", new ColumnsWithValue {{"id", 1}});
-                _cloner.Clone(source, true);
+				Assert.Equal(Make.Obj(1), result);
+			}
 
-                _queryDispatcher.Received();
-                _queryHelper.Received();
-                _queryHelper.Received().Select(Arg.Any<IRowIdentifier>());
-                _queryHelper.Received().Select(Tools.NewRi(0, "", "", "customer", new ColumnsWithValue {{"id", 1}}));
-            }
-        }
-    }
+			#endregion
+
+			#region Cloner
+
+			[Fact]
+			public void Cloner_Clone_ShouldReturnNoRow()
+			{
+				var row = Make.Ri0("color", new ColumnsWithValue { { "id", -1 } });
+				var clones = _cloner.Clone(row, true);
+
+				Assert.Equal(0, clones.Count);
+			}
+
+			[Fact]
+			public void Cloner_Clone_Param_ShouldThrow()
+			{
+				Assert.Throws(typeof(ArgumentNullException), () => _cloner.Clone(null, true));
+			}
+
+			[Fact]
+			public void Cloner_Clone_OneRowOneTable()
+			{
+				var row = Make.Ri0("color", new ColumnsWithValue { { "id", 1 } });
+				var clones = _cloner.Clone(row, true);
+
+				Assert.Equal(1, clones.Count);
+				Assert.Equal("color", clones[0].Table);
+				Assert.IsType<SqlVariable>(clones[0].Columns["id"]);
+			}
+
+			[Fact]
+			public void Cloner_Clone_RecursiveDontCrash()
+			{
+				var row = Make.Ri0("person", new ColumnsWithValue { { "id", 1 } });
+				var clones = _cloner.Clone(row, true);
+
+				Assert.Equal(1, clones.Count);
+				Assert.Equal("person", clones[0].Table);
+				Assert.IsType<SqlVariable>(clones[0].Columns["id"]);
+			}
+
+			#endregion
+		}
+	}
 }

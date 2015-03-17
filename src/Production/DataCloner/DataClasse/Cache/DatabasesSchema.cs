@@ -14,10 +14,10 @@ namespace DataCloner.DataClasse.Cache
     /// Contient les tables statiques de la base de données
     /// </summary>
     /// <remarks>Optimisé pour la lecture et non pour l'écriture!</remarks>
-    internal sealed class DatabasesSchema
+    public sealed class DatabasesSchema
     {
         //ServerId / Database / Schema -> TableSchema[]
-        private readonly Dictionary<Int16, Dictionary<string, Dictionary<string, TableSchema[]>>> _dic =
+        public readonly Dictionary<Int16, Dictionary<string, Dictionary<string, TableSchema[]>>> _dic =
             new Dictionary<Int16, Dictionary<string, Dictionary<string, TableSchema[]>>>();
 
         public TableSchema GetTable(Int16 server, string database, string schema, string table)
@@ -111,7 +111,7 @@ namespace DataCloner.DataClasse.Cache
             }
         }
 
-        public void LoadForeignKeys(IDataReader reader, Int16 serverId, String database)
+        internal void LoadForeignKeys(IDataReader reader, Int16 serverId, String database)
         {
             var lstForeignKeys = new List<ForeignKey>();
             var lstForeignKeyColumns = new List<ForeignKeyColumn>();
@@ -189,7 +189,7 @@ namespace DataCloner.DataClasse.Cache
             }
         }
 
-        public void LoadUniqueKeys(IDataReader reader, Int16 serverId, String database)
+		internal void LoadUniqueKeys(IDataReader reader, Int16 serverId, String database)
         {
             var lstUniqueKeys = new List<UniqueKey>();
             var lstUniqueKeyColumns = new List<string>();
@@ -251,7 +251,7 @@ namespace DataCloner.DataClasse.Cache
             }
         }
 
-        public void LoadColumns(IDataReader reader, Int16 serverId, String database, SqlTypeToDbTypeConverter dataTypeParser)
+		internal void LoadColumns(IDataReader reader, Int16 serverId, String database, SqlTypeToDbTypeConverter dataTypeParser)
         {
             var lstTable = new List<TableSchema>();
             var lstSchemaColumn = new List<ColumnDefinition>();
@@ -313,12 +313,12 @@ namespace DataCloner.DataClasse.Cache
             }
         }
 
-        /// <summary>
-        /// Termine la construction de la cache.
-        /// </summary>
-        /// <param name="config"></param>
-        /// <remarks>Le schéma de la BD doit préalablement avoir été obtenu. GetColumns() et GetForeignKeys()</remarks>
-        public void FinalizeCache(ClonerConfiguration config)
+		/// <summary>
+		/// Termine la construction de la cache.
+		/// </summary>
+		/// <param name="config"></param>
+		/// <remarks>Le schéma de la BD doit préalablement avoir été obtenu. GetColumns() et GetForeignKeys()</remarks>
+		internal void FinalizeCache(ClonerConfiguration config)
         {
             GenerateCommands();
             MergeFkConfig(config);

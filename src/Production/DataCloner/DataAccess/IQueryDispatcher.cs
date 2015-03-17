@@ -5,7 +5,7 @@ using DataCloner.DataClasse.Cache;
 
 namespace DataCloner.DataAccess
 {
-    internal interface IQueryDispatcher
+    public interface IQueryDispatcher
     {
         IQueryHelper this[IServerIdentifier server] { get; }
         IQueryHelper this[Int16 server] { get; }

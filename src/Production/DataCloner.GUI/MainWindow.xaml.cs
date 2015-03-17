@@ -7,6 +7,7 @@ using System.Windows.Data;
 using DataCloner.DataClasse.Configuration;
 using System.Linq;
 using System.Text;
+using System.Windows.Forms;
 
 namespace DataCloner.GUI
 {
@@ -19,6 +20,8 @@ namespace DataCloner.GUI
         private Cloner _cloner = new Cloner();
 		private Configuration _config = Configuration.Load(Configuration.ConfigFileName);
 
+	    private List<Int16> Servers = null;
+
 		public MainWindow()
 	    {
 			_cloner.EnforceIntegrity = false;
@@ -29,29 +32,27 @@ namespace DataCloner.GUI
 		{
 			cbApp.ItemsSource = _config.Applications;
 
-			/*****************************************************************/
-			var conn1 = new Connection {ConnectionString = "", Id = 1, ProviderName = "", Name = "UNI"};
-			var lstConn = new List<Connection>{conn1};
+			///*****************************************************************/
+			var conn1 = new Connection { ConnectionString = "", Id = 1, ProviderName = "", Name = "UNI" };
+			var lstConn = new List<Connection> { conn1 };
 			var lstDatabases = new List<string>
 			{
 				"Sakila",
 				"DataClonerTestDatabases"
 			};
-			var lstSchemas = new List<string> {""};
-			var lstTables = new List<string> {"table1", "table2"};
+			var lstSchemas = new List<string> { "" };
+			var lstTables = new List<string> { "table1", "table2" };
 
 			var lstsourceCloneIdentifier = new List<sourceCloneIdentifier>
 			{
 				new sourceCloneIdentifier {ServerId = 1, Database = "Sakila", Schema = "", Table = "table1"}
 			};
 
-			dgcServer.ItemsSource = lstConn;
-			dgcDatabase.ItemsSource = lstDatabases;
-			dgcSchema.ItemsSource = lstSchemas;
-			dgcTable.ItemsSource = lstTables;
+			//dgcServer.ItemsSource = lstConn;
+			//dgcDatabase.ItemsSource = lstDatabases;
+			//dgcSchema.ItemsSource = lstSchemas;
+			//dgcTable.ItemsSource = lstTables;
 			dataGrid.ItemsSource = lstsourceCloneIdentifier;
-
-
 		}
 
 		private static void OnStatusChanged(object s, StatusChangedEventArgs e)
@@ -143,6 +144,8 @@ namespace DataCloner.GUI
 					{
 						var configId = (Int16)cbExtractionType.SelectedValue;
                         _cloner.Setup(app, map.Id, configId);
+						Servers = _cloner._cache.DatabasesSchema._dic.Keys.ToArray().ToList();
+						dgcServer.ItemsSource = Servers;
 					}
 				}
 			}

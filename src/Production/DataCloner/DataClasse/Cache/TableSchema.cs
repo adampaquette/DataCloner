@@ -7,7 +7,7 @@ using DataCloner.Framework;
 
 namespace DataCloner.DataClasse.Cache
 {
-    internal sealed class TableSchema : ITableSchema
+    public sealed class TableSchema : ITableSchema
     {
         public string Name { get; set; }
         public bool IsStatic { get; set; }
