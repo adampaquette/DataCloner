@@ -121,8 +121,7 @@ namespace DataCloner.Tests
 						TableTo = "person",
 						Columns = new []{new ForeignKeyColumn {NameFrom = "fatherId", NameTo = "id"} }
 					}
-				},
-				DerivativeTables = new[] { new DerivativeTable { ServerId = 0, Schema = "", Database = "", Table = "color" } }
+				}				
 			};
 
 			var color = new TableSchema

@@ -39,7 +39,7 @@ namespace DataCloner.Tests
 				_queryDispatcher.Received().GetQueryHelper(row);
 				_queryHelper.Received().Select(row);
 
-				Assert.Equal(Make.Obj(1), result);
+				Assert.Equal(Make.Obj(1, "orange"), result);
 			}
 
 			[Fact]
@@ -51,7 +51,7 @@ namespace DataCloner.Tests
 				_queryDispatcher.Received().GetQueryHelper(row);
 				_queryHelper.Received().Select(row);
 
-				Assert.Equal(Make.Obj(1), result);
+				Assert.Equal(Make.Obj(1, "orange"), result);
 			}
 
 			[Fact]
@@ -63,17 +63,19 @@ namespace DataCloner.Tests
 				_queryDispatcher.Received().GetQueryHelper(row.ServerId);
 				_queryHelper.Received().Select(row);
 
-				Assert.Equal(Make.Obj(1), result);
+				Assert.Equal(Make.Obj(1, "orange"), result);
 			}
 
 			#endregion
 
 			#region Cloner
 
-			[Fact]
-			public void Cloner_Clone_ShouldReturnNoRow()
+			[Theory]
+			[InlineData(int.MinValue)]
+			[InlineData(int.MaxValue)]
+			public void Cloner_Clone_Param_ReturnNoRow(int id)
 			{
-				var row = Make.Ri0("color", new ColumnsWithValue { { "id", -1 } });
+				var row = Make.Ri0("color", new ColumnsWithValue { { "id", id } });
 				var clones = _cloner.Clone(row, true);
 
 				Assert.Equal(0, clones.Count);

@@ -136,7 +136,6 @@ namespace DataCloner.Tests
                 }
             };
 
-
             _config.Applications.Add(app);
         }
 
@@ -144,14 +143,10 @@ namespace DataCloner.Tests
         public void SaveLoadConfigFile()
         {
             const string fileName = "dcSaveLoadConfigFile.config";
-
-            Assert.DoesNotThrow(() =>
-            {
-                _config.Save(fileName);
-                var configLoaded = Configuration.Load(fileName);
-            });
-
-            var temp = _config.SerializeXml();
+            
+            _config.Save(fileName);
+            var configLoaded = Configuration.Load(fileName);
+            //var temp = _config.SerializeXml();
 
             File.Delete(fileName);
         }
