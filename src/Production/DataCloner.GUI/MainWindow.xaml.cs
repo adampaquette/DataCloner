@@ -5,25 +5,35 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using DataCloner.DataClasse.Configuration;
+using System.Windows.Media;
 using System.Linq;
 using System.Text;
-using System.Windows.Forms;
+using DataCloner.DataClasse;
 
 namespace DataCloner.GUI
 {
-    public partial class MainWindow : Window
-    {
-        private const string FileElement = "File";
-        private const string FileExtension = ".dca";
-        private const string Filter = "Datacloner archive (.dca)|*.dca";
+	public partial class MainWindow : Window
+	{
+		private const string FileElement = "File";
+		private const string FileExtension = ".dca";
+		private const string Filter = "Datacloner archive (.dca)|*.dca";
 
-        private Cloner _cloner = new Cloner();
+		private Cloner _cloner = new Cloner();
 		private Configuration _config = Configuration.Load(Configuration.ConfigFileName);
+		private DataCloner.DataClasse.Configuration.Application _selectedApp;
+		private IEnumerable<Map> _maps;
+		private Map _fromMaps;
 
-	    private List<Int16> Servers = null;
+		private Int16 _selectedServer;
+		private string _selectedDatabase;
+		private string _selectedSchema;
+		private string _selectedTable;
+		private string _selectedColumn;
+
+		private List<Int16> Servers = null;
 
 		public MainWindow()
-	    {
+		{
 			_cloner.EnforceIntegrity = false;
 			_cloner.StatusChanged += OnStatusChanged;
 		}
@@ -31,28 +41,8 @@ namespace DataCloner.GUI
 		private void Window_Loaded(object sender, RoutedEventArgs e)
 		{
 			cbApp.ItemsSource = _config.Applications;
-
-			///*****************************************************************/
-			var conn1 = new Connection { ConnectionString = "", Id = 1, ProviderName = "", Name = "UNI" };
-			var lstConn = new List<Connection> { conn1 };
-			var lstDatabases = new List<string>
-			{
-				"Sakila",
-				"DataClonerTestDatabases"
-			};
-			var lstSchemas = new List<string> { "" };
-			var lstTables = new List<string> { "table1", "table2" };
-
-			var lstsourceCloneIdentifier = new List<sourceCloneIdentifier>
-			{
-				new sourceCloneIdentifier {ServerId = 1, Database = "Sakila", Schema = "", Table = "table1"}
-			};
-
-			//dgcServer.ItemsSource = lstConn;
-			//dgcDatabase.ItemsSource = lstDatabases;
-			//dgcSchema.ItemsSource = lstSchemas;
-			//dgcTable.ItemsSource = lstTables;
-			dataGrid.ItemsSource = lstsourceCloneIdentifier;
+			if (_config.Applications.Count == 1)
+				cbApp.SelectedIndex = 0;
 		}
 
 		private static void OnStatusChanged(object s, StatusChangedEventArgs e)
@@ -74,89 +64,120 @@ namespace DataCloner.GUI
 			}
 		}
 
+		private void CbApp_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			_selectedApp = _config?.Applications?.FirstOrDefault(a => a.Id == (Int16)cbApp.SelectedValue);
+			if (_selectedApp != null)
+			{
+				cbExtractionType.ItemsSource = _selectedApp.ClonerConfigurations;
+				if (_selectedApp.ClonerConfigurations.Count == 1)
+					cbExtractionType.SelectedIndex = 0;
+			}
+		}
+
+		private void CbExtractionType_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			_maps = _selectedApp?.Maps?.Where(m => m.UsableConfigs.Split(',').Contains(cbExtractionType.SelectedValue.ToString()));
+			if (_maps != null)
+			{
+				cbSource.ItemsSource = _maps;
+				if (_maps.Count() == 1)
+					cbSource.SelectedIndex = 0;
+			}
+		}
+
+		private void cbSource_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			_fromMaps = _maps?.FirstOrDefault(m => m.From == cbSource.SelectedValue.ToString());
+			if (_fromMaps != null)
+			{
+				var _mapsTo = _maps.Where(m =>
+						m.From == _fromMaps.From &&
+						m.UsableConfigs.Split(',').Contains(cbExtractionType.SelectedValue.ToString()));
+				cbDestination.ItemsSource = _mapsTo;
+
+				if (_mapsTo.Count() == 1)
+					cbDestination.SelectedIndex = 0;
+			}
+		}
+
+		private void cbDestination_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			var map = _maps?.FirstOrDefault(m => m.From == cbSource.SelectedValue.ToString() &&
+											   m.To == cbDestination.SelectedValue.ToString() &&
+											   m.UsableConfigs.Split(',').Contains(cbExtractionType.SelectedValue.ToString()));
+			if (map != null)
+			{
+				var configId = (Int16)cbExtractionType.SelectedValue;
+				_cloner.Setup(_selectedApp, map.Id, configId);
+				Servers = _cloner._cache.DatabasesSchema._dic.Keys.ToArray().ToList();
+
+				cbServer.ItemsSource = Servers;
+				if (Servers.Count == 1)
+					cbServer.SelectedIndex = 0;
+			}
+		}
+
+		private void cbServer_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			_selectedServer = (Int16)cbServer.SelectedValue;
+			var databases = _cloner._cache.DatabasesSchema._dic[_selectedServer].Keys.ToArray().ToList();
+
+			cbDatabase.ItemsSource = databases;
+			if (databases.Count == 1)
+				cbDatabase.SelectedIndex = 0;
+		}
+
+		private void cbDatabase_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			_selectedDatabase = cbDatabase.SelectedValue.ToString();
+			var schemas = _cloner._cache.DatabasesSchema._dic[_selectedServer][_selectedDatabase].Keys.ToArray().ToList();
+
+			cbSchema.ItemsSource = schemas;
+			if (schemas.Count == 1)
+				cbSchema.SelectedIndex = 0;
+		}
+
+		private void cbSchema_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			_selectedSchema = cbSchema.SelectedValue.ToString();
+			var tables = _cloner._cache.DatabasesSchema._dic[_selectedServer][_selectedDatabase][_selectedSchema].Select(t => t.Name).ToList();
+				
+			cbTable.ItemsSource = tables;
+			if (tables.Count == 1)
+				cbTable.SelectedIndex = 0;
+		}
+
+		private void cbTable_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			_selectedTable = cbTable.SelectedValue.ToString();
+			var columns = _cloner._cache.DatabasesSchema._dic[_selectedServer][_selectedDatabase][_selectedSchema].FirstOrDefault(t => t.Name == _selectedTable)?.ColumnsDefinition.Select(c => c.Name).ToList();
+
+			cbColonne.ItemsSource = columns;
+			if (columns.Count == 1)
+				cbColonne.SelectedIndex = 0;
+		}
+
+		private void cbColonne_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			_selectedColumn = cbColonne.SelectedValue.ToString();
+		}
+
 		private void btnExec_Click(object sender, RoutedEventArgs e)
-        {
-            //var selectedMap = _serversMaps.Maps.FirstOrDefault(m => m.nameFrom == cbServerSource.SelectedValue.ToString() &&
-            //                                                        m.nameTo == cbServerDestination.SelectedValue.ToString());
-            //cloner.ServerMap = selectedMap;
-            //cloner.Initialize();
-
-            //////Basic test : 1 row
-            //var source = new RowIdentifier();
-            //source.ServerId = 1;
-            //source.Database = "sakila";
-            //source.Schema = "";
-            //source.Table = "actor";
-            //source.Columns.Add("actor_id", 1);
-
-            ////cloner.SqlTraveler(source, true, false);
-        }
-
-	    private void CbApp_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
-	    {
-		    var app = _config?.Applications.FirstOrDefault(a => a.Id == (Int16)cbApp.SelectedValue);
-		    if (app != null)
-			    cbExtractionType.ItemsSource = app.ClonerConfigurations;
-	    }
-
-	    private void CbExtractionType_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
-	    {
-			var app = _config?.Applications.FirstOrDefault(a => a.Id == (Int16)cbApp.SelectedValue);
-		    if (app != null)
-		    {
-			    var maps = app.Maps?.Where(m => m.UsableConfigs.Split(',').Contains(cbExtractionType.SelectedValue.ToString()));
-				if(maps!=null)
-					cbServerSource.ItemsSource = maps;
-		    }
-	    }
-
-		private void cbServerSource_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
-			var app = _config?.Applications.FirstOrDefault(a => a.Id == (Int16)cbApp.SelectedValue);
-			if (app != null)
+			if (_selectedColumn != null &&
+				txtValeur.Text != null)
 			{
-				var maps = app.Maps?.Where(m => m.UsableConfigs.Split(',').Contains(cbExtractionType.SelectedValue.ToString()));
-				if (maps != null)
-				{
-					var fromMap = maps.FirstOrDefault(m => m.From == cbServerSource.SelectedValue.ToString());
-					if (fromMap != null)
-					{
-						var mapsTo = maps.Where(
-								m => m.From == fromMap.From && m.UsableConfigs.Split(',').Contains(cbExtractionType.SelectedValue.ToString()));
-						cbServerDestination.ItemsSource = mapsTo;
-					}
-				}
+
+				var source = new RowIdentifier();
+				source.ServerId = _selectedServer;
+				source.Database = _selectedDatabase;
+				source.Schema = _selectedSchema;
+				source.Table = _selectedTable;
+				source.Columns.Add(_selectedColumn, txtValeur.Text);
+
+				_cloner.Clone(source, true);
 			}
 		}
-
-		private void cbServerDestination_SelectionChanged(object sender, SelectionChangedEventArgs e)
-		{
-			var app = _config?.Applications.FirstOrDefault(a => a.Id == (Int16)cbApp.SelectedValue);
-			if (app != null)
-			{
-				var maps = app.Maps?.Where(m => m.UsableConfigs.Split(',').Contains(cbExtractionType.SelectedValue.ToString()));
-				if (maps != null)
-				{
-					var map = maps.FirstOrDefault(m => m.From == cbServerSource.SelectedValue.ToString() &&
-													   m.To == cbServerDestination.SelectedValue.ToString() &&
-													   m.UsableConfigs.Split(',').Contains(cbExtractionType.SelectedValue.ToString()));
-					if (map != null)
-					{
-						var configId = (Int16)cbExtractionType.SelectedValue;
-                        _cloner.Setup(app, map.Id, configId);
-						Servers = _cloner._cache.DatabasesSchema._dic.Keys.ToArray().ToList();
-						dgcServer.ItemsSource = Servers;
-					}
-				}
-			}
-		}
-	}
-
-	public class sourceCloneIdentifier
-	{
-		public Int16 ServerId { get; set; }
-		public string Database { get; set; }
-		public string Schema { get; set; }
-		public string Table { get; set; }
 	}
 }
