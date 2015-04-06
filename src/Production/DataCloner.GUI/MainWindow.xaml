@@ -66,7 +66,7 @@
 					<TabControl Margin="0,0,0,188">
 						<TabItem Header="Paramètres">
 							<Grid>
-								<GroupBox x:Name="groupBox1" Header="Environnements" Margin="10,10,0,0" Height="244" VerticalAlignment="Top" HorizontalAlignment="Left" Width="208">
+								<GroupBox x:Name="groupBox1" Header="Environnements" Margin="10,10,0,0" Height="244" VerticalAlignment="Top" HorizontalAlignment="Left" Width="187">
 									<Grid>
 										<Label x:Name="label1" Content="Application :" Margin="4,4,0,0" Height="29" VerticalAlignment="Top" HorizontalAlignment="Left" Width="99"/>
 										<ComboBox x:Name="cbApp" Margin="10,33,10,0" 

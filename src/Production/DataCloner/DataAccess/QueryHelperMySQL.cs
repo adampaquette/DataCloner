@@ -10,22 +10,26 @@ namespace DataCloner.DataAccess
         private const string SqlGetDatabasesName =
         "SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA " +
         "WHERE SCHEMA_NAME NOT IN ('information_schema','performance_schema','mysql');";
-        
-        private const string SqlGetColumns = 
-        "SELECT " +
-            "'' AS SHEMA," +
-            "TABLE_NAME," +
-            "COLUMN_NAME," +
-            "COLUMN_TYPE," +
-            "COLUMN_KEY = 'PRI' AS 'IsPrimaryKey'," +
-            "EXTRA = 'auto_increment' AS 'IsAutoIncrement' " +
-        "FROM INFORMATION_SCHEMA.COLUMNS " +
-        "WHERE TABLE_SCHEMA = @DATABASE " +
-        "ORDER BY " +
-            "TABLE_NAME," +
-            "ORDINAL_POSITION;";
 
-        private const string SqlGetForeignKey =
+		private const string SqlGetColumns =
+		"SELECT " +
+			"'' AS SHEMA," +
+			"COL.TABLE_NAME," +
+			"COL.COLUMN_NAME," +
+			"COL.COLUMN_TYPE," +
+			"COL.COLUMN_KEY = 'PRI' AS 'IsPrimaryKey'," +
+			"COL.EXTRA = 'auto_increment' AS 'IsAutoIncrement' " +
+		"FROM INFORMATION_SCHEMA.COLUMNS COL " +
+		"INNER JOIN INFORMATION_SCHEMA.TABLES TBL ON TBL.TABLE_CATALOG = COL.TABLE_CATALOG AND " +
+													"TBL.TABLE_SCHEMA = COL.TABLE_SCHEMA AND " +
+													"TBL.TABLE_NAME = COL.TABLE_NAME AND " +
+													"TBL.TABLE_TYPE = 'BASE TABLE' " +
+		"WHERE COL.TABLE_SCHEMA = @DATABASE " +
+		"ORDER BY " +
+			"COL.TABLE_NAME, " +
+			"COL.ORDINAL_POSITION;";
+
+		private const string SqlGetForeignKey =
         "SELECT " +
             "'' AS 'Schema'," +
             "TC.TABLE_NAME," +
@@ -37,6 +41,10 @@ namespace DataCloner.DataAccess
         "FROM information_schema.TABLE_CONSTRAINTS TC " +
         "INNER JOIN information_schema.KEY_COLUMN_USAGE K ON TC.TABLE_NAME = K.TABLE_NAME " +
                                                         "AND TC.CONSTRAINT_NAME = K.CONSTRAINT_NAME " +
+		"INNER JOIN INFORMATION_SCHEMA.TABLES TBL ON TBL.TABLE_CATALOG = TC.CONSTRAINT_CATALOG AND " + 
+											        "TBL.TABLE_SCHEMA = TC.TABLE_SCHEMA AND " +
+											        "TBL.TABLE_NAME = TC.TABLE_NAME AND " +
+											        "TBL.TABLE_TYPE = 'BASE TABLE' " +
         "WHERE TC.TABLE_SCHEMA = @DATABASE " +
         "AND TC.CONSTRAINT_TYPE = 'FOREIGN KEY' " +
         "ORDER BY " +
