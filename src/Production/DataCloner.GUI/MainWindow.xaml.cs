@@ -9,6 +9,7 @@ using System.Windows.Media;
 using System.Linq;
 using System.Text;
 using DataCloner.DataClasse;
+using System.ComponentModel;
 
 namespace DataCloner.GUI
 {
@@ -19,6 +20,7 @@ namespace DataCloner.GUI
 		private const string Filter = "Datacloner archive (.dca)|*.dca";
 
 		private Cloner _cloner = new Cloner();
+		private BackgroundWorker _cloneWorker;
 		private Configuration _config = Configuration.Load(Configuration.ConfigFileName);
 		private DataCloner.DataClasse.Configuration.Application _selectedApp;
 		private IEnumerable<Map> _maps;
@@ -34,8 +36,8 @@ namespace DataCloner.GUI
 
 		public MainWindow()
 		{
-			_cloner.EnforceIntegrity = false;
-			_cloner.StatusChanged += OnStatusChanged;
+			InitCloner();
+			InitClonerWorker();
 		}
 
 		private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -43,25 +45,6 @@ namespace DataCloner.GUI
 			cbApp.ItemsSource = _config.Applications;
 			if (_config.Applications.Count == 1)
 				cbApp.SelectedIndex = 0;
-		}
-
-		private static void OnStatusChanged(object s, StatusChangedEventArgs e)
-		{
-			if (e.Status == Status.Cloning)
-			{
-				var sb = new StringBuilder();
-				sb.Append(new string(' ', 3 * e.Level));
-				sb.Append(e.SourceRow.Database).Append(".").Append(e.SourceRow.Schema).Append(".").Append(e.SourceRow.Table).Append(" : (");
-				foreach (var col in e.SourceRow.Columns)
-					sb.Append(col.Key).Append("=").Append(col.Value).Append(", ");
-				sb.Remove(sb.Length - 2, 2);
-				sb.Append(")");
-				Console.WriteLine(sb.ToString());
-			}
-			else if (e.Status == Status.FetchingDerivatives)
-			{
-				Console.WriteLine(new string(' ', 3 * e.Level) + "=================================");
-			}
 		}
 
 		private void CbApp_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -120,47 +103,78 @@ namespace DataCloner.GUI
 
 		private void cbServer_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
-			_selectedServer = (Int16)cbServer.SelectedValue;
-			var databases = _cloner._cache.DatabasesSchema._dic[_selectedServer].Keys.ToArray().ToList();
+			if (cbServer.SelectedIndex != -1)
+			{
+				_selectedServer = (Int16)cbServer.SelectedValue;
+				var databases = _cloner._cache.DatabasesSchema._dic[_selectedServer].Keys.ToArray().ToList();
 
-			cbDatabase.ItemsSource = databases;
-			if (databases.Count == 1)
-				cbDatabase.SelectedIndex = 0;
+				cbDatabase.ItemsSource = databases;
+				if (databases.Count == 1)
+					cbDatabase.SelectedIndex = 0;
+			}
+			else
+				cbDatabase.SelectedIndex = -1;
+
+			cbDatabase_SelectionChanged(null, null);
 		}
 
 		private void cbDatabase_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
-			_selectedDatabase = cbDatabase.SelectedValue.ToString();
-			var schemas = _cloner._cache.DatabasesSchema._dic[_selectedServer][_selectedDatabase].Keys.ToArray().ToList();
+			if (cbDatabase.SelectedIndex != -1)
+			{
+				_selectedDatabase = cbDatabase.SelectedValue.ToString();
+				var schemas = _cloner._cache.DatabasesSchema._dic[_selectedServer][_selectedDatabase].Keys.ToArray().ToList();
 
-			cbSchema.ItemsSource = schemas;
-			if (schemas.Count == 1)
-				cbSchema.SelectedIndex = 0;
+				cbSchema.ItemsSource = schemas;
+				if (schemas.Count == 1)
+					cbSchema.SelectedIndex = 0;
+			}
+			else
+				cbSchema.SelectedIndex = -1;
+
+			cbSchema_SelectionChanged(null, null);
 		}
 
 		private void cbSchema_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
-			_selectedSchema = cbSchema.SelectedValue.ToString();
-			var tables = _cloner._cache.DatabasesSchema._dic[_selectedServer][_selectedDatabase][_selectedSchema].Select(t => t.Name).ToList();
-				
-			cbTable.ItemsSource = tables;
-			if (tables.Count == 1)
-				cbTable.SelectedIndex = 0;
+			if (cbSchema.SelectedIndex != -1)
+			{
+				_selectedSchema = cbSchema.SelectedValue.ToString();
+				var tables = _cloner._cache.DatabasesSchema._dic[_selectedServer][_selectedDatabase][_selectedSchema].Select(t => t.Name).ToList();
+
+				cbTable.ItemsSource = tables;
+				if (tables.Count == 1)
+					cbTable.SelectedIndex = 0;
+			}
+			else
+				cbTable.SelectedIndex = -1;
+
+			cbTable_SelectionChanged(null, null);
 		}
 
 		private void cbTable_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
-			_selectedTable = cbTable.SelectedValue.ToString();
-			var columns = _cloner._cache.DatabasesSchema._dic[_selectedServer][_selectedDatabase][_selectedSchema].FirstOrDefault(t => t.Name == _selectedTable)?.ColumnsDefinition.Select(c => c.Name).ToList();
+			if (cbTable.SelectedIndex != -1)
+			{
+				_selectedTable = cbTable.SelectedValue.ToString();
+				var columns = _cloner._cache.DatabasesSchema._dic[_selectedServer][_selectedDatabase][_selectedSchema].FirstOrDefault(t => t.Name == _selectedTable)?.ColumnsDefinition.Select(c => c.Name).ToList();
 
-			cbColonne.ItemsSource = columns;
-			if (columns.Count == 1)
-				cbColonne.SelectedIndex = 0;
+				cbColonne.ItemsSource = columns;
+				if (columns.Count == 1)
+					cbColonne.SelectedIndex = 0;
+			}
+			else
+				cbColonne.SelectedIndex = -1;
+
+			cbColonne_SelectionChanged(null, null);
 		}
 
 		private void cbColonne_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
-			_selectedColumn = cbColonne.SelectedValue.ToString();
+			if (cbColonne.SelectedIndex != -1)
+				_selectedColumn = cbColonne.SelectedValue.ToString();
+			else
+				_selectedColumn = null;
 		}
 
 		private void btnExec_Click(object sender, RoutedEventArgs e)
@@ -168,16 +182,153 @@ namespace DataCloner.GUI
 			if (_selectedColumn != null &&
 				txtValeur.Text != null)
 			{
+				txtStatus.Text += "Cloning started" + Environment.NewLine;
+				_cloneWorker.RunWorkerAsync(new ClonerWorkerInputArgs
+				{
+					Server = _selectedServer,
+					Database = _selectedDatabase,
+					Schema = _selectedSchema,
+					Table = _selectedTable,
+					Columns = new ColumnsWithValue { { _selectedColumn, txtValeur.Text } },
+					NbCopies = sliderCopy.Value
+				});
+				BtnExec.IsEnabled = false;
+			}
+			else
+			{
+				MessageBox.Show("Vous devez sélectionner la source des données à copier.", "Attention", MessageBoxButton.OK, MessageBoxImage.Error);
+			}
+		}
+
+		private void InitCloner()
+		{
+			_cloner = new Cloner();
+			_cloner.EnforceIntegrity = false;
+			_cloner.StatusChanged += ClonerWorkerStatusChanged_event;
+		}
+
+		private void InitClonerWorker()
+		{
+			_cloneWorker = new BackgroundWorker();
+			_cloneWorker.WorkerReportsProgress = true;
+			_cloneWorker.RunWorkerCompleted += (s, e) =>
+			{
+				var sbLog = new StringBuilder();
+				var paramsOut = e.Result as ClonerWorkerOutputArgs;
+
+				sbLog.Append("Cloning completed in : ")
+					.Append(DateTime.Now.Subtract(paramsOut.StartDate).ToString("hh':'mm':'ss'.'fff"))
+					.Append(Environment.NewLine);
+
+				
+
+				foreach (var row in paramsOut.ClonedRow)
+				{
+					sbLog.Append("New clone : ")
+						 .Append(row.Database).Append(".").Append(row.Schema)
+						 .Append(".").Append(row.Table).Append(" : (");
+
+					foreach (var col in row.Columns)
+					{
+						var sqlVar = col.Value as SqlVariable;
+						sbLog.Append(col.Key).Append("=").Append(sqlVar??col.Value).Append(", ");
+					}
+
+					sbLog.Remove(sbLog.Length - 2, 2);
+					sbLog.Append(")").Append(Environment.NewLine);
+				}
+
+				sbLog.Append(Environment.NewLine);
+				txtStatus.Text += sbLog.ToString();
+				txtStatus.ScrollToEnd();
+
+				BtnExec.IsEnabled = true;
+			};
+			_cloneWorker.ProgressChanged += (s, e) =>
+			{
+				var args = e.UserState as StatusChangedEventArgs;
+				StatusChanged_event(s, args);
+			};
+			_cloneWorker.DoWork += (s, arg) =>
+			{
+				var paramsIn = arg.Argument as ClonerWorkerInputArgs;
+				var paramsOut = new ClonerWorkerOutputArgs
+				{
+					StartDate = DateTime.Now,
+					ClonedRow = new List<IRowIdentifier>()
+				};
 
 				var source = new RowIdentifier();
-				source.ServerId = _selectedServer;
-				source.Database = _selectedDatabase;
-				source.Schema = _selectedSchema;
-				source.Table = _selectedTable;
-				source.Columns.Add(_selectedColumn, txtValeur.Text);
+				source.Columns.Clear();
+				source.ServerId = paramsIn.Server;
+				source.Database = paramsIn.Database;
+				source.Schema = paramsIn.Schema;
+				source.Table = paramsIn.Table;
+				source.Columns = paramsIn.Columns;
 
-				_cloner.Clone(source, true);
+				if (paramsIn.ForceClone)
+					_cloner.Clear();				
+
+				//Clone
+				for (int i = 0; i < paramsIn.NbCopies; i++)
+					paramsOut.ClonedRow.AddRange(_cloner.Clone(source, true));
+
+				arg.Result = paramsOut;
+			};
+		}
+
+		public void ClonerWorkerStatusChanged_event(object sender, StatusChangedEventArgs e)
+		{
+			_cloneWorker.ReportProgress(0, e);
+		}
+
+		public void StatusChanged_event(object sender, StatusChangedEventArgs e)
+		{
+			if (e.Status == Status.Cloning)
+			{
+				var sb = new StringBuilder();
+				sb.Append(new string(' ', 3 * e.Level));
+				sb.Append(e.SourceRow.Database)
+					.Append(".")
+					.Append(e.SourceRow.Schema)
+					.Append(".")
+					.Append(e.SourceRow.Table)
+					.Append(" : (");
+				foreach (var col in e.SourceRow.Columns)
+					sb.Append(col.Key).Append("=").Append(col.Value).Append(", ");
+				sb.Remove(sb.Length - 2, 2);
+				sb.Append(")").Append(Environment.NewLine);
+
+				txtStatus.Text += sb.ToString();
+				txtStatus.ScrollToEnd();
 			}
+			else if (e.Status == Status.FetchingDerivatives)
+			{
+				Console.WriteLine(new string(' ', 3 * e.Level) + "=================================");
+			}
+		}
+
+		public class ClonerWorkerInputArgs
+		{
+			public Int16 Server { get; set; }
+			public String Database { get; set; }
+			public String Schema { get; set; }
+			public String Table { get; set; }
+			public ColumnsWithValue Columns { get; set; }
+			public bool ForceClone { get; set; }
+			public double NbCopies { get; set; }
+		}
+
+		public class ClonerWorkerOutputArgs
+		{
+			public DateTime StartDate { get; set; }
+			public List<IRowIdentifier> ClonedRow { get; set; }
+		}
+
+		private class ClonedRows
+		{
+			public int RowId { get; set; }
+			public string Result { get; set; }
 		}
 	}
 }

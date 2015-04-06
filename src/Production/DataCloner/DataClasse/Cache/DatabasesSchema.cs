@@ -353,13 +353,13 @@ namespace DataCloner.DataClasse.Cache
                             for (var j = 0; j < nbCols; j++)
                             {
                                 //Select
-                                sbSelect.Append(table.ColumnsDefinition[j].Name);
+                                sbSelect.Append('`').Append(table.ColumnsDefinition[j].Name).Append('`');
                                 if (j < nbCols - 1) sbSelect.Append(",");
 
                                 //Insert
                                 if (!table.ColumnsDefinition[j].IsAutoIncrement)
                                 {
-                                    sbInsert.Append(table.ColumnsDefinition[j].Name);
+                                    sbInsert.Append('`').Append(table.ColumnsDefinition[j].Name).Append('`');
                                     if (j < nbCols - 1) sbInsert.Append(",");
                                 }
                             }

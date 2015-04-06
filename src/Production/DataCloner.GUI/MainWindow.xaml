@@ -4,38 +4,41 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
 		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" 
 		x:Class="DataCloner.GUI.MainWindow" Loaded="Window_Loaded"
-        Title="DataCloner GUI" Height="546" Width="645" MinWidth="645">
-	<Grid Background="#FFEEEBE6">
-		<TabControl BorderThickness="1 1 1 1" Margin="10" TabStripPlacement="Left" >
-			<TabControl.Resources>
-				<Style TargetType="{x:Type TabItem}">
-					<Setter Property="Template">
-						<Setter.Value>
-							<ControlTemplate TargetType="{x:Type TabItem}">
-								<Border x:Name="Border" BorderThickness="2,2,0,2" BorderBrush="Gainsboro" 
+        Title="DataCloner GUI" Height="647" Width="645" MinHeight="655" MinWidth="645">
+	<Window.Resources>
+		<Style x:Key="RoundedTab" TargetType="{x:Type TabItem}">
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="{x:Type TabItem}">
+						<Border x:Name="Border" BorderThickness="2,2,0,2" BorderBrush="Gainsboro" 
 										CornerRadius="7,0,0,7" Margin="0,10" Padding="5,10">
-									<ContentPresenter x:Name="ContentSite"
+							<ContentPresenter x:Name="ContentSite"
 										VerticalAlignment="Center"
 										HorizontalAlignment="Center"
 										ContentSource="Header"/>
-								</Border>
-								<ControlTemplate.Triggers>
-									<Trigger Property="IsSelected" Value="True">
-										<Setter TargetName="Border" Property="Background" Value="#ffffff" />
-										<Setter TargetName="Border" Property="BorderThickness" Value="1 1 0 1"/>
-									</Trigger>
-									<Trigger Property="IsSelected" Value="False">
-										<Setter TargetName="Border" Property="Background" Value="#FFEEEBE6" />
-										<Setter TargetName="Border" Property="BorderThickness" Value="1 1 0 1"/>
-										<Setter TargetName="Border" Property="BorderBrush"  Value="Transparent"/>
-									</Trigger>
-								</ControlTemplate.Triggers>
-							</ControlTemplate>
-						</Setter.Value>
-					</Setter>
-				</Style>
-			</TabControl.Resources>
-			<TabItem>
+						</Border>
+						<ControlTemplate.Triggers>
+							<Trigger Property="IsSelected" Value="True">
+								<Setter TargetName="Border" Property="Background" Value="#ffffff" />
+								<Setter TargetName="Border" Property="BorderThickness" Value="1 1 0 1"/>
+							</Trigger>
+							<Trigger Property="IsSelected" Value="False">
+								<Setter TargetName="Border" Property="Background" Value="#FFEEEBE6" />
+								<Setter TargetName="Border" Property="BorderThickness" Value="1 1 0 1"/>
+								<Setter TargetName="Border" Property="BorderBrush"  Value="Transparent"/>
+							</Trigger>
+						</ControlTemplate.Triggers>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+		<Style TargetType="{x:Type Button}">
+			<Setter Property="Background" Value="Coral"/>
+		</Style>
+	</Window.Resources>
+	<Grid Background="#FFEEEBE6">
+		<TabControl BorderThickness="1 1 1 1" Margin="10" TabStripPlacement="Left">
+			<TabItem Style="{StaticResource RoundedTab}">
 				<TabItem.Header>
 					<StackPanel Orientation="Vertical">
 						<Image Source="Resources/seo1.png" Height="45" Width="auto"/>
@@ -43,7 +46,7 @@
 					</StackPanel>
 				</TabItem.Header>
 			</TabItem>
-			<TabItem>
+			<TabItem Style="{StaticResource RoundedTab}">
 				<TabItem.Header>
 					<StackPanel Orientation="Vertical">
 						<Image Source="Resources/settings48.png" Height="45" Width="auto"/>
@@ -51,7 +54,8 @@
 					</StackPanel>
 				</TabItem.Header>
 			</TabItem>
-			<TabItem IsSelected="True">
+			<TabItem Style="{StaticResource RoundedTab}"
+					 IsSelected="True">
 				<TabItem.Header>
 					<StackPanel Orientation="Vertical">
 						<Image Source="Resources/database31.png" Height="45" Width="auto"/>
@@ -59,76 +63,75 @@
 					</StackPanel>
 				</TabItem.Header>
 				<Grid>
-					<GroupBox x:Name="groupBox1" Header="Environnements" Margin="10,10,279,0" Height="244" VerticalAlignment="Top">
-						<Grid>
-							<Label x:Name="label1" Content="Application :" Margin="4,4,0,0" Height="29" VerticalAlignment="Top" HorizontalAlignment="Left" Width="99"/>
-							<ComboBox x:Name="cbApp" Margin="10,33,0,0" 
+					<TabControl Height="410" VerticalAlignment="Top">
+						<TabItem Header="Paramètres">
+							<Grid>
+								<GroupBox x:Name="groupBox1" Header="Environnements" Margin="10,10,0,0" Height="244" VerticalAlignment="Top" HorizontalAlignment="Left" Width="208">
+									<Grid>
+										<Label x:Name="label1" Content="Application :" Margin="4,4,0,0" Height="29" VerticalAlignment="Top" HorizontalAlignment="Left" Width="99"/>
+										<ComboBox x:Name="cbApp" Margin="10,33,10,0" 
 								VerticalAlignment="Top" 
 								Height="22"
 								SelectedValuePath="Id"
-								DisplayMemberPath="Name" 
-								HorizontalAlignment="Left" 
-								Width="179"
+								DisplayMemberPath="Name"
 								SelectionChanged="CbApp_OnSelectionChanged" />
-							<TextBlock HorizontalAlignment="Left" Text="Type d'extraction : " VerticalAlignment="Top" Margin="10,60,0,0" RenderTransformOrigin="0.57,0.625"/>
-							<ComboBox x:Name="cbExtractionType" 
-								Margin="10,81,0,0" 
-								VerticalAlignment="Top" Height="22" 
-								HorizontalAlignment="Left" Width="179"
+										<TextBlock HorizontalAlignment="Left" Text="Type d'extraction : " VerticalAlignment="Top" Margin="10,60,0,0" RenderTransformOrigin="0.57,0.625"/>
+										<ComboBox x:Name="cbExtractionType" 
+								Margin="10,81,10,0" 
+								VerticalAlignment="Top" Height="22"
 								SelectedValuePath="Id"
 								DisplayMemberPath="Name"
 								SelectionChanged="CbExtractionType_OnSelectionChanged"/>
-							<Label Content="Source : " Margin="10,103,0,0" Height="29" VerticalAlignment="Top" HorizontalAlignment="Left" Width="99"/>
-							<ComboBox x:Name="cbSource" Margin="10,132,0,0" 
+										<Label Content="Source : " Margin="10,103,0,0" Height="29" VerticalAlignment="Top" HorizontalAlignment="Left" Width="99"/>
+										<ComboBox x:Name="cbSource" Margin="10,132,10,0" 
 								VerticalAlignment="Top" 
 								SelectedValuePath="From"
 								DisplayMemberPath="From"
-								SelectionChanged="cbSource_SelectionChanged" 
-								HorizontalAlignment="Left" Width="179"/>
-							<Label Content="Destination : " Margin="10,159,92,0" Height="29" VerticalAlignment="Top"/>
-							<ComboBox x:Name="cbDestination" Margin="10,188,0,0" 
+								SelectionChanged="cbSource_SelectionChanged"/>
+										<Label Content="Destination : " Margin="10,159,92,0" Height="29" VerticalAlignment="Top"/>
+										<ComboBox x:Name="cbDestination" Margin="10,188,10,0" 
 								VerticalAlignment="Top"
 								SelectedValuePath="To"
 								DisplayMemberPath="To"
-								SelectionChanged="cbDestination_SelectionChanged" 
-								HorizontalAlignment="Left" Width="179" RenderTransformOrigin="0.498,0.591"/>
-						</Grid>
-					</GroupBox>
-
-					<Button x:Name="BtnExec" Content="Exécuter" HorizontalAlignment="Right" Margin="0,324,279,0" VerticalAlignment="Top" Width="214" Height="34" 
-						Click="btnExec_Click" />
-					<GroupBox x:Name="groupBox" Header="Données sources" Margin="313,10,10,0" Height="362" VerticalAlignment="Top">
-						<Grid>
-							<Label Content="Serveur : " Margin="10,10,0,0" Height="29" VerticalAlignment="Top" HorizontalAlignment="Left" Width="99"/>
-							<ComboBox x:Name="cbServer" Margin="10,39,0,0" 
+								SelectionChanged="cbDestination_SelectionChanged" RenderTransformOrigin="0.498,0.591"/>
+									</Grid>
+								</GroupBox>
+								<GroupBox x:Name="groupBox" Header="Données sources" Margin="294,10,0,0" Height="362" VerticalAlignment="Top" HorizontalAlignment="Left" Width="174">
+									<Grid>
+										<Label Content="Serveur : " Margin="10,10,0,0" Height="29" VerticalAlignment="Top" HorizontalAlignment="Left" Width="99"/>
+										<ComboBox x:Name="cbServer" Margin="10,39,10,0" 
 								VerticalAlignment="Top" 								
-								SelectionChanged="cbServer_SelectionChanged" 
-								HorizontalAlignment="Left" Width="148"/>
-							<Label Content="Base de données : " Margin="10,66,0,0" Height="29" VerticalAlignment="Top" HorizontalAlignment="Left" Width="99" RenderTransformOrigin="-0.485,4.172"/>
-							<ComboBox x:Name="cbDatabase" Margin="10,95,0,0" 
+								SelectionChanged="cbServer_SelectionChanged"/>
+										<Label Content="Base de données : " Margin="10,66,0,0" Height="29" VerticalAlignment="Top" HorizontalAlignment="Left" Width="99" RenderTransformOrigin="-0.485,4.172"/>
+										<ComboBox x:Name="cbDatabase" Margin="10,95,10,0" 
 								VerticalAlignment="Top"
-								SelectionChanged="cbDatabase_SelectionChanged" 
-								HorizontalAlignment="Left" Width="148"/>
-							<Label Content="Schéma : " Margin="10,117,0,0" Height="29" VerticalAlignment="Top" HorizontalAlignment="Left" Width="99" RenderTransformOrigin="-0.485,4.172"/>
-							<ComboBox x:Name="cbSchema" Margin="10,145,0,0" 
+								SelectionChanged="cbDatabase_SelectionChanged"/>
+										<Label Content="Schéma : " Margin="10,117,0,0" Height="29" VerticalAlignment="Top" HorizontalAlignment="Left" Width="99" RenderTransformOrigin="-0.485,4.172"/>
+										<ComboBox x:Name="cbSchema" Margin="10,145,10,0" 
 								VerticalAlignment="Top" 
-								SelectionChanged="cbSchema_SelectionChanged" 
-								HorizontalAlignment="Left" Width="148"/>
-							<Label Content="Table : " Margin="10,172,0,0" Height="29" VerticalAlignment="Top" HorizontalAlignment="Left" Width="99" RenderTransformOrigin="-0.485,4.172"/>
-							<ComboBox x:Name="cbTable" Margin="10,201,0,0" 
+								SelectionChanged="cbSchema_SelectionChanged"/>
+										<Label Content="Table : " Margin="10,172,0,0" Height="29" VerticalAlignment="Top" HorizontalAlignment="Left" Width="99" RenderTransformOrigin="-0.485,4.172"/>
+										<ComboBox x:Name="cbTable" Margin="10,201,10,0" 
 								VerticalAlignment="Top"
-								SelectionChanged="cbTable_SelectionChanged" 
-								HorizontalAlignment="Left" Width="148"/>
-							<Label Content="Colonne : " Margin="10,228,0,0" Height="29" VerticalAlignment="Top" HorizontalAlignment="Left" Width="99" RenderTransformOrigin="-0.485,4.172"/>
-							<ComboBox x:Name="cbColonne" Margin="10,257,0,0" 
+								SelectionChanged="cbTable_SelectionChanged"/>
+										<Label Content="Colonne : " Margin="10,228,0,0" Height="29" VerticalAlignment="Top" HorizontalAlignment="Left" Width="99" RenderTransformOrigin="-0.485,4.172"/>
+										<ComboBox x:Name="cbColonne" Margin="10,257,10,0" 
 								VerticalAlignment="Top" 
-								SelectionChanged="cbColonne_SelectionChanged" 
-								HorizontalAlignment="Left" Width="148"/>
-							<Label Content="Valeur : " Margin="10,279,0,0" Height="29" VerticalAlignment="Top" HorizontalAlignment="Left" Width="99" RenderTransformOrigin="-0.485,4.172"/>
-							<TextBox x:Name="txtValeur" Margin="10,308,10,10"/>
-						</Grid>
-					</GroupBox>
-					<Slider Margin="10,286,279,0" VerticalAlignment="Top"/>
+								SelectionChanged="cbColonne_SelectionChanged"/>
+										<Label Content="Valeur : " Margin="10,279,0,0" Height="29" VerticalAlignment="Top" HorizontalAlignment="Left" Width="99" RenderTransformOrigin="-0.485,4.172"/>
+										<TextBox x:Name="txtValeur" Margin="10,308,10,10"/>
+									</Grid>
+								</GroupBox>
+
+							</Grid>
+						</TabItem>
+						<TabItem Header="Logs">
+							<Grid>
+								<TextBlock Text="Status : " Height="20" Margin="0,10,0,352" />
+								<TextBox x:Name="txtStatus" Height="337" TextWrapping="NoWrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" Margin="0,35,0,0" VerticalAlignment="Top" />
+							</Grid>
+						</TabItem>
+					</TabControl>
 					<ListView x:Name="lvResults" Margin="10,0,10,10" Height="96" VerticalAlignment="Bottom">
 						<ListView.View>
 							<GridView>
@@ -136,7 +139,15 @@
 							</GridView>
 						</ListView.View>
 					</ListView>
-					<Label x:Name="label" Content="Nombre de copies :" HorizontalAlignment="Left" Margin="10,258,0,0" VerticalAlignment="Top" Height="29" />
+					<Label x:Name="label" Content="Nombre de copies :" HorizontalAlignment="Left" Margin="10,415,0,0" VerticalAlignment="Top" Height="29" RenderTransformOrigin="0.553,1.586" />
+					<TextBlock Text="{Binding ElementName=sliderCopy, Path=Value, UpdateSourceTrigger=PropertyChanged}"  HorizontalAlignment="Left" Margin="129,420,0,0" VerticalAlignment="Top" Height="17" RenderTransformOrigin="0.553,1.586" Width="39"/>
+					<Slider x:Name="sliderCopy" Margin="10,449,229,0" VerticalAlignment="Top"
+							Maximum="20" TickFrequency="1" IsSnapToTickEnabled="True" TickPlacement="BottomRight"
+							Minimum="1"/>
+
+					<Button x:Name="BtnExec" Content="Exécuter" HorizontalAlignment="Right" Margin="0,427,10,0" 
+									VerticalAlignment="Top" Width="214" Height="34" 
+									Click="btnExec_Click" />
 				</Grid>
 			</TabItem>
 		</TabControl>

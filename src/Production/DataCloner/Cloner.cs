@@ -106,13 +106,26 @@ namespace DataCloner
 
 					if (dstKey != null)
 					{
+						var pkTemp = table.BuildPkFromRawKey(dstKey);
+
+						//Clone for new reference
+						var clonedPk = new ColumnsWithValue();
+						foreach (var col in pkTemp)
+						{
+							var sqlVar = col.Value as SqlVariable;
+							if (sqlVar != null)
+								clonedPk.Add(col.Key, sqlVar.Value);
+							else
+								clonedPk.Add(col.Key, sqlVar);
+						}
+
 						var riReturn = new RowIdentifier
 						{
 							ServerId = serverDst.ServerId,
 							Database = serverDst.Database,
 							Schema = serverDst.Schema,
 							Table = riSource.Table,
-							Columns = table.BuildPkFromRawKey(dstKey)
+							Columns = clonedPk
 						};
 
 						//Construit la pk de retour
@@ -500,6 +513,31 @@ namespace DataCloner
 
 		private void ExecutePlan(Dictionary<Int16, ExecutionPlan> planByServer)
 		{
+			ResetExecutionPlan(planByServer);
+            Parallel.ForEach(planByServer, a => _dispatcher.GetQueryHelper(a.Key).Execute(a.Value));
+		}
+
+		private void ResetExecutionPlan(Dictionary<Int16, ExecutionPlan> planByServer)
+		{
+			foreach (var server in planByServer)
+			{
+				foreach (var step in server.Value.InsertSteps)
+				{
+					foreach (var sqlVar in step.Variables)
+						sqlVar.Value = null;
+				}
+
+				foreach (var step in server.Value.UpdateSteps)
+				{
+					foreach (var col in step.ForeignKey)
+					{
+						var sqlVar = col.Value as SqlVariable;
+						if(sqlVar != null)
+							sqlVar.Value = null;
+					}
+				}
+			}
+
 			Parallel.ForEach(planByServer, a => _dispatcher.GetQueryHelper(a.Key).Execute(a.Value));
 		}
 	}

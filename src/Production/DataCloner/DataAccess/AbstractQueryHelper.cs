@@ -262,7 +262,7 @@ namespace DataCloner.DataAccess
 			{
 				var col = schema.ColumnsDefinition[i];
 				if (!col.IsAutoIncrement)
-					sbInsert.Append(col.Name).Append(",");
+					sbInsert.Append('`').Append(col.Name).Append('`').Append(",");
 			}
 			sbInsert.Remove(sbInsert.Length - 1, 1);
 			sbInsert.Append(")VALUES(");
@@ -307,7 +307,7 @@ namespace DataCloner.DataAccess
 					//C'est une valeur brute
 					else
 					{
-						var sqlVarName = "@" + schema.ColumnsDefinition[i].Name + step.StepId;
+						var sqlVarName = "@" + schema.ColumnsDefinition[i].Name.EscapeSql() + step.StepId;
 						var p = cmd.CreateParameter();
 						p.ParameterName = sqlVarName;
 						p.Value = step.DataRow[i];
@@ -337,14 +337,16 @@ namespace DataCloner.DataAccess
 
 			foreach (var col in step.ForeignKey)
 			{
-				sql.Append(col.Key)
+				var paramName = col.Key.EscapeSql();
+
+				sql.Append('`').Append(col.Key).Append('`')
 				   .Append(" = @")
-				   .Append(col.Key)
+				   .Append(paramName)
 				   .Append(step.StepId)
 				   .Append(",");
 
 				var p = cmd.CreateParameter();
-				p.ParameterName = "@" + col.Key + step.StepId;
+				p.ParameterName = "@" + paramName + step.StepId;
 				p.Value = col.Value;
 				cmd.Parameters.Add(p);
 			}
@@ -353,14 +355,16 @@ namespace DataCloner.DataAccess
 
 			foreach (var kv in step.DestinationRow.Columns)
 			{
-				sql.Append(kv.Key)
+				var paramName = kv.Key.EscapeSql();
+
+				sql.Append('`').Append(kv.Key).Append('`')
 				   .Append(" = @")
-				   .Append(kv.Key)
+				   .Append(paramName)
 				   .Append(step.StepId)
 				   .Append(" AND ");
 
 				var p = cmd.CreateParameter();
-				p.ParameterName = "@" + kv.Key + step.StepId;
+				p.ParameterName = "@" + paramName + step.StepId;
 				p.Value = kv.Value;
 				cmd.Parameters.Add(p);
 			}
@@ -382,13 +386,15 @@ namespace DataCloner.DataAccess
 
 			foreach (var col in values)
 			{
-				sql.Append(col.Key)
+				var paramName = col.Key.EscapeSql();
+
+				sql.Append('`').Append(col.Key).Append('`')
 				   .Append(" = @")
-				   .Append(col.Key)
+				   .Append(paramName)
 				   .Append(",");
 
 				var p = cmd.CreateParameter();
-				p.ParameterName = "@" + col.Key;
+				p.ParameterName = "@" + paramName;
 				p.Value = col.Value;
 				cmd.Parameters.Add(p);
 			}
@@ -397,13 +403,15 @@ namespace DataCloner.DataAccess
 
 			foreach (var kv in row.Columns)
 			{
-				sql.Append(kv.Key)
+				var paramName = kv.Key.EscapeSql();
+
+				sql.Append('`').Append(kv.Key).Append('`')
 				   .Append(" = @")
-				   .Append(kv.Key)
+				   .Append(paramName)
 				   .Append(" AND ");
 
 				var p = cmd.CreateParameter();
-				p.ParameterName = "@" + kv.Key;
+				p.ParameterName = "@" + paramName;
 				p.Value = kv.Value;
 				cmd.Parameters.Add(p);
 			}
@@ -433,13 +441,15 @@ namespace DataCloner.DataAccess
 
 			foreach (var kv in row.Columns)
 			{
+				var paramName = kv.Key.EscapeSql();
+
 				sql.Append(" AND ")
-				   .Append(kv.Key)
+				   .Append('`').Append(kv.Key).Append('`')
 				   .Append(" = @")
-				   .Append(kv.Key);
+				   .Append(paramName);
 
 				var p = cmd.CreateParameter();
-				p.ParameterName = "@" + kv.Key;
+				p.ParameterName = "@" + paramName;
 				p.Value = kv.Value;
 				cmd.Parameters.Add(p);
 			}
@@ -629,6 +639,14 @@ namespace DataCloner.DataAccess
 						break;
 				}
 			}
+		}
+	}
+
+	internal static class SqlExtensions
+	{
+		internal static string EscapeSql(this string value)
+		{
+			return value.Replace(" ", String.Empty);
 		}
 	}
 }
