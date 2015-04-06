@@ -63,7 +63,7 @@
 					</StackPanel>
 				</TabItem.Header>
 				<Grid>
-					<TabControl Height="410" VerticalAlignment="Top">
+					<TabControl Margin="0,0,0,188">
 						<TabItem Header="Paramètres">
 							<Grid>
 								<GroupBox x:Name="groupBox1" Header="Environnements" Margin="10,10,0,0" Height="244" VerticalAlignment="Top" HorizontalAlignment="Left" Width="208">
@@ -127,8 +127,9 @@
 						</TabItem>
 						<TabItem Header="Logs">
 							<Grid>
-								<TextBlock Text="Status : " Height="20" Margin="0,10,0,352" />
-								<TextBox x:Name="txtStatus" Height="337" TextWrapping="NoWrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" Margin="0,35,0,0" VerticalAlignment="Top" />
+								<TextBlock Text="Status : " Margin="0,10,0,347" />
+								<TextBox x:Name="txtStatus" TextWrapping="NoWrap" AcceptsReturn="True" 
+										 IsReadOnly="True" VerticalScrollBarVisibility="Auto" Margin="0,35,0,10" />
 							</Grid>
 						</TabItem>
 					</TabControl>
@@ -139,15 +140,14 @@
 							</GridView>
 						</ListView.View>
 					</ListView>
-					<Label x:Name="label" Content="Nombre de copies :" HorizontalAlignment="Left" Margin="10,415,0,0" VerticalAlignment="Top" Height="29" RenderTransformOrigin="0.553,1.586" />
-					<TextBlock Text="{Binding ElementName=sliderCopy, Path=Value, UpdateSourceTrigger=PropertyChanged}"  HorizontalAlignment="Left" Margin="129,420,0,0" VerticalAlignment="Top" Height="17" RenderTransformOrigin="0.553,1.586" Width="39"/>
-					<Slider x:Name="sliderCopy" Margin="10,449,229,0" VerticalAlignment="Top"
+					<Label x:Name="label" Content="Nombre de copies :" HorizontalAlignment="Left" Margin="10,0,0,154" RenderTransformOrigin="0.553,1.586" Height="29" VerticalAlignment="Bottom" />
+					<TextBlock Text="{Binding ElementName=sliderCopy, Path=Value, UpdateSourceTrigger=PropertyChanged}"  HorizontalAlignment="Left" Margin="129,0,0,161" RenderTransformOrigin="0.553,1.586" Width="39" Height="17" VerticalAlignment="Bottom"/>
+					<Slider x:Name="sliderCopy" Margin="10,0,229,125"
 							Maximum="20" TickFrequency="1" IsSnapToTickEnabled="True" TickPlacement="BottomRight"
-							Minimum="1"/>
+							Minimum="1" Height="24" VerticalAlignment="Bottom"/>
 
-					<Button x:Name="BtnExec" Content="Exécuter" HorizontalAlignment="Right" Margin="0,427,10,0" 
-									VerticalAlignment="Top" Width="214" Height="34" 
-									Click="btnExec_Click" />
+					<Button x:Name="BtnExec" Content="Exécuter" HorizontalAlignment="Right" Margin="0,0,10,137" Width="214" 
+									Click="btnExec_Click" Height="34" VerticalAlignment="Bottom" />
 				</Grid>
 			</TabItem>
 		</TabControl>

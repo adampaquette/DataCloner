@@ -220,8 +220,6 @@ namespace DataCloner.GUI
 					.Append(DateTime.Now.Subtract(paramsOut.StartDate).ToString("hh':'mm':'ss'.'fff"))
 					.Append(Environment.NewLine);
 
-				
-
 				foreach (var row in paramsOut.ClonedRow)
 				{
 					sbLog.Append("New clone : ")

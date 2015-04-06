@@ -280,6 +280,7 @@ namespace DataCloner
 				}
 
 				var step = CreateExecutionStep(riSource, tiDestination, table, destinationRow);
+				step.Depth = level;
 				AddInsertStep(step);
 
 				//Sauve la PK dans la cache
@@ -514,7 +515,7 @@ namespace DataCloner
 		private void ExecutePlan(Dictionary<Int16, ExecutionPlan> planByServer)
 		{
 			ResetExecutionPlan(planByServer);
-            Parallel.ForEach(planByServer, a => _dispatcher.GetQueryHelper(a.Key).Execute(a.Value));
+			Parallel.ForEach(planByServer, a => _dispatcher.GetQueryHelper(a.Key).Execute(a.Value));
 		}
 
 		private void ResetExecutionPlan(Dictionary<Int16, ExecutionPlan> planByServer)
@@ -537,8 +538,6 @@ namespace DataCloner
 					}
 				}
 			}
-
-			Parallel.ForEach(planByServer, a => _dispatcher.GetQueryHelper(a.Key).Execute(a.Value));
 		}
 	}
 }
