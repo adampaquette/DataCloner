@@ -262,7 +262,7 @@ namespace DataCloner.DataAccess
 			foreach (var parameter in dbCommand.Parameters)
 			{
 				var param = parameter as MySql.Data.MySqlClient.MySqlParameter;
-				query = query.Replace(param.ParameterName, param.Value.ToString());
+				query = query.Replace(param.ParameterName, param.Value.ToString().EscapeSql());
 			}
 
 			return query;
@@ -364,7 +364,7 @@ namespace DataCloner.DataAccess
 					//C'est une valeur brute
 					else
 					{
-						var sqlVarName = "@" + schema.ColumnsDefinition[i].Name.EscapeSql() + step.StepId;
+						var sqlVarName = "@" + schema.ColumnsDefinition[i].Name.FormatSqlParam() + step.StepId;
 						var p = cmd.CreateParameter();
 						p.ParameterName = sqlVarName;
 						p.Value = step.DataRow[i];
@@ -394,7 +394,7 @@ namespace DataCloner.DataAccess
 
 			foreach (var col in step.ForeignKey)
 			{
-				var paramName = col.Key.EscapeSql();
+				var paramName = col.Key.FormatSqlParam();
 
 				sql.Append('`').Append(col.Key).Append('`')
 				   .Append(" = @")
@@ -412,7 +412,7 @@ namespace DataCloner.DataAccess
 
 			foreach (var kv in step.DestinationRow.Columns)
 			{
-				var paramName = kv.Key.EscapeSql();
+				var paramName = kv.Key.FormatSqlParam();
 
 				sql.Append('`').Append(kv.Key).Append('`')
 				   .Append(" = @")
@@ -443,7 +443,7 @@ namespace DataCloner.DataAccess
 
 			foreach (var col in values)
 			{
-				var paramName = col.Key.EscapeSql();
+				var paramName = col.Key.FormatSqlParam();
 
 				sql.Append('`').Append(col.Key).Append('`')
 				   .Append(" = @")
@@ -460,7 +460,7 @@ namespace DataCloner.DataAccess
 
 			foreach (var kv in row.Columns)
 			{
-				var paramName = kv.Key.EscapeSql();
+				var paramName = kv.Key.FormatSqlParam();
 
 				sql.Append('`').Append(kv.Key).Append('`')
 				   .Append(" = @")
@@ -498,7 +498,7 @@ namespace DataCloner.DataAccess
 
 			foreach (var kv in row.Columns)
 			{
-				var paramName = kv.Key.EscapeSql();
+				var paramName = kv.Key.FormatSqlParam();
 
 				sql.Append(" AND ")
 				   .Append('`').Append(kv.Key).Append('`')
@@ -701,9 +701,14 @@ namespace DataCloner.DataAccess
 
 	internal static class SqlExtensions
 	{
-		internal static string EscapeSql(this string value)
+		internal static string FormatSqlParam(this string value)
 		{
 			return value.Replace(" ", String.Empty);
+		}
+
+		internal static string EscapeSql(this string value)
+		{
+			return value.Replace("'", "''");
 		}
 	}
 }

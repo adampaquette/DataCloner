@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using DataCloner.DataClasse;
 using System.ComponentModel;
+using DataCloner.GUI.Properties;
 
 namespace DataCloner.GUI
 {
@@ -43,8 +44,16 @@ namespace DataCloner.GUI
 		private void Window_Loaded(object sender, RoutedEventArgs e)
 		{
 			cbApp.ItemsSource = _config.Applications;
-			if (_config.Applications.Count == 1)
-				cbApp.SelectedIndex = 0;
+
+			//Tente de charger la préférence utilisateur
+			var app = _config.Applications.FirstOrDefault(a => a.Id == Settings.Default.ApplicationId);
+			if (app != null)
+				cbApp.SelectedItem = app;
+			else
+			{
+				if (_config.Applications.Count == 1)
+					cbApp.SelectedIndex = 0;
+			}
 		}
 
 		private void CbApp_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -52,52 +61,95 @@ namespace DataCloner.GUI
 			_selectedApp = _config?.Applications?.FirstOrDefault(a => a.Id == (Int16)cbApp.SelectedValue);
 			if (_selectedApp != null)
 			{
-				cbExtractionType.ItemsSource = _selectedApp.ClonerConfigurations;
-				if (_selectedApp.ClonerConfigurations.Count == 1)
-					cbExtractionType.SelectedIndex = 0;
+				Settings.Default.ApplicationId = _selectedApp.Id;
+				Settings.Default.Save();
+
+				cbDatabaseConfig.ItemsSource = _selectedApp.ClonerConfigurations;
+
+				//Tente de charger la préférence utilisateur
+				var config = _selectedApp.ClonerConfigurations.FirstOrDefault(c => c.Id == Settings.Default.DatabaseConfigId);
+				if (config != null)
+					cbDatabaseConfig.SelectedItem = config;
+				else
+				{
+					if (_selectedApp.ClonerConfigurations.Count == 1)
+						cbDatabaseConfig.SelectedIndex = 0;
+				}
 			}
 		}
 
-		private void CbExtractionType_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+		private void CbDatabaseConfig_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
-			_maps = _selectedApp?.Maps?.Where(m => m.UsableConfigs.Split(',').Contains(cbExtractionType.SelectedValue.ToString()));
+			_maps = _selectedApp?.Maps?.Where(m => m.UsableConfigs.Split(',').Contains(cbDatabaseConfig.SelectedValue.ToString()));
 			if (_maps != null)
 			{
-				cbSource.ItemsSource = _maps;
-				if (_maps.Count() == 1)
-					cbSource.SelectedIndex = 0;
+				Settings.Default.DatabaseConfigId = (Int16)cbDatabaseConfig.SelectedValue;
+				Settings.Default.Save();
+
+				cbSourceEnvir.ItemsSource = _maps;
+
+				//Tente de charger la préférence utilisateur
+				_fromMaps = _maps.FirstOrDefault(m => m.From == Settings.Default.SourceEnvir);
+				if (_fromMaps != null)
+					cbSourceEnvir.SelectedItem = _fromMaps;
+				else
+				{
+					if (_maps.Count() == 1)
+						cbSourceEnvir.SelectedIndex = 0;
+				}
 			}
 		}
 
-		private void cbSource_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		private void cbSourceEnvir_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
-			_fromMaps = _maps?.FirstOrDefault(m => m.From == cbSource.SelectedValue.ToString());
+			_fromMaps = _maps?.FirstOrDefault(m => m.From == cbSourceEnvir.SelectedValue.ToString());
 			if (_fromMaps != null)
 			{
+				Settings.Default.SourceEnvir = cbSourceEnvir.SelectedValue.ToString();
+				Settings.Default.Save();
+
 				var _mapsTo = _maps.Where(m =>
 						m.From == _fromMaps.From &&
-						m.UsableConfigs.Split(',').Contains(cbExtractionType.SelectedValue.ToString()));
-				cbDestination.ItemsSource = _mapsTo;
+						m.UsableConfigs.Split(',').Contains(cbDatabaseConfig.SelectedValue.ToString()));
+				cbDestinationEnvir.ItemsSource = _mapsTo;
 
-				if (_mapsTo.Count() == 1)
-					cbDestination.SelectedIndex = 0;
+				//Tente de charger la préférence utilisateur
+				var map = _maps?.FirstOrDefault(m => m.From == cbSourceEnvir.SelectedValue.ToString() &&
+											   m.To == Settings.Default.DestinationEnvir &&
+											   m.UsableConfigs.Split(',').Contains(cbDatabaseConfig.SelectedValue.ToString()));
+				if (map != null)
+					cbDestinationEnvir.SelectedItem = map;
+				else
+				{
+					if (_mapsTo.Count() == 1)
+						cbDestinationEnvir.SelectedIndex = 0;
+				}
 			}
 		}
 
-		private void cbDestination_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		private void cbDestinationEnvir_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
-			var map = _maps?.FirstOrDefault(m => m.From == cbSource.SelectedValue.ToString() &&
-											   m.To == cbDestination.SelectedValue.ToString() &&
-											   m.UsableConfigs.Split(',').Contains(cbExtractionType.SelectedValue.ToString()));
+			var map = _maps?.FirstOrDefault(m => m.From == cbSourceEnvir.SelectedValue.ToString() &&
+											   m.To == cbDestinationEnvir.SelectedValue.ToString() &&
+											   m.UsableConfigs.Split(',').Contains(cbDatabaseConfig.SelectedValue.ToString()));
 			if (map != null)
 			{
-				var configId = (Int16)cbExtractionType.SelectedValue;
+				Settings.Default.DestinationEnvir = cbDestinationEnvir.SelectedValue.ToString();
+				Settings.Default.Save();
+
+				var configId = (Int16)cbDatabaseConfig.SelectedValue;
 				_cloner.Setup(_selectedApp, map.Id, configId);
 				Servers = _cloner._cache.DatabasesSchema._dic.Keys.ToArray().ToList();
-
 				cbServer.ItemsSource = Servers;
-				if (Servers.Count == 1)
-					cbServer.SelectedIndex = 0;
+
+				//Tente de charger la préférence utilisateur
+				if (Servers.Contains(Settings.Default.ServerSource))
+					cbServer.SelectedItem = Settings.Default.ServerSource;
+				else
+				{
+					if (Servers.Count == 1)
+						cbServer.SelectedIndex = 0;
+				}
 			}
 		}
 
@@ -106,11 +158,21 @@ namespace DataCloner.GUI
 			if (cbServer.SelectedIndex != -1)
 			{
 				_selectedServer = (Int16)cbServer.SelectedValue;
-				var databases = _cloner._cache.DatabasesSchema._dic[_selectedServer].Keys.ToArray().ToList();
 
+				Settings.Default.ServerSource = _selectedServer;
+				Settings.Default.Save();
+
+				var databases = _cloner._cache.DatabasesSchema._dic[_selectedServer].Keys.ToArray().ToList();
 				cbDatabase.ItemsSource = databases;
-				if (databases.Count == 1)
-					cbDatabase.SelectedIndex = 0;
+
+				//Tente de charger la préférence utilisateur
+				if (databases.Contains(Settings.Default.DatabaseSource))
+					cbDatabase.SelectedItem = Settings.Default.DatabaseSource;
+				else
+				{
+					if (databases.Count == 1)
+						cbDatabase.SelectedIndex = 0;
+				}
 			}
 			else
 				cbDatabase.SelectedIndex = -1;
@@ -123,11 +185,21 @@ namespace DataCloner.GUI
 			if (cbDatabase.SelectedIndex != -1)
 			{
 				_selectedDatabase = cbDatabase.SelectedValue.ToString();
-				var schemas = _cloner._cache.DatabasesSchema._dic[_selectedServer][_selectedDatabase].Keys.ToArray().ToList();
 
+				Settings.Default.DatabaseSource = _selectedDatabase;
+				Settings.Default.Save();
+
+				var schemas = _cloner._cache.DatabasesSchema._dic[_selectedServer][_selectedDatabase].Keys.ToArray().ToList();
 				cbSchema.ItemsSource = schemas;
-				if (schemas.Count == 1)
-					cbSchema.SelectedIndex = 0;
+
+				//Tente de charger la préférence utilisateur
+				if (schemas.Contains(Settings.Default.SchemaSource))
+					cbSchema.SelectedItem = Settings.Default.SchemaSource;
+				else
+				{
+					if (schemas.Count == 1)
+						cbSchema.SelectedIndex = 0;
+				}
 			}
 			else
 				cbSchema.SelectedIndex = -1;
@@ -140,11 +212,21 @@ namespace DataCloner.GUI
 			if (cbSchema.SelectedIndex != -1)
 			{
 				_selectedSchema = cbSchema.SelectedValue.ToString();
-				var tables = _cloner._cache.DatabasesSchema._dic[_selectedServer][_selectedDatabase][_selectedSchema].Select(t => t.Name).ToList();
 
+				Settings.Default.SchemaSource = _selectedSchema;
+				Settings.Default.Save();
+
+				var tables = _cloner._cache.DatabasesSchema._dic[_selectedServer][_selectedDatabase][_selectedSchema].Select(t => t.Name).ToList();
 				cbTable.ItemsSource = tables;
-				if (tables.Count == 1)
-					cbTable.SelectedIndex = 0;
+
+				//Tente de charger la préférence utilisateur
+				if (tables.Contains(Settings.Default.TableSource))
+					cbTable.SelectedItem = Settings.Default.TableSource;
+				else
+				{
+					if (tables.Count == 1)
+						cbTable.SelectedIndex = 0;
+				}
 			}
 			else
 				cbTable.SelectedIndex = -1;
@@ -157,11 +239,21 @@ namespace DataCloner.GUI
 			if (cbTable.SelectedIndex != -1)
 			{
 				_selectedTable = cbTable.SelectedValue.ToString();
-				var columns = _cloner._cache.DatabasesSchema._dic[_selectedServer][_selectedDatabase][_selectedSchema].FirstOrDefault(t => t.Name == _selectedTable)?.ColumnsDefinition.Select(c => c.Name).ToList();
 
+				Settings.Default.TableSource = _selectedTable;
+				Settings.Default.Save();
+
+				var columns = _cloner._cache.DatabasesSchema._dic[_selectedServer][_selectedDatabase][_selectedSchema].FirstOrDefault(t => t.Name == _selectedTable)?.ColumnsDefinition.Select(c => c.Name).ToList();
 				cbColonne.ItemsSource = columns;
-				if (columns.Count == 1)
-					cbColonne.SelectedIndex = 0;
+
+				//Tente de charger la préférence utilisateur
+				if (columns.Contains(Settings.Default.ColumnSource))
+					cbColonne.SelectedItem = Settings.Default.ColumnSource;
+				else
+				{
+					if (columns.Count == 1)
+						cbColonne.SelectedIndex = 0;
+				}
 			}
 			else
 				cbColonne.SelectedIndex = -1;
@@ -172,7 +264,12 @@ namespace DataCloner.GUI
 		private void cbColonne_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
 			if (cbColonne.SelectedIndex != -1)
+			{
 				_selectedColumn = cbColonne.SelectedValue.ToString();
+
+				Settings.Default.ColumnSource = _selectedColumn;
+				Settings.Default.Save();
+			}
 			else
 				_selectedColumn = null;
 		}
@@ -288,7 +385,10 @@ namespace DataCloner.GUI
 
 		public void QueryCommiting_event(object sender, QueryCommitingEventArgs e)
 		{
-			txtQuery.Text = e.Query;
+			scintilla.IsReadOnly = false;
+			scintilla.Text = e.Query;
+			//scintilla.IsReadOnly = true;
+
 			e.Cancel = chkSimulation.IsChecked.GetValueOrDefault();
 		}
 

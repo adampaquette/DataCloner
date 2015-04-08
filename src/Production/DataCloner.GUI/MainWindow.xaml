@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
 		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" 
+		xmlns:sn="http://scintillanet.codeplex.com"
 		x:Class="DataCloner.GUI.MainWindow" Loaded="Window_Loaded"
         Title="DataCloner GUI" Height="647" Width="645" MinHeight="655" MinWidth="645">
 	<Window.Resources>
@@ -70,30 +71,30 @@
 									<Grid>
 										<Label x:Name="label1" Content="Application :" Margin="4,4,0,0" Height="29" VerticalAlignment="Top" HorizontalAlignment="Left" Width="99"/>
 										<ComboBox x:Name="cbApp" Margin="10,33,10,0" 
-								VerticalAlignment="Top" 
-								Height="22"
-								SelectedValuePath="Id"
-								DisplayMemberPath="Name"
-								SelectionChanged="CbApp_OnSelectionChanged" />
+													VerticalAlignment="Top" 
+													Height="22"
+													SelectedValuePath="Id"
+													DisplayMemberPath="Name"
+													SelectionChanged="CbApp_OnSelectionChanged" />
 										<TextBlock HorizontalAlignment="Left" Text="Type d'extraction : " VerticalAlignment="Top" Margin="10,60,0,0" RenderTransformOrigin="0.57,0.625"/>
-										<ComboBox x:Name="cbExtractionType" 
-								Margin="10,81,10,0" 
-								VerticalAlignment="Top" Height="22"
-								SelectedValuePath="Id"
-								DisplayMemberPath="Name"
-								SelectionChanged="CbExtractionType_OnSelectionChanged"/>
+										<ComboBox x:Name="cbDatabaseConfig" 
+													Margin="10,81,10,0" 
+													VerticalAlignment="Top" Height="22"
+													SelectedValuePath="Id"
+													DisplayMemberPath="Name"
+													SelectionChanged="CbDatabaseConfig_OnSelectionChanged"/>
 										<Label Content="Source : " Margin="10,103,0,0" Height="29" VerticalAlignment="Top" HorizontalAlignment="Left" Width="99"/>
-										<ComboBox x:Name="cbSource" Margin="10,132,10,0" 
-								VerticalAlignment="Top" 
-								SelectedValuePath="From"
-								DisplayMemberPath="From"
-								SelectionChanged="cbSource_SelectionChanged"/>
+										<ComboBox x:Name="cbSourceEnvir" Margin="10,132,10,0" 
+													VerticalAlignment="Top" 
+													SelectedValuePath="From"
+													DisplayMemberPath="From"
+													SelectionChanged="cbSourceEnvir_SelectionChanged"/>
 										<Label Content="Destination : " Margin="10,159,92,0" Height="29" VerticalAlignment="Top"/>
-										<ComboBox x:Name="cbDestination" Margin="10,188,10,0" 
-								VerticalAlignment="Top"
-								SelectedValuePath="To"
-								DisplayMemberPath="To"
-								SelectionChanged="cbDestination_SelectionChanged" RenderTransformOrigin="0.498,0.591"/>
+										<ComboBox x:Name="cbDestinationEnvir" Margin="10,188,10,0" 
+													VerticalAlignment="Top"
+													SelectedValuePath="To"
+													DisplayMemberPath="To"
+													SelectionChanged="cbDestinationEnvir_SelectionChanged" RenderTransformOrigin="0.498,0.591"/>
 									</Grid>
 								</GroupBox>
 								<GroupBox x:Name="groupBox" Header="Données sources" Margin="202,10,0,0" Height="362" VerticalAlignment="Top" HorizontalAlignment="Left" Width="174">
@@ -139,8 +140,36 @@
 						<TabItem Header="Requête">
 							<Grid>
 								<TextBlock Text="Requête SQL générée (les valeurs ne sont pas formattées) : " Margin="0,10,0,347" />
-								<TextBox x:Name="txtQuery" TextWrapping="NoWrap" AcceptsReturn="True" 
-										 IsReadOnly="True" VerticalScrollBarVisibility="Auto" Margin="0,35,0,0" />
+								<sn:ScintillaWPF HorizontalAlignment="Stretch" VerticalAlignment="Stretch" x:Name="scintilla" 
+												 Margin="0,35,0,0" IsReadOnly="True">
+									<sn:ConfigurationManager Language="mssql" />
+									<!-- IsVisible IsEnabled -->
+									<!--sn:Annotations AnnotationVisibility="Standard" />
+									<sn:AutoComplete AutomaticLengthEntered="True" />
+									<sn:CallTip BackColor="Red" />
+									<sn:Caret HighlightCurrentLine="True" CurrentLineBackgroundColor="#40FFFF00" />
+									<sn:Clipboard ConvertLineBreaksOnPaste="False" />
+									<sn:Commands AllowDuplicateBindings="False" />									
+									<sn:DocumentNavigation NavigationPointTimeout="20" />
+									<sn:DropMarkers SharedStackName="SomeSharedName" />
+									<sn:EndOfLine IsEndOfLineVisible="True" />
+									<sn:Folding IsFoldingEnabled="True" MarkerScheme="CirclePlusMinus" />
+									<sn:HotspotStyle ActiveUnderline="True" />
+									<sn:Indentation BackspaceUnindents="True" />
+									<sn:Lexing Lexer="Css" /-->
+									<sn:LineWrapping VisualFlags="End" />			<!-- This is the same as SCide -->
+									<!--sn:LongLines EdgeMode="Background" /-->
+									<sn:Margins>									<!-- This is the same as SCide -->
+										<sn:Margin0 Width="35" />
+										<sn:Margin1 Width="5" AutoToggleMarkerNumber="0" IsClickable="false" />
+										<sn:Margin2 Width="0" />
+									</sn:Margins>
+									<!--sn:Markers>
+										<sn:FolderMarker BackColor="Green" />
+										<sn:FolderOpenMarker Symbol="ShortArrow" />
+									</sn:Markers>
+									<sn:Scrolling ScrollBars="Both" /-->
+								</sn:ScintillaWPF>
 							</Grid>
 						</TabItem>
 					</TabControl>

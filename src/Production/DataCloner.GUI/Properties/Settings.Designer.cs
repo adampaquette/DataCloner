@@ -22,5 +22,125 @@ namespace DataCloner.GUI.Properties {
                 return defaultInstance;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public short ApplicationId {
+            get {
+                return ((short)(this["ApplicationId"]));
+            }
+            set {
+                this["ApplicationId"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public short DatabaseConfigId {
+            get {
+                return ((short)(this["DatabaseConfigId"]));
+            }
+            set {
+                this["DatabaseConfigId"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string SourceEnvir {
+            get {
+                return ((string)(this["SourceEnvir"]));
+            }
+            set {
+                this["SourceEnvir"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string DestinationEnvir {
+            get {
+                return ((string)(this["DestinationEnvir"]));
+            }
+            set {
+                this["DestinationEnvir"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool IsSimulation {
+            get {
+                return ((bool)(this["IsSimulation"]));
+            }
+            set {
+                this["IsSimulation"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public short ServerSource {
+            get {
+                return ((short)(this["ServerSource"]));
+            }
+            set {
+                this["ServerSource"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string DatabaseSource {
+            get {
+                return ((string)(this["DatabaseSource"]));
+            }
+            set {
+                this["DatabaseSource"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string SchemaSource {
+            get {
+                return ((string)(this["SchemaSource"]));
+            }
+            set {
+                this["SchemaSource"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string TableSource {
+            get {
+                return ((string)(this["TableSource"]));
+            }
+            set {
+                this["TableSource"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string ColumnSource {
+            get {
+                return ((string)(this["ColumnSource"]));
+            }
+            set {
+                this["ColumnSource"] = value;
+            }
+        }
     }
 }
