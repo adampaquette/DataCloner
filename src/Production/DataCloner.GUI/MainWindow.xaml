@@ -122,9 +122,9 @@
 										<TextBox x:Name="txtValeur" Margin="10,308,10,10"/>
 									</Grid>
 								</GroupBox>
-								<GroupBox Header="Paramètres" Margin="10,259,300,10">
+								<GroupBox Header="Paramètres" Margin="10,259,0,0" Height="113" VerticalAlignment="Top" HorizontalAlignment="Left" Width="187">
 									<Grid>
-										<CheckBox x:Name="chkSimulation" Content="Simulation" Margin="10,10,65,54"/>
+										<CheckBox x:Name="chkSimulation" Content="Simulation" Margin="10,10,0,0" HorizontalAlignment="Left" Width="100" Height="27" VerticalAlignment="Top"/>
 									</Grid>
 								</GroupBox>
 							</Grid>
@@ -142,7 +142,7 @@
 								<TextBox x:Name="txtQuery" TextWrapping="NoWrap" AcceptsReturn="True" 
 										 IsReadOnly="True" VerticalScrollBarVisibility="Auto" Margin="0,35,0,0" />
 							</Grid>
-						</TabItem>						
+						</TabItem>
 					</TabControl>
 					<ListView x:Name="lvResults" Margin="10,0,10,10" Height="96" VerticalAlignment="Bottom">
 						<ListView.View>
