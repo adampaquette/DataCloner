@@ -205,6 +205,7 @@ namespace DataCloner.GUI
 			_cloner = new Cloner();
 			_cloner.EnforceIntegrity = false;
 			_cloner.StatusChanged += ClonerWorkerStatusChanged_event;
+			_cloner.QueryCommiting += ClonerWorkerQueryCommiting_event;
 		}
 
 		private void InitClonerWorker()
@@ -244,8 +245,13 @@ namespace DataCloner.GUI
 			};
 			_cloneWorker.ProgressChanged += (s, e) =>
 			{
-				var args = e.UserState as StatusChangedEventArgs;
-				StatusChanged_event(s, args);
+				var statusArgs = e.UserState as StatusChangedEventArgs;
+				if(statusArgs != null)
+					StatusChanged_event(s, statusArgs);
+
+				var queryArgs = e.UserState as QueryCommitingEventArgs;
+				if (queryArgs != null)
+					QueryCommiting_event(s, queryArgs);			
 			};
 			_cloneWorker.DoWork += (s, arg) =>
 			{
@@ -273,6 +279,17 @@ namespace DataCloner.GUI
 
 				arg.Result = paramsOut;
 			};
+		}
+
+		private void ClonerWorkerQueryCommiting_event(object sender, QueryCommitingEventArgs e)
+		{
+			_cloneWorker.ReportProgress(0, e);
+		}
+
+		public void QueryCommiting_event(object sender, QueryCommitingEventArgs e)
+		{
+			txtQuery.Text = e.Query;
+			e.Cancel = chkSimulation.IsChecked.GetValueOrDefault();
 		}
 
 		public void ClonerWorkerStatusChanged_event(object sender, StatusChangedEventArgs e)

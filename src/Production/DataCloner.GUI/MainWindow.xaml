@@ -96,42 +96,53 @@
 								SelectionChanged="cbDestination_SelectionChanged" RenderTransformOrigin="0.498,0.591"/>
 									</Grid>
 								</GroupBox>
-								<GroupBox x:Name="groupBox" Header="Données sources" Margin="294,10,0,0" Height="362" VerticalAlignment="Top" HorizontalAlignment="Left" Width="174">
+								<GroupBox x:Name="groupBox" Header="Données sources" Margin="202,10,0,0" Height="362" VerticalAlignment="Top" HorizontalAlignment="Left" Width="174">
 									<Grid>
 										<Label Content="Serveur : " Margin="10,10,0,0" Height="29" VerticalAlignment="Top" HorizontalAlignment="Left" Width="99"/>
 										<ComboBox x:Name="cbServer" Margin="10,39,10,0" 
-								VerticalAlignment="Top" 								
-								SelectionChanged="cbServer_SelectionChanged"/>
+													VerticalAlignment="Top" 								
+													SelectionChanged="cbServer_SelectionChanged"/>
 										<Label Content="Base de données : " Margin="10,66,0,0" Height="29" VerticalAlignment="Top" HorizontalAlignment="Left" Width="99" RenderTransformOrigin="-0.485,4.172"/>
 										<ComboBox x:Name="cbDatabase" Margin="10,95,10,0" 
-								VerticalAlignment="Top"
-								SelectionChanged="cbDatabase_SelectionChanged"/>
+													VerticalAlignment="Top"
+													SelectionChanged="cbDatabase_SelectionChanged"/>
 										<Label Content="Schéma : " Margin="10,117,0,0" Height="29" VerticalAlignment="Top" HorizontalAlignment="Left" Width="99" RenderTransformOrigin="-0.485,4.172"/>
 										<ComboBox x:Name="cbSchema" Margin="10,145,10,0" 
-								VerticalAlignment="Top" 
-								SelectionChanged="cbSchema_SelectionChanged"/>
+													VerticalAlignment="Top" 
+													SelectionChanged="cbSchema_SelectionChanged"/>
 										<Label Content="Table : " Margin="10,172,0,0" Height="29" VerticalAlignment="Top" HorizontalAlignment="Left" Width="99" RenderTransformOrigin="-0.485,4.172"/>
 										<ComboBox x:Name="cbTable" Margin="10,201,10,0" 
-								VerticalAlignment="Top"
-								SelectionChanged="cbTable_SelectionChanged"/>
+													VerticalAlignment="Top"
+													SelectionChanged="cbTable_SelectionChanged"/>
 										<Label Content="Colonne : " Margin="10,228,0,0" Height="29" VerticalAlignment="Top" HorizontalAlignment="Left" Width="99" RenderTransformOrigin="-0.485,4.172"/>
 										<ComboBox x:Name="cbColonne" Margin="10,257,10,0" 
-								VerticalAlignment="Top" 
-								SelectionChanged="cbColonne_SelectionChanged"/>
+													VerticalAlignment="Top" 
+													SelectionChanged="cbColonne_SelectionChanged"/>
 										<Label Content="Valeur : " Margin="10,279,0,0" Height="29" VerticalAlignment="Top" HorizontalAlignment="Left" Width="99" RenderTransformOrigin="-0.485,4.172"/>
 										<TextBox x:Name="txtValeur" Margin="10,308,10,10"/>
 									</Grid>
 								</GroupBox>
-
+								<GroupBox Header="Paramètres" Margin="10,259,300,10">
+									<Grid>
+										<CheckBox x:Name="chkSimulation" Content="Simulation" Margin="10,10,65,54"/>
+									</Grid>
+								</GroupBox>
 							</Grid>
 						</TabItem>
 						<TabItem Header="Logs">
 							<Grid>
-								<TextBlock Text="Status : " Margin="0,10,0,347" />
+								<TextBlock Text="Statut : " Margin="0,10,0,347" />
 								<TextBox x:Name="txtStatus" TextWrapping="NoWrap" AcceptsReturn="True" 
-										 IsReadOnly="True" VerticalScrollBarVisibility="Auto" Margin="0,35,0,10" />
+										 IsReadOnly="True" VerticalScrollBarVisibility="Auto" Margin="0,35,0,0" />
 							</Grid>
 						</TabItem>
+						<TabItem Header="Requête">
+							<Grid>
+								<TextBlock Text="Requête SQL générée (les valeurs ne sont pas formattées) : " Margin="0,10,0,347" />
+								<TextBox x:Name="txtQuery" TextWrapping="NoWrap" AcceptsReturn="True" 
+										 IsReadOnly="True" VerticalScrollBarVisibility="Auto" Margin="0,35,0,0" />
+							</Grid>
+						</TabItem>						
 					</TabControl>
 					<ListView x:Name="lvResults" Margin="10,0,10,10" Height="96" VerticalAlignment="Bottom">
 						<ListView.View>

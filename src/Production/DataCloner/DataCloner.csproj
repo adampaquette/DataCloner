@@ -140,6 +140,7 @@
     <Compile Include="PlugIn\DataBuilder.cs" />
     <Compile Include="PlugIn\IDataBuilder.cs" />
     <Compile Include="PlugIn\StringDataBuilder.cs" />
+    <Compile Include="QueryCommitingEvent.cs" />
     <Compile Include="rawTests.cs" />
     <Compile Include="DataAccess\QueryHelperSQLServer.cs" />
     <Compile Include="DataAccess\QueryDispatcher.cs" />

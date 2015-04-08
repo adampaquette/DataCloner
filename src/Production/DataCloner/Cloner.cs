@@ -33,6 +33,7 @@ namespace DataCloner
 		public bool EnforceIntegrity { get; set; }
 
 		public event StatusChangedEventHandler StatusChanged;
+		public event QueryCommitingEventHandler  QueryCommiting;
 
 		public Cloner()
 		{
@@ -515,7 +516,13 @@ namespace DataCloner
 		private void ExecutePlan(Dictionary<Int16, ExecutionPlan> planByServer)
 		{
 			ResetExecutionPlan(planByServer);
-			Parallel.ForEach(planByServer, a => _dispatcher.GetQueryHelper(a.Key).Execute(a.Value));
+			Parallel.ForEach(planByServer, a =>
+			{
+				var qh = _dispatcher.GetQueryHelper(a.Key);
+				qh.QueryCommmiting += QueryCommiting;
+				qh.Execute(a.Value);
+				qh.QueryCommmiting -= QueryCommiting;
+			});
 		}
 
 		private void ResetExecutionPlan(Dictionary<Int16, ExecutionPlan> planByServer)

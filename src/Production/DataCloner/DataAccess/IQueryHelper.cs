@@ -12,8 +12,9 @@ namespace DataCloner.DataAccess
     
     public interface IQueryHelper : IDisposable
     {
-        IDbConnection Connection { get; }
-        DbEngine Engine { get; }
+        event QueryCommitingEventHandler QueryCommmiting;
+		IDbConnection Connection { get; }
+        DbEngine Engine { get; }		
         string[] GetDatabasesName();
         void GetColumns(ColumnReader reader, String database);
         void GetForeignKeys(ForeignKeyReader reader, String database);
