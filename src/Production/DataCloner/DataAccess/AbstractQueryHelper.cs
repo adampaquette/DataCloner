@@ -246,9 +246,9 @@ namespace DataCloner.DataAccess
 						var args = new QueryCommitingEventArgs(GetGeneratedQuery(cmd));
 						QueryCommmiting(null, args);
 						cancel = args.Cancel;
-                    }
+					}
 
-					if(!cancel)
+					if (!cancel)
 						transaction.Commit();
 				}
 				Connection.Close();
@@ -344,9 +344,9 @@ namespace DataCloner.DataAccess
 					sbPostInsert.Append("SET ").Append(sqlVarName).Append(" = LAST_INSERT_ID();\r\n");
 
 					//Get the generated id only for top level query
-					if(step.Depth == 0)
+					if (step.Depth == 0)
 						sbPostInsert.Append("SELECT ").Append(sqlVar.Id).Append(" K, ").Append(sqlVarName).Append(" V;\r\n");
-                }
+				}
 				//Normal variables
 				else
 				{
@@ -404,7 +404,10 @@ namespace DataCloner.DataAccess
 
 				var p = cmd.CreateParameter();
 				p.ParameterName = "@" + paramName + step.StepId;
-				p.Value = col.Value;
+
+				var sqlVar = col.Value as SqlVariable;
+				p.Value = sqlVar.Value ?? "@" + sqlVar.Id;
+
 				cmd.Parameters.Add(p);
 			}
 			sql.Remove(sql.Length - 1, 1);
@@ -422,7 +425,10 @@ namespace DataCloner.DataAccess
 
 				var p = cmd.CreateParameter();
 				p.ParameterName = "@" + paramName + step.StepId;
-				p.Value = kv.Value;
+
+				var sqlVar = kv.Value as SqlVariable;
+				p.Value = sqlVar.Value ?? "@" + sqlVar.Id;
+
 				cmd.Parameters.Add(p);
 			}
 			sql.Remove(sql.Length - 5, 5);

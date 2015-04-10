@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Security.AccessControl;
 using System.Windows;
+using System.Windows.Threading;
+using System.Threading;
 using System.Windows.Controls;
 using System.Windows.Data;
 using DataCloner.DataClasse.Configuration;
@@ -318,20 +320,27 @@ namespace DataCloner.GUI
 					.Append(DateTime.Now.Subtract(paramsOut.StartDate).ToString("hh':'mm':'ss'.'fff"))
 					.Append(Environment.NewLine);
 
-				foreach (var row in paramsOut.ClonedRow)
+				if (chkSimulation.IsChecked.GetValueOrDefault())
 				{
-					sbLog.Append("New clone : ")
-						 .Append(row.Database).Append(".").Append(row.Schema)
-						 .Append(".").Append(row.Table).Append(" : (");
-
-					foreach (var col in row.Columns)
+					sbLog.AppendLine("Simulation mode : No clone appended to the database.");
+				}
+				else
+				{
+					foreach (var row in paramsOut.ClonedRow)
 					{
-						var sqlVar = col.Value as SqlVariable;
-						sbLog.Append(col.Key).Append("=").Append(sqlVar??col.Value).Append(", ");
-					}
+						sbLog.Append("New clone : ")
+							 .Append(row.Database).Append(".").Append(row.Schema)
+							 .Append(".").Append(row.Table).Append(" : (");
 
-					sbLog.Remove(sbLog.Length - 2, 2);
-					sbLog.Append(")").Append(Environment.NewLine);
+						foreach (var col in row.Columns)
+						{
+							var sqlVar = col.Value as SqlVariable;
+							sbLog.Append(col.Key).Append("=").Append(sqlVar ?? col.Value).Append(", ");
+						}
+
+						sbLog.Remove(sbLog.Length - 2, 2);
+						sbLog.Append(")").Append(Environment.NewLine);
+					}
 				}
 
 				sbLog.Append(Environment.NewLine);
@@ -380,6 +389,12 @@ namespace DataCloner.GUI
 
 		private void ClonerWorkerQueryCommiting_event(object sender, QueryCommitingEventArgs e)
 		{
+			//On doit savoir dans le thread 2 la valeur du thread 1
+			//car ReportProgress call le thread 1 en asyn.
+			System.Windows.Application.Current.Dispatcher.Invoke(
+			DispatcherPriority.Normal,
+			(ThreadStart)delegate { e.Cancel  = chkSimulation.IsChecked.GetValueOrDefault(); });
+		
 			_cloneWorker.ReportProgress(0, e);
 		}
 
@@ -387,9 +402,7 @@ namespace DataCloner.GUI
 		{
 			scintilla.IsReadOnly = false;
 			scintilla.Text = e.Query;
-			//scintilla.IsReadOnly = true;
-
-			e.Cancel = chkSimulation.IsChecked.GetValueOrDefault();
+			scintilla.IsReadOnly = true;
 		}
 
 		public void ClonerWorkerStatusChanged_event(object sender, StatusChangedEventArgs e)
