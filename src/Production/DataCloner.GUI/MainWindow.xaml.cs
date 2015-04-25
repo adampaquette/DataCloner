@@ -141,7 +141,7 @@ namespace DataCloner.GUI
 
 				var configId = (Int16)cbDatabaseConfig.SelectedValue;
 				_cloner.Setup(_selectedApp, map.Id, configId);
-				Servers = _cloner._cache.DatabasesSchema._dic.Keys.ToArray().ToList();
+				Servers = _cloner._cache.DatabasesSchema.Keys.ToArray().ToList();
 				cbServer.ItemsSource = Servers;
 
 				//Tente de charger la préférence utilisateur
@@ -164,7 +164,7 @@ namespace DataCloner.GUI
 				Settings.Default.ServerSource = _selectedServer;
 				Settings.Default.Save();
 
-				var databases = _cloner._cache.DatabasesSchema._dic[_selectedServer].Keys.ToArray().ToList();
+				var databases = _cloner._cache.DatabasesSchema[_selectedServer].Keys.ToArray().ToList();
 				cbDatabase.ItemsSource = databases;
 
 				//Tente de charger la préférence utilisateur
@@ -191,7 +191,7 @@ namespace DataCloner.GUI
 				Settings.Default.DatabaseSource = _selectedDatabase;
 				Settings.Default.Save();
 
-				var schemas = _cloner._cache.DatabasesSchema._dic[_selectedServer][_selectedDatabase].Keys.ToArray().ToList();
+				var schemas = _cloner._cache.DatabasesSchema[_selectedServer][_selectedDatabase].Keys.ToArray().ToList();
 				cbSchema.ItemsSource = schemas;
 
 				//Tente de charger la préférence utilisateur
@@ -218,7 +218,7 @@ namespace DataCloner.GUI
 				Settings.Default.SchemaSource = _selectedSchema;
 				Settings.Default.Save();
 
-				var tables = _cloner._cache.DatabasesSchema._dic[_selectedServer][_selectedDatabase][_selectedSchema].Select(t => t.Name).ToList();
+				var tables = _cloner._cache.DatabasesSchema[_selectedServer][_selectedDatabase][_selectedSchema].Select(t => t.Name).ToList();
 				cbTable.ItemsSource = tables;
 
 				//Tente de charger la préférence utilisateur
@@ -245,7 +245,7 @@ namespace DataCloner.GUI
 				Settings.Default.TableSource = _selectedTable;
 				Settings.Default.Save();
 
-				var columns = _cloner._cache.DatabasesSchema._dic[_selectedServer][_selectedDatabase][_selectedSchema].FirstOrDefault(t => t.Name == _selectedTable)?.ColumnsDefinition.Select(c => c.Name).ToList();
+				var columns = _cloner._cache.DatabasesSchema[_selectedServer][_selectedDatabase][_selectedSchema].FirstOrDefault(t => t.Name == _selectedTable)?.ColumnsDefinition.Select(c => c.Name).ToList();
 				cbColonne.ItemsSource = columns;
 
 				//Tente de charger la préférence utilisateur

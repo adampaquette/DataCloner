@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using DataCloner.DataAccess;
@@ -8,16 +7,12 @@ using DataCloner.DataClasse;
 using DataCloner.DataClasse.Cache;
 using DataCloner.DataClasse.Configuration;
 using DataCloner.Framework;
-using Connection = DataCloner.DataClasse.Cache.Connection;
 using DataBuilder = DataCloner.PlugIn.DataBuilder;
-using System.Data.SQLite;
 
 namespace DataCloner
 {
 	public class Cloner
 	{
-		private const string TempFolderName = "temp";
-
 		private readonly IQueryDispatcher _dispatcher;
 		private readonly Cache.CacheInitialiser _cacheInitialiser;
 		private readonly KeyRelationship _keyRelationships;
@@ -28,8 +23,6 @@ namespace DataCloner
 		private int _nextVariableId;
 		private int _nextStepId;
 
-		public bool SaveToFile { get; set; }
-		public string SavePath { get; set; }
 		public bool EnforceIntegrity { get; set; }
 
 		public event StatusChangedEventHandler StatusChanged;
@@ -410,7 +403,10 @@ namespace DataCloner
 					Columns = table.BuildDerivativePk(cachedDt, sourceRow)
 				};
 
-				BuildExecutionPlan(riDt, getDerivatives, false, level + 1, new Stack<IRowIdentifier>());
+				var rowsGenerating = new Stack<IRowIdentifier>();
+				rowsGenerating.Push(riDt);
+
+				BuildExecutionPlan(riDt, getDerivatives, false, level + 1, rowsGenerating);
 			}
 		}
 

@@ -8,22 +8,21 @@ namespace DataCloner.DataClasse
     /// <summary>
     /// Server / database / schema / table / primarykey source value = primarykey destination value
     /// </summary>
-    internal sealed class KeyRelationship
-    {
-        private readonly Dictionary<Int16, Dictionary<string, Dictionary<string, Dictionary<string, Dictionary<object[], object[]>>>>> _dic = 
-            new Dictionary<Int16, Dictionary<string, Dictionary<string, Dictionary<string, Dictionary<object[], object[]>>>>>();
-
+    internal sealed class KeyRelationship 
+		: Dictionary<Int16, Dictionary<string, Dictionary<string, Dictionary<string, Dictionary<object[], object[]>>>>>
+	{
+       
         public object[] GetKey(Int16 server, string database, string schema, string table, object[] keyValuesSource)
         {
-            if (_dic.ContainsKey(server) &&
-                _dic[server].ContainsKey(database) &&
-                _dic[server][database].ContainsKey(schema) &&
-                _dic[server][database][schema].ContainsKey(table) &&
-                _dic[server][database][schema][table].ContainsKey(keyValuesSource))
-                return _dic[server][database][schema][table][keyValuesSource];
+            if (ContainsKey(server) &&
+                this[server].ContainsKey(database) &&
+                this[server][database].ContainsKey(schema) &&
+                this[server][database][schema].ContainsKey(table) &&
+                this[server][database][schema][table].ContainsKey(keyValuesSource))
+                return this[server][database][schema][table][keyValuesSource];
             return null;
         }
-
+		
         public object[] GetKey(IRowIdentifier sourceKey)
         {
             var rawKey = new object[sourceKey.Columns.Count];
@@ -35,26 +34,21 @@ namespace DataCloner.DataClasse
 
         public void SetKey(Int16 server, string database, string schema, string table, object[] keyValuesSource, object[] keyValuesDestination)
         {
-            if (!_dic.ContainsKey(server))
-                _dic.Add(server, new Dictionary<string, Dictionary<string, Dictionary<string, Dictionary<object[], object[]>>>>());
+            if (!ContainsKey(server))
+                Add(server, new Dictionary<string, Dictionary<string, Dictionary<string, Dictionary<object[], object[]>>>>());
 
-            if (!_dic[server].ContainsKey(database))
-                _dic[server].Add(database, new Dictionary<string, Dictionary<string, Dictionary<object[], object[]>>>());
+            if (!this[server].ContainsKey(database))
+                this[server].Add(database, new Dictionary<string, Dictionary<string, Dictionary<object[], object[]>>>());
 
-            if (!_dic[server][database].ContainsKey(schema))
-                _dic[server][database].Add(schema, new Dictionary<string, Dictionary<object[], object[]>>());
+            if (!this[server][database].ContainsKey(schema))
+                this[server][database].Add(schema, new Dictionary<string, Dictionary<object[], object[]>>());
 
-            if (!_dic[server][database][schema].ContainsKey(table))
-                _dic[server][database][schema].Add(table, new Dictionary<object[], object[]>(StructuralEqualityComparer<object[]>.Default));
+            if (!this[server][database][schema].ContainsKey(table))
+                this[server][database][schema].Add(table, new Dictionary<object[], object[]>(StructuralEqualityComparer<object[]>.Default));
 
-            if (_dic[server][database][schema][table].ContainsKey(keyValuesSource))
+            if (this[server][database][schema][table].ContainsKey(keyValuesSource))
                 throw new ArgumentException("Key already exist!");
-            _dic[server][database][schema][table][keyValuesSource] = keyValuesDestination;
-        }
-
-        public void Clear()
-        {
-            _dic.Clear();
+            this[server][database][schema][table][keyValuesSource] = keyValuesDestination;
         }
     }    
 }

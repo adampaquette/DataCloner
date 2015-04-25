@@ -83,7 +83,6 @@ namespace DataCloner.DataClasse.Cache
         {
             Cache cache = null;
 
-            //Check if cached file match with config file version
             if (File.Exists(cacheFile))
             {
                 using (var fsCache = new FileStream(cacheFile, FileMode.Open))
@@ -91,6 +90,7 @@ namespace DataCloner.DataClasse.Cache
                 {
                     var fileHash = brCache.ReadString();
 
+					//Check if cached file match with config file version
                     if (fileHash == configHash)
                     {
                         cache = new Cache { ConfigFileHash = fileHash };
@@ -107,32 +107,6 @@ namespace DataCloner.DataClasse.Cache
             Serialize(fsCache);
             fsCache.Close();
         }
-
-        //public static void BuildAllCaches(IQueryDispatcher dispatcher, Configuration.Configuration config)
-        //{
-        //    foreach (var app in config.Applications)
-        //    {
-        //        foreach (var map in app.Maps)
-        //        {
-        //            if (!String.IsNullOrWhiteSpace(map.UsableConfigs))
-        //            {
-        //                foreach (var strConfigId in map.UsableConfigs.Split(','))
-        //                {
-        //                    int? configId = strConfigId.ToNullableInt32();
-        //                    var clonerConfig = app.ClonerConfigurations.FirstOrDefault(c => c.Id.ToString() == strConfigId);
-        //                    if (clonerConfig != null)
-        //                    {
-        //                        //       Cache.Init(dispatcher, clonerConfig, app.Name, map.Id, configId)
-        //                    }
-        //                }
-        //            }
-        //            else
-        //            {
-
-        //            }
-        //        }
-        //    }
-        //}
 
         internal delegate void CacheInitialiser(IQueryDispatcher dispatcher, Application app, int mapId, int? configId, ref Cache cache);
         public static void Init(IQueryDispatcher dispatcher, Application app, int mapId, int? configId, ref Cache cache)
