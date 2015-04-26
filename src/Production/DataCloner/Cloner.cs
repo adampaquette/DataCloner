@@ -26,7 +26,7 @@ namespace DataCloner
 		public bool EnforceIntegrity { get; set; }
 
 		public event StatusChangedEventHandler StatusChanged;
-		public event QueryCommitingEventHandler  QueryCommiting;
+		public event QueryCommitingEventHandler QueryCommiting;
 
 		public Cloner()
 		{
@@ -39,8 +39,8 @@ namespace DataCloner
 
 		internal Cloner(IQueryDispatcher dispatcher, Cache.CacheInitialiser cacheInit)
 		{
-			if (dispatcher == null) throw new ArgumentNullException("dispatcher");
-			if (cacheInit == null) throw new ArgumentNullException("cacheInit");
+			if (dispatcher == null) throw new ArgumentNullException(nameof(dispatcher));
+			if (cacheInit == null) throw new ArgumentNullException(nameof(cacheInit));
 
 			_keyRelationships = new KeyRelationship();
 			_circularKeyJobs = new List<CircularKeyJob>();
@@ -64,7 +64,7 @@ namespace DataCloner
 
 		public List<IRowIdentifier> Clone(IRowIdentifier riSource, bool getDerivatives)
 		{
-			if(riSource == null) throw new ArgumentNullException("riSource");
+			if (riSource == null) throw new ArgumentNullException(nameof(riSource));
 
 			var rowsGenerating = new Stack<IRowIdentifier>();
 			rowsGenerating.Push(riSource);
@@ -73,9 +73,34 @@ namespace DataCloner
 
 			BuildExecutionPlan(riSource, getDerivatives, false, 0, rowsGenerating);
 			BuildCircularReferencesPlan();
+			OptimizeExecutionPlans(_executionPlanByServer);
 			ExecutePlan(_executionPlanByServer);
 
 			return GetClonedRows(riSource);
+		}
+
+		private void OptimizeExecutionPlans(Dictionary<short, ExecutionPlan> plans)
+		{
+			var data = new List<object>();
+
+			foreach (var plan in plans)
+			{
+				plan.Value.InsertSteps.ForEach(s => data.AddRange(s.DataRow));
+				plan.Value.UpdateSteps.ForEach(s =>
+				{
+					data.AddRange(s.DestinationRow.Columns.Values);
+					data.AddRange(s.ForeignKey.Values);
+				});
+			}
+
+			foreach (var value in data)
+			{
+				var sqlVar = value as SqlVariable;
+				if (sqlVar != null)
+					sqlVar.ReferenceCount++;
+			}
+
+			var memoryEntriesOptimized = plans.Values.Sum(p => p.Variables.Count(v => v.ReferenceCount <= 1));
 		}
 
 		private List<IRowIdentifier> GetClonedRows(IRowIdentifier riSource)
@@ -273,9 +298,9 @@ namespace DataCloner
 					}
 				}
 
-				var step = CreateExecutionStep(riSource, tiDestination, table, destinationRow);
-				step.Depth = level;
-				AddInsertStep(step);
+				var step = CreateExecutionStep(riSource, tiDestination, table, destinationRow, level);
+
+
 
 				//Sauve la PK dans la cache
 				dstKey = table.BuildRawPkFromDataRow(step.DataRow);
@@ -303,6 +328,10 @@ namespace DataCloner
 			if (!_executionPlanByServer.ContainsKey(connId))
 				_executionPlanByServer.Add(connId, new ExecutionPlan());
 			_executionPlanByServer[connId].InsertSteps.Add(step);
+
+			//Recopie dans le plan d'exécition pour la performance
+			foreach (var sqlVar in step.Variables)
+				_executionPlanByServer[connId].Variables.Add(sqlVar);
 		}
 
 		private void AddUpdateStep(UpdateStep step)
@@ -326,6 +355,7 @@ namespace DataCloner
 
 			foreach (var plan in _executionPlanByServer)
 			{
+				//var dr = plan.Value.Variables.FirstOrDefault(v => v.Id == varId);
 				var dr = plan.Value.InsertSteps.FirstOrDefault(r => r.Variables.Any(v => v.Id == varId));
 				if (dr != null)
 					return dr.DataRow;
@@ -333,14 +363,15 @@ namespace DataCloner
 			throw new Exception();
 		}
 
-		private InsertStep CreateExecutionStep(ITableIdentifier tiSource, ITableIdentifier tiDestination, ITableSchema table, object[] destinationRow)
+		private InsertStep CreateExecutionStep(ITableIdentifier tiSource, ITableIdentifier tiDestination, ITableSchema table, object[] destinationRow, int level)
 		{
 			var step = new InsertStep
 			{
 				StepId = _nextStepId++,
 				SourceTable = tiSource,
 				DestinationTable = tiDestination,
-				TableSchema = table
+				TableSchema = table,
+				Depth = level
 			};
 
 			//Renseignement des variables à générer
@@ -362,6 +393,9 @@ namespace DataCloner
 			}
 
 			step.DataRow = destinationRow;
+
+			AddInsertStep(step);
+
 			return step;
 		}
 
@@ -524,23 +558,8 @@ namespace DataCloner
 		private void ResetExecutionPlan(Dictionary<Int16, ExecutionPlan> planByServer)
 		{
 			foreach (var server in planByServer)
-			{
-				foreach (var step in server.Value.InsertSteps)
-				{
-					foreach (var sqlVar in step.Variables)
-						sqlVar.Value = null;
-				}
-
-				foreach (var step in server.Value.UpdateSteps)
-				{
-					foreach (var col in step.ForeignKey)
-					{
-						var sqlVar = col.Value as SqlVariable;
-						if(sqlVar != null)
-							sqlVar.Value = null;
-					}
-				}
-			}
+				foreach (var sqlVar in server.Value.Variables)
+					sqlVar.Value = null;
 		}
 	}
 }
