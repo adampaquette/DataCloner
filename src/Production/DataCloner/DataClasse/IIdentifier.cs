@@ -22,5 +22,6 @@ namespace DataCloner.DataClasse
     public interface IRowIdentifier : ITableIdentifier, IEquatable<IRowIdentifier>
     {
         ColumnsWithValue Columns { get; set; }
+        IRowIdentifier Clone();
     }
 }

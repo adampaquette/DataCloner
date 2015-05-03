@@ -142,5 +142,17 @@ namespace DataCloner.GUI.Properties {
                 this["ColumnSource"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool DoOptimisation {
+            get {
+                return ((bool)(this["DoOptimisation"]));
+            }
+            set {
+                this["DoOptimisation"] = value;
+            }
+        }
     }
 }

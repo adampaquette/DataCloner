@@ -16,6 +16,23 @@ namespace DataCloner.DataClasse
             Columns = new ColumnsWithValue();
         }
 
+        public IRowIdentifier Clone()
+        {
+            var clone = new RowIdentifier
+            {
+                ServerId = ServerId,
+                Database = Database,
+                Schema = Schema,
+                Table = Table
+            };
+            
+            //TODO : DEEP CLONE VALUE
+            foreach (var col in Columns)
+                clone.Columns.Add(col.Key, col.Value);
+
+            return clone;
+        }
+
         public bool Equals(IRowIdentifier obj)
         {
             if (ServerId != obj?.ServerId || Database != obj.Database || Schema != obj.Schema || Table != obj.Table)

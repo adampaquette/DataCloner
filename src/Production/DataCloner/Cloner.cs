@@ -24,6 +24,7 @@ namespace DataCloner
 		private int _nextStepId;
 
 		public bool EnforceIntegrity { get; set; }
+        public bool OptimiseExecutionPlan { get; set; }
 
 		public event StatusChangedEventHandler StatusChanged;
 		public event QueryCommitingEventHandler QueryCommiting;
@@ -73,7 +74,10 @@ namespace DataCloner
 
 			BuildExecutionPlan(riSource, getDerivatives, false, 0, rowsGenerating);
 			BuildCircularReferencesPlan();
-			OptimizeExecutionPlans(_executionPlanByServer);
+
+            if(OptimiseExecutionPlan)
+			    OptimizeExecutionPlans(_executionPlanByServer);
+
 			ExecutePlan(_executionPlanByServer);
 
 			return GetClonedRows(riSource);
@@ -316,7 +320,7 @@ namespace DataCloner
 				}
 
 				//On clone les lignes des tables dépendantes
-				GetDerivatives(table, currentRow, getDerivatives, level);
+				GetDerivatives(table, currentRow, getDerivatives, level, rowsGenerating);
 			}
 
 			return riReturn;
@@ -401,9 +405,10 @@ namespace DataCloner
 
 		private void LogStatusChanged(IRowIdentifier riSource, int level)
 		{
-			if (StatusChanged != null)
+            var clientCopy = riSource.Clone();
+            if (StatusChanged != null)
 			{
-				var args = new StatusChangedEventArgs(Status.Cloning, 0, 0, riSource, level);
+				var args = new StatusChangedEventArgs(Status.Cloning, 0, 0, clientCopy, level);
 				StatusChanged(this, args);
 			}
 		}
@@ -417,14 +422,15 @@ namespace DataCloner
 			}
 		}
 
-		private void GetDerivatives(TableSchema table, object[] sourceRow, bool getDerivatives, int level)
+		private void GetDerivatives(TableSchema sourceTable, object[] sourceRow, bool getDerivatives, int level, 
+                                    Stack<IRowIdentifier> rowsGenerating)
 		{
 			LogDerivativeStep(level + 1);
-			var derivativeTable = getDerivatives ? table.DerivativeTables : table.DerivativeTables.Where(t => t.Access == DerivativeTableAccess.Forced);
+			var derivativeTable = getDerivatives ? sourceTable.DerivativeTables : sourceTable.DerivativeTables.Where(t => t.Access == DerivativeTableAccess.Forced);
 
 			foreach (var dt in derivativeTable)
 			{
-				var cachedDt = _cache.GetTable(dt);
+				var tableDt = _cache.GetTable(dt);
 				if (dt.Access == DerivativeTableAccess.Forced && dt.Cascade)
 					getDerivatives = true;
 
@@ -434,13 +440,20 @@ namespace DataCloner
 					Database = dt.Database,
 					Schema = dt.Schema,
 					Table = dt.Table,
-					Columns = table.BuildDerivativePk(cachedDt, sourceRow)
+					Columns = sourceTable.BuildDerivativePk(tableDt, sourceRow)
 				};
 
-				var rowsGenerating = new Stack<IRowIdentifier>();
-				rowsGenerating.Push(riDt);
+                var rows = _dispatcher.Select(riDt);
 
-				BuildExecutionPlan(riDt, getDerivatives, false, level + 1, rowsGenerating);
+                //Pour chaque ligne dérivée de la table source
+                foreach (var row in rows)
+                {
+                    riDt.Columns = tableDt.BuildPkFromDataRow(row);
+
+                    rowsGenerating.Push(riDt);
+                    BuildExecutionPlan(riDt, getDerivatives, false, level + 1, rowsGenerating);
+                    rowsGenerating.Pop();
+                }
 			}
 		}
 

@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:DataCloner.GUI.Views"
              xmlns:sn="http://scintillanet.codeplex.com"
-             mc:Ignorable="d" Height="606" Width="552"
+             mc:Ignorable="d" 
              Loaded="Window_Loaded">
     <Grid>
         <TabControl Margin="0,0,0,188">
@@ -69,7 +69,8 @@
                     </GroupBox>
                     <GroupBox Header="Paramètres" Margin="10,259,0,0" Height="113" VerticalAlignment="Top" HorizontalAlignment="Left" Width="187">
                         <Grid>
-                            <CheckBox x:Name="chkSimulation" Content="Simulation" Margin="10,10,0,0" HorizontalAlignment="Left" Width="100" Height="27" VerticalAlignment="Top"/>
+                            <CheckBox x:Name="chkSimulation" Content="Simulation" Margin="10,10,0,0" HorizontalAlignment="Left" Width="100" Height="27" VerticalAlignment="Top" Checked="chkSimulation_Checked"/>
+                            <CheckBox x:Name="chkOptimisation" Content="Optimisation" Margin="10,34,0,0" HorizontalAlignment="Left" Width="100" Height="27" VerticalAlignment="Top" Checked="chkOptimisation_Checked"/>
                         </Grid>
                     </GroupBox>
                 </Grid>

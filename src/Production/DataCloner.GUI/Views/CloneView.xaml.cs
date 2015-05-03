@@ -1,23 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using DataCloner.DataClasse;
-using System.ComponentModel;
-using DataCloner.GUI.Properties;
-using DataCloner.DataClasse.Configuration;
 using System.Windows.Threading;
-using System.Threading;
+using DataCloner.DataClasse;
+using DataCloner.DataClasse.Configuration;
+using DataCloner.GUI.Properties;
 
 namespace DataCloner.GUI.Views
 {
@@ -55,6 +47,9 @@ namespace DataCloner.GUI.Views
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             cbApp.ItemsSource = _config.Applications;
+
+            chkSimulation.IsChecked = Settings.Default.IsSimulation;
+            chkOptimisation.IsChecked = Settings.Default.DoOptimisation;
 
             //Tente de charger la préférence utilisateur
             var app = _config.Applications.FirstOrDefault(a => a.Id == Settings.Default.ApplicationId);
@@ -291,6 +286,8 @@ namespace DataCloner.GUI.Views
                 txtValeur.Text != null)
             {
                 txtStatus.Text += "Cloning started" + Environment.NewLine;
+                _cloner.OptimiseExecutionPlan = (bool)chkOptimisation.IsChecked;
+
                 _cloneWorker.RunWorkerAsync(new ClonerWorkerInputArgs
                 {
                     Server = _selectedServer,
@@ -311,7 +308,6 @@ namespace DataCloner.GUI.Views
         private void InitCloner()
         {
             _cloner = new Cloner();
-            _cloner.EnforceIntegrity = false;
             _cloner.StatusChanged += ClonerWorkerStatusChanged_event;
             _cloner.QueryCommiting += ClonerWorkerQueryCommiting_event;
         }
@@ -437,12 +433,12 @@ namespace DataCloner.GUI.Views
                 sb.Append(")").Append(Environment.NewLine);
 
                 txtStatus.Text += sb.ToString();
-                txtStatus.ScrollToEnd();
             }
             else if (e.Status == Status.FetchingDerivatives)
             {
-                Console.WriteLine(new string(' ', 3 * e.Level) + "=================================");
+                //txtStatus.Text += new string(' ', 3 * e.Level) + "=================================\r\n";
             }
+            txtStatus.ScrollToEnd();
         }
 
         public class ClonerWorkerInputArgs
@@ -466,6 +462,18 @@ namespace DataCloner.GUI.Views
         {
             public int RowId { get; set; }
             public string Result { get; set; }
+        }
+
+        private void chkSimulation_Checked(object sender, RoutedEventArgs e)
+        {
+            Settings.Default.IsSimulation = (bool)chkSimulation.IsChecked;
+            Settings.Default.Save();
+        }
+
+        private void chkOptimisation_Checked(object sender, RoutedEventArgs e)
+        {
+            Settings.Default.DoOptimisation = (bool)chkOptimisation.IsChecked;
+            Settings.Default.Save();
         }
     }
 }
