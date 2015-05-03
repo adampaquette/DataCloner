@@ -6,13 +6,11 @@ namespace DataCloner.DataClasse
     {
         public Int32 Id { get; set; }
         public object Value { get; set; }
-		public int ReferenceCount { get; set; }
+		public bool QueryValue { get; set; }
 
         public SqlVariable()
         {
-            //We clean variable with 0 reference, 
-            //so by default, we don't clean.
-            ReferenceCount = 2;
+            QueryValue = true;
         }
 
 		public override bool Equals(object obj)

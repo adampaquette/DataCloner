@@ -334,7 +334,7 @@ namespace DataCloner.DataAccess
 					var sqlVar = step.DataRow[i] as SqlVariable;
 					var sqlVarName = "@" + sqlVar.Id;
 
-					if (sqlVar.ReferenceCount > 1)
+					if (sqlVar.QueryValue)
 					{
 						//sbPostInsert.Append("DECLARE ").Append(sqlVarName).Append(" varchar(max);\r\n");
 						sbPostInsert.Append("SET ").Append(sqlVarName).Append(" = LAST_INSERT_ID();\r\n");

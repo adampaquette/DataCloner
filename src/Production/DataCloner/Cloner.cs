@@ -97,15 +97,30 @@ namespace DataCloner
 				});
 			}
 
-			foreach (var value in data)
+            var sqlVarsRefCount = new Dictionary<SqlVariable, int>();
+
+            //We count the number of references
+            foreach (var value in data)
 			{
 				var sqlVar = value as SqlVariable;
-				if (sqlVar != null)
-					sqlVar.ReferenceCount++;
+                if (sqlVar != null)
+                {
+                    if (!sqlVarsRefCount.ContainsKey(sqlVar))
+                        sqlVarsRefCount.Add(sqlVar, 0);
+
+                    sqlVarsRefCount[sqlVar]++;
+                }
 			}
 
-			var memoryEntriesOptimized = plans.Values.Sum(p => p.Variables.Count(v => v.ReferenceCount <= 1));
-		}
+            //We remove variables with les then 2 references
+            foreach(var sqlVarRefCount in sqlVarsRefCount)
+            {
+                if (sqlVarRefCount.Value < 2)
+                    sqlVarRefCount.Key.QueryValue = false;
+            }
+
+            //var memoryEntriesOptimized = sqlVarsRefCount.Count((sv) => sv.Value < 2); 
+        }
 
 		private List<IRowIdentifier> GetClonedRows(IRowIdentifier riSource)
 		{
