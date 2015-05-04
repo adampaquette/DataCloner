@@ -141,7 +141,7 @@
     <Compile Include="PlugIn\StringDataBuilder.cs" />
     <Compile Include="QueryCommitingEvent.cs" />
     <Compile Include="rawTests.cs" />
-    <Compile Include="DataAccess\QueryHelperSQLServer.cs" />
+    <Compile Include="DataAccess\QueryHelperSqlServer.cs" />
     <Compile Include="DataAccess\QueryDispatcher.cs" />
     <Compile Include="DataClasse\ColumnIdentifier.cs" />
     <Compile Include="DataClasse\Cache\Cache.cs" />
