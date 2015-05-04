@@ -7,29 +7,42 @@ namespace DataCloner.DataAccess
     {
         public const string ProviderName = "System.Data.SqlClient";
 
-        //TODO
         private const string SqlGetDatabasesName =
         "SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA " +
-        "WHERE SCHEMA_NAME NOT IN ('information_schema','performance_schema','mysql');";
+		"WHERE SCHEMA_NAME NOT IN ('information_schema','sys') AND " +
+		"SCHEMA_NAME NOT LIKE 'db\_%' ESCAPE '\';";
 
-        //TODO
         private const string SqlGetColumns =
         "SELECT " +
-            "'' AS SHEMA," +
-            "COL.TABLE_NAME," +
-            "COL.COLUMN_NAME," +
-            "COL.COLUMN_TYPE," +
-            "COL.COLUMN_KEY = 'PRI' AS 'IsPrimaryKey'," +
-            "COL.EXTRA = 'auto_increment' AS 'IsAutoIncrement' " +
-        "FROM INFORMATION_SCHEMA.COLUMNS COL " +
-        "INNER JOIN INFORMATION_SCHEMA.TABLES TBL ON TBL.TABLE_CATALOG = COL.TABLE_CATALOG AND " +
-                                                    "TBL.TABLE_SCHEMA = COL.TABLE_SCHEMA AND " +
-                                                    "TBL.TABLE_NAME = COL.TABLE_NAME AND " +
-                                                    "TBL.TABLE_TYPE = 'BASE TABLE' " +
-        "WHERE COL.TABLE_SCHEMA = @DATABASE " +
-        "ORDER BY " +
-            "COL.TABLE_NAME, " +
-            "COL.ORDINAL_POSITION;";
+		"    COL.TABLE_SCHEMA, " +
+		"    COL.TABLE_NAME, " +
+		"    COL.COLUMN_NAME, " +
+		"    COL.DATA_TYPE, " +
+		"    COLUMNPROPERTY(object_id(COL.TABLE_NAME), COL.COLUMN_NAME, 'Precision') AS 'Precision',  " +
+		"    COLUMNPROPERTY(object_id(COL.TABLE_NAME), COL.COLUMN_NAME, 'Scale') AS 'Scale',  " +
+		"    ISNULL(( " +
+		"        SELECT TOP 1 1 " +
+		"        FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE KCU " +
+		"        INNER JOIN INFORMATION_SCHEMA.TABLE_CONSTRAINTS TC ON TC.CONSTRAINT_CATALOG = KCU.CONSTRAINT_CATALOG AND " +
+		"                                                              TC.CONSTRAINT_SCHEMA = KCU.CONSTRAINT_SCHEMA AND " +
+		"                                                              TC.CONSTRAINT_NAME = KCU.CONSTRAINT_NAME " +
+		"        WHERE " +
+		"            KCU.TABLE_CATALOG = COL.TABLE_CATALOG AND " +
+		"            KCU.TABLE_SCHEMA = COL.TABLE_SCHEMA AND " +
+		"            KCU.TABLE_NAME = COL.TABLE_NAME AND " +
+		"            KCU.COLUMN_NAME = COL.COLUMN_NAME AND " +
+		"            TC.CONSTRAINT_TYPE = 'PRIMARY KEY' " +
+		"    ), 0) AS 'IsPrimaryKey', " +
+		"    COLUMNPROPERTY(object_id(COL.TABLE_NAME), COL.COLUMN_NAME, 'IsIdentity') AS 'IsAutoIncrement' " +
+		"FROM INFORMATION_SCHEMA.COLUMNS COL " +
+		"INNER JOIN INFORMATION_SCHEMA.TABLES TBL ON TBL.TABLE_CATALOG = COL.TABLE_CATALOG AND " +
+		"                                            TBL.TABLE_SCHEMA = COL.TABLE_SCHEMA AND " +
+		"                                            TBL.TABLE_NAME = COL.TABLE_NAME AND " +
+		"                                            TBL.TABLE_TYPE = 'BASE TABLE' " +
+		"WHERE COL.TABLE_SCHEMA = @DATABASE " +
+		"ORDER BY " +
+		"    COL.TABLE_NAME, " +
+		"    COL.ORDINAL_POSITION;";
 
         //TODO
         private const string SqlGetForeignKey =
