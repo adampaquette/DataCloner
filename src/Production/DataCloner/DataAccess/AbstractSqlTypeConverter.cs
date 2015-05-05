@@ -127,6 +127,13 @@ namespace DataCloner.DataAccess
             //    }
             //}
             //}
+
+            if (Int32FromSql(type))
+                return DbType.Int32;
+            if (StringFromSql(type))
+                return DbType.String;
+
+            throw new NotSupportedException();
         }
 
         public SqlType ConvertToSql(DbType type)
@@ -143,6 +150,31 @@ namespace DataCloner.DataAccess
             throw new NotImplementedException();
         }
 
+        #region FromSql
+
+        public virtual bool Int32FromSql(SqlType t)
+        {
+            if (t.DataType == "int" ||
+                t.DataType == "integer")
+                return true;
+            return false;
+        }
+
+        public virtual bool StringFromSql(SqlType t)
+        {
+            if (t.DataType == "varchar" ||
+                t.DataType == "tinytext" ||
+                t.DataType == "text" ||
+                t.DataType == "mediumtext" ||
+                t.DataType == "longtext")
+                return true;
+            return false;
+        }
+
+        #endregion
+
+        #region ToSql
+
         protected abstract SqlType AnsiStringToSql();
 
         protected virtual SqlType Int32ToSql()
@@ -154,5 +186,6 @@ namespace DataCloner.DataAccess
             };
         }
 
+        #endregion
     }
 }
