@@ -246,7 +246,16 @@ namespace DataCloner.DataClasse.Cache
             }
         }
 
-		internal void LoadColumns(IDataReader reader, Int16 serverId, String database, SqlTypeToDbTypeConverter dataTypeParser)
+        /// <summary>
+        /// Load the cache with the columns read from the IDataReader.
+        /// The query must have this defenition in order : 
+        /// Schema, Table, Column, DataType, Precision, Scale, IsPrimaryKey, IsAutoIncrement
+        /// </summary>
+        /// <param name="reader"></param>
+        /// <param name="serverId"></param>
+        /// <param name="database"></param>
+        /// <param name="dataTypeConverter"></param>
+		internal void LoadColumns(IDataReader reader, Int16 serverId, String database, SqlToClrTypeConverter dataTypeConverter)
         {
             var lstTable = new List<TableSchema>();
             var lstSchemaColumn = new List<ColumnDefinition>();
@@ -292,7 +301,7 @@ namespace DataCloner.DataClasse.Cache
                 };
                 DbType type;
                 string size;
-                dataTypeParser(reader.GetString(3), out type, out size);
+                dataTypeConverter(reader.GetString(3), out type, out size);
                 col.Type = type;
                 col.Size = size;
                 lstSchemaColumn.Add(col);

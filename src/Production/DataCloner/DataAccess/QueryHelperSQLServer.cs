@@ -10,7 +10,7 @@ namespace DataCloner.DataAccess
         private const string SqlGetDatabasesName =
         "SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA " +
 		"WHERE SCHEMA_NAME NOT IN ('information_schema','sys') AND " +
-		"SCHEMA_NAME NOT LIKE 'db\_%' ESCAPE '\';";
+		"SCHEMA_NAME NOT LIKE 'db\\_%' ESCAPE '\\';";
 
         private const string SqlGetColumns =
         "SELECT " +

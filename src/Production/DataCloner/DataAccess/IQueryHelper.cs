@@ -4,10 +4,10 @@ using DataCloner.DataClasse;
 
 namespace DataCloner.DataAccess
 {
-    public delegate void ColumnReader(IDataReader reader, Int16 serverId, string database, SqlTypeToDbTypeConverter sqlToClrDatatype);
+    public delegate void ColumnReader(IDataReader reader, Int16 serverId, string database, SqlToClrTypeConverter converter);
     public delegate void ForeignKeyReader(IDataReader reader, Int16 serverId, string database);
     public delegate void UniqueKeyReader(IDataReader reader, Int16 serverId, string database);
-    public delegate void SqlTypeToDbTypeConverter(string fullType, out DbType type, out string size);
+    public delegate void SqlToClrTypeConverter(string fullType, out DbType type, out string size);
     
     public interface IQueryHelper : IDisposable
     {
