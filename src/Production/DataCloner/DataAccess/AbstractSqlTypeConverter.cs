@@ -7,169 +7,204 @@ namespace DataCloner.DataAccess
     {
         public DbType ConvertFromSql(SqlType type)
         {
-            //fullType = fullType.ToLower();
-            //var startPosLength = fullType.IndexOf("(", StringComparison.Ordinal);
-            //var endPosLength = fullType.IndexOf(")", StringComparison.Ordinal);
-            //var values = fullType.Split(' ');
-            //string strType;
-            //string[] descriptorValues = null;
-            ////int length;
-            ////int precision;
-            //bool? signedness = null;
-            //type = DbType.Object;
-            //size = null;
-
-            ////S'il y a une description du type entre ()
-            //if (startPosLength > -1 && endPosLength > startPosLength)
-            //{
-            //    size = fullType.Substring(startPosLength + 1, endPosLength - startPosLength - 1);
-            //    descriptorValues = size.Split(',');
-            //    strType = values[0].Substring(0, startPosLength);
-            //}
-            //else
-            //{
-            //    strType = values[0];
-            //}
-
-            //if (values.Length > 1)
-            //    signedness = values[1] == "signed";
-
-            ////Parse descriptior
-            ////switch (strType)
-            ////{
-            ////    case "enum":
-            ////    case "set":
-            ////        type = DbType.Object; //Not supported
-            ////        break; 
-            ////    default:
-            ////        if (descriptorValues != null)
-            ////        {
-            ////            if (descriptorValues.Length > 1)
-            ////                precision = Int32.Parse(descriptorValues[1]);
-            ////            length = Int32.Parse(descriptorValues[0]);
-            ////        }
-            ////        break;
-            ////}
-
-            ////From unsigned to CLR data type
-            //if (signedness.HasValue && !signedness.Value)
-            //{
-            //    switch (strType)
-            //    {
-            //        case "tinyint":
-            //        case "smallint":
-            //        case "mediumint": //À vérifier
-            //            type = DbType.Int32;
-            //            break;
-            //        case "int":
-            //            type = DbType.Int64;
-            //            break;
-            //        case "bigint":
-            //            type = DbType.Decimal;
-            //            break;
-            //    }
-            //}
-            //else
-            //{
-            //    //From signed to CLR data type
-            //    switch (strType)
-            //    {
-            //        case "tinyint":
-            //            type = DbType.Byte;
-            //            break;
-            //        case "smallint":
-            //        case "year":
-            //            type = DbType.Int16;
-            //            break;
-            //        case "mediumint":
-            //        case "int":
-            //            type = DbType.Int32;
-            //            break;
-            //        case "bigint":
-            //        case "bit":
-            //            type = DbType.Int64;
-            //            break;
-            //        case "float":
-            //            type = DbType.Single;
-            //            break;
-            //        case "double":
-            //            type = DbType.Double;
-            //            break;
-            //        case "decimal":
-            //            type = DbType.Decimal;
-            //            break;
-            //        case "char":
-            //        case "varchar":
-            //        case "tinytext":
-            //        case "text":
-            //        case "mediumtext":
-            //        case "longtext":
-            //        case "binary":
-            //        case "varbinary":
-            //            type = DbType.String;
-            //            break;
-            //        case "tinyblob":
-            //        case "blob":
-            //        case "mediumblob":
-            //        case "longblob":
-            //        case "enum":
-            //        case "set":
-            //            type = DbType.Binary;
-            //            break;
-            //        case "date":
-            //        case "datetime":
-            //            type = DbType.DateTime;
-            //            break;
-            //        case "time":
-            //        case "timestamp":
-            //            type = DbType.Time;
-            //            break;
-            //    }
-            //}
-            //}
-
-            if (Int32FromSql(type))
-                return DbType.Int32;
-            if (StringFromSql(type))
-                return DbType.String;
-
+            if (AnsiStringFromSql(type) return DbType.AnsiString;
+            if (AnsiStringFixedLengthFromSql(type) return DbType.AnsiStringFixedLength;
+            if (BinaryFromSql(type) return DbType.Binary;
+            if (BooleanFromSql(type) return DbType.Boolean;
+            if (ByteFromSql(type) return DbType.Byte;
+            if (CurrencyFromSql(type) return DbType.Currency;
+            if (DateFromSql(type) return DbType.Date;
+            if (DateTimeFromSql(type) return DbType.DateTime;
+            if (DateTime2FromSql(type) return DbType.DateTime2;
+            if (DateTimeOffsetFromSql(type) return DbType.DateTimeOffset;
+            if (DecimalFromSql(type) return DbType.Decimal;
+            if (DoubleFromSql(type) return DbType.Double;
+            if (GuidFromSql(type) return DbType.Guid;
+            if (Int16FromSql(type) return DbType.Int16;
+            if (Int32FromSql(type) return DbType.Int32;
+            if (Int64FromSql(type) return DbType.Int64;
+            if (ObjectFromSql(type) return DbType.Object;
+            if (SByteFromSql(type) return DbType.SByte;
+            if (SingleFromSql(type) return DbType.Single;
+            if (StringFromSql(type) return DbType.String;
+            if (StringFixedLengthFromSql(type) return DbType.StringFixedLength;
+            if (TimeFromSql(type) return DbType.Time;
+            if (UInt16FromSql(type) return DbType.UInt16;
+            if (UInt32FromSql(type) return DbType.UInt32;
+            if (UInt64FromSql(type) return DbType.UInt64;
+            if (VarNumericFromSql(type) return DbType.VarNumeric;
+            if (XmlFromSql(type) return DbType.Xml;
+            
             throw new NotSupportedException();
         }
 
-        public SqlType ConvertToSql(DbType type)
+        protected SqlType ConvertToSql(DbType type)
         {
             switch (type)
             {
-                case DbType.AnsiString:
-                    return AnsiStringToSql();
-                //...
-                case DbType.Int32:
-                    return Int32ToSql();
+                case DbType.AnsiString: return AnsiStringToSql();
+                case DbType.Int32: return Int32ToSql();
             }
 
             throw new NotImplementedException();
         }
 
         #region FromSql
-
-        public virtual bool Int32FromSql(SqlType t)
+		
+		protected abstract bool AnsiStringFromSql(SqlType t);
+		protected abstract bool AnsiStringFixedLengthFromSql(SqlType t);
+		
+		protected virtual bool BinaryFromSql(SqlType t)
         {
-            if (t.DataType == "int" ||
-                t.DataType == "integer")
+            if (t.DataType == "binary" ||
+                t.DataType == "varbinary" ||
+                t.DataType == "timestamp" ||
+                t.DataType == "rowversion")
                 return true;
             return false;
         }
-
-        public virtual bool StringFromSql(SqlType t)
+        
+        protected virtual bool BooleanFromSql(SqlType t)
         {
-            if (t.DataType == "varchar" ||
-                t.DataType == "tinytext" ||
+            if (t.DataType == "bit")
+                return true;
+            return false;
+        }
+        
+        protected virtual bool ByteFromSql(SqlType t)
+        {
+            if (t.DataType == "tinyint")
+                return true;
+            return false;
+        }
+        
+        protected abstract bool CurrencyFromSql(SqlType t);
+        
+        protected virtual bool DateFromSql(SqlType t)
+        {
+            if (t.DataType == "date")
+                return true;
+            return false;
+        }
+        
+        protected virtual bool DateTimeFromSql(SqlType t)
+        {
+            if (t.DataType == "datetime")
+                return true;
+            return false;
+        }
+        
+        protected virtual bool DateTime2FromSql(SqlType t)
+        {
+            if (t.DataType == "datetime2")
+                return true;
+            return false;
+        }
+        
+        protected virtual bool DateTimeOffsetFromSql(SqlType t)
+        {
+            if (t.DataType == "datetimeoffset")
+                return true;
+            return false;
+        }
+        
+        protected virtual bool DecimalFromSql(SqlType t)
+        {
+            if (t.DataType == "decimal" ||
+                t.DataType == "numeric" ||
+                t.DataType == "money" ||
+                t.DataType == "smallmoney")
+                return true;
+            return false;
+        }
+        
+        protected virtual bool DoubleFromSql(SqlType t)
+        {
+            if (t.DataType == "float")
+                return true;
+            return false;
+        }
+        
+        protected virtual bool GuidFromSql(SqlType t)
+        {
+            if (t.DataType == "uniqueidentifier")
+                return true;
+            return false;
+        }
+        
+        protected virtual bool Int16FromSql(SqlType t)
+        {
+            if (t.DataType == "smallint")
+                return true;
+            return false;
+        }
+        
+        protected virtual bool Int32FromSql(SqlType t)
+        {
+            if (t.DataType == "int")
+                return true;
+            return false;
+        }
+        
+        protected virtual bool Int64FromSql(SqlType t)
+        {
+            if (t.DataType == "bigint")
+                return true;
+            return false;
+        }
+		
+        protected virtual bool ObjectFromSql(SqlType t)
+        {
+            if (t.DataType == "sql_variant")
+                return true;
+            return false;
+        }
+        
+        protected abstract bool SByteFromSql(SqlType t);
+        
+        protected virtual bool SingleFromSql(SqlType t)
+        {
+            if (t.DataType == "real")
+                return true;
+            return false;
+        }
+        
+        protected virtual bool StringFromSql(SqlType t)
+        {
+            if (t.DataType == "char" ||
+                t.DataType == "varchar" ||
+                t.DataType == "nvarchar" ||
                 t.DataType == "text" ||
-                t.DataType == "mediumtext" ||
-                t.DataType == "longtext")
+                t.DataType == "ntext")
                 return true;
             return false;
         }
+        
+        protected virtual bool StringFixedLengthFromSql(SqlType t)
+        {
+            if (t.DataType == "nchar")
+                return true;
+            return false;
+        }
+        
+        protected virtual bool TimeFromSql(SqlType t)
+        {
+            if (t.DataType == "time")
+                return true;
+            return false;
+        }
+        
+        protected abstract bool UInt16FromSql(SqlType t);        
+        protected abstract bool UInt32FromSql(SqlType t);        
+        protected abstract bool UInt64FromSql(SqlType t);        
+        protected abstract bool VarNumericFromSql(SqlType t);
+        
+        protected virtual bool XmlFromSql(SqlType t)
+        {
+            if (t.DataType == "xml")
+                return true;
+            return false;
+        }	
 
         #endregion
 
@@ -181,8 +216,7 @@ namespace DataCloner.DataAccess
         {
             return new SqlType
             {
-                DataType = "integer",
-                Signess = true
+                DataType = "integer"
             };
         }
 

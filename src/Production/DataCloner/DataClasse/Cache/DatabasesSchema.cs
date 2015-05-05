@@ -249,7 +249,7 @@ namespace DataCloner.DataClasse.Cache
         /// <summary>
         /// Load the cache with the columns read from the IDataReader.
         /// The query must have this defenition in order : 
-        /// Schema, Table, Column, DataType, Precision, Scale, IsPrimaryKey, IsAutoIncrement
+        /// Schema, Table, Column, DataType, Precision, Scale, IsUnsigned, IsPrimaryKey, IsAutoIncrement
         /// </summary>
         /// <param name="reader"></param>
         /// <param name="serverId"></param>

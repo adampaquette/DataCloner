@@ -20,6 +20,7 @@ namespace DataCloner.DataAccess
 		"    COL.DATA_TYPE, " +
 		"    COLUMNPROPERTY(object_id(COL.TABLE_NAME), COL.COLUMN_NAME, 'Precision') AS 'Precision',  " +
 		"    COLUMNPROPERTY(object_id(COL.TABLE_NAME), COL.COLUMN_NAME, 'Scale') AS 'Scale',  " +
+        "    0 AS IsUnsigned, " +
 		"    ISNULL(( " +
 		"        SELECT TOP 1 1 " +
 		"        FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE KCU " +
