@@ -45,28 +45,35 @@ namespace DataCloner.DataAccess
 		"    COL.TABLE_NAME, " +
 		"    COL.ORDINAL_POSITION;";
 
-        //TODO
         private const string SqlGetForeignKey =
         "SELECT " +
-            "'' AS 'Schema'," +
-            "TC.TABLE_NAME," +
-            "TC.CONSTRAINT_NAME," +
-            "K.COLUMN_NAME," +
-            "K.REFERENCED_TABLE_SCHEMA," +
-            "K.REFERENCED_TABLE_NAME," +
-            "K.REFERENCED_COLUMN_NAME " +
+        "    TC.TABLE_SCHEMA, " +
+        "    TC.TABLE_NAME, " +
+        "    TC.CONSTRAINT_NAME, " +
+        "    KCU1.COLUMN_NAME, " +
+        "    KCU2.CONSTRAINT_NAME AS REFERENCED_CONSTRAINT_NAME, " +
+        "    KCU2.TABLE_NAME AS REFERENCED_TABLE_NAME, " +
+        "    KCU2.COLUMN_NAME AS REFERENCED_COLUMN_NAME " +
         "FROM information_schema.TABLE_CONSTRAINTS TC " +
-        "INNER JOIN information_schema.KEY_COLUMN_USAGE K ON TC.TABLE_NAME = K.TABLE_NAME " +
-                                                        "AND TC.CONSTRAINT_NAME = K.CONSTRAINT_NAME " +
-        "INNER JOIN INFORMATION_SCHEMA.TABLES TBL ON TBL.TABLE_CATALOG = TC.CONSTRAINT_CATALOG AND " +
-                                                    "TBL.TABLE_SCHEMA = TC.TABLE_SCHEMA AND " +
-                                                    "TBL.TABLE_NAME = TC.TABLE_NAME AND " +
-                                                    "TBL.TABLE_TYPE = 'BASE TABLE' " +
-        "WHERE TC.TABLE_SCHEMA = @DATABASE " +
-        "AND TC.CONSTRAINT_TYPE = 'FOREIGN KEY' " +
+        "INNER JOIN INFORMATION_SCHEMA.TABLES TBL ON TBL.TABLE_CATALOG = TC.TABLE_CATALOG AND " +
+        "                                            TBL.TABLE_SCHEMA = TC.TABLE_SCHEMA AND " +
+        "                                            TBL.TABLE_NAME = TC.TABLE_NAME AND " +
+        "                                            TBL.TABLE_TYPE = 'BASE TABLE' " +
+        "INNER JOIN information_schema.KEY_COLUMN_USAGE KCU1 ON KCU1.CONSTRAINT_CATALOG = TC.CONSTRAINT_CATALOG " +
+        "                                                   AND KCU1.CONSTRAINT_SCHEMA = TC.CONSTRAINT_SCHEMA " +
+        "                                                   AND KCU1.CONSTRAINT_NAME = TC.CONSTRAINT_NAME " +
+        "INNER JOIN INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS AS RC ON RC.CONSTRAINT_CATALOG = KCU1.CONSTRAINT_CATALOG " +
+        "                                                           AND RC.CONSTRAINT_SCHEMA  = KCU1.CONSTRAINT_SCHEMA " +
+        "                                                           AND RC.CONSTRAINT_NAME = KCU1.CONSTRAINT_NAME " +
+        "INNER JOIN INFORMATION_SCHEMA.KEY_COLUMN_USAGE KCU2 ON KCU2.CONSTRAINT_CATALOG = RC.UNIQUE_CONSTRAINT_CATALOG " +
+        "                                                   AND KCU2.CONSTRAINT_SCHEMA = RC.UNIQUE_CONSTRAINT_SCHEMA " +
+        "                                                   AND KCU2.CONSTRAINT_NAME = RC.UNIQUE_CONSTRAINT_NAME " +
+        "                                                   AND KCU2.ORDINAL_POSITION = KCU1.ORDINAL_POSITION " +
+        "WHERE TC.TABLE_CATALOG = @DATABASE " +
+        "  AND TC.CONSTRAINT_TYPE = 'FOREIGN KEY' " +
         "ORDER BY " +
-            "TC.TABLE_NAME," +
-            "TC.CONSTRAINT_NAME;";
+        "    TC.TABLE_NAME, " +
+        "    TC.CONSTRAINT_NAME;";
 
         //TODO
         private const string SqlGetUniqueKey =
