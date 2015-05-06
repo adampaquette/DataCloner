@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data;
+using DataCloner.DataAccess;
 
 namespace DataCloner.DataClasse.Cache
 {
@@ -49,7 +50,7 @@ namespace DataCloner.DataClasse.Cache
     {
         string Name { get; set; }
         DbType Type { get; set; }
-        string Size { get; set; }
+        SqlType SqlType { get; set; }
         bool IsPrimary { get; set; }
         bool IsForeignKey { get; set; }
         bool IsUniqueKey { get; set; }

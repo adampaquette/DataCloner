@@ -10,11 +10,13 @@ using DataCloner.PlugIn;
 
 namespace DataCloner.DataAccess
 {
-	internal class AbstractQueryHelper : IQueryHelper
+	internal abstract class AbstractQueryHelper : IQueryHelper
 	{
 		private readonly Cache _cache;
 		private readonly Int16 _serverIdCtx;
-		private readonly string _sqlGetDatabasesName;
+        private readonly static MsSqlTypeConverter _typeConverter;
+
+        private readonly string _sqlGetDatabasesName;
 		private readonly string _sqlGetColumns;
 		private readonly string _sqlGetForeignKeys;
 		private readonly string _sqlGetUniqueKeys;
@@ -32,7 +34,7 @@ namespace DataCloner.DataAccess
 			Connection = factory.CreateConnection();
 			Connection.ConnectionString = connectionString;
 
-			_serverIdCtx = serverId;
+            _serverIdCtx = serverId;
 
 			_sqlGetDatabasesName = sqlGetDatabasesName;
 			_sqlGetColumns = sqlGetColumns;
@@ -42,11 +44,13 @@ namespace DataCloner.DataAccess
 			_sqlEnforceIntegrityCheck = sqlEnforceIntegrityCheck;
 		}
 
-		public IDbConnection Connection { get; }
+        public IDbConnection Connection { get; }
 
 		public DbEngine Engine => DbEngine.MySql;
 
-		public string[] GetDatabasesName()
+        public abstract ISqlTypeConverter TypeConverter { get; }
+
+        public string[] GetDatabasesName()
 		{
 			var databases = new List<string>();
 
@@ -77,7 +81,7 @@ namespace DataCloner.DataAccess
 
 				Connection.Open();
 				using (var r = cmd.ExecuteReader())
-					reader(r, _serverIdCtx, database, SqlTypeToDbType);
+					reader(r, _serverIdCtx, database, TypeConverter);
 				Connection.Close();
 			}
 		}
@@ -190,36 +194,36 @@ namespace DataCloner.DataAccess
 			return rows.ToArray();
 		}
 
-		public void Insert(ITableIdentifier table, object[] row)
-		{
-			var schema = _cache.GetTable(table);
-			if (schema.ColumnsDefinition.Count() != row.Length)
-				throw new Exception("The step doesn't correspond to schema!");
+		//public void Insert(ITableIdentifier table, object[] row)
+		//{
+		//	var schema = _cache.GetTable(table);
+		//	if (schema.ColumnsDefinition.Count() != row.Length)
+		//		throw new Exception("The step doesn't correspond to schema!");
 
-			using (var cmd = Connection.CreateCommand())
-			{
-				//Add params
-				for (var i = 0; i < schema.ColumnsDefinition.Count(); i++)
-				{
-					if (schema.ColumnsDefinition[i].IsAutoIncrement) continue;
+		//	using (var cmd = Connection.CreateCommand())
+		//	{
+		//		//Add params
+		//		for (var i = 0; i < schema.ColumnsDefinition.Count(); i++)
+		//		{
+		//			if (schema.ColumnsDefinition[i].IsAutoIncrement) continue;
 
-					var p = cmd.CreateParameter();
-					p.ParameterName = "@" + schema.ColumnsDefinition[i].Name;
-					p.Value = row[i];
-					cmd.Parameters.Add(p);
-				}
-				cmd.CommandText = schema.InsertCommand;
+		//			var p = cmd.CreateParameter();
+		//			p.ParameterName = "@" + schema.ColumnsDefinition[i].Name;
+		//			p.Value = row[i];
+		//			cmd.Parameters.Add(p);
+		//		}
+		//		cmd.CommandText = schema.InsertCommand;
 
-				//Exec query
-				Connection.Open();
-				using (var transaction = Connection.BeginTransaction())
-				{
-					cmd.ExecuteNonQuery();
-					transaction.Commit();
-				}
-				Connection.Close();
-			}
-		}
+		//		//Exec query
+		//		Connection.Open();
+		//		using (var transaction = Connection.BeginTransaction())
+		//		{
+		//			cmd.ExecuteNonQuery();
+		//			transaction.Commit();
+		//		}
+		//		Connection.Close();
+		//	}
+		//}
 
 		public void Execute(ExecutionPlan plan)
 		{
@@ -432,98 +436,98 @@ namespace DataCloner.DataAccess
 			sql.Append(";\r\n");
 		}
 
-		public void Update(IRowIdentifier row, ColumnsWithValue values)
-		{
-			if (!row.Columns.Any())
-				throw new ArgumentNullException("You must specify at least one column in the step identifier.");
+		//public void Update(IRowIdentifier row, ColumnsWithValue values)
+		//{
+		//	if (!row.Columns.Any())
+		//		throw new ArgumentNullException("You must specify at least one column in the step identifier.");
 
-			var cmd = Connection.CreateCommand();
-			var sql = new StringBuilder("UPDATE ");
-			sql.Append(row.Database)
-			   .Append(".")
-			   .Append(row.Table)
-			   .Append(" SET ");
+		//	var cmd = Connection.CreateCommand();
+		//	var sql = new StringBuilder("UPDATE ");
+		//	sql.Append(row.Database)
+		//	   .Append(".")
+		//	   .Append(row.Table)
+		//	   .Append(" SET ");
 
-			foreach (var col in values)
-			{
-				var paramName = col.Key.FormatSqlParam();
+		//	foreach (var col in values)
+		//	{
+		//		var paramName = col.Key.FormatSqlParam();
 
-				sql.Append('`').Append(col.Key).Append('`')
-				   .Append(" = @")
-				   .Append(paramName)
-				   .Append(",");
+		//		sql.Append('`').Append(col.Key).Append('`')
+		//		   .Append(" = @")
+		//		   .Append(paramName)
+		//		   .Append(",");
 
-				var p = cmd.CreateParameter();
-				p.ParameterName = "@" + paramName;
-				p.Value = col.Value;
-				cmd.Parameters.Add(p);
-			}
-			sql.Remove(sql.Length - 1, 1);
-			sql.Append(" WHERE ");
+		//		var p = cmd.CreateParameter();
+		//		p.ParameterName = "@" + paramName;
+		//		p.Value = col.Value;
+		//		cmd.Parameters.Add(p);
+		//	}
+		//	sql.Remove(sql.Length - 1, 1);
+		//	sql.Append(" WHERE ");
 
-			foreach (var kv in row.Columns)
-			{
-				var paramName = kv.Key.FormatSqlParam();
+		//	foreach (var kv in row.Columns)
+		//	{
+		//		var paramName = kv.Key.FormatSqlParam();
 
-				sql.Append('`').Append(kv.Key).Append('`')
-				   .Append(" = @")
-				   .Append(paramName)
-				   .Append(" AND ");
+		//		sql.Append('`').Append(kv.Key).Append('`')
+		//		   .Append(" = @")
+		//		   .Append(paramName)
+		//		   .Append(" AND ");
 
-				var p = cmd.CreateParameter();
-				p.ParameterName = "@" + paramName;
-				p.Value = kv.Value;
-				cmd.Parameters.Add(p);
-			}
-			sql.Remove(sql.Length - 5, 5);
+		//		var p = cmd.CreateParameter();
+		//		p.ParameterName = "@" + paramName;
+		//		p.Value = kv.Value;
+		//		cmd.Parameters.Add(p);
+		//	}
+		//	sql.Remove(sql.Length - 5, 5);
 
-			cmd.CommandText = sql.ToString();
+		//	cmd.CommandText = sql.ToString();
 
-			Connection.Open();
-			using (var transaction = Connection.BeginTransaction())
-			{
-				cmd.ExecuteNonQuery();
-				transaction.Commit();
-			}
-			Connection.Close();
-		}
+		//	Connection.Open();
+		//	using (var transaction = Connection.BeginTransaction())
+		//	{
+		//		cmd.ExecuteNonQuery();
+		//		transaction.Commit();
+		//	}
+		//	Connection.Close();
+		//}
 
-		public void Delete(IRowIdentifier row)
-		{
-			var cmd = Connection.CreateCommand();
-			var sql = new StringBuilder("DELETE FROM ");
-			sql.Append(row.Database)
-			   .Append(".")
-			   .Append(row.Table);
+		//public void Delete(IRowIdentifier row)
+		//{
+		//	var cmd = Connection.CreateCommand();
+		//	var sql = new StringBuilder("DELETE FROM ");
+		//	sql.Append(row.Database)
+		//	   .Append(".")
+		//	   .Append(row.Table);
 
-			if (row.Columns.Count > 0)
-				sql.Append(" WHERE 1=1");
+		//	if (row.Columns.Count > 0)
+		//		sql.Append(" WHERE 1=1");
 
-			foreach (var kv in row.Columns)
-			{
-				var paramName = kv.Key.FormatSqlParam();
+		//	foreach (var kv in row.Columns)
+		//	{
+		//		var paramName = kv.Key.FormatSqlParam();
 
-				sql.Append(" AND ")
-				   .Append('`').Append(kv.Key).Append('`')
-				   .Append(" = @")
-				   .Append(paramName);
+		//		sql.Append(" AND ")
+		//		   .Append('`').Append(kv.Key).Append('`')
+		//		   .Append(" = @")
+		//		   .Append(paramName);
 
-				var p = cmd.CreateParameter();
-				p.ParameterName = "@" + paramName;
-				p.Value = kv.Value;
-				cmd.Parameters.Add(p);
-			}
+		//		var p = cmd.CreateParameter();
+		//		p.ParameterName = "@" + paramName;
+		//		p.Value = kv.Value;
+		//		cmd.Parameters.Add(p);
+		//	}
 
-			cmd.CommandText = sql.ToString();
+		//	cmd.CommandText = sql.ToString();
 
-			Connection.Open();
-			using (var transaction = Connection.BeginTransaction())
-			{
-				cmd.ExecuteNonQuery();
-				transaction.Commit();
-			}
-			Connection.Close();
-		}
+		//	Connection.Open();
+		//	using (var transaction = Connection.BeginTransaction())
+		//	{
+		//		cmd.ExecuteNonQuery();
+		//		transaction.Commit();
+		//	}
+		//	Connection.Close();
+		//}
 
 		public void Dispose()
 		{
@@ -578,128 +582,128 @@ namespace DataCloner.DataAccess
 		/// </summary>
 		/// <param name="fullType">Type de la colonne SQL</param>
 		/// <returns>Type DbType</returns>     
-		public virtual void SqlTypeToDbType(string fullType, out DbType type, out string size)
-		{
-			fullType = fullType.ToLower();
-			var startPosLength = fullType.IndexOf("(", StringComparison.Ordinal);
-			var endPosLength = fullType.IndexOf(")", StringComparison.Ordinal);
-			var values = fullType.Split(' ');
-			string strType;
-			string[] descriptorValues = null;
-			//int length;
-			//int precision;
-			bool? signedness = null;
-			type = DbType.Object;
-			size = null;
+		//public virtual void SqlTypeToDbType(string fullType, out DbType type, out string size)
+		//{
+		//	fullType = fullType.ToLower();
+		//	var startPosLength = fullType.IndexOf("(", StringComparison.Ordinal);
+		//	var endPosLength = fullType.IndexOf(")", StringComparison.Ordinal);
+		//	var values = fullType.Split(' ');
+		//	string strType;
+		//	string[] descriptorValues = null;
+		//	//int length;
+		//	//int precision;
+		//	bool? signedness = null;
+		//	type = DbType.Object;
+		//	size = null;
 
-			//S'il y a une description du type entre ()
-			if (startPosLength > -1 && endPosLength > startPosLength)
-			{
-				size = fullType.Substring(startPosLength + 1, endPosLength - startPosLength - 1);
-				descriptorValues = size.Split(',');
-				strType = values[0].Substring(0, startPosLength);
-			}
-			else
-			{
-				strType = values[0];
-			}
+		//	//S'il y a une description du type entre ()
+		//	if (startPosLength > -1 && endPosLength > startPosLength)
+		//	{
+		//		size = fullType.Substring(startPosLength + 1, endPosLength - startPosLength - 1);
+		//		descriptorValues = size.Split(',');
+		//		strType = values[0].Substring(0, startPosLength);
+		//	}
+		//	else
+		//	{
+		//		strType = values[0];
+		//	}
 
-			if (values.Length > 1)
-				signedness = values[1] == "signed";
+		//	if (values.Length > 1)
+		//		signedness = values[1] == "signed";
 
-			//Parse descriptior
-			//switch (strType)
-			//{
-			//    case "enum":
-			//    case "set":
-			//        type = DbType.Object; //Not supported
-			//        break; 
-			//    default:
-			//        if (descriptorValues != null)
-			//        {
-			//            if (descriptorValues.Length > 1)
-			//                precision = Int32.Parse(descriptorValues[1]);
-			//            length = Int32.Parse(descriptorValues[0]);
-			//        }
-			//        break;
-			//}
+		//	//Parse descriptior
+		//	//switch (strType)
+		//	//{
+		//	//    case "enum":
+		//	//    case "set":
+		//	//        type = DbType.Object; //Not supported
+		//	//        break; 
+		//	//    default:
+		//	//        if (descriptorValues != null)
+		//	//        {
+		//	//            if (descriptorValues.Length > 1)
+		//	//                precision = Int32.Parse(descriptorValues[1]);
+		//	//            length = Int32.Parse(descriptorValues[0]);
+		//	//        }
+		//	//        break;
+		//	//}
 
-			//From unsigned to CLR data type
-			if (signedness.HasValue && !signedness.Value)
-			{
-				switch (strType)
-				{
-					case "tinyint":
-					case "smallint":
-					case "mediumint": //À vérifier
-						type = DbType.Int32;
-						break;
-					case "int":
-						type = DbType.Int64;
-						break;
-					case "bigint":
-						type = DbType.Decimal;
-						break;
-				}
-			}
-			else
-			{
-				//From signed to CLR data type
-				switch (strType)
-				{
-					case "tinyint":
-						type = DbType.Byte;
-						break;
-					case "smallint":
-					case "year":
-						type = DbType.Int16;
-						break;
-					case "mediumint":
-					case "int":
-						type = DbType.Int32;
-						break;
-					case "bigint":
-					case "bit":
-						type = DbType.Int64;
-						break;
-					case "float":
-						type = DbType.Single;
-						break;
-					case "double":
-						type = DbType.Double;
-						break;
-					case "decimal":
-						type = DbType.Decimal;
-						break;
-					case "char":
-					case "varchar":
-					case "tinytext":
-					case "text":
-					case "mediumtext":
-					case "longtext":
-					case "binary":
-					case "varbinary":
-						type = DbType.String;
-						break;
-					case "tinyblob":
-					case "blob":
-					case "mediumblob":
-					case "longblob":
-					case "enum":
-					case "set":
-						type = DbType.Binary;
-						break;
-					case "date":
-					case "datetime":
-						type = DbType.DateTime;
-						break;
-					case "time":
-					case "timestamp":
-						type = DbType.Time;
-						break;
-				}
-			}
-		}
+		//	//From unsigned to CLR data type
+		//	if (signedness.HasValue && !signedness.Value)
+		//	{
+		//		switch (strType)
+		//		{
+		//			case "tinyint":
+		//			case "smallint":
+		//			case "mediumint": //À vérifier
+		//				type = DbType.Int32;
+		//				break;
+		//			case "int":
+		//				type = DbType.Int64;
+		//				break;
+		//			case "bigint":
+		//				type = DbType.Decimal;
+		//				break;
+		//		}
+		//	}
+		//	else
+		//	{
+		//		//From signed to CLR data type
+		//		switch (strType)
+		//		{
+		//			case "tinyint":
+		//				type = DbType.Byte;
+		//				break;
+		//			case "smallint":
+		//			case "year":
+		//				type = DbType.Int16;
+		//				break;
+		//			case "mediumint":
+		//			case "int":
+		//				type = DbType.Int32;
+		//				break;
+		//			case "bigint":
+		//			case "bit":
+		//				type = DbType.Int64;
+		//				break;
+		//			case "float":
+		//				type = DbType.Single;
+		//				break;
+		//			case "double":
+		//				type = DbType.Double;
+		//				break;
+		//			case "decimal":
+		//				type = DbType.Decimal;
+		//				break;
+		//			case "char":
+		//			case "varchar":
+		//			case "tinytext":
+		//			case "text":
+		//			case "mediumtext":
+		//			case "longtext":
+		//			case "binary":
+		//			case "varbinary":
+		//				type = DbType.String;
+		//				break;
+		//			case "tinyblob":
+		//			case "blob":
+		//			case "mediumblob":
+		//			case "longblob":
+		//			case "enum":
+		//			case "set":
+		//				type = DbType.Binary;
+		//				break;
+		//			case "date":
+		//			case "datetime":
+		//				type = DbType.DateTime;
+		//				break;
+		//			case "time":
+		//			case "timestamp":
+		//				type = DbType.Time;
+		//				break;
+		//		}
+		//	}
+		//}
 	}
 
 	internal static class SqlExtensions

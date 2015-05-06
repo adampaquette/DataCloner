@@ -1,9 +1,8 @@
-﻿using System;
-using System.Data;
+﻿using System.Data;
 
 namespace DataCloner.DataAccess
 {
-    interface ISqlTypeConverter
+    public interface ISqlTypeConverter
     {
         SqlType ConvertToSql(DbType type);
         DbType ConvertFromSql(SqlType type);

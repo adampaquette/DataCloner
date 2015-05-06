@@ -113,6 +113,8 @@
     <Compile Include="DataAccess\AbstractSqlTypeConverter.cs" />
     <Compile Include="DataAccess\ISqlTypeConverter.cs" />
     <Compile Include="DataAccess\IQueryDispatcher.cs" />
+    <Compile Include="DataAccess\MsSqlTypeConverter.cs" />
+    <Compile Include="DataAccess\MySqlTypeConverter.cs" />
     <Compile Include="DataAccess\QueryDispatcherExtensions.cs" />
     <Compile Include="DataAccess\QueryHelperFactory.cs" />
     <Compile Include="DataAccess\QueryHelperMySQL.cs" />

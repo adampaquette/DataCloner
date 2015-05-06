@@ -19,9 +19,9 @@ namespace DataCloner.DataAccess
 		"    COL.COLUMN_NAME, " +
 		"    COL.DATA_TYPE, " +
 		"    COLUMNPROPERTY(object_id(COL.TABLE_NAME), COL.COLUMN_NAME, 'Precision') AS 'Precision',  " +
-		"    COLUMNPROPERTY(object_id(COL.TABLE_NAME), COL.COLUMN_NAME, 'Scale') AS 'Scale',  " +
-        "    0 AS IsUnsigned, " +
-		"    ISNULL(( " +
+		"    ISNULL(COLUMNPROPERTY(object_id(COL.TABLE_NAME), COL.COLUMN_NAME, 'Scale'), 0) AS 'Scale',  " +
+        "    CAST(0 AS BIT) AS IsUnsigned, " +
+		"    CAST(ISNULL(( " +
 		"        SELECT TOP 1 1 " +
 		"        FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE KCU " +
 		"        INNER JOIN INFORMATION_SCHEMA.TABLE_CONSTRAINTS TC ON TC.CONSTRAINT_CATALOG = KCU.CONSTRAINT_CATALOG AND " +
@@ -33,8 +33,8 @@ namespace DataCloner.DataAccess
 		"            KCU.TABLE_NAME = COL.TABLE_NAME AND " +
 		"            KCU.COLUMN_NAME = COL.COLUMN_NAME AND " +
 		"            TC.CONSTRAINT_TYPE = 'PRIMARY KEY' " +
-		"    ), 0) AS 'IsPrimaryKey', " +
-		"    COLUMNPROPERTY(object_id(COL.TABLE_NAME), COL.COLUMN_NAME, 'IsIdentity') AS 'IsAutoIncrement' " +
+		"    ), 0) AS BIT) AS 'IsPrimaryKey', " +
+		"    CAST(COLUMNPROPERTY(object_id(COL.TABLE_NAME), COL.COLUMN_NAME, 'IsIdentity') AS BIT) AS 'IsAutoIncrement' " +
 		"FROM INFORMATION_SCHEMA.COLUMNS COL " +
 		"INNER JOIN INFORMATION_SCHEMA.TABLES TBL ON TBL.TABLE_CATALOG = COL.TABLE_CATALOG AND " +
 		"                                            TBL.TABLE_SCHEMA = COL.TABLE_SCHEMA AND " +
@@ -92,6 +92,9 @@ namespace DataCloner.DataAccess
         //EXEC sp_msforeachtable "ALTER TABLE ? WITH CHECK CHECK CONSTRAINT all"
         //TODO
         private const string SqlEnforceIntegrityCheck = "SET UNIQUE_CHECKS=@ACTIVE; SET FOREIGN_KEY_CHECKS=@ACTIVE;";
+
+        private readonly static ISqlTypeConverter _typeConverter = new MsSqlTypeConverter();
+        public override ISqlTypeConverter TypeConverter => _typeConverter;
 
         public QueryHelperSqlServer(Cache cache, string connectionString, Int16 serverId)
             : base(cache, ProviderName, connectionString, serverId, SqlGetDatabasesName,

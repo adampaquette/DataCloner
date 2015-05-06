@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data;
+using DataCloner.Framework;
 
 namespace DataCloner.DataAccess
 {
@@ -7,38 +8,38 @@ namespace DataCloner.DataAccess
     {
         public DbType ConvertFromSql(SqlType type)
         {
-            if (AnsiStringFromSql(type) return DbType.AnsiString;
-            if (AnsiStringFixedLengthFromSql(type) return DbType.AnsiStringFixedLength;
-            if (BinaryFromSql(type) return DbType.Binary;
-            if (BooleanFromSql(type) return DbType.Boolean;
-            if (ByteFromSql(type) return DbType.Byte;
-            if (CurrencyFromSql(type) return DbType.Currency;
-            if (DateFromSql(type) return DbType.Date;
-            if (DateTimeFromSql(type) return DbType.DateTime;
-            if (DateTime2FromSql(type) return DbType.DateTime2;
-            if (DateTimeOffsetFromSql(type) return DbType.DateTimeOffset;
-            if (DecimalFromSql(type) return DbType.Decimal;
-            if (DoubleFromSql(type) return DbType.Double;
-            if (GuidFromSql(type) return DbType.Guid;
-            if (Int16FromSql(type) return DbType.Int16;
-            if (Int32FromSql(type) return DbType.Int32;
-            if (Int64FromSql(type) return DbType.Int64;
-            if (ObjectFromSql(type) return DbType.Object;
-            if (SByteFromSql(type) return DbType.SByte;
-            if (SingleFromSql(type) return DbType.Single;
-            if (StringFromSql(type) return DbType.String;
-            if (StringFixedLengthFromSql(type) return DbType.StringFixedLength;
-            if (TimeFromSql(type) return DbType.Time;
-            if (UInt16FromSql(type) return DbType.UInt16;
-            if (UInt32FromSql(type) return DbType.UInt32;
-            if (UInt64FromSql(type) return DbType.UInt64;
-            if (VarNumericFromSql(type) return DbType.VarNumeric;
-            if (XmlFromSql(type) return DbType.Xml;
+            if (AnsiStringFromSql(type)) return DbType.AnsiString;
+            if (AnsiStringFixedLengthFromSql(type)) return DbType.AnsiStringFixedLength;
+            if (BinaryFromSql(type)) return DbType.Binary;
+            if (BooleanFromSql(type)) return DbType.Boolean;
+            if (ByteFromSql(type)) return DbType.Byte;
+            if (CurrencyFromSql(type)) return DbType.Currency;
+            if (DateFromSql(type)) return DbType.Date;
+            if (DateTimeFromSql(type)) return DbType.DateTime;
+            if (DateTime2FromSql(type)) return DbType.DateTime2;
+            if (DateTimeOffsetFromSql(type)) return DbType.DateTimeOffset;
+            if (DecimalFromSql(type)) return DbType.Decimal;
+            if (DoubleFromSql(type)) return DbType.Double;
+            if (GuidFromSql(type)) return DbType.Guid;
+            if (Int16FromSql(type)) return DbType.Int16;
+            if (Int32FromSql(type)) return DbType.Int32;
+            if (Int64FromSql(type)) return DbType.Int64;
+            if (ObjectFromSql(type)) return DbType.Object;
+            if (SByteFromSql(type)) return DbType.SByte;
+            if (SingleFromSql(type)) return DbType.Single;
+            if (StringFromSql(type)) return DbType.String;
+            if (StringFixedLengthFromSql(type)) return DbType.StringFixedLength;
+            if (TimeFromSql(type)) return DbType.Time;
+            if (UInt16FromSql(type)) return DbType.UInt16;
+            if (UInt32FromSql(type)) return DbType.UInt32;
+            if (UInt64FromSql(type)) return DbType.UInt64;
+            if (VarNumericFromSql(type)) return DbType.VarNumeric;
+            if (XmlFromSql(type)) return DbType.Xml;
             
-            throw new NotSupportedException();
+            throw new NotSupportedException(type.SerializeXml());
         }
 
-        protected SqlType ConvertToSql(DbType type)
+        public SqlType ConvertToSql(DbType type)
         {
             switch (type)
             {
@@ -77,8 +78,11 @@ namespace DataCloner.DataAccess
                 return true;
             return false;
         }
-        
-        protected abstract bool CurrencyFromSql(SqlType t);
+
+        protected virtual bool CurrencyFromSql(SqlType t)
+        {
+            return false;
+        }
         
         protected virtual bool DateFromSql(SqlType t)
         {
@@ -159,8 +163,11 @@ namespace DataCloner.DataAccess
                 return true;
             return false;
         }
-        
-        protected abstract bool SByteFromSql(SqlType t);
+
+        protected virtual bool SByteFromSql(SqlType t)
+        {
+            return false;
+        }
         
         protected virtual bool SingleFromSql(SqlType t)
         {
@@ -193,11 +200,26 @@ namespace DataCloner.DataAccess
                 return true;
             return false;
         }
-        
-        protected abstract bool UInt16FromSql(SqlType t);        
-        protected abstract bool UInt32FromSql(SqlType t);        
-        protected abstract bool UInt64FromSql(SqlType t);        
-        protected abstract bool VarNumericFromSql(SqlType t);
+
+        protected virtual bool UInt16FromSql(SqlType t)
+        {
+            return false;
+        }
+
+        protected virtual bool UInt32FromSql(SqlType t)
+        {
+            return false;
+        }
+
+        protected virtual bool UInt64FromSql(SqlType t)
+        {
+            return false;
+        }
+
+        protected virtual bool VarNumericFromSql(SqlType t)
+        {
+            return false;
+        }
         
         protected virtual bool XmlFromSql(SqlType t)
         {

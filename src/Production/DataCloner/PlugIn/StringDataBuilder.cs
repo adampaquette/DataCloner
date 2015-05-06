@@ -9,9 +9,7 @@ namespace DataCloner.PlugIn
     {
         public object BuildData(IDbConnection conn, DbEngine engine, Int16 serverId, string database, string schema, ITableSchema table, IColumnDefinition column)
         {
-            int size;
-            if (!Int32.TryParse(column.Size, out size))
-                size = 10;
+            int size = column.SqlType.Precision != 0 ? column.SqlType.Precision : 10;
 
             return KeyGenerator.GetUniqueKey(size);
         }

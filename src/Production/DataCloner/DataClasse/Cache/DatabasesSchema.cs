@@ -15,8 +15,8 @@ namespace DataCloner.DataClasse.Cache
     /// </summary>
     /// <remarks>ServerId / Database / Schema -> TableSchema[]</remarks>
     public sealed class DatabasesSchema
-		: Dictionary<Int16, Dictionary<string, Dictionary<string, TableSchema[]>>>
-	{
+        : Dictionary<Int16, Dictionary<string, Dictionary<string, TableSchema[]>>>
+    {
         public TableSchema GetTable(Int16 server, string database, string schema, string table)
         {
             if (ContainsKey(server) &&
@@ -184,7 +184,7 @@ namespace DataCloner.DataClasse.Cache
             }
         }
 
-		internal void LoadUniqueKeys(IDataReader reader, Int16 serverId, String database)
+        internal void LoadUniqueKeys(IDataReader reader, Int16 serverId, String database)
         {
             var lstUniqueKeys = new List<UniqueKey>();
             var lstUniqueKeyColumns = new List<string>();
@@ -254,8 +254,8 @@ namespace DataCloner.DataClasse.Cache
         /// <param name="reader"></param>
         /// <param name="serverId"></param>
         /// <param name="database"></param>
-        /// <param name="dataTypeConverter"></param>
-		internal void LoadColumns(IDataReader reader, Int16 serverId, String database, SqlToClrTypeConverter dataTypeConverter)
+        /// <param name="typeConverter"></param>
+		internal void LoadColumns(IDataReader reader, Int16 serverId, String database, ISqlTypeConverter typeConverter)
         {
             var lstTable = new List<TableSchema>();
             var lstSchemaColumn = new List<ColumnDefinition>();
@@ -282,9 +282,9 @@ namespace DataCloner.DataClasse.Cache
                     lstTable.Add(previousTable);
 
                     lstSchemaColumn = new List<ColumnDefinition>();
-                    previousTable = new TableSchema {Name = currentTable};
+                    previousTable = new TableSchema { Name = currentTable };
                 }
-
+                
                 //Si on change de schema
                 if (currentSchema != previousSchema)
                 {
@@ -296,14 +296,18 @@ namespace DataCloner.DataClasse.Cache
                 var col = new ColumnDefinition
                 {
                     Name = reader.GetString(2),
-                    IsPrimary = reader.GetBoolean(4),
-                    IsAutoIncrement = reader.GetBoolean(5)
+                    SqlType = new SqlType
+                    {
+                        DataType = reader.GetString(3),
+                        Precision = reader.GetInt32(4),
+                        Scale = reader.GetInt32(5),
+                        IsUnsigned = reader.GetBoolean(6)
+                    },
+                    IsPrimary = reader.GetBoolean(7),
+                    IsAutoIncrement = reader.GetBoolean(8)
                 };
-                DbType type;
-                string size;
-                dataTypeConverter(reader.GetString(3), out type, out size);
-                col.Type = type;
-                col.Size = size;
+                col.Type = typeConverter.ConvertFromSql(col.SqlType);
+               
                 lstSchemaColumn.Add(col);
 
             } while (reader.Read());
@@ -317,12 +321,12 @@ namespace DataCloner.DataClasse.Cache
             }
         }
 
-		/// <summary>
-		/// Termine la construction de la cache.
-		/// </summary>
-		/// <param name="config"></param>
-		/// <remarks>Le schéma de la BD doit préalablement avoir été obtenu. GetColumns() et GetForeignKeys()</remarks>
-		internal void FinalizeCache(ClonerConfiguration config)
+        /// <summary>
+        /// Termine la construction de la cache.
+        /// </summary>
+        /// <param name="config"></param>
+        /// <remarks>Le schéma de la BD doit préalablement avoir été obtenu. GetColumns() et GetForeignKeys()</remarks>
+        internal void FinalizeCache(ClonerConfiguration config)
         {
             GenerateCommands();
             MergeFkConfig(config);
@@ -343,7 +347,7 @@ namespace DataCloner.DataClasse.Cache
                         {
                             var table = schema.Value[i];
                             var sbInsert = new StringBuilder("INSERT INTO ");
-							var sbSelect = new StringBuilder("SELECT ");
+                            var sbSelect = new StringBuilder("SELECT ");
 
                             sbInsert.Append(database.Key);
                             if (!string.IsNullOrEmpty(schema.Key))

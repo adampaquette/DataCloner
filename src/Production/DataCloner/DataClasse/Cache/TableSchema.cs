@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using DataCloner.DataAccess;
 using DataCloner.Framework;
 
 namespace DataCloner.DataClasse.Cache
@@ -238,11 +239,11 @@ namespace DataCloner.DataClasse.Cache
             {
                 stream.Write(ColumnsDefinition[i].Name);
                 stream.Write((Int32)ColumnsDefinition[i].Type);
-                stream.Write(ColumnsDefinition[i].Size ?? "");
                 stream.Write(ColumnsDefinition[i].IsPrimary);
                 stream.Write(ColumnsDefinition[i].IsForeignKey);
                 stream.Write(ColumnsDefinition[i].IsAutoIncrement);
                 stream.Write(ColumnsDefinition[i].BuilderName ?? "");
+                ColumnsDefinition[i].SqlType.Serialize(stream);
             }
         }
 
@@ -305,13 +306,13 @@ namespace DataCloner.DataClasse.Cache
                 schemaColList.Add(new ColumnDefinition
                 {
                     Name = stream.ReadString(),
-                    Type = (DbType)stream.ReadInt32(),
-                    Size = stream.ReadString(),
+                    Type = (DbType)stream.ReadInt32(),                    
                     IsPrimary = stream.ReadBoolean(),
                     IsForeignKey = stream.ReadBoolean(),
                     IsAutoIncrement = stream.ReadBoolean(),
-                    BuilderName = stream.ReadString()
-                });
+                    BuilderName = stream.ReadString(),
+                    SqlType = SqlType.Deserialize(stream)
+            });
             }
 
             t.DerivativeTables = dtList.ToArray();
@@ -346,7 +347,7 @@ namespace DataCloner.DataClasse.Cache
     {
         public string Name { get; set; }
         public DbType Type { get; set; }
-        public string Size { get; set; }
+        public SqlType SqlType { get; set; }
         public bool IsPrimary { get; set; }
         public bool IsForeignKey { get; set; }
         public bool IsUniqueKey { get; set; }

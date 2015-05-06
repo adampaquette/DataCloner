@@ -70,6 +70,9 @@ namespace DataCloner.DataAccess
 
         private const string SqlEnforceIntegrityCheck = "SET UNIQUE_CHECKS=@ACTIVE; SET FOREIGN_KEY_CHECKS=@ACTIVE;";
 
+        private readonly static ISqlTypeConverter _typeConverter = new MySqlTypeConverter();
+        public override ISqlTypeConverter TypeConverter => _typeConverter;
+
         public QueryHelperMySql(Cache cache, string connectionString, Int16 serverId)
             : base(cache, ProviderName, connectionString, serverId, SqlGetDatabasesName,
                    SqlGetColumns, SqlGetForeignKey, SqlGetUniqueKey, SqlGetLastInsertedPk, 
