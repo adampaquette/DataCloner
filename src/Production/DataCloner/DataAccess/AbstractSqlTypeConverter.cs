@@ -52,8 +52,15 @@ namespace DataCloner.DataAccess
 
         #region FromSql
 		
-		protected abstract bool AnsiStringFromSql(SqlType t);
-		protected abstract bool AnsiStringFixedLengthFromSql(SqlType t);
+		protected virtual bool AnsiStringFromSql(SqlType t)
+        {
+            return false;
+        }
+        
+		protected virtual bool AnsiStringFixedLengthFromSql(SqlType t)
+        {
+            return false;
+        }
 		
 		protected virtual bool BinaryFromSql(SqlType t)
         {
