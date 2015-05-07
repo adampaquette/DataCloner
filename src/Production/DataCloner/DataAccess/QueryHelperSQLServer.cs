@@ -8,7 +8,7 @@ namespace DataCloner.DataAccess
         public const string ProviderName = "System.Data.SqlClient";
 
         private const string SqlGetDatabasesName =
-        "SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA " +
+        "SELECT CATALOG_NAME FROM INFORMATION_SCHEMA.SCHEMATA " +
 		"WHERE SCHEMA_NAME NOT IN ('information_schema','sys') AND " +
 		"SCHEMA_NAME NOT LIKE 'db\\_%' ESCAPE '\\';";
 
@@ -40,7 +40,7 @@ namespace DataCloner.DataAccess
 		"                                            TBL.TABLE_SCHEMA = COL.TABLE_SCHEMA AND " +
 		"                                            TBL.TABLE_NAME = COL.TABLE_NAME AND " +
 		"                                            TBL.TABLE_TYPE = 'BASE TABLE' " +
-		"WHERE COL.TABLE_SCHEMA = @DATABASE " +
+        "WHERE COL.TABLE_CATALOG = @DATABASE " +
 		"ORDER BY " +
 		"    COL.TABLE_NAME, " +
 		"    COL.ORDINAL_POSITION;";
