@@ -8,9 +8,8 @@ namespace DataCloner.DataAccess
         public const string ProviderName = "System.Data.SqlClient";
 
         private const string SqlGetDatabasesName =
-        "SELECT CATALOG_NAME FROM INFORMATION_SCHEMA.SCHEMATA " +
-		"WHERE SCHEMA_NAME NOT IN ('information_schema','sys') AND " +
-		"SCHEMA_NAME NOT LIKE 'db\\_%' ESCAPE '\\';";
+        "SELECT D.NAME FROM SYS.DATABASES D " +
+        "WHERE D.NAME NOT IN ('master', 'tempdb');";
 
         private const string SqlGetColumns =
         "SELECT " +
@@ -75,31 +74,31 @@ namespace DataCloner.DataAccess
         "    TC.TABLE_NAME, " +
         "    TC.CONSTRAINT_NAME;";
 
-        //TODO
         private const string SqlGetUniqueKey =
         "SELECT " +
-            "'' AS 'Schema'," +
-            "TC.TABLE_NAME," +
-            "TC.CONSTRAINT_NAME," +
-            "K.COLUMN_NAME " +
+        "    TC.CONSTRAINT_SCHEMA, " +
+        "    TC.TABLE_NAME, " +
+        "    TC.CONSTRAINT_NAME, " +
+        "    KCU.COLUMN_NAME " +
         "FROM information_schema.TABLE_CONSTRAINTS TC " +
-        "INNER JOIN information_schema.KEY_COLUMN_USAGE K ON TC.TABLE_NAME = K.TABLE_NAME " +
-                                                        "AND TC.CONSTRAINT_NAME = K.CONSTRAINT_NAME " +
+        "INNER JOIN information_schema.KEY_COLUMN_USAGE KCU ON KCU.CONSTRAINT_CATALOG = TC.CONSTRAINT_CATALOG " +
+        "                                                  AND KCU.CONSTRAINT_SCHEMA = TC.CONSTRAINT_SCHEMA " +
+        "                                                  AND KCU.CONSTRAINT_NAME = TC.CONSTRAINT_NAME " +
         "WHERE TC.TABLE_SCHEMA = @DATABASE " +
         "AND TC.CONSTRAINT_TYPE = 'UNIQUE' " +
         "ORDER BY " +
-            "TC.TABLE_NAME," +
-            "TC.CONSTRAINT_NAME;";
+        "    TC.TABLE_NAME, " +
+        "    TC.CONSTRAINT_NAME;";
 
         private const string SqlGetLastInsertedPk = "SELECT SCOPE_IDENTITY();";
 
-        //Disable constraints for all tables:
-        //EXEC sp_msforeachtable "ALTER TABLE ? NOCHECK CONSTRAINT all"
-        //Re-enable constraints for all tables:
-        //EXEC sp_msforeachtable "ALTER TABLE ? WITH CHECK CHECK CONSTRAINT all"
-        //TODO
-        private const string SqlEnforceIntegrityCheck = "SET UNIQUE_CHECKS=@ACTIVE; SET FOREIGN_KEY_CHECKS=@ACTIVE;";
-
+        private const string SqlEnforceIntegrityCheck = 
+        "IF @ACTIVE = 1 BEGIN " +
+        "    EXEC sp_msforeachtable ""ALTER TABLE ? WITH CHECK CONSTRAINT all;"" " +
+        "END ELSE BEGIN " + 
+        "    EXEC sp_msforeachtable ""ALTER TABLE ? NOCHECK CONSTRAINT all;"" " +
+        "END;"
+        
         private readonly static ISqlTypeConverter _typeConverter = new MsSqlTypeConverter();
         public override ISqlTypeConverter TypeConverter => _typeConverter;
 
