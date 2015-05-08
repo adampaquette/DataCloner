@@ -92,12 +92,12 @@ namespace DataCloner.DataAccess
 
         private const string SqlGetLastInsertedPk = "SELECT SCOPE_IDENTITY();";
 
-        private const string SqlEnforceIntegrityCheck = 
+        private const string SqlEnforceIntegrityCheck =
         "IF @ACTIVE = 1 BEGIN " +
-        "    EXEC sp_msforeachtable ""ALTER TABLE ? WITH CHECK CONSTRAINT all;"" " +
-        "END ELSE BEGIN " + 
-        "    EXEC sp_msforeachtable ""ALTER TABLE ? NOCHECK CONSTRAINT all;"" " +
-        "END;"
+        "    EXEC sp_msforeachtable \"ALTER TABLE ? WITH CHECK CONSTRAINT all;\" " +
+        "END ELSE BEGIN " +
+        "    EXEC sp_msforeachtable \"ALTER TABLE ? NOCHECK CONSTRAINT all;\" " +
+        "END;";
         
         private readonly static ISqlTypeConverter _typeConverter = new MsSqlTypeConverter();
         public override ISqlTypeConverter TypeConverter => _typeConverter;
