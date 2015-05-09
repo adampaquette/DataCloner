@@ -189,12 +189,17 @@ namespace DataCloner
 			var srcRows = _dispatcher.Select(riSource);
 			var nbRows = srcRows.Length;
 			var table = _cache.GetTable(riSource);
-			var serverDst = _cache.ServerMap[new ServerIdentifier
-			{
-				ServerId = riSource.ServerId,
-				Database = riSource.Database,
-				Schema = riSource.Schema
-			}];
+
+            var serverDst = new ServerIdentifier
+            {
+                ServerId = riSource.ServerId,
+                Database = riSource.Database,
+                Schema = riSource.Schema
+            };
+
+            if (_cache.ServerMap.ContainsKey(serverDst))
+                serverDst = _cache.ServerMap[serverDst];
+
 			var riReturn = new RowIdentifier
 			{
 				ServerId = serverDst.ServerId,

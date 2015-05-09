@@ -67,7 +67,8 @@ namespace DataCloner.DataAccess
             if (t.DataType == "binary" ||
                 t.DataType == "varbinary" ||
                 t.DataType == "timestamp" ||
-                t.DataType == "rowversion")
+                t.DataType == "rowversion" ||
+                t.DataType == "image")
                 return true;
             return false;
         }

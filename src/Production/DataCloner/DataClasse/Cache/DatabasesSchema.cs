@@ -351,23 +351,23 @@ namespace DataCloner.DataClasse.Cache
 
                             sbInsert.Append(database.Key);
                             if (!string.IsNullOrEmpty(schema.Key))
-                                sbInsert.Append(".").Append(schema.Key);
-                            sbInsert.Append(".")
+                                sbInsert.Append(".\"").Append(schema.Key).Append('"');
+                            sbInsert.Append(".\"")
                                          .Append(table.Name)
-                                         .Append(" (");
+                                         .Append("\" (");
 
                             //Nom des colonnes
                             var nbCols = table.ColumnsDefinition.Length;
                             for (var j = 0; j < nbCols; j++)
                             {
                                 //Select
-                                sbSelect.Append('`').Append(table.ColumnsDefinition[j].Name).Append('`');
+                                sbSelect.Append('"').Append(table.ColumnsDefinition[j].Name).Append('"');
                                 if (j < nbCols - 1) sbSelect.Append(",");
 
                                 //Insert
                                 if (!table.ColumnsDefinition[j].IsAutoIncrement)
                                 {
-                                    sbInsert.Append('`').Append(table.ColumnsDefinition[j].Name).Append('`');
+                                    sbInsert.Append('"').Append(table.ColumnsDefinition[j].Name).Append('"');
                                     if (j < nbCols - 1) sbInsert.Append(",");
                                 }
                             }
@@ -386,12 +386,14 @@ namespace DataCloner.DataClasse.Cache
                             sbInsert.Append(");");
 
                             //Finalisation du select
-                            sbSelect.Append(" FROM ")
-                                    .Append(database.Key);
+                            sbSelect.Append(" FROM \"")
+                                    .Append(database.Key)
+                                    .Append('"');
                             if (!string.IsNullOrEmpty(schema.Key))
-                                sbSelect.Append(".").Append(schema.Key);
-                            sbSelect.Append(".")
-                                    .Append(table.Name);
+                                sbSelect.Append(".\"").Append(schema.Key).Append('"');
+                            sbSelect.Append(".\"")
+                                    .Append(table.Name)
+                                    .Append("\"");
 
                             table.InsertCommand = sbInsert.ToString();
                             table.SelectCommand = sbSelect.ToString();

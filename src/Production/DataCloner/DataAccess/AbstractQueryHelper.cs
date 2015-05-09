@@ -61,7 +61,7 @@ namespace DataCloner.DataAccess
 				using (var r = cmd.ExecuteReader())
 				{
 					while (r.Read())
-						databases.Add(r.GetString(0));
+						databases.Add(r.GetString(0).ToLower());
 				}
 				Connection.Close();
 			}

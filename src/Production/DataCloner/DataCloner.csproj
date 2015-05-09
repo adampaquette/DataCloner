@@ -140,6 +140,10 @@
     <Compile Include="Framework\FastActivator.cs" />
     <Compile Include="Framework\Helpers.cs" />
     <Compile Include="Framework\KeyGenerator.cs" />
+    <Compile Include="Generator\AbstractSqlGenerator.cs" />
+    <Compile Include="Generator\ISqlGenerator.cs" />
+    <Compile Include="Generator\MsSqlGenerator.cs" />
+    <Compile Include="Generator\MySqlGenerator.cs" />
     <Compile Include="PlugIn\AutoIncrementDataBuilder.cs" />
     <Compile Include="PlugIn\DataBuilder.cs" />
     <Compile Include="PlugIn\IDataBuilder.cs" />
