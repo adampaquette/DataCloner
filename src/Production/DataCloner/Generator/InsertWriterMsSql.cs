@@ -2,6 +2,7 @@
 using System;
 using System.Linq;
 using System.Text;
+using DataCloner.DataClasse;
 
 namespace DataCloner.Generator
 {
@@ -9,20 +10,21 @@ namespace DataCloner.Generator
     {
         private StringBuilder _sb = new StringBuilder();
 
-        public IInsertWriter AppendColumns(string database, TableSchema schema)
+        public IInsertWriter AppendColumns(ITableIdentifier table, IColumnDefinition[] columns)
         {
             _sb.Append("INSERT INTO \"")
-               .Append(database)
+               .Append(table.Database)
                .Append("\".\"")
-               .Append(schema.Name)
+               .Append(table.Schema)
+               .Append("\".\"")
+               .Append(table.Table)
                .Append("\"(");
 
             //Nom des colonnes
-            for (var i = 0; i < schema.ColumnsDefinition.Count(); i++)
+            for (var i = 0; i < columns.Count(); i++)
             {
-                var col = schema.ColumnsDefinition[i];
-                if (!col.IsAutoIncrement)
-                    _sb.Append('"').Append(col.Name).Append('"').Append(",");
+                if (! columns[i].IsAutoIncrement)
+                    _sb.Append('"').Append(columns[i].Name).Append('"').Append(",");
             }
             _sb.Remove(_sb.Length - 1, 1);
             _sb.Append(")VALUES(");

@@ -305,7 +305,7 @@ namespace DataCloner.DataAccess
                 //Pour chaque ligne
                 while (dr.Read())
                 {
-                    var stepId = dr.GetInt16(0);
+                    var stepId = dr.GetInt32(0);
                     var value = dr.GetValue(1);
 
                     //On récupère la valeur générée par SQL pour traitements futurs
@@ -325,7 +325,7 @@ namespace DataCloner.DataAccess
                 throw new Exception("The step doesn't correspond to schema!");
 
             var insertWriter = SqlWriter.GetInsertWriter()
-                               .AppendColumns(step.DestinationTable.Database, schema);
+                               .AppendColumns(step.DestinationTable, schema.ColumnsDefinition);
 
             var sbPostInsert = new StringBuilder();
 
