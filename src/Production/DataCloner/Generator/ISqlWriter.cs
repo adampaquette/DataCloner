@@ -2,8 +2,9 @@
 
 namespace DataCloner.Generator
 {
-    interface ISqlGenerator
+    public interface ISqlWriter
     {
         Char DelemitedIdentifierCaracter { get; }
+        IInsertWriter GetInsertWriter();
     }
 }

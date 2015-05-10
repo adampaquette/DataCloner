@@ -10,8 +10,8 @@ namespace DataCloner.DataAccess
         {
             switch (providerName)
             {
-                case QueryHelperSqlServer.ProviderName:
-                    return new QueryHelperSqlServer(cache, connectionString, serverId);
+                case QueryHelperMsSql.ProviderName:
+                    return new QueryHelperMsSql(cache, connectionString, serverId);
                 case QueryHelperMySql.ProviderName:
                     return new QueryHelperMySql(cache, connectionString, serverId);
                 //case PostgresProvider.ProviderName:

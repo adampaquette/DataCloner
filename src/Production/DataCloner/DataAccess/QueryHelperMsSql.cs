@@ -1,9 +1,10 @@
 ﻿using System;
 using DataCloner.DataClasse.Cache;
+using DataCloner.Generator;
 
 namespace DataCloner.DataAccess
 {
-    internal sealed class QueryHelperSqlServer : AbstractQueryHelper
+    internal sealed class QueryHelperMsSql : AbstractQueryHelper
     {
         public const string ProviderName = "System.Data.SqlClient";
 
@@ -98,16 +99,19 @@ namespace DataCloner.DataAccess
         "END ELSE BEGIN " +
         "    EXEC sp_msforeachtable \"ALTER TABLE ? NOCHECK CONSTRAINT all;\" " +
         "END;";
-        
-        private readonly static ISqlTypeConverter _typeConverter = new MsSqlTypeConverter();
-        public override ISqlTypeConverter TypeConverter => _typeConverter;
 
-        public QueryHelperSqlServer(Cache cache, string connectionString, Int16 serverId)
+        private readonly static ISqlTypeConverter _typeConverter = new SqlTypeConverterMsSql();
+        private readonly static ISqlWriter _sqlWriter = new SqlWriterMsSql();
+
+        public override ISqlTypeConverter TypeConverter => _typeConverter;
+        public override ISqlWriter SqlWriter => _sqlWriter;
+
+        public QueryHelperMsSql(Cache cache, string connectionString, Int16 serverId)
             : base(cache, ProviderName, connectionString, serverId, SqlGetDatabasesName,
                    SqlGetColumns, SqlGetForeignKey, SqlGetUniqueKey, SqlGetLastInsertedPk,
                    SqlEnforceIntegrityCheck)
         {
-
+            
         }
     }
 }

@@ -1,6 +1,8 @@
-﻿namespace DataCloner.Generator
+﻿using System;
+
+namespace DataCloner.Generator
 {
-    public abstract class AbstractSqlGenerator : ISqlGenerator
+    public abstract class AbstractSqlWriter : ISqlWriter
     {
         /// <summary>
         /// The delimited identifier or quoted identifier. 
@@ -11,6 +13,8 @@
         /// column name is expected.
         /// </summary>
         /// <seealso cref="http://www.postgresql.org/docs/8.2/static/sql-syntax-lexical.html"/>
-        public virtual char DelemitedIdentifierCaracter => '"';      
+        public virtual char DelemitedIdentifierCaracter => '"';
+
+        public abstract IInsertWriter GetInsertWriter();
     }
 }

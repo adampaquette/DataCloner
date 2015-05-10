@@ -2,7 +2,7 @@
 
 namespace DataCloner.DataAccess
 {
-    internal class MsSqlTypeConverter : AbstractSqlTypeConverter
+    internal class SqlTypeConverterMySql : AbstractSqlTypeConverter
     {
         protected override SqlType AnsiStringToSql()
         {

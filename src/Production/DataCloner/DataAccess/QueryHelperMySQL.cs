@@ -1,5 +1,6 @@
 ﻿using System;
 using DataCloner.DataClasse.Cache;
+using DataCloner.Generator;
 
 namespace DataCloner.DataAccess
 {
@@ -70,8 +71,11 @@ namespace DataCloner.DataAccess
 
         private const string SqlEnforceIntegrityCheck = "SET UNIQUE_CHECKS=@ACTIVE; SET FOREIGN_KEY_CHECKS=@ACTIVE;";
 
-        private readonly static ISqlTypeConverter _typeConverter = new MySqlTypeConverter();
+        private readonly static ISqlTypeConverter _typeConverter = new SqlTypeConverterMySql();
+        private readonly static ISqlWriter _sqlWriter = new SqlWriterMySql();
+
         public override ISqlTypeConverter TypeConverter => _typeConverter;
+        public override ISqlWriter SqlWriter => _sqlWriter;
 
         public QueryHelperMySql(Cache cache, string connectionString, Int16 serverId)
             : base(cache, ProviderName, connectionString, serverId, SqlGetDatabasesName,

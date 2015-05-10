@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using DataCloner.DataClasse;
+using DataCloner.Generator;
 
 namespace DataCloner.DataAccess
 {
@@ -14,6 +15,7 @@ namespace DataCloner.DataAccess
         event QueryCommitingEventHandler QueryCommmiting;
         IDbConnection Connection { get; }
         ISqlTypeConverter TypeConverter { get; }
+        ISqlWriter SqlWriter { get; }
         DbEngine Engine { get; }
         string[] GetDatabasesName();
         void GetColumns(ColumnReader reader, String database);
