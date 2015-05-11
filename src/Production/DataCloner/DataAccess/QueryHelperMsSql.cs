@@ -6,13 +6,16 @@ namespace DataCloner.DataAccess
 {
     internal sealed class QueryHelperMsSql : AbstractQueryHelper
     {
+        private readonly static ISqlTypeConverter _typeConverter = new SqlTypeConverterMsSql();
+        private readonly static ISqlWriter _sqlWriter = new SqlWriterMsSql();
+
         public const string ProviderName = "System.Data.SqlClient";
 
-        private const string SqlGetDatabasesName =
+        protected override string SqlGetDatabasesName =>
         "SELECT D.NAME FROM SYS.DATABASES D " +
         "WHERE D.NAME NOT IN ('master', 'tempdb');";
 
-        private const string SqlGetColumns =
+        protected override string SqlGetColumns =>
         "SELECT " +
 		"    COL.TABLE_SCHEMA, " +
 		"    COL.TABLE_NAME, " +
@@ -45,7 +48,7 @@ namespace DataCloner.DataAccess
 		"    COL.TABLE_NAME, " +
 		"    COL.ORDINAL_POSITION;";
 
-        private const string SqlGetForeignKey =
+        protected override string SqlGetForeignKeys =>
         "SELECT " +
         "    TC.TABLE_SCHEMA, " +
         "    TC.TABLE_NAME, " +
@@ -75,7 +78,7 @@ namespace DataCloner.DataAccess
         "    TC.TABLE_NAME, " +
         "    TC.CONSTRAINT_NAME;";
 
-        private const string SqlGetUniqueKey =
+        protected override string SqlGetUniqueKeys =>
         "SELECT " +
         "    TC.CONSTRAINT_SCHEMA, " +
         "    TC.TABLE_NAME, " +
@@ -91,25 +94,20 @@ namespace DataCloner.DataAccess
         "    TC.TABLE_NAME, " +
         "    TC.CONSTRAINT_NAME;";
 
-        private const string SqlGetLastInsertedPk = "SELECT SCOPE_IDENTITY();";
+        protected override string SqlGetLastInsertedPk => "SELECT SCOPE_IDENTITY();";
 
-        private const string SqlEnforceIntegrityCheck =
+        protected override string SqlEnforceIntegrityCheck =>
         "IF @ACTIVE = 1 BEGIN " +
         "    EXEC sp_msforeachtable \"ALTER TABLE ? WITH CHECK CONSTRAINT all;\" " +
         "END ELSE BEGIN " +
         "    EXEC sp_msforeachtable \"ALTER TABLE ? NOCHECK CONSTRAINT all;\" " +
         "END;";
-
-        private readonly static ISqlTypeConverter _typeConverter = new SqlTypeConverterMsSql();
-        private readonly static ISqlWriter _sqlWriter = new SqlWriterMsSql();
-
+        
         public override ISqlTypeConverter TypeConverter => _typeConverter;
         public override ISqlWriter SqlWriter => _sqlWriter;
 
         public QueryHelperMsSql(Cache cache, string connectionString, Int16 serverId)
-            : base(cache, ProviderName, connectionString, serverId, SqlGetDatabasesName,
-                   SqlGetColumns, SqlGetForeignKey, SqlGetUniqueKey, SqlGetLastInsertedPk,
-                   SqlEnforceIntegrityCheck)
+            : base(cache, ProviderName, connectionString, serverId)
         {
             
         }

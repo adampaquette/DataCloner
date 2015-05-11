@@ -16,18 +16,20 @@ namespace DataCloner.DataAccess
         private readonly Cache _cache;
         private readonly Int16 _serverIdCtx;
 
-        private readonly string _sqlGetDatabasesName;
-        private readonly string _sqlGetColumns;
-        private readonly string _sqlGetForeignKeys;
-        private readonly string _sqlGetUniqueKeys;
-        private readonly string _sqlGetLastInsertedPk;
-        private readonly string _sqlEnforceIntegrityCheck;
+        protected abstract string SqlGetDatabasesName { get; }
+        protected abstract string SqlGetColumns { get; }
+        protected abstract string SqlGetForeignKeys { get; }
+        protected abstract string SqlGetUniqueKeys { get; }
+        protected abstract string SqlGetLastInsertedPk { get; }
+        protected abstract string SqlEnforceIntegrityCheck { get; }
 
         public event QueryCommitingEventHandler QueryCommmiting;
+        public IDbConnection Connection { get; }
+        public DbEngine Engine => DbEngine.MySql;
+        public abstract ISqlTypeConverter TypeConverter { get; }
+        public abstract ISqlWriter SqlWriter { get; }
 
-        public AbstractQueryHelper(Cache cache, string providerName, string connectionString, Int16 serverId,
-            string sqlGetDatabasesName, string sqlGetColumns, string sqlGetForeignKeys, string sqlGetUniqueKeys,
-            string sqlGetLastInsertedPk, string sqlEnforceIntegrityCheck)
+        public AbstractQueryHelper(Cache cache, string providerName, string connectionString, Int16 serverId)
         {
             var factory = DbProviderFactories.GetFactory(providerName);
             _cache = cache;
@@ -35,21 +37,7 @@ namespace DataCloner.DataAccess
             Connection.ConnectionString = connectionString;
 
             _serverIdCtx = serverId;
-
-            _sqlGetDatabasesName = sqlGetDatabasesName;
-            _sqlGetColumns = sqlGetColumns;
-            _sqlGetForeignKeys = sqlGetForeignKeys;
-            _sqlGetUniqueKeys = sqlGetUniqueKeys;
-            _sqlGetLastInsertedPk = sqlGetLastInsertedPk;
-            _sqlEnforceIntegrityCheck = sqlEnforceIntegrityCheck;
         }
-
-        public IDbConnection Connection { get; }
-
-        public DbEngine Engine => DbEngine.MySql;
-
-        public abstract ISqlTypeConverter TypeConverter { get; }
-        public abstract ISqlWriter SqlWriter { get; }
 
         public string[] GetDatabasesName()
         {
@@ -57,7 +45,7 @@ namespace DataCloner.DataAccess
 
             using (var cmd = Connection.CreateCommand())
             {
-                cmd.CommandText = _sqlGetDatabasesName;
+                cmd.CommandText = SqlGetDatabasesName;
                 Connection.Open();
                 using (var r = cmd.ExecuteReader())
                 {
@@ -73,7 +61,7 @@ namespace DataCloner.DataAccess
         {
             using (var cmd = Connection.CreateCommand())
             {
-                cmd.CommandText = _sqlGetColumns;
+                cmd.CommandText = SqlGetColumns;
 
                 var p = cmd.CreateParameter();
                 p.ParameterName = "@DATABASE";
@@ -91,7 +79,7 @@ namespace DataCloner.DataAccess
         {
             using (var cmd = Connection.CreateCommand())
             {
-                cmd.CommandText = _sqlGetForeignKeys;
+                cmd.CommandText = SqlGetForeignKeys;
 
                 var p = cmd.CreateParameter();
                 p.ParameterName = "@DATABASE";
@@ -109,7 +97,7 @@ namespace DataCloner.DataAccess
         {
             using (var cmd = Connection.CreateCommand())
             {
-                cmd.CommandText = _sqlGetUniqueKeys;
+                cmd.CommandText = SqlGetUniqueKeys;
 
                 var p = cmd.CreateParameter();
                 p.ParameterName = "@DATABASE";
@@ -126,7 +114,7 @@ namespace DataCloner.DataAccess
         public object GetLastInsertedPk()
         {
             var cmd = Connection.CreateCommand();
-            cmd.CommandText = _sqlGetLastInsertedPk;
+            cmd.CommandText = SqlGetLastInsertedPk;
 
             Connection.Open();
             var result = cmd.ExecuteScalar();
@@ -144,7 +132,7 @@ namespace DataCloner.DataAccess
             p.DbType = DbType.Boolean;
             cmd.Parameters.Add(p);
 
-            cmd.CommandText = _sqlEnforceIntegrityCheck;
+            cmd.CommandText = SqlEnforceIntegrityCheck;
 
             Connection.Open();
             cmd.ExecuteNonQuery();
@@ -290,10 +278,9 @@ namespace DataCloner.DataAccess
             var query = dbCommand.CommandText;
             foreach (var parameter in dbCommand.Parameters)
             {
-                var param = parameter as MySql.Data.MySqlClient.MySqlParameter;
+                var param = parameter as IDataParameter;
                 query = query.Replace(param.ParameterName, param.Value.ToString().EscapeSql());
             }
-
             return query;
         }
 

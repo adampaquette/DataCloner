@@ -6,13 +6,16 @@ namespace DataCloner.DataAccess
 {
     internal sealed class QueryHelperMySql : AbstractQueryHelper
     {
+        private readonly static ISqlTypeConverter _typeConverter = new SqlTypeConverterMySql();
+        private readonly static ISqlWriter _sqlWriter = new SqlWriterMySql();
+
         public const string ProviderName = "MySql.Data.MySqlClient";
 
-        private const string SqlGetDatabasesName =
+        protected override string SqlGetDatabasesName =>
         "SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA " +
         "WHERE SCHEMA_NAME NOT IN ('information_schema','performance_schema','mysql');";
 
-		private const string SqlGetColumns =
+        protected override string SqlGetColumns =>
 		"SELECT " +
 			"'' AS SHEMA," +
 			"COL.TABLE_NAME," +
@@ -30,7 +33,7 @@ namespace DataCloner.DataAccess
 			"COL.TABLE_NAME, " +
 			"COL.ORDINAL_POSITION;";
 
-		private const string SqlGetForeignKey =
+        protected override string SqlGetForeignKeys =>
         "SELECT " +
             "'' AS 'Schema'," +
             "TC.TABLE_NAME," +
@@ -52,7 +55,7 @@ namespace DataCloner.DataAccess
             "TC.TABLE_NAME," +
             "TC.CONSTRAINT_NAME;";
 
-        private const string SqlGetUniqueKey =
+        protected override string SqlGetUniqueKeys =>
         "SELECT " +
             "'' AS 'Schema'," +
             "TC.TABLE_NAME," +
@@ -67,20 +70,15 @@ namespace DataCloner.DataAccess
             "TC.TABLE_NAME," +
             "TC.CONSTRAINT_NAME;";
 
-        private const string SqlGetLastInsertedPk = "SELECT LAST_INSERT_ID();";
+        protected override string SqlGetLastInsertedPk => "SELECT LAST_INSERT_ID();";
 
-        private const string SqlEnforceIntegrityCheck = "SET UNIQUE_CHECKS=@ACTIVE; SET FOREIGN_KEY_CHECKS=@ACTIVE;";
-
-        private readonly static ISqlTypeConverter _typeConverter = new SqlTypeConverterMySql();
-        private readonly static ISqlWriter _sqlWriter = new SqlWriterMySql();
+        protected override string SqlEnforceIntegrityCheck => "SET UNIQUE_CHECKS=@ACTIVE; SET FOREIGN_KEY_CHECKS=@ACTIVE;";
 
         public override ISqlTypeConverter TypeConverter => _typeConverter;
         public override ISqlWriter SqlWriter => _sqlWriter;
 
         public QueryHelperMySql(Cache cache, string connectionString, Int16 serverId)
-            : base(cache, ProviderName, connectionString, serverId, SqlGetDatabasesName,
-                   SqlGetColumns, SqlGetForeignKey, SqlGetUniqueKey, SqlGetLastInsertedPk, 
-                   SqlEnforceIntegrityCheck)
+            : base(cache, ProviderName, connectionString, serverId)
         {
 
         }      
