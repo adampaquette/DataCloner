@@ -34,7 +34,8 @@ namespace DataCloner.DataClasse.Cache
 			if (!app.ConnectionStrings?.Any() ?? false) throw new NullReferenceException("ConnectionStrings");
 
 			var map = app.Maps.FirstOrDefault(m => m.Id == mapId);
-			if (map == null) throw new Exception(String.Format("Map id '{0}' not found in configuration file for application '{1}'!", mapId, app.Name));
+			if (map == null) throw new Exception(
+                $"Map id '{mapId}' not found in configuration file for application '{app.Name}'!");
 
 			var cacheFileName = app.Name + " _" + map.From + "-" + map.To;
 			if (configId != null)
@@ -53,9 +54,8 @@ namespace DataCloner.DataClasse.Cache
 			{
 				clonerConfig = app.ClonerConfigurations.FirstOrDefault(c => c.Id == configId);
 				if (clonerConfig == null)
-					throw new KeyNotFoundException(String.Format(
-						"There is no cloner configuration '{0}' in the configuration for the appName name '{1}'.",
-						configId, app.Name));
+					throw new KeyNotFoundException(
+					    $"There is no cloner configuration '{configId}' in the configuration for the appName name '{app.Name}'.");
 
 				bf.Serialize(configData, clonerConfig);
 			}

@@ -4,29 +4,25 @@ namespace DataCloner.DataClasse
 {
     public class SqlVariable : IEquatable<SqlVariable>
     {
-        public Int32 Id { get; set; }
+        public Int32 Id { get; }
         public object Value { get; set; }
 		public bool QueryValue { get; set; }
 
-        public SqlVariable()
+        public SqlVariable(Int32 id)
         {
+            Id = id;
             QueryValue = true;
         }
 
 		public override bool Equals(object obj)
 		{
-			if (obj == null) return false;
-
-			var sv = obj as SqlVariable;
-			if (sv == null) return false;
-
-			return sv.Id == Id;
+		    var sv = obj as SqlVariable;
+		    return sv?.Id == Id;
 		}
-
-		public bool Equals(SqlVariable other)
+    
+        public bool Equals(SqlVariable other)
 		{
-			if (other == null) return false;
-			return other.Id == Id;
+            return other?.Id == Id;
 		}
 
 		public override int GetHashCode()

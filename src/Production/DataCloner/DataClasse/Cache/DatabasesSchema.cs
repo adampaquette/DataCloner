@@ -171,7 +171,8 @@ namespace DataCloner.DataClasse.Cache
                 //Affecte l'indicateur dans le schema
                 var col = previousTable.ColumnsDefinition.FirstOrDefault(c => c.Name == colName);
                 if (col == null)
-                    throw new Exception(string.Format("The column {0} has not been found in the cache for the table {1}.", colName, previousTable.Name));
+                    throw new Exception(
+                        $"The column {colName} has not been found in the cache for the table {previousTable.Name}.");
                 col.IsForeignKey = true;
             } while (reader.Read());
 
@@ -233,7 +234,8 @@ namespace DataCloner.DataClasse.Cache
                 //Affecte l'indicateur dans le schema
                 var col = previousTable.ColumnsDefinition.FirstOrDefault(c => c.Name == colName);
                 if (col == null)
-                    throw new Exception(string.Format("The column {0} has not been found in the cache for the table {1}.", colName, previousTable.Name));
+                    throw new Exception(
+                        $"The column {colName} has not been found in the cache for the table {previousTable.Name}.");
                 col.IsUniqueKey = true;
             } while (reader.Read());
 

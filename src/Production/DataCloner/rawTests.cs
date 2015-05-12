@@ -158,9 +158,8 @@ namespace DataCloner
 		{
 			var source = new RowIdentifier();
 
-			var dc = new Cloner();
-			dc.EnforceIntegrity = false;
-			dc.StatusChanged += OnStatusChanged;
+		    var dc = new Cloner {EnforceIntegrity = false};
+		    dc.StatusChanged += OnStatusChanged;
 
 			var config = Configuration.Load(Configuration.ConfigFileName);
 			

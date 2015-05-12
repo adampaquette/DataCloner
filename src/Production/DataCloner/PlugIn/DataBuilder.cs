@@ -69,8 +69,7 @@ namespace DataCloner.PlugIn
                         break;
                     default:
                         throw new NotSupportedException(
-                            String.Format("The generation of the key failed. Please specify a databuilder in the configuration for {0}.{1}.{2}",
-                            database, table, col.Name));
+                            $"The generation of the key failed. Please specify a databuilder in the configuration for {database}.{table}.{col.Name}");
                 }
             }
 
@@ -79,7 +78,7 @@ namespace DataCloner.PlugIn
             {
                 if (builder == null)
                     throw new NullReferenceException(
-                        String.Format("Builder '{0}' for column '{1}' is not found. Watch configuration file.", col.BuilderName, col.Name));
+                        $"Builder '{col.BuilderName}' for column '{col.Name}' is not found. Watch configuration file.");
                 return builder.BuildData(queryHelper.Connection, queryHelper.Engine, serverId, database, schema, table, col);
             }
             return null;
@@ -89,8 +88,7 @@ namespace DataCloner.PlugIn
         {
             if (table.ColumnsDefinition.Length != dataRow.Length)
                 throw new ArgumentException(
-                    String.Format("The number of columns defined in the cached table {0} '{1}' is different from the current row '{2}'.",
-                    table.Name, table.ColumnsDefinition.Length, dataRow.Length));
+                    $"The number of columns defined in the cached table {table.Name} '{table.ColumnsDefinition.Length}' is different from the current row '{dataRow.Length}'.");
 
             for (var i = 0; i < table.ColumnsDefinition.Length; i++)
             {

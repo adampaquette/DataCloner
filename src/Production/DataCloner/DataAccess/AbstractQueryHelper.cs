@@ -29,7 +29,7 @@ namespace DataCloner.DataAccess
         public abstract ISqlTypeConverter TypeConverter { get; }
         public abstract ISqlWriter SqlWriter { get; }
 
-        public AbstractQueryHelper(Cache cache, string providerName, string connectionString, Int16 serverId)
+        protected AbstractQueryHelper(Cache cache, string providerName, string connectionString, Int16 serverId)
         {
             var factory = DbProviderFactories.GetFactory(providerName);
             _cache = cache;
@@ -185,7 +185,7 @@ namespace DataCloner.DataAccess
 
         //public void Insert(ITableIdentifier table, object[] row)
         //{
-        //	var schema = _cache.GetTable(table);
+        //	var schema = Cache.GetTable(table);
         //	if (schema.ColumnsDefinition.Count() != row.Length)
         //		throw new Exception("The step doesn't correspond to schema!");
 
@@ -571,12 +571,12 @@ namespace DataCloner.DataAccess
         //    }
         //}
 
-        /// <summary>
-        /// Détermine le DbType correspondant au type SQL sous les formes :
-        /// smallint(5) unsigned, varchar(50), decimal(5,2), timestamp, enum('G','P','R').
-        /// </summary>
-        /// <param name="fullType">Type de la colonne SQL</param>
-        /// <returns>Type DbType</returns>     
+        ///// <summary>
+        ///// Détermine le DbType correspondant au type SQL sous les formes :
+        ///// smallint(5) unsigned, varchar(50), decimal(5,2), timestamp, enum('G','P','R').
+        ///// </summary>
+        ///// <param name="fullType">Type de la colonne SQL</param>
+        ///// <returns>Type DbType</returns>     
         //public virtual void SqlTypeToDbType(string fullType, out DbType type, out string size)
         //{
         //	fullType = fullType.ToLower();

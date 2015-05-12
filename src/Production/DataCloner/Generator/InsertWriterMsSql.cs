@@ -8,7 +8,7 @@ namespace DataCloner.Generator
 {
     internal class InsertWriterMsSql : IInsertWriter
     {
-        private StringBuilder _sb = new StringBuilder();
+        private readonly StringBuilder _sb = new StringBuilder();
 
         public IInsertWriter AppendColumns(ITableIdentifier table, IColumnDefinition[] columns)
         {

@@ -30,9 +30,9 @@ namespace DataCloner.DataClasse.Cache
         public object[] BuildRawFkFromDataRow(IForeignKey fk, object[] row)
         {
             var pk = new List<object>();
-            for (var j = 0; j < fk.Columns.Length; j++)
+            foreach (var t in fk.Columns)
             {
-                var posTblSource = ColumnsDefinition.IndexOf(c => c.Name == fk.Columns[j].NameFrom);
+                var posTblSource = ColumnsDefinition.IndexOf(c => c.Name == t.NameFrom);
                 pk.Add(row[posTblSource]);
             }
             return pk.ToArray();
@@ -41,10 +41,10 @@ namespace DataCloner.DataClasse.Cache
         public ColumnsWithValue BuildKeyFromDerivativeDataRow(IForeignKey fk, object[] row)
         {
             var fkValues = new ColumnsWithValue();
-            for (var j = 0; j < fk.Columns.Length; j++)
+            foreach (var t in fk.Columns)
             {
-                var posTblSource = ColumnsDefinition.IndexOf(c => c.Name == fk.Columns[j].NameFrom);
-                fkValues.Add(fk.Columns[j].NameTo, row[posTblSource]);
+                var posTblSource = ColumnsDefinition.IndexOf(c => c.Name == t.NameFrom);
+                fkValues.Add(t.NameTo, row[posTblSource]);
             }
             return fkValues;
         }
@@ -167,9 +167,8 @@ namespace DataCloner.DataClasse.Cache
                 }
             }
             if(!colPkDst.Any())
-                throw new Exception(String.Format(
-                    "A problem append with the cache. The derivative table '{0}' dosen't have a foreign key to the table '{1}'.", 
-                    derivativeTable.Name, Name));
+                throw new Exception(
+                    $"A problem append with the cache. The derivative table '{derivativeTable.Name}' dosen't have a foreign key to the table '{Name}'.");
             return colPkDst;
         }
 

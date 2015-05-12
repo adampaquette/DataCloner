@@ -74,9 +74,9 @@ namespace DataCloner.Archive
         private void SaveToBin(string path)
         {
             if (OriginalQueries == null)
-                throw new ArgumentNullException("OriginalQueries");
+                throw new NullReferenceException("OriginalQueries");
             if (Databases == null)
-                throw new ArgumentNullException("Databases");
+                throw new NullReferenceException("Databases");
             foreach (var file in Databases)
                 if (!File.Exists(file))
                     throw new FileNotFoundException(file);
@@ -138,7 +138,7 @@ namespace DataCloner.Archive
                     var filePath = Path.Combine(decompressedPath, fileName);
                     var fileSize = bstream.ReadInt64();
                     if (fileSize > Int32.MaxValue)
-                        throw new OverflowException(String.Format("File size for {0} is larger then 32 bit value.", fileName));
+                        throw new OverflowException($"File size for {fileName} is larger then 32 bit value.");
                     var fileSize32 = Convert.ToInt32(fileSize);
 
                     if (!Directory.Exists(decompressedPath))

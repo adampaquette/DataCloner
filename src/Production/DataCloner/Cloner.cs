@@ -19,10 +19,10 @@ namespace DataCloner
 		private readonly List<CircularKeyJob> _circularKeyJobs;
 		private readonly Dictionary<Int16, ExecutionPlan> _executionPlanByServer;
 
-		public Cache _cache;
-		private int _nextVariableId;
+	    private int _nextVariableId;
 		private int _nextStepId;
 
+	    public Cache Cache;
 		public bool EnforceIntegrity { get; set; }
         public bool OptimiseExecutionPlan { get; set; }
 
@@ -60,7 +60,7 @@ namespace DataCloner
 
 		public void Setup(Application app, int mapId, int? configId)
 		{
-			_cacheInitialiser(_dispatcher, app, mapId, configId, ref _cache);
+			_cacheInitialiser(_dispatcher, app, mapId, configId, ref Cache);
 		}
 
 		public List<IRowIdentifier> Clone(IRowIdentifier riSource, bool getDerivatives)
@@ -128,8 +128,8 @@ namespace DataCloner
 			var srcRows = _dispatcher.Select(riSource);
 			if (srcRows.Length > 0)
 			{
-				var table = _cache.GetTable(riSource);
-				var serverDst = _cache.ServerMap[new ServerIdentifier
+				var table = Cache.GetTable(riSource);
+				var serverDst = Cache.ServerMap[new ServerIdentifier
 				{
 					ServerId = riSource.ServerId,
 					Database = riSource.Database,
@@ -150,14 +150,11 @@ namespace DataCloner
 						var clonedPk = new ColumnsWithValue();
 						foreach (var col in pkTemp)
 						{
-							var sqlVar = col.Value as SqlVariable;
-							if (sqlVar != null)
-								clonedPk.Add(col.Key, sqlVar.Value);
-							else
-								clonedPk.Add(col.Key, sqlVar);
+						    var sqlVar = col.Value as SqlVariable;
+						    clonedPk.Add(col.Key, sqlVar != null ? sqlVar.Value : col.Value);
 						}
 
-						var riReturn = new RowIdentifier
+					    var riReturn = new RowIdentifier
 						{
 							ServerId = serverDst.ServerId,
 							Database = serverDst.Database,
@@ -188,7 +185,7 @@ namespace DataCloner
 		{
 			var srcRows = _dispatcher.Select(riSource);
 			var nbRows = srcRows.Length;
-			var table = _cache.GetTable(riSource);
+			var table = Cache.GetTable(riSource);
 
             var serverDst = new ServerIdentifier
             {
@@ -197,8 +194,8 @@ namespace DataCloner
                 Schema = riSource.Schema
             };
 
-            if (_cache.ServerMap.ContainsKey(serverDst))
-                serverDst = _cache.ServerMap[serverDst];
+            if (Cache.ServerMap.ContainsKey(serverDst))
+                serverDst = Cache.ServerMap[serverDst];
 
 			var riReturn = new RowIdentifier
 			{
@@ -254,7 +251,7 @@ namespace DataCloner
 					else
 					{
 						var fkDestinationExists = false;
-						var fkTable = _cache.GetTable(fk);
+						var fkTable = Cache.GetTable(fk);
 						var riFk = new RowIdentifier
 						{
 							ServerId = fk.ServerIdTo,
@@ -375,11 +372,10 @@ namespace DataCloner
 
 			//La FK (ou unique constraint) n'est pas necessairement la PK donc on réobtient la ligne car
 			//BuildExecutionPlan retourne toujours la PK.
-			var varId = (riNewFk.Columns.Values.First() as SqlVariable).Id;
+			var varId = (riNewFk.Columns.Values.First() as SqlVariable)?.Id;
 
 			foreach (var plan in _executionPlanByServer)
 			{
-				//var dr = plan.Value.Variables.FirstOrDefault(v => v.Id == varId);
 				var dr = plan.Value.InsertSteps.FirstOrDefault(r => r.Variables.Any(v => v.Id == varId));
 				if (dr != null)
 					return dr.DataRow;
@@ -408,7 +404,7 @@ namespace DataCloner
 
 				if (valueToGenerate | pkToGenerate)
 				{
-					var sqlVar = new SqlVariable { Id = _nextVariableId++ };
+					var sqlVar = new SqlVariable(_nextVariableId++);
 					step.Variables.Add(sqlVar);
 
 					var pos = table.ColumnsDefinition.IndexOf(c => c.Name == colName);
@@ -417,9 +413,7 @@ namespace DataCloner
 			}
 
 			step.DataRow = destinationRow;
-
 			AddInsertStep(step);
-
 			return step;
 		}
 
@@ -450,7 +444,7 @@ namespace DataCloner
 
 			foreach (var dt in derivativeTable)
 			{
-				var tableDt = _cache.GetTable(dt);
+				var tableDt = Cache.GetTable(dt);
 				if (dt.Access == DerivativeTableAccess.Forced && dt.Cascade)
 					getDerivatives = true;
 
@@ -480,8 +474,8 @@ namespace DataCloner
 		private void CreateDatabasesFiles()
 		{
 			//var folderPath = Path.Combine(Path.GetDirectoryName(SavePath), TempFolderName);
-			//var nbFileToCreate = _cache.ServerMap.Select(r => r.Value.ServerId).Distinct().Count();
-			//int lastIdUsed = _cache.ConnectionStrings.Max(cs => cs.Id);
+			//var nbFileToCreate = Cache.ServerMap.Select(r => r.Value.ServerId).Distinct().Count();
+			//int lastIdUsed = Cache.ConnectionStrings.Max(cs => cs.Id);
 
 			//if (!Directory.Exists(folderPath))
 			//    Directory.CreateDirectory(folderPath);
@@ -496,7 +490,7 @@ namespace DataCloner
 			//    SQLiteConnection.CreateFile(fullFilePath);
 
 			//    //Crer la string de connection
-			//    _cache.ConnectionStrings.Add(new Connection
+			//    Cache.ConnectionStrings.Add(new Connection
 			//    {
 			//        Id = (short)id,
 			//        ConnectionString = String.Format("Data Source={0};Version=3;", fullFilePath),
@@ -511,19 +505,19 @@ namespace DataCloner
 		{
 			foreach (var job in _circularKeyJobs)
 			{
-				var baseTable = _cache.GetTable(job.SourceBaseRowStartPoint);
-				var fkTable = _cache.GetTable(job.SourceFkRowStartPoint);
+				var baseTable = Cache.GetTable(job.SourceBaseRowStartPoint);
+				var fkTable = Cache.GetTable(job.SourceFkRowStartPoint);
 				var pkDestinationRow = _keyRelationships.GetKey(job.SourceBaseRowStartPoint);
 				var keyDestinationFkRow = _keyRelationships.GetKey(job.SourceFkRowStartPoint);
 
-				var serverDstBaseTable = _cache.ServerMap[new ServerIdentifier
+				var serverDstBaseTable = Cache.ServerMap[new ServerIdentifier
 				{
 					ServerId = job.SourceBaseRowStartPoint.ServerId,
 					Database = job.SourceBaseRowStartPoint.Database,
 					Schema = job.SourceBaseRowStartPoint.Schema
 				}];
 
-				var serverDstFkTable = _cache.ServerMap[new ServerIdentifier
+				var serverDstFkTable = Cache.ServerMap[new ServerIdentifier
 				{
 					ServerId = job.SourceFkRowStartPoint.ServerId,
 					Database = job.SourceFkRowStartPoint.Database,

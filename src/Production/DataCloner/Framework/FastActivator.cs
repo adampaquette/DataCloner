@@ -48,7 +48,7 @@ namespace DataCloner.Framework
     public static class FastActivator<T1>
     {
         // THIS VERSION NOT THREAD SAFE YET
-        static Dictionary<Type, Func<T1, object>> _constructorCache = new Dictionary<Type, Func<T1, object>>();
+        readonly static Dictionary<Type, Func<T1, object>> ConstructorCache = new Dictionary<Type, Func<T1, object>>();
         public static object CreateInstance(Type objType, T1 arg1)
         {
             return GetConstructor(objType, new[] { typeof(T1) })(arg1);
@@ -57,12 +57,12 @@ namespace DataCloner.Framework
         public static Func<T1, object> GetConstructor(Type objType, Type[] argTypes)
         {
             if (argTypes.Length != 1)
-                throw new ArgumentException(string.Format("Arguments found {0} : Expected : 1", argTypes.Length));
+                throw new ArgumentException($"Arguments found {argTypes.Length} : Expected : 1");
             Func<T1, object> constructor;
-            if (!_constructorCache.TryGetValue(objType, out constructor))
+            if (!ConstructorCache.TryGetValue(objType, out constructor))
             {
                 constructor = (Func<T1, object>)FastActivator.BuildConstructorDelegate(objType, typeof(Func<T1, object>), argTypes);
-                _constructorCache.Add(objType, constructor);
+                ConstructorCache.Add(objType, constructor);
             }
             return constructor;
         }
@@ -72,7 +72,7 @@ namespace DataCloner.Framework
     public static class FastActivator<T1, T2>
     {
         // THIS VERSION NOT THREAD SAFE YET
-        static Dictionary<Type, Func<T1, T2, object>> _constructorCache = new Dictionary<Type, Func<T1, T2, object>>();
+        readonly static Dictionary<Type, Func<T1, T2, object>> ConstructorCache = new Dictionary<Type, Func<T1, T2, object>>();
         public static object CreateInstance(Type objType, T1 arg1, T2 arg2)
         {
             return GetConstructor(objType, new[] { typeof(T1), typeof(T2) })(arg1, arg2);
@@ -81,12 +81,12 @@ namespace DataCloner.Framework
         public static Func<T1, T2, object> GetConstructor(Type objType, Type[] argTypes)
         {
             if (argTypes.Length != 2)
-                throw new ArgumentException(string.Format("Arguments found {0} : Expected : 2", argTypes.Length));
+                throw new ArgumentException($"Arguments found {argTypes.Length} : Expected : 2");
             Func<T1, T2, object> constructor;
-            if (!_constructorCache.TryGetValue(objType, out constructor))
+            if (!ConstructorCache.TryGetValue(objType, out constructor))
             {
                 constructor = (Func<T1, T2, object>)FastActivator.BuildConstructorDelegate(objType, typeof(Func<T1, T2, object>), argTypes);
-                _constructorCache.Add(objType, constructor);
+                ConstructorCache.Add(objType, constructor);
             }
             return constructor;
         }
@@ -99,7 +99,7 @@ namespace DataCloner.Framework
     public static class FastActivator<T1, T2, T3>
     {
         // THIS VERSION NOT THREAD SAFE YET
-        static Dictionary<Type, Func<T1, T2, T3, object>> _constructorCache = new Dictionary<Type, Func<T1, T2, T3, object>>();
+        readonly static Dictionary<Type, Func<T1, T2, T3, object>> ConstructorCache = new Dictionary<Type, Func<T1, T2, T3, object>>();
         public static object CreateInstance(Type objType, T1 arg1, T2 arg2, T3 arg3)
         {
             return GetConstructor(objType, new[] { typeof(T1), typeof(T2), typeof(T3) })(arg1, arg2, arg3);
@@ -108,12 +108,12 @@ namespace DataCloner.Framework
         public static Func<T1, T2, T3, object> GetConstructor(Type objType, Type[] argTypes)
         {
             if (argTypes.Length != 3)
-                throw new ArgumentException(string.Format("Arguments found {0} : Expected : 3", argTypes.Length));
+                throw new ArgumentException($"Arguments found {argTypes.Length} : Expected : 3");
             Func<T1, T2, T3, object> constructor;
-            if (!_constructorCache.TryGetValue(objType, out constructor))
+            if (!ConstructorCache.TryGetValue(objType, out constructor))
             {
                 constructor = (Func<T1, T2, T3, object>)FastActivator.BuildConstructorDelegate(objType, typeof(Func<T1, T2, T3, object>), argTypes);
-                _constructorCache.Add(objType, constructor);
+                ConstructorCache.Add(objType, constructor);
             }
             return constructor;
         }
