@@ -15,9 +15,8 @@ namespace DataCloner.Tests
         public CachedTableTests()
         { 
             _cache = new DatabasesSchema();
-            _table = new TableSchema
+            _table = new TableSchema("table1")
             {
-                Name = "table1",
                 IsStatic = false,
                 SelectCommand = "SELECT * FROM TABLE1",
                 InsertCommand = "INSERT INTO TABLE1 VALUES(@COL1, @COL2)"

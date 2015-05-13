@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace DataCloner.DataAccess
+﻿namespace DataCloner.DataAccess
 {
     internal class SqlTypeConverterMsSql : AbstractSqlTypeConverter
     {

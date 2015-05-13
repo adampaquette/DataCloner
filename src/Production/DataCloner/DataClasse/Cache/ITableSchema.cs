@@ -6,7 +6,7 @@ namespace DataCloner.DataClasse.Cache
 {
     public interface ITableSchema
     {
-        string Name { get; set; }
+        string Name { get; }
         bool IsStatic { get; set; }
         string SelectCommand { get; set; }
         string InsertCommand { get; set; }

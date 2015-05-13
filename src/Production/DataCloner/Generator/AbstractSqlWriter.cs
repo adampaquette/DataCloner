@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace DataCloner.Generator
+﻿namespace DataCloner.Generator
 {
     public abstract class AbstractSqlWriter : ISqlWriter
     {

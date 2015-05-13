@@ -10,9 +10,8 @@ namespace DataCloner.Tests
     {
         internal static Cache CreateDatabaseSchema()
         {
-            var house = new TableSchema
+            var house = new TableSchema("house")
             {
-                Name = "house",
                 ColumnsDefinition = new[]
                 {
                     new ColumnDefinition {Name = "id", IsPrimary = true, Type = DbType.Int32},
@@ -32,9 +31,8 @@ namespace DataCloner.Tests
                 }
             };
 
-            var city = new TableSchema
+            var city = new TableSchema("city")
             {
-                Name = "city",
                 ColumnsDefinition = new[]
                 {
                     new ColumnDefinition {Name = "id", IsPrimary = true, Type = DbType.Int32},
@@ -55,9 +53,8 @@ namespace DataCloner.Tests
                 DerivativeTables = new[] { new DerivativeTable { ServerId = 0, Schema = "", Database = "", Table = "house" } }
             };
 
-            var state = new TableSchema
+            var state = new TableSchema("state")
             {
-                Name = "state",
                 ColumnsDefinition = new[]
                 {
                     new ColumnDefinition {Name = "id", IsPrimary = true, Type = DbType.Int32},
@@ -78,9 +75,8 @@ namespace DataCloner.Tests
                 DerivativeTables = new[] { new DerivativeTable { ServerId = 0, Schema = "", Database = "", Table = "city" } }
             };
 
-            var country = new TableSchema
+            var country = new TableSchema("country")
             {
-                Name = "country",
                 ColumnsDefinition = new[]
                 {
                     new ColumnDefinition {Name = "id", IsPrimary = true, Type = DbType.Int32},
@@ -93,9 +89,8 @@ namespace DataCloner.Tests
                 }
             };
 
-            var person = new TableSchema
+            var person = new TableSchema("person")
             {
-                Name = "person",
                 ColumnsDefinition = new[]
                 {
                     new ColumnDefinition {Name = "id", IsPrimary = true, Type = DbType.Int32},
@@ -124,9 +119,8 @@ namespace DataCloner.Tests
                 }
             };
 
-            var color = new TableSchema
+            var color = new TableSchema("color")
             {
-                Name = "color",
                 ColumnsDefinition = new[]
                 {
                     new ColumnDefinition {Name = "id", IsPrimary = true, Type = DbType.Int32},

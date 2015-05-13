@@ -1,8 +1,7 @@
-﻿using DataCloner.DataClasse.Cache;
-using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Text;
 using DataCloner.DataClasse;
+using DataCloner.DataClasse.Cache;
 
 namespace DataCloner.Generator
 {
