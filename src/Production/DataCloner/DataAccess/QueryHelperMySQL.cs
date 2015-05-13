@@ -74,6 +74,7 @@ namespace DataCloner.DataAccess
 
         protected override string SqlEnforceIntegrityCheck => "SET UNIQUE_CHECKS=@ACTIVE; SET FOREIGN_KEY_CHECKS=@ACTIVE;";
 
+        public override DbEngine Engine => DbEngine.MySql;
         public override ISqlTypeConverter TypeConverter => _typeConverter;
         public override ISqlWriter SqlWriter => _sqlWriter;
 

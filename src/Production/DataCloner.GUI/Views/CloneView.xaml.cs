@@ -288,6 +288,10 @@ namespace DataCloner.GUI.Views
                 txtStatus.Text += "Cloning started" + Environment.NewLine;
                 _cloner.OptimiseExecutionPlan = (bool)chkOptimisation.IsChecked;
 
+                scintilla.IsReadOnly = false;
+                scintilla.Text = string.Empty;
+                scintilla.IsReadOnly = true;
+
                 _cloneWorker.RunWorkerAsync(new ClonerWorkerInputArgs
                 {
                     Server = _selectedServer,
@@ -406,7 +410,7 @@ namespace DataCloner.GUI.Views
         public void QueryCommiting_event(object sender, QueryCommitingEventArgs e)
         {
             scintilla.IsReadOnly = false;
-            scintilla.Text = e.Query;
+            scintilla.Text += e.Query;
             scintilla.IsReadOnly = true;
         }
 
