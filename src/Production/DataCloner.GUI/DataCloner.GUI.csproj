@@ -47,10 +47,11 @@
     </Reference>
     <Reference Include="ScintillaNET, Version=2.6.0.0, Culture=neutral, PublicKeyToken=948d6c9751444115, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\ScintillaNET2.6\ScintillaNET.dll</HintPath>
+      <HintPath>.\ScintillaNET.dll</HintPath>
     </Reference>
-    <Reference Include="ScintillaNET.WPF">
-      <HintPath>..\packages\ScintillaNET2.6\ScintillaNET.WPF.dll</HintPath>
+    <Reference Include="ScintillaNET.WPF, Version=2.6.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>.\ScintillaNET.WPF.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
