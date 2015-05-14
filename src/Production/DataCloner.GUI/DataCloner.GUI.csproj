@@ -152,6 +152,8 @@
     <Content Include="SciLexer64.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="ScintillaNET.dll" />
+    <Content Include="ScintillaNET.WPF.dll" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Assets\" />
