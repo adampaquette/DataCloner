@@ -346,6 +346,7 @@ namespace DataCloner.DataAccess
                         var p = cmd.CreateParameter();
                         p.ParameterName = sqlVarName;
                         p.Value = step.DataRow[i];
+                        p.DbType = col.Type;
                         cmd.Parameters.Add(p);
 
                         insertWriter.Append(sqlVarName).Append(",");
