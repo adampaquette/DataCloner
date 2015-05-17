@@ -316,15 +316,14 @@ namespace DataCloner.DataAccess
 
                     var sqlVarName = "@" + sqlVar.Id;
 
-                    if (sqlVar.QueryValue)
+                    if (step.Depth == 0 || sqlVar.QueryValue)
                     {
                         sbPostInsert.Append("DECLARE ").Append(sqlVarName).Append(" varchar(max);\r\n");
                         sbPostInsert.Append("SET ").Append(sqlVarName).Append(" = SCOPE_IDENTITY();\r\n");
-                    }
 
-                    //Get the generated id only for top level query or for the next sql batchs
-                    if (step.Depth == 0 || sqlVar.QueryValue)
+                        //if (step.Depth == 0)
                         sbPostInsert.Append("SELECT ").Append(sqlVar.Id).Append(" K, ").Append(sqlVarName).Append(" V;\r\n");
+                    }
                 }
                 //Normal variables
                 else

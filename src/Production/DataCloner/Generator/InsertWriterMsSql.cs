@@ -11,19 +11,19 @@ namespace DataCloner.Generator
 
         public IInsertWriter AppendColumns(ITableIdentifier table, IColumnDefinition[] columns)
         {
-            _sb.Append("INSERT INTO \"")
+            _sb.Append("INSERT INTO [")
                .Append(table.Database)
-               .Append("\".\"")
+               .Append("].[")
                .Append(table.Schema)
-               .Append("\".\"")
+               .Append("].[")
                .Append(table.Table)
-               .Append("\"(");
+               .Append("](");
 
             //Nom des colonnes
             for (var i = 0; i < columns.Count(); i++)
             {
                 if (! columns[i].IsAutoIncrement)
-                    _sb.Append('"').Append(columns[i].Name).Append('"').Append(",");
+                    _sb.Append('[').Append(columns[i].Name).Append(']').Append(",");
             }
             _sb.Remove(_sb.Length - 1, 1);
             _sb.Append(")VALUES(");
