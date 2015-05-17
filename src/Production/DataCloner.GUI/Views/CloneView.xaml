@@ -20,7 +20,7 @@
 													SelectedValuePath="Id"
 													DisplayMemberPath="Name"
 													SelectionChanged="CbApp_OnSelectionChanged" />
-                            <TextBlock HorizontalAlignment="Left" Text="Type d'extraction : " VerticalAlignment="Top" Margin="10,60,0,0" RenderTransformOrigin="0.57,0.625"/>
+                            <TextBlock HorizontalAlignment="Left" Text="DbType d'extraction : " VerticalAlignment="Top" Margin="10,60,0,0" RenderTransformOrigin="0.57,0.625"/>
                             <ComboBox x:Name="cbDatabaseConfig" 
 													Margin="10,81,10,0" 
 													VerticalAlignment="Top" Height="22"
@@ -78,8 +78,8 @@
             <TabItem Header="Logs">
                 <Grid>
                     <TextBlock Text="Statut : " Margin="0,10,0,347" />
-                    <TextBox x:Name="txtStatus" TextWrapping="NoWrap" AcceptsReturn="True" 
-										 IsReadOnly="True" VerticalScrollBarVisibility="Auto" Margin="0,35,0,0" />
+                    <RichTextBox  x:Name="rtbStatus" AcceptsReturn="True" IsReadOnly="True" VerticalScrollBarVisibility="Auto"
+                                  Margin="0,35,0,0" />
                 </Grid>
             </TabItem>
             <TabItem Header="Requête">

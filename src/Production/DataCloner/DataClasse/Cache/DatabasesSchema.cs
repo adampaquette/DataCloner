@@ -307,7 +307,7 @@ namespace DataCloner.DataClasse.Cache
                     IsPrimary = reader.GetBoolean(7),
                     IsAutoIncrement = reader.GetBoolean(8)
                 };
-                col.Type = typeConverter.ConvertFromSql(col.SqlType);
+                col.DbType = typeConverter.ConvertFromSql(col.SqlType);
                
                 lstSchemaColumn.Add(col);
 

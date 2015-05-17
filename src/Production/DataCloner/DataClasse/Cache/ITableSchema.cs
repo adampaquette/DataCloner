@@ -49,7 +49,7 @@ namespace DataCloner.DataClasse.Cache
     public interface IColumnDefinition
     {
         string Name { get; set; }
-        DbType Type { get; set; }
+        DbType DbType { get; set; }
         SqlType SqlType { get; set; }
         bool IsPrimary { get; set; }
         bool IsForeignKey { get; set; }

@@ -320,8 +320,6 @@ namespace DataCloner
 
 				var step = CreateExecutionStep(riSource, tiDestination, table, destinationRow, level);
 
-
-
 				//Sauve la PK dans la cache
 				dstKey = table.BuildRawPkFromDataRow(step.DataRow);
 				_keyRelationships.SetKey(riSource.ServerId, riSource.Database, riSource.Schema, riSource.Table, srcKey, dstKey);
