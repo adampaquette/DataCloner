@@ -14,9 +14,9 @@ namespace DataCloner.Tests
             {
                 ColumnsDefinition = new[]
                 {
-                    new ColumnDefinition {Name = "id", IsPrimary = true, Type = DbType.Int32},
-                    new ColumnDefinition {Name = "name", Type = DbType.String, SqlType = new SqlType{ Precision = 20 } },
-                    new ColumnDefinition {Name = "cityId", IsForeignKey = true, Type = DbType.Int32}
+                    new ColumnDefinition {Name = "id", IsPrimary = true, DbType = DbType.Int32},
+                    new ColumnDefinition {Name = "name", DbType = DbType.String, SqlType = new SqlType{ Precision = 20 } },
+                    new ColumnDefinition {Name = "cityId", IsForeignKey = true, DbType = DbType.Int32}
                 },
                 ForeignKeys = new[]
                 {
@@ -35,9 +35,9 @@ namespace DataCloner.Tests
             {
                 ColumnsDefinition = new[]
                 {
-                    new ColumnDefinition {Name = "id", IsPrimary = true, Type = DbType.Int32},
-                    new ColumnDefinition {Name = "name", Type = DbType.String,  SqlType = new SqlType{ Precision = 20 }},
-                    new ColumnDefinition {Name = "stateId", IsForeignKey = true, Type = DbType.Int32}
+                    new ColumnDefinition {Name = "id", IsPrimary = true, DbType = DbType.Int32},
+                    new ColumnDefinition {Name = "name", DbType = DbType.String,  SqlType = new SqlType{ Precision = 20 }},
+                    new ColumnDefinition {Name = "stateId", IsForeignKey = true, DbType = DbType.Int32}
                 },
                 ForeignKeys = new[]
                 {
@@ -57,9 +57,9 @@ namespace DataCloner.Tests
             {
                 ColumnsDefinition = new[]
                 {
-                    new ColumnDefinition {Name = "id", IsPrimary = true, Type = DbType.Int32},
-                    new ColumnDefinition {Name = "name", Type = DbType.String,  SqlType = new SqlType{ Precision = 20 }},
-                    new ColumnDefinition {Name = "countryId", IsForeignKey = true, Type = DbType.Int32}
+                    new ColumnDefinition {Name = "id", IsPrimary = true, DbType = DbType.Int32},
+                    new ColumnDefinition {Name = "name", DbType = DbType.String,  SqlType = new SqlType{ Precision = 20 }},
+                    new ColumnDefinition {Name = "countryId", IsForeignKey = true, DbType = DbType.Int32}
                 },
                 ForeignKeys = new[]
                 {
@@ -79,8 +79,8 @@ namespace DataCloner.Tests
             {
                 ColumnsDefinition = new[]
                 {
-                    new ColumnDefinition {Name = "id", IsPrimary = true, Type = DbType.Int32},
-                    new ColumnDefinition {Name = "name", Type = DbType.String, SqlType = new SqlType{ Precision = 20 }}
+                    new ColumnDefinition {Name = "id", IsPrimary = true, DbType = DbType.Int32},
+                    new ColumnDefinition {Name = "name", DbType = DbType.String, SqlType = new SqlType{ Precision = 20 }}
                 },
                 DerivativeTables = new[]
                 {
@@ -93,10 +93,10 @@ namespace DataCloner.Tests
             {
                 ColumnsDefinition = new[]
                 {
-                    new ColumnDefinition {Name = "id", IsPrimary = true, Type = DbType.Int32},
-                    new ColumnDefinition {Name = "name", Type = DbType.String,  SqlType = new SqlType{ Precision = 20 }},
-                    new ColumnDefinition {Name = "fatherId", IsForeignKey = true, IsUniqueKey = true, Type = DbType.Int32},
-                    new ColumnDefinition {Name = "favoriteColorId", IsForeignKey = true, Type = DbType.Int32}
+                    new ColumnDefinition {Name = "id", IsPrimary = true, DbType = DbType.Int32},
+                    new ColumnDefinition {Name = "name", DbType = DbType.String,  SqlType = new SqlType{ Precision = 20 }},
+                    new ColumnDefinition {Name = "fatherId", IsForeignKey = true, IsUniqueKey = true, DbType = DbType.Int32},
+                    new ColumnDefinition {Name = "favoriteColorId", IsForeignKey = true, DbType = DbType.Int32}
                 },
                 ForeignKeys = new[]
                 {
@@ -123,8 +123,8 @@ namespace DataCloner.Tests
             {
                 ColumnsDefinition = new[]
                 {
-                    new ColumnDefinition {Name = "id", IsPrimary = true, Type = DbType.Int32},
-                    new ColumnDefinition {Name = "name", Type = DbType.String,  SqlType = new SqlType{ Precision = 20 }}
+                    new ColumnDefinition {Name = "id", IsPrimary = true, DbType = DbType.Int32},
+                    new ColumnDefinition {Name = "name", DbType = DbType.String,  SqlType = new SqlType{ Precision = 20 }}
                 },
                 IsStatic = true
             };

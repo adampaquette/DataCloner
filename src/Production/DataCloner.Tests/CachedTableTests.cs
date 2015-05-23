@@ -25,7 +25,7 @@ namespace DataCloner.Tests
             _table.ColumnsDefinition = _table.ColumnsDefinition.Add(new ColumnDefinition
             {
                 Name = "COL1",
-                Type = DbType.Int32,
+                DbType = DbType.Int32,
                 IsPrimary = true,
                 IsForeignKey = false,
                 IsAutoIncrement = true,
@@ -35,7 +35,7 @@ namespace DataCloner.Tests
             _table.ColumnsDefinition = _table.ColumnsDefinition.Add(new ColumnDefinition
             {
                 Name = "COL2",
-                Type = DbType.Int32,
+                DbType = DbType.Int32,
                 IsPrimary = false,
                 IsForeignKey = false,
                 IsAutoIncrement = false,
