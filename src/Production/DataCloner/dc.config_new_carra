@@ -1,4 +1,4 @@
-Tout ce qui est à l'intérieur du TableModifier peut utiliser {$SourceContext} et ???{$DestinationContext}.
+Tout ce qui est à l'intérieur du TableModifier peut utiliser {$SourceContext} et {$1} {$2}...
 Le nom des templates SchemaModifier, DatabaseModifier et ServerModifier peuvent être overridés.
 
 Mettre la configuration de tout ce qui ne change pas dans les template et ajouter ce qui manque directement dans les configurations.
@@ -26,19 +26,35 @@ Règles
 	<Applications>
 		<Application Name="PGIS">
 			<ConnectionStrings>
-				<add Id="1" Name="UNI" ProviderName="MySql.Data.MySqlClient" ConnectionString="server=localhost;user id=root; password=toor; database=DataclonerTestDatabase; pooling=true" />
-				<add Id="2" Name="FON" ProviderName="MySql.Data.MySqlClient" ConnectionString="server=localhost;user id=root; password=toor; database=DataclonerTestDatabase; pooling=true" />
+				<add Id="1" Name="UNI" ProviderName="MySql.Data.MySqlClient" ConnectionString="server=UNI;user id=root; password=toor; database=master; pooling=true" />
+				<add Id="2" Name="FON" ProviderName="System.Data.Sqlite" ConnectionString="server=FON;user id=root; password=toor; database=master; pooling=true" />
+                <add Id="3" Name="PROD_PGIS" ProviderName="System.Data.Oracle" ConnectionString="server=PROD_PGIS;user id=root; password=toor; database=master; pooling=true" />
+                <add Id="4" Name="PROD_ARIEL" ProviderName="System.Data.PosgreSql" ConnectionString="server=PROD_ARIEL;user id=root; password=toor; database=master; pooling=true" />
+                <add Id="5" Name="PROD_SIEBEL" ProviderName="System.Data.MsSql" ConnectionString="server=PROD_SIEBEL;user id=root; password=toor; database=master; pooling=true" />
 			</ConnectionStrings>
 			<ModifiersTemplates>
-				<ServerModifier id="1" templateId="1">
+				<ServerModifier id="{$SERVER_SOURCE_PGIS}" templateId="1">
 					<DatabaseModifier Name="PGIScbl" templateId="1">
 						<SchemaModifier Name="dbo" templateId="1">
+                            <TableModifier Name="DomaineValeur" IsStatic="true"/>
 							<TableModifier Name="Transmission" IsStatic="false">
-								<DerivativeTables GlobalAccess="forced" Cascade="true">  
+								<!--
+                                <DerivativeTables GlobalAccess="forced" Cascade="true">  
 									<Table serverId="{$SourceContext}" database="{$SourceContext}" schema="{$SourceContext}" table="Demande" Access="NotSet" Cascade="false"/>    
 								</DerivativeTables>
+                                -->
 								<ForeignKeys>
-									<Add ServerId="{$SourceContext}" Database="SIEBELDB" Schema="{$SourceContext}" Table="S_SRV_REQ">
+									<Add ServerId="{$SERVER_SOURCE_SIEBEL}" Database="SIEBELDB" Schema="dbo" Table="S_SRV_REQ">
+										<Collumn NameFrom="NoReferenceTransmission" NameTo="SR_NUM" />
+									</Add>                
+								</ForeignKeys>
+								<DataBuilders>
+									<Collumn Name="col1" BuilderName="Client.Builder.CreatePK" />
+								</DataBuilders>
+							</TableModifier>
+                            <TableModifier Name="PropositionRachat" IsStatic="false">
+								<ForeignKeys>
+									<Add ServerId="{$SERVER_SOURCE_ARIEL}" Database="Ariel" Schema="dbo" Table="S_SRV_REQ">
 										<Collumn NameFrom="NoReferenceTransmission" NameTo="SR_NUM" />
 									</Add>                
 								</ForeignKeys>
@@ -49,9 +65,22 @@ Règles
 						</SchemaModifier>
 					</DatabaseModifier>
 				</ServerModifier>
+   				<ServerModifier id="{$SERVER_SOURCE_ARIEL}" templateId="2">
+               		<DatabaseModifier Name="Ariel" templateId="2"/>
+				</ServerModifier>
+                <ServerModifier id="{$SERVER_SOURCE_SIEBEL}" templateId="3">
+               		<DatabaseModifier Name="SIEBEL" templateId="3"/>
+				</ServerModifier>
 			</ModifiersTemplates>
 			<ClonerConfigurations>
 				<ClonerConfiguration id="1" Name="Default" Description="Configuration par défaut">	
+					<Modifiers>
+						<ServerModifier useTemplateId="1"/>
+                        <ServerModifier useTemplateId="2"/>
+                        <ServerModifier useTemplateId="3"/>
+					</Modifiers> 
+				</ClonerConfiguration>
+                <ClonerConfiguration id="2" Name="Test" Description="Tests">	
 					<Modifiers>
 						<ServerModifier useTemplateId="1" />
 						<ServerModifier id="2" useTemplateId="1" />
@@ -59,30 +88,32 @@ Règles
 				</ClonerConfiguration>
 			</ClonerConfigurations>
 			<CloneMaps>
-				<Map nameFrom="PROD" nameTo="UNI" usableConfigs="1,2,3">
+				<Map nameFrom="PROD" nameTo="UNI" usableConfigs="1,2">
 					<Variables>
-						<Var Name="ServerSrc1" Value="1"/>
-						<Var Name="ServerSrc2" Value="2"/>
-						<Var Name="DatabaseSrc1" Value="3"/>
-						<Var Name="DatabaseSrc2" Value="3"/>
+                        <Var Name="SERVER_SOURCE_PGIS" Value="3"/>
+                        <Var Name="SERVER_SOURCE_ARIEL" Value="4"/>
+                        <Var Name="SERVER_SOURCE_SIEBEL" Value="5"/>
 					</Variables>
-					<Road ServerSrc="1" DatabaseSrc="PGIS" SchemaSrc="" 
-						  ServerDst="3" DatabaseDst="PGIS" SchemaDst=""/>
-					<Road ServerSrc="2" DatabaseSrc="Ariel" SchemaSrc="" 
-						  ServerDst="3" DatabaseDst="Ariel" SchemaDst=""/>
-				</Map>
-				<Map nameFrom="PROD" nameTo="UNI" usableConfigs="1">
-					<Road ServerSrc="5" DatabaseSrc="PGIS" SchemaSrc="" 
-						  ServerDst="3" DatabaseDst="PGIS" SchemaDst=""/>
-					<Road ServerSrc="5" DatabaseSrc="Ariel" SchemaSrc="" 
-						  ServerDst="3" DatabaseDst="Ariel" SchemaDst=""/>
-				</Map>
-				<Map nameFrom="PROD" nameTo="UNI Paul" usableConfigs="1,2,3">
-					<Road ServerSrc="5" DatabaseSrc="PGIS" SchemaSrc="" 
-						  ServerDst="3" DatabaseDst="PGIS" SchemaDst="Paul"/>
-					<Road ServerSrc="5" DatabaseSrc="Ariel" SchemaSrc="" 
-						  ServerDst="3" DatabaseDst="Ariel" SchemaDst="Paul"/>
-				</Map>
+					<Road ServerSrc="{$SERVER_SOURCE_PGIS}" DatabaseSrc="PGIS" SchemaSrc="dbo" 
+						  ServerDst="1" DatabaseDst="PGIS" SchemaDst="dbo"/>
+					<Road ServerSrc="{$SERVER_SOURCE_ARIEL}" DatabaseSrc="Ariel" SchemaSrc="dbo" 
+						  ServerDst="1" DatabaseDst="Ariel" SchemaDst="dbo"/>
+                    <Road ServerSrc="{$SERVER_SOURCE_SIEBEL}" DatabaseSrc="SIEBELDB" SchemaSrc="dbo" 
+						  ServerDst="1" DatabaseDst="SIEBELDB" SchemaDst="dbo"/>
+				</Map>	
+				<Map nameFrom="UNI" nameTo="PROD" usableConfigs="1">
+					<Variables>
+                        <Var Name="SERVER_SOURCE_PGIS" Value="1"/>
+                        <Var Name="SERVER_SOURCE_ARIEL" Value="2"/>
+                        <Var Name="SERVER_SOURCE_SIEBEL" Value="3"/>
+					</Variables>
+					<Road ServerSrc="{$SERVER_SOURCE_PGIS}" DatabaseSrc="PGIS" SchemaSrc="dbo" 
+						  ServerDst="3" DatabaseDst="PGIS" SchemaDst="dbo"/>
+					<Road ServerSrc="{$SERVER_SOURCE_ARIEL}" DatabaseSrc="Ariel" SchemaSrc="dbo" 
+						  ServerDst="4" DatabaseDst="Ariel" SchemaDst="dbo"/>
+                    <Road ServerSrc="{$SERVER_SOURCE_SIEBEL}" DatabaseSrc="SIEBELDB" SchemaSrc="dbo" 
+						  ServerDst="5" DatabaseDst="SIEBELDB" SchemaDst="dbo"/>
+				</Map>	                
 				<Map nameFrom="File" nameTo="" usableConfigs="2">
 					<Road ServerSrc="5" DatabaseSrc="PGIS" SchemaSrc="" />
 					<Road ServerSrc="5" DatabaseSrc="Ariel" SchemaSrc="" />
