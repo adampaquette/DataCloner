@@ -10,6 +10,8 @@ using System.Windows.Threading;
 using DataCloner.DataClasse;
 using DataCloner.DataClasse.Configuration;
 using DataCloner.GUI.Properties;
+using System.Windows.Documents;
+using System.Windows.Media;
 
 namespace DataCloner.GUI.Views
 {
@@ -34,6 +36,8 @@ namespace DataCloner.GUI.Views
         private string _selectedSchema;
         private string _selectedTable;
         private string _selectedColumn;
+
+        private int derivativeLevel = -1;
 
         private List<Int16> Servers = null;
 
@@ -285,8 +289,12 @@ namespace DataCloner.GUI.Views
             if (_selectedColumn != null &&
                 txtValeur.Text != null)
             {
-                txtStatus.Text += "Cloning started" + Environment.NewLine;
+                rtbStatus.AppendText("Cloning started");
                 _cloner.OptimiseExecutionPlan = (bool)chkOptimisation.IsChecked;
+
+                scintilla.IsReadOnly = false;
+                scintilla.Text = string.Empty;
+                scintilla.IsReadOnly = true;
 
                 _cloneWorker.RunWorkerAsync(new ClonerWorkerInputArgs
                 {
@@ -321,9 +329,9 @@ namespace DataCloner.GUI.Views
                 var sbLog = new StringBuilder();
                 var paramsOut = e.Result as ClonerWorkerOutputArgs;
 
-                sbLog.Append("Cloning completed in : ")
+                sbLog.Append("\rCloning completed in : ")
                     .Append(DateTime.Now.Subtract(paramsOut.StartDate).ToString("hh':'mm':'ss'.'fff"))
-                    .Append(Environment.NewLine);
+                    .Append("\r");
 
                 if (chkSimulation.IsChecked.GetValueOrDefault())
                 {
@@ -344,13 +352,13 @@ namespace DataCloner.GUI.Views
                         }
 
                         sbLog.Remove(sbLog.Length - 2, 2);
-                        sbLog.Append(")").Append(Environment.NewLine);
+                        sbLog.Append(")").Append("\r");
                     }
                 }
 
-                sbLog.Append(Environment.NewLine);
-                txtStatus.Text += sbLog.ToString();
-                txtStatus.ScrollToEnd();
+                sbLog.Append("\r");
+                rtbStatus.AppendText(sbLog.ToString());
+                rtbStatus.ScrollToEnd();
 
                 BtnExec.IsEnabled = true;
             };
@@ -406,7 +414,7 @@ namespace DataCloner.GUI.Views
         public void QueryCommiting_event(object sender, QueryCommitingEventArgs e)
         {
             scintilla.IsReadOnly = false;
-            scintilla.Text = e.Query;
+            scintilla.Text += e.Query;
             scintilla.IsReadOnly = true;
         }
 
@@ -419,8 +427,12 @@ namespace DataCloner.GUI.Views
         {
             if (e.Status == Status.Cloning)
             {
+                var p = new Paragraph();
+                p.Margin = new Thickness(0);
+                p.Inlines.Add(e.Level.ToString());
+                p.Inlines.Add(new string(' ', 4 * (e.Level + 1)));
+
                 var sb = new StringBuilder();
-                sb.Append(new string(' ', 3 * e.Level));
                 sb.Append(e.SourceRow.Database)
                     .Append(".")
                     .Append(e.SourceRow.Schema)
@@ -430,15 +442,25 @@ namespace DataCloner.GUI.Views
                 foreach (var col in e.SourceRow.Columns)
                     sb.Append(col.Key).Append("=").Append(col.Value).Append(", ");
                 sb.Remove(sb.Length - 2, 2);
-                sb.Append(")").Append(Environment.NewLine);
+                sb.Append(")");
 
-                txtStatus.Text += sb.ToString();
+                if (derivativeLevel == e.Level)
+                {
+                    var span = new Span();
+                    span.Background = Brushes.PowderBlue;
+                    span.Inlines.Add(sb.ToString());
+                    p.Inlines.Add(span);
+
+                    derivativeLevel = -1;
+                }
+                else
+                    p.Inlines.Add(sb.ToString());
+                
+                rtbStatus.Document.Blocks.Add(p);
             }
             else if (e.Status == Status.FetchingDerivatives)
-            {
-                //txtStatus.Text += new string(' ', 3 * e.Level) + "=================================\r\n";
-            }
-            txtStatus.ScrollToEnd();
+                derivativeLevel = e.Level;
+            rtbStatus.ScrollToEnd();
         }
 
         public class ClonerWorkerInputArgs

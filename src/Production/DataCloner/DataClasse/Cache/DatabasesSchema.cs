@@ -261,7 +261,6 @@ namespace DataCloner.DataClasse.Cache
         {
             var lstTable = new List<TableSchema>();
             var lstSchemaColumn = new List<ColumnDefinition>();
-            var previousTable = new TableSchema();
             string currentSchema;
 
             if (!reader.Read())
@@ -269,7 +268,7 @@ namespace DataCloner.DataClasse.Cache
 
             //Init first row
             var previousSchema = reader.GetString(0);
-            previousTable.Name = reader.GetString(1);
+            var previousTable = new TableSchema(reader.GetString(1));
 
             //Pour chaque ligne
             do
@@ -284,7 +283,7 @@ namespace DataCloner.DataClasse.Cache
                     lstTable.Add(previousTable);
 
                     lstSchemaColumn = new List<ColumnDefinition>();
-                    previousTable = new TableSchema { Name = currentTable };
+                    previousTable = new TableSchema(currentTable);
                 }
                 
                 //Si on change de schema
@@ -308,7 +307,7 @@ namespace DataCloner.DataClasse.Cache
                     IsPrimary = reader.GetBoolean(7),
                     IsAutoIncrement = reader.GetBoolean(8)
                 };
-                col.Type = typeConverter.ConvertFromSql(col.SqlType);
+                col.DbType = typeConverter.ConvertFromSql(col.SqlType);
                
                 lstSchemaColumn.Add(col);
 

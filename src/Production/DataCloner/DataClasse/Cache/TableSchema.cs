@@ -10,7 +10,7 @@ namespace DataCloner.DataClasse.Cache
 {
     public sealed class TableSchema : ITableSchema
     {
-        public string Name { get; set; }
+        public string Name { get; }
         public bool IsStatic { get; set; }
         public string SelectCommand { get; set; }
         public string InsertCommand { get; set; }
@@ -19,8 +19,9 @@ namespace DataCloner.DataClasse.Cache
         public IUniqueKey[] UniqueKeys { get; set; }
         public IColumnDefinition[] ColumnsDefinition { get; set; }
 
-        public TableSchema()
+        public TableSchema(string name)
         {
+            Name = name;
             DerivativeTables = new IDerivativeTable[] { };
             ForeignKeys = new IForeignKey[] { };
             UniqueKeys = new IUniqueKey[] { };
@@ -237,7 +238,7 @@ namespace DataCloner.DataClasse.Cache
             for (var i = 0; i < nbRows; i++)
             {
                 stream.Write(ColumnsDefinition[i].Name);
-                stream.Write((Int32)ColumnsDefinition[i].Type);
+                stream.Write((Int32)ColumnsDefinition[i].DbType);
                 stream.Write(ColumnsDefinition[i].IsPrimary);
                 stream.Write(ColumnsDefinition[i].IsForeignKey);
                 stream.Write(ColumnsDefinition[i].IsAutoIncrement);
@@ -248,15 +249,17 @@ namespace DataCloner.DataClasse.Cache
 
         public static TableSchema Deserialize(BinaryReader stream)
         {
-            var t = new TableSchema();
+            
             var dtList = new List<DerivativeTable>();
             var fkList = new List<ForeignKey>();
             var schemaColList = new List<ColumnDefinition>();
 
-            t.Name = stream.ReadString();
-            t.IsStatic = stream.ReadBoolean();
-            t.SelectCommand = stream.ReadString();
-            t.InsertCommand = stream.ReadString();
+            var t = new TableSchema(stream.ReadString())
+            {
+                IsStatic = stream.ReadBoolean(),
+                SelectCommand = stream.ReadString(),
+                InsertCommand = stream.ReadString()
+            };
 
             var nbRows = stream.ReadInt32();
             for (var i = 0; i < nbRows; i++)
@@ -305,7 +308,7 @@ namespace DataCloner.DataClasse.Cache
                 schemaColList.Add(new ColumnDefinition
                 {
                     Name = stream.ReadString(),
-                    Type = (DbType)stream.ReadInt32(),                    
+                    DbType = (DbType)stream.ReadInt32(),                    
                     IsPrimary = stream.ReadBoolean(),
                     IsForeignKey = stream.ReadBoolean(),
                     IsAutoIncrement = stream.ReadBoolean(),
@@ -345,7 +348,7 @@ namespace DataCloner.DataClasse.Cache
     internal sealed class ColumnDefinition : IColumnDefinition
     {
         public string Name { get; set; }
-        public DbType Type { get; set; }
+        public DbType DbType { get; set; }
         public SqlType SqlType { get; set; }
         public bool IsPrimary { get; set; }
         public bool IsForeignKey { get; set; }

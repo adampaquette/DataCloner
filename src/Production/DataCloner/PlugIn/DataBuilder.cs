@@ -41,7 +41,7 @@ namespace DataCloner.PlugIn
             else if (((col.IsPrimary && !col.IsAutoIncrement) || col.IsUniqueKey) && !col.IsForeignKey)
             {
                 mustGenerate = true;
-                switch (col.Type)
+                switch (col.DbType)
                 {
                     case DbType.Date:
                     case DbType.DateTime:

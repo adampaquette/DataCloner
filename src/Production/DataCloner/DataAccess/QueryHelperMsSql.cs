@@ -102,7 +102,8 @@ namespace DataCloner.DataAccess
         "END ELSE BEGIN " +
         "    EXEC sp_msforeachtable \"ALTER TABLE ? NOCHECK CONSTRAINT all;\" " +
         "END;";
-        
+
+        public override DbEngine Engine => DbEngine.SqlServer;
         public override ISqlTypeConverter TypeConverter => _typeConverter;
         public override ISqlWriter SqlWriter => _sqlWriter;
 

@@ -15,9 +15,8 @@ namespace DataCloner.Tests
         public CachedTableTests()
         { 
             _cache = new DatabasesSchema();
-            _table = new TableSchema
+            _table = new TableSchema("table1")
             {
-                Name = "table1",
                 IsStatic = false,
                 SelectCommand = "SELECT * FROM TABLE1",
                 InsertCommand = "INSERT INTO TABLE1 VALUES(@COL1, @COL2)"
@@ -26,7 +25,7 @@ namespace DataCloner.Tests
             _table.ColumnsDefinition = _table.ColumnsDefinition.Add(new ColumnDefinition
             {
                 Name = "COL1",
-                Type = DbType.Int32,
+                DbType = DbType.Int32,
                 IsPrimary = true,
                 IsForeignKey = false,
                 IsAutoIncrement = true,
@@ -36,7 +35,7 @@ namespace DataCloner.Tests
             _table.ColumnsDefinition = _table.ColumnsDefinition.Add(new ColumnDefinition
             {
                 Name = "COL2",
-                Type = DbType.Int32,
+                DbType = DbType.Int32,
                 IsPrimary = false,
                 IsForeignKey = false,
                 IsAutoIncrement = false,

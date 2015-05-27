@@ -6,7 +6,7 @@ namespace DataCloner.DataClasse.Cache
 {
     public interface ITableSchema
     {
-        string Name { get; set; }
+        string Name { get; }
         bool IsStatic { get; set; }
         string SelectCommand { get; set; }
         string InsertCommand { get; set; }
@@ -49,7 +49,7 @@ namespace DataCloner.DataClasse.Cache
     public interface IColumnDefinition
     {
         string Name { get; set; }
-        DbType Type { get; set; }
+        DbType DbType { get; set; }
         SqlType SqlType { get; set; }
         bool IsPrimary { get; set; }
         bool IsForeignKey { get; set; }

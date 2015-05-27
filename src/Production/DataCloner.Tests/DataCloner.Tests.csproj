@@ -11,7 +11,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>DataCloner.Tests</RootNamespace>
     <AssemblyName>DataCloner.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
@@ -88,7 +88,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DataCloner\DataCloner.csproj">
-      <Project>{3459DC7A-21BA-435C-882B-D84A333AEFD0}</Project>
+      <Project>{3459dc7a-21ba-435c-882b-d84a333aefd0}</Project>
       <Name>DataCloner</Name>
     </ProjectReference>
   </ItemGroup>

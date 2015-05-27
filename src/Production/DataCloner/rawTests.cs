@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Text;
 using DataCloner.Archive;
 using DataCloner.DataClasse;
 using DataCloner.DataClasse.Cache;
@@ -8,7 +9,6 @@ using DataCloner.DataClasse.Configuration;
 using DataCloner.Framework;
 using Connection = DataCloner.DataClasse.Cache.Connection;
 using ForeignKeyColumn = DataCloner.DataClasse.Cache.ForeignKeyColumn;
-using System.Text;
 
 namespace DataCloner
 {
@@ -70,9 +70,8 @@ namespace DataCloner
 
 			//Cache
 			var ct = new DatabasesSchema();
-			var table = new TableSchema
+			var table = new TableSchema("table1")
 			{
-				Name = "table1",
 				IsStatic = false,
 				SelectCommand = "SELECT * FROM TABLE1",
 				InsertCommand = "INSERT INTO TABLE1 VALUES(@COL1, @COL2)"
@@ -81,7 +80,7 @@ namespace DataCloner
 			table.ColumnsDefinition = table.ColumnsDefinition.Add(new ColumnDefinition
 			{
 				Name = "COL1",
-				Type = DbType.Int32,
+				DbType = DbType.Int32,
 				IsPrimary = true,
 				IsForeignKey = false,
 				IsAutoIncrement = true,
@@ -91,7 +90,7 @@ namespace DataCloner
 			table.ColumnsDefinition = table.ColumnsDefinition.Add(new ColumnDefinition
 			{
 				Name = "COL2",
-				Type = DbType.Int32,
+				DbType = DbType.Int32,
 				IsPrimary = false,
 				IsForeignKey = false,
 				IsAutoIncrement = false,
