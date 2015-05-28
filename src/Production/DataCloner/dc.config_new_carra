@@ -24,7 +24,7 @@ Règles
 
 <Configuration>
 	<Applications>
-		<Application Name="PGIS">
+		<Application Name="RISE">
 			<ConnectionStrings>
 				<add Id="1" Name="UNI" ProviderName="MySql.Data.MySqlClient" ConnectionString="server=UNI;user id=root; password=toor; database=master; pooling=true" />
 				<add Id="2" Name="FON" ProviderName="System.Data.Sqlite" ConnectionString="server=FON;user id=root; password=toor; database=master; pooling=true" />
