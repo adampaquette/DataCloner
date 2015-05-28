@@ -461,7 +461,7 @@ namespace DataCloner.DataClasse.Cache
 
             foreach (var server in this)
             {
-                var serConfig = config.Servers.Find(s => s.Id == server.Key);
+                var serConfig = config.Servers.Find(s => s.Id == server.Key.ToString());
                 if (serConfig != null)
                 {
                     foreach (var database in server.Value)
@@ -539,7 +539,7 @@ namespace DataCloner.DataClasse.Cache
 
             foreach (var server in this)
             {
-                var serConfig = config.Servers.Find(s => s.Id == server.Key);
+                var serConfig = config.Servers.Find(s => s.Id == server.Key.ToString());
                 if (serConfig != null)
                 {
                     foreach (var database in server.Value)

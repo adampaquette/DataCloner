@@ -8,19 +8,17 @@ namespace DataCloner.DataClasse.Configuration
     public class ServerModifier
     {
         [XmlAttribute]
-        public Int16 Id { get; set; }
+        public string Id { get; set; }
+        [XmlAttribute]
+        public Int16? TemplateId { get; set; }
+        [XmlAttribute]
+        public Int16? UseTemplateId { get; set; }
         [XmlElement("Database")]
         public List<DatabaseModifier> Databases { get; set; }
 
         public ServerModifier()
         {
             Databases = new List<DatabaseModifier>();
-        }
-
-        public ServerModifier(List<DatabaseModifier> databases, Int16 id)
-        {
-            Databases = databases;
-            Id = id;
         }
     }
 
@@ -29,18 +27,16 @@ namespace DataCloner.DataClasse.Configuration
     {
         [XmlAttribute]
         public string Name { get; set; }
+        [XmlAttribute]
+        public Int16? TemplateId { get; set; }
+        [XmlAttribute]
+        public Int16? UseTemplateId { get; set; }
         [XmlElement("Schema")]
         public List<SchemaModifier> Schemas { get; set; }
 
         public DatabaseModifier()
         {
             Schemas = new List<SchemaModifier>();
-        }
-
-        public DatabaseModifier(List<SchemaModifier> schemas, string name)
-        {
-            Schemas = schemas;
-            Name = name;
         }
     }
 
@@ -49,18 +45,16 @@ namespace DataCloner.DataClasse.Configuration
     {
         [XmlAttribute]
         public string Name { get; set; }
+        [XmlAttribute]
+        public Int16? TemplateId { get; set; }
+        [XmlAttribute]
+        public Int16? UseTemplateId { get; set; }
         [XmlElement("Table")]
         public List<TableModifier> Tables { get; set; }
 
         public SchemaModifier()
         {
             Tables = new List<TableModifier>();
-        }
-
-        public SchemaModifier(List<TableModifier> tables, string name)
-        {
-            Tables = tables;
-            Name = name;
         }
     }
 

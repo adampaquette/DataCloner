@@ -43,20 +43,20 @@ namespace DataCloner
 			//Server maps
 			var r1 = new Road
 			{
-				ServerSrc = 3,
+				ServerSrc = "3",
 				DatabaseSrc = "db1",
 				SchemaSrc = "",
-				ServerDst = 1,
+				ServerDst = "1",
 				DatabaseDst = "cloned",
 				SchemaDst = ""
 			};
 
 			var r2 = new Road
 			{
-				ServerSrc = 2,
+				ServerSrc = "2",
 				DatabaseSrc = "db1",
 				SchemaSrc = "",
-				ServerDst = 1,
+				ServerDst = "1",
 				DatabaseDst = "cloned",
 				SchemaDst = ""
 			};
@@ -258,20 +258,20 @@ namespace DataCloner
 		{
 			var r1 = new Road
 			{
-				ServerSrc = 3,
+				ServerSrc = "3",
 				DatabaseSrc = "db1",
 				SchemaSrc = "",
-				ServerDst = 1,
+				ServerDst = "1",
 				DatabaseDst = "cloned",
 				SchemaDst = ""
 			};
 
 			var r2 = new Road
 			{
-				ServerSrc = 2,
+				ServerSrc = "2",
 				DatabaseSrc = "db1",
 				SchemaSrc = "",
-				ServerDst = 1,
+				ServerDst = "1",
 				DatabaseDst = "cloned",
 				SchemaDst = ""
 			};

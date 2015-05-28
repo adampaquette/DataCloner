@@ -86,7 +86,7 @@ namespace DataCloner.Tests
 
             var server1 = new ServerModifier
             {
-                Id = 1,
+                Id = "1",
                 Databases = new List<DatabaseModifier>
                 {
                     new DatabaseModifier
@@ -129,8 +129,8 @@ namespace DataCloner.Tests
                      {
                          new Road
                          {
-                             ServerSrc = 1, SchemaSrc = "dbo", DatabaseSrc = "myDB",
-                             ServerDst = 1, SchemaDst = "dbo", DatabaseDst = "myDB"
+                             ServerSrc = "1", SchemaSrc = "dbo", DatabaseSrc = "myDB",
+                             ServerDst = "1", SchemaDst = "dbo", DatabaseDst = "myDB"
                          }
                      }
                 }
