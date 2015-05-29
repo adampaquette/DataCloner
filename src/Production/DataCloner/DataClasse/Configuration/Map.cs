@@ -40,6 +40,8 @@ namespace DataCloner.DataClasse.Configuration
                 Int16 serverSrc;
                 if (!Int16.TryParse(road.ServerSrc, out serverSrc))
                 {
+                    if(!map.IsVariable(road.ServerSrc)) 
+                        throw new Exception($"The value '{road.ServerSrc}' is not a valid variable in the map id='{map.Id}'.");
                     configVar = map.Variables.FirstOrDefault(v => v.Name == road.ServerSrc);
                     if (configVar == null || !Int16.TryParse(road.ServerSrc, out serverSrc))
                         throw new Exception($"Variable '{road.ServerSrc}' not found in the map id='{map.Id}'.");
@@ -47,40 +49,54 @@ namespace DataCloner.DataClasse.Configuration
                 }
 
                 Int16 serverDst;
-                if (!Int16.TryParse(road.DatabaseSrc, out serverDst))
+                if (!Int16.TryParse(road.ServerDst, out serverDst))
                 {
+                    if (!map.IsVariable(road.ServerDst))
+                        throw new Exception($"The value '{road.ServerDst}' is not a valid variable in the map id='{map.Id}'.");
                     configVar = map.Variables.FirstOrDefault(v => v.Name == road.ServerDst);
                     if (configVar == null || !Int16.TryParse(road.ServerDst, out serverDst))
                         throw new Exception($"Variable '{road.ServerDst}' not found in the map id='{map.Id}'.");
                     configVar = null;
                 }
 
-                string databaseSrc;
-                configVar = map.Variables.FirstOrDefault(v => v.Name == road.DatabaseSrc);
-                if (configVar == null)
-                    throw new Exception($"Variable '{road.DatabaseSrc}' not found in the map id='{map.Id}'.");
-                databaseSrc = configVar.Value;
+                string databaseSrc = road.DatabaseSrc;
+                if (map.IsVariable(databaseSrc))
+                {
+                    configVar = map.Variables.FirstOrDefault(v => v.Name == databaseSrc);
+                    if (configVar == null)
+                        throw new Exception($"Variable '{databaseSrc}' not found in the map id='{map.Id}'.");
+                    databaseSrc = configVar.Value;
+                }
                 configVar = null;
 
-                string databaseDst;
-                configVar = map.Variables.FirstOrDefault(v => v.Name == road.DatabaseDst);
-                if (configVar == null)
-                    throw new Exception($"Variable '{road.DatabaseDst}' not found in the map id='{map.Id}'.");
-                databaseDst = configVar.Value;
+                string databaseDst = road.DatabaseDst;
+                if (map.IsVariable(databaseDst))
+                {
+                    configVar = map.Variables.FirstOrDefault(v => v.Name == databaseDst);
+                    if (configVar == null)
+                        throw new Exception($"Variable '{databaseDst}' not found in the map id='{map.Id}'.");
+                    databaseDst = configVar.Value;
+                }
                 configVar = null;
 
-                string schemaSrc;
-                configVar = map.Variables.FirstOrDefault(v => v.Name == road.SchemaSrc);
-                if (configVar == null)
-                    throw new Exception($"Variable '{road.SchemaSrc}' not found in the map id='{map.Id}'.");
-                schemaSrc = configVar.Value;
+                string schemaSrc = road.SchemaSrc;
+                if (map.IsVariable(schemaSrc))
+                {
+                    configVar = map.Variables.FirstOrDefault(v => v.Name == schemaSrc);
+                    if (configVar == null)
+                        throw new Exception($"Variable '{schemaSrc}' not found in the map id='{map.Id}'.");
+                    schemaSrc = configVar.Value;
+                }
                 configVar = null;
 
-                string schemaDst;
-                configVar = map.Variables.FirstOrDefault(v => v.Name == road.SchemaDst);
-                if (configVar == null)
-                    throw new Exception($"Variable '{road.SchemaDst}' not found in the map id='{map.Id}'.");
-                schemaDst = configVar.Value;
+                string schemaDst = road.SchemaDst;
+                if (map.IsVariable(schemaDst))
+                {
+                    configVar = map.Variables.FirstOrDefault(v => v.Name == schemaDst);
+                    if (configVar == null)
+                        throw new Exception($"Variable '{schemaDst}' not found in the map id='{map.Id}'.");
+                    schemaDst = configVar.Value;
+                }
                 configVar = null;
 
                 output.Add(
@@ -89,6 +105,7 @@ namespace DataCloner.DataClasse.Configuration
             }
             return output;
         }
+        private bool IsVariable(string value) => value.StartsWith("{$") && value.EndsWith("}");
     }
 
     [Serializable]

@@ -10,10 +10,10 @@ namespace DataCloner.DataClasse.Configuration
         [XmlAttribute]
         public string Id { get; set; }
         [XmlAttribute]
-        public Int16? TemplateId { get; set; }
+        public Int16 TemplateId { get; set; }
         [XmlAttribute]
-        public Int16? UseTemplateId { get; set; }
-        [XmlElement("Database")]
+        public Int16 UseTemplateId { get; set; }
+        [XmlElement("DatabaseModifier")]
         public List<DatabaseModifier> Databases { get; set; }
 
         public ServerModifier()
@@ -28,10 +28,10 @@ namespace DataCloner.DataClasse.Configuration
         [XmlAttribute]
         public string Name { get; set; }
         [XmlAttribute]
-        public Int16? TemplateId { get; set; }
+        public Int16 TemplateId { get; set; }
         [XmlAttribute]
-        public Int16? UseTemplateId { get; set; }
-        [XmlElement("Schema")]
+        public Int16 UseTemplateId { get; set; }
+        [XmlElement("SchemaModifier")]
         public List<SchemaModifier> Schemas { get; set; }
 
         public DatabaseModifier()
@@ -46,10 +46,10 @@ namespace DataCloner.DataClasse.Configuration
         [XmlAttribute]
         public string Name { get; set; }
         [XmlAttribute]
-        public Int16? TemplateId { get; set; }
+        public Int16 TemplateId { get; set; }
         [XmlAttribute]
-        public Int16? UseTemplateId { get; set; }
-        [XmlElement("Table")]
+        public Int16 UseTemplateId { get; set; }
+        [XmlElement("TableModifier")]
         public List<TableModifier> Tables { get; set; }
 
         public SchemaModifier()
@@ -107,7 +107,7 @@ namespace DataCloner.DataClasse.Configuration
     public class DerivativeSubTable
     {
         [XmlAttribute]
-        public Int16 ServerId { get; set; }
+        public string ServerId { get; set; }
         [XmlAttribute]
         public string Database { get; set; }
         [XmlAttribute]
@@ -139,7 +139,7 @@ namespace DataCloner.DataClasse.Configuration
     public class ForeignKeyAdd
     {
         [XmlAttribute]
-        public Int16 ServerId { get; set; }
+        public string ServerId { get; set; }
         [XmlAttribute]
         public string Database { get; set; }
         [XmlAttribute]

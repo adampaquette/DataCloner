@@ -13,7 +13,7 @@ namespace DataCloner.DataClasse.Configuration
         public string Name { get; set; }
         [XmlAttribute]
         public string Description { get; set; }
-        [XmlElement("Server")]
+        [XmlElement("ServerModifier")]
         public List<ServerModifier> Servers { get; set; }
 
         public ClonerConfiguration()

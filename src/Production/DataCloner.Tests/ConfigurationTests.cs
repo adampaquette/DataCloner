@@ -38,7 +38,7 @@ namespace DataCloner.Tests
                     {
                         new DerivativeSubTable
                         {
-                            ServerId = 1,
+                            ServerId = "1",
                             Database = "db",
                             Schema = "dbo",
                             Table = "table2",
@@ -50,7 +50,7 @@ namespace DataCloner.Tests
 
             table1.ForeignKeys.ForeignKeyAdd.Add(new ForeignKeyAdd
             {
-                ServerId = 1,
+                ServerId = "1",
                 Database = "db",
                 Schema = "dbo",
                 Table = "table55",

@@ -327,12 +327,12 @@ namespace DataCloner.DataClasse.Cache
         /// </summary>
         /// <param name="config"></param>
         /// <remarks>Le schéma de la BD doit préalablement avoir été obtenu. GetColumns() et GetForeignKeys()</remarks>
-        internal void FinalizeCache(ClonerConfiguration config)
+        internal void FinalizeCache(ClonerConfiguration config, ModifiersTemplates templates)
         {
             GenerateCommands();
-            MergeFkConfig(config);
+            MergeFkConfig(config, templates);
             GenerateDerivativeTables();
-            MergeCacheAndUserConfig(config);
+            MergeCacheAndUserConfig(config, templates);
         }
 
         private void GenerateCommands()
@@ -454,7 +454,7 @@ namespace DataCloner.DataClasse.Cache
             }
         }
 
-        private void MergeFkConfig(ClonerConfiguration config)
+        private void MergeFkConfig(ClonerConfiguration config, ModifiersTemplates templates)
         {
             if (config == null)
                 return;
@@ -513,7 +513,7 @@ namespace DataCloner.DataClasse.Cache
                                             {
                                                 var newFk = new ForeignKey
                                                 {
-                                                    ServerIdTo = fkConfig.ServerId,
+                                                    ServerIdTo = Int16.Parse(fkConfig.ServerId),
                                                     DatabaseTo = fkConfig.Database,
                                                     SchemaTo = fkConfig.Schema,
                                                     TableTo = fkConfig.Table,
@@ -532,7 +532,7 @@ namespace DataCloner.DataClasse.Cache
             }
         }
 
-        private void MergeCacheAndUserConfig(ClonerConfiguration config)
+        private void MergeCacheAndUserConfig(ClonerConfiguration config, ModifiersTemplates templates)
         {
             if (config == null)
                 return;
@@ -567,7 +567,7 @@ namespace DataCloner.DataClasse.Cache
                                             foreach (var derivTbl in table.DerivativeTables)
                                             {
                                                 var derivTblConfig = tblConfig.DerativeTables.DerativeSubTables
-                                                                              .FirstOrDefault(t => t.ServerId == derivTbl.ServerId &&
+                                                                              .FirstOrDefault(t => t.ServerId == derivTbl.ServerId.ToString() &&
                                                                                               t.Database == derivTbl.Database &&
                                                                                               t.Schema == derivTbl.Schema &&
                                                                                               t.Table == derivTbl.Table);
