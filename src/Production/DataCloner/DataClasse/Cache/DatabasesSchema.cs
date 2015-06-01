@@ -454,6 +454,8 @@ namespace DataCloner.DataClasse.Cache
             }
         }
 
+        //TODO : Faire une fonctione qui va chercher un template dans la config
+        //TODO : Faire des fonctions de merge par Serveur / Database / schema.
         private void MergeFkConfig(ClonerConfiguration config, ModifiersTemplates templates)
         {
             if (config == null)
@@ -473,63 +475,66 @@ namespace DataCloner.DataClasse.Cache
                             {
                                 var scheConfig = dbConfig.Schemas.Find(s => s.Name == schema.Key);
                                 if (scheConfig != null)
+                                    MergeFkConfigSchema(schema.Value, scheConfig.Value);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        private void MergeFkConfigSchema(List<TableModifier> tablesCache, List<TableModifier> tablesConfig)
+        {
+            foreach (var table in tablesCache)
+            {
+                var tblConfig = tablesConfig.Find(t => t.Name == table.Name);
+                if (tblConfig != null)
+                {
+                    //On affecte les changements de la configuration
+
+                    //On supprime les clefs
+                    foreach (var fkConfig in tblConfig.ForeignKeys.ForeignKeyRemove)
+                    {
+                        foreach (var colConfig in fkConfig.Columns)
+                        {
+                            for (var j = 0; j < table.ForeignKeys.Count(); j++)
+                            {
+                                var fk = table.ForeignKeys[j];
+
+                                for (var i = 0; i < fk.Columns.Count(); i++)
                                 {
-                                    foreach (var table in schema.Value)
+                                    if (fk.Columns[i].NameFrom == colConfig.Name)
                                     {
-                                        var tblConfig = scheConfig.Tables.Find(t => t.Name == table.Name);
-                                        if (tblConfig != null)
+                                        fk.Columns.RemoveAt(i);
+                                        i--;
+
+                                        if (fk.Columns.Length == 0)
                                         {
-                                            //On affecte les changements de la configuration
-
-                                            //On supprime les clefs
-                                            foreach (var fkConfig in tblConfig.ForeignKeys.ForeignKeyRemove)
-                                            {
-                                                foreach (var colConfig in fkConfig.Columns)
-                                                {
-                                                    for (var j = 0; j < table.ForeignKeys.Count(); j++)
-                                                    {
-                                                        var fk = table.ForeignKeys[j];
-
-                                                        for (var i = 0; i < fk.Columns.Count(); i++)
-                                                        {
-                                                            if (fk.Columns[i].NameFrom == colConfig.Name)
-                                                            {
-                                                                fk.Columns.RemoveAt(i);
-                                                                i--;
-
-                                                                if (fk.Columns.Length == 0)
-                                                                {
-                                                                    table.ForeignKeys.RemoveAt(j);
-                                                                    j--;
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-
-                                            //On ajoute les clefs
-                                            foreach (var fkConfig in tblConfig.ForeignKeys.ForeignKeyAdd)
-                                            {
-                                                var newFk = new ForeignKey
-                                                {
-                                                    ServerIdTo = Int16.Parse(fkConfig.ServerId),
-                                                    DatabaseTo = fkConfig.Database,
-                                                    SchemaTo = fkConfig.Schema,
-                                                    TableTo = fkConfig.Table,
-                                                    Columns = (from fk in fkConfig.Columns select new ForeignKeyColumn { NameFrom = fk.NameFrom, NameTo = fk.NameTo }).ToArray()
-                                                };
-
-                                                table.ForeignKeys.Add(newFk);
-                                            }
+                                            table.ForeignKeys.RemoveAt(j);
+                                            j--;
                                         }
                                     }
                                 }
                             }
                         }
                     }
+
+                    //On ajoute les clefs
+                    foreach (var fkConfig in tblConfig.ForeignKeys.ForeignKeyAdd)
+                    {
+                        var newFk = new ForeignKey
+                        {
+                            ServerIdTo = Int16.Parse(fkConfig.ServerId),
+                            DatabaseTo = fkConfig.Database,
+                            SchemaTo = fkConfig.Schema,
+                            TableTo = fkConfig.Table,
+                            Columns = (from fk in fkConfig.Columns select new ForeignKeyColumn { NameFrom = fk.NameFrom, NameTo = fk.NameTo }).ToArray()
+                        };
+
+                        table.ForeignKeys.Add(newFk);
+                    }
                 }
-            }
+            }            
         }
 
         private void MergeCacheAndUserConfig(ClonerConfiguration config, ModifiersTemplates templates)
