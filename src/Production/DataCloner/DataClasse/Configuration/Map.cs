@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Xml.Serialization;
 using DataCloner.DataClasse.Cache;
 using System.Linq;
+using DataCloner.Framework;
 
 namespace DataCloner.DataClasse.Configuration
 {
@@ -40,7 +41,7 @@ namespace DataCloner.DataClasse.Configuration
                 Int16 serverSrc;
                 if (!Int16.TryParse(road.ServerSrc, out serverSrc))
                 {
-                    if(!map.IsVariable(road.ServerSrc)) 
+                    if(!road.ServerSrc.IsVariable()) 
                         throw new Exception($"The value '{road.ServerSrc}' is not a valid variable in the map id='{map.Id}'.");
                     configVar = map.Variables.FirstOrDefault(v => v.Name == road.ServerSrc);
                     if (configVar == null || !Int16.TryParse(road.ServerSrc, out serverSrc))
@@ -51,7 +52,7 @@ namespace DataCloner.DataClasse.Configuration
                 Int16 serverDst;
                 if (!Int16.TryParse(road.ServerDst, out serverDst))
                 {
-                    if (!map.IsVariable(road.ServerDst))
+                    if (!road.ServerDst.IsVariable())
                         throw new Exception($"The value '{road.ServerDst}' is not a valid variable in the map id='{map.Id}'.");
                     configVar = map.Variables.FirstOrDefault(v => v.Name == road.ServerDst);
                     if (configVar == null || !Int16.TryParse(road.ServerDst, out serverDst))
@@ -60,7 +61,7 @@ namespace DataCloner.DataClasse.Configuration
                 }
 
                 string databaseSrc = road.DatabaseSrc;
-                if (map.IsVariable(databaseSrc))
+                if (databaseSrc.IsVariable())
                 {
                     configVar = map.Variables.FirstOrDefault(v => v.Name == databaseSrc);
                     if (configVar == null)
@@ -70,7 +71,7 @@ namespace DataCloner.DataClasse.Configuration
                 configVar = null;
 
                 string databaseDst = road.DatabaseDst;
-                if (map.IsVariable(databaseDst))
+                if (databaseDst.IsVariable())
                 {
                     configVar = map.Variables.FirstOrDefault(v => v.Name == databaseDst);
                     if (configVar == null)
@@ -80,7 +81,7 @@ namespace DataCloner.DataClasse.Configuration
                 configVar = null;
 
                 string schemaSrc = road.SchemaSrc;
-                if (map.IsVariable(schemaSrc))
+                if (schemaSrc.IsVariable())
                 {
                     configVar = map.Variables.FirstOrDefault(v => v.Name == schemaSrc);
                     if (configVar == null)
@@ -90,7 +91,7 @@ namespace DataCloner.DataClasse.Configuration
                 configVar = null;
 
                 string schemaDst = road.SchemaDst;
-                if (map.IsVariable(schemaDst))
+                if (schemaDst.IsVariable())
                 {
                     configVar = map.Variables.FirstOrDefault(v => v.Name == schemaDst);
                     if (configVar == null)
@@ -105,7 +106,6 @@ namespace DataCloner.DataClasse.Configuration
             }
             return output;
         }
-        private bool IsVariable(string value) => value.StartsWith("{$") && value.EndsWith("}");
     }
 
     [Serializable]

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Xml.Serialization;
+using DataCloner.Framework;
 
 namespace DataCloner.DataClasse.Configuration
 {
@@ -19,6 +21,34 @@ namespace DataCloner.DataClasse.Configuration
         public ClonerConfiguration()
         {
             Servers = new List<ServerModifier>();
+        }
+
+        public void Build(ModifiersTemplates templates, List<Variable> variables)
+        {
+            var compiledConfig = new Dictionary<string, ServerModifier>();
+
+            foreach (var server in Servers)
+                MergeServer(templates, variables, compiledConfig, server);
+        }
+
+        private void MergeServer(ModifiersTemplates templates, 
+                                 List<Variable> variables, 
+                                 Dictionary<string, ServerModifier> compiledConfig,
+                                 ServerModifier server)
+        {
+            //Remplacement de la variable
+            if (server.Id.IsVariable())
+                server.Id = variables.First(v => v.Name == server.Id).Value;
+
+
+            if (server.UseTemplateId > 0)
+            {
+                var srvTemplate = Servers.FirstOrDefault(s => s.TemplateId == server.UseTemplateId);
+                if (srvTemplate == null)
+                    srvTemplate = templates.ServerModifiers.First(s => s.TemplateId == server.UseTemplateId);
+
+
+            }
         }
     }
 }

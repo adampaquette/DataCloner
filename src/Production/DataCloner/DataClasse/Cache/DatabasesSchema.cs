@@ -327,12 +327,12 @@ namespace DataCloner.DataClasse.Cache
         /// </summary>
         /// <param name="config"></param>
         /// <remarks>Le schéma de la BD doit préalablement avoir été obtenu. GetColumns() et GetForeignKeys()</remarks>
-        internal void FinalizeCache(ClonerConfiguration config, ModifiersTemplates templates)
+        internal void FinalizeCache(ClonerConfiguration config)
         {
             GenerateCommands();
-            MergeFkConfig(config, templates);
+            MergeFkConfig(config);
             GenerateDerivativeTables();
-            MergeCacheAndUserConfig(config, templates);
+            MergeCacheAndUserConfig(config);
         }
 
         private void GenerateCommands()
@@ -456,7 +456,7 @@ namespace DataCloner.DataClasse.Cache
 
         //TODO : Faire une fonctione qui va chercher un template dans la config
         //TODO : Faire des fonctions de merge par Serveur / Database / schema.
-        private void MergeFkConfig(ClonerConfiguration config, ModifiersTemplates templates)
+        private void MergeFkConfig(ClonerConfiguration config)
         {
             if (config == null)
                 return;
@@ -475,7 +475,7 @@ namespace DataCloner.DataClasse.Cache
                             {
                                 var scheConfig = dbConfig.Schemas.Find(s => s.Name == schema.Key);
                                 if (scheConfig != null)
-                                    MergeFkConfigSchema(schema.Value, scheConfig.Value);
+                                    MergeFkConfigSchema(schema.Value, scheConfig.Tables);
                             }
                         }
                     }
@@ -483,7 +483,7 @@ namespace DataCloner.DataClasse.Cache
             }
         }
         
-        private void MergeFkConfigSchema(List<TableModifier> tablesCache, List<TableModifier> tablesConfig)
+        private void MergeFkConfigSchema(TableSchema[] tablesCache, List<TableModifier> tablesConfig)
         {
             foreach (var table in tablesCache)
             {
@@ -537,7 +537,7 @@ namespace DataCloner.DataClasse.Cache
             }            
         }
 
-        private void MergeCacheAndUserConfig(ClonerConfiguration config, ModifiersTemplates templates)
+        private void MergeCacheAndUserConfig(ClonerConfiguration config)
         {
             if (config == null)
                 return;

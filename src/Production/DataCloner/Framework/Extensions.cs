@@ -122,5 +122,7 @@ namespace DataCloner.Framework
             int i;
             return Int32.TryParse(input, out i) ? (int?)i : null;
         }
+
+        public static bool IsVariable(this string value) => value.StartsWith("{$") && value.EndsWith("}");
     }
 }

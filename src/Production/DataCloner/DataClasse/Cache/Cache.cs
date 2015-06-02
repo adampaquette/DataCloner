@@ -105,7 +105,8 @@ namespace DataCloner.DataClasse.Cache
                     provider.GetUniqueKeys(cache.DatabasesSchema.LoadUniqueKeys, database);
                 }
             }
-            cache.DatabasesSchema.FinalizeCache(clonerConfig, app.ModifiersTemplates);
+            clonerConfig.Build(app.ModifiersTemplates, map.Variables);
+            cache.DatabasesSchema.FinalizeCache(clonerConfig);
 
             //Save cache
             cache.Save(cacheFileName);
