@@ -74,25 +74,21 @@ Règles
 			</ModifiersTemplates>
 			<ClonerConfigurations>
 				<ClonerConfiguration id="1" Name="Default" Description="Configuration par défaut">	
-					<Modifiers>
-						<ServerModifier useTemplateId="1"/>
-                        <ServerModifier useTemplateId="2"/>
-                        <ServerModifier useTemplateId="3"/>
-					</Modifiers> 
+					<ServerModifier useTemplateId="1"/>
+                    <ServerModifier useTemplateId="2"/>
+                    <ServerModifier useTemplateId="3"/>
 				</ClonerConfiguration>
                 <ClonerConfiguration id="2" Name="Test" Description="Tests">	
-					<Modifiers>
-						<ServerModifier useTemplateId="1" />
-						<ServerModifier id="2" useTemplateId="1" />
-					</Modifiers> 
+					<ServerModifier useTemplateId="1" />
+					<ServerModifier id="2" useTemplateId="1" />
 				</ClonerConfiguration>
 			</ClonerConfigurations>
 			<CloneMaps>
 				<Map nameFrom="PROD" nameTo="UNI" usableConfigs="1,2">
 					<Variables>
-                        <Var Name="SERVER_SOURCE_PGIS" Value="3"/>
-                        <Var Name="SERVER_SOURCE_ARIEL" Value="4"/>
-                        <Var Name="SERVER_SOURCE_SIEBEL" Value="5"/>
+                        <Var Name="{$SERVER_SOURCE_PGIS}" Value="3"/>
+                        <Var Name="{$SERVER_SOURCE_ARIEL}" Value="4"/>
+                        <Var Name="{$SERVER_SOURCE_SIEBEL}" Value="5"/>
 					</Variables>
 					<Road ServerSrc="{$SERVER_SOURCE_PGIS}" DatabaseSrc="PGIS" SchemaSrc="dbo" 
 						  ServerDst="1" DatabaseDst="PGIS" SchemaDst="dbo"/>
@@ -103,9 +99,9 @@ Règles
 				</Map>	
 				<Map nameFrom="UNI" nameTo="PROD" usableConfigs="1">
 					<Variables>
-                        <Var Name="SERVER_SOURCE_PGIS" Value="1"/>
-                        <Var Name="SERVER_SOURCE_ARIEL" Value="2"/>
-                        <Var Name="SERVER_SOURCE_SIEBEL" Value="3"/>
+                        <Var Name="{$SERVER_SOURCE_PGIS}" Value="1"/>
+                        <Var Name="{$SERVER_SOURCE_ARIEL}" Value="1"/>
+                        <Var Name="{$SERVER_SOURCE_SIEBEL}" Value="1"/>
 					</Variables>
 					<Road ServerSrc="{$SERVER_SOURCE_PGIS}" DatabaseSrc="PGIS" SchemaSrc="dbo" 
 						  ServerDst="3" DatabaseDst="PGIS" SchemaDst="dbo"/>

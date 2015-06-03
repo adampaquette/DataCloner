@@ -40,15 +40,33 @@ namespace DataCloner.DataClasse.Configuration
             if (server.Id.IsVariable())
                 server.Id = variables.First(v => v.Name == server.Id).Value;
 
-
+            if (!compiledConfig.CountainKey(server.Id))
+                compiledConfig.Add(server.Id, server);
+            
+            //Template
             if (server.UseTemplateId > 0)
             {
                 var srvTemplate = Servers.FirstOrDefault(s => s.TemplateId == server.UseTemplateId);
                 if (srvTemplate == null)
                     srvTemplate = templates.ServerModifiers.First(s => s.TemplateId == server.UseTemplateId);
 
-
+                MergeServer(templates, variables, compiledConfig, srvTemplate);
             }
+            
+            //Merge
+            var srv = compiledConfig[server.Id];
+            foreach (var database in server.Databases)
+            {
+                if (database.Name.IsVariable())
+                    database.Name = variables.First(v => v.Name == database.Name).Value;
+                
+                var db = srv.Databases.FirstOrDefault(d => d.Name == database.Name);
+                if (db == null)    
+                    srv.Databases.Add(db);
+             
+            }
+            
+            
         }
     }
 }
