@@ -18,7 +18,7 @@ namespace DataCloner.DataClasse.Configuration
         public string To { get; set; }
         [XmlAttribute]
         public string UsableConfigs { get; set; }
-        [XmlElement("Var")]
+        [XmlArrayItem("Var")]
         public List<Variable> Variables { get; set; }
         [XmlElement("Road")]
         public List<Road> Roads { get; set; }
