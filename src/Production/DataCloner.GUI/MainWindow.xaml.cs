@@ -6,6 +6,6 @@ namespace DataCloner.GUI
 	{
 		public MainWindow()
 		{
-		}		
-	}
+		}
+    }
 }

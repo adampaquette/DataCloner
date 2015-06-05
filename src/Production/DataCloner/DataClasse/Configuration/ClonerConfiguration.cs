@@ -56,12 +56,16 @@ namespace DataCloner.DataClasse.Configuration
                     srvTemplate = templates.ServerModifiers.First(s => s.TemplateId == srvToMerge.UseTemplateId);
 
                 MergeServer(templates, variables, compiledConfig, srvTemplate);
+                srvToMerge.TemplateId = 0;
                 srvToMerge.UseTemplateId = 0;
             }
 
             //Merge
             foreach (var database in srvToMerge.Databases)
-                MergeDatabase(templates, variables, srvToMerge, database);
+            {
+                var dstServer = compiledConfig[srvToMerge.Id];
+                MergeDatabase(templates, variables, dstServer, database);
+            }
         }
 
         private void MergeDatabase(ModifiersTemplates templates,
@@ -91,12 +95,16 @@ namespace DataCloner.DataClasse.Configuration
                 var db = allDb.First(d => d.TemplateId == dbToMerge.UseTemplateId);
 
                 MergeDatabase(templates, variables, compiledServer, db);
+                dbToMerge.TemplateId = 0;
                 dbToMerge.UseTemplateId = 0;
             }
 
             //Merge
             foreach (var schema in dbToMerge.Schemas)
-                MergeSchema(templates, variables, dbToMerge, schema);
+            {
+                var dstDb = compiledServer.Databases.First(d => d.Name == dbToMerge.Name);
+                MergeSchema(templates, variables, dstDb, schema);
+            }
         }
 
         private void MergeSchema(ModifiersTemplates templates,
@@ -126,12 +134,16 @@ namespace DataCloner.DataClasse.Configuration
                 var sch = allSchema.First(d => d.TemplateId == schemaToMerge.UseTemplateId);
 
                 MergeSchema(templates, variables, compiledDatabase, sch);
+                schemaToMerge.TemplateId = 0;
                 schemaToMerge.UseTemplateId = 0;
             }
 
             //Merge
             foreach (var table in schemaToMerge.Tables)
-                MergeTable(variables, schemaToMerge, table);
+            {
+                var dstSchema = compiledDatabase.Schemas.First(d => d.Name == schemaToMerge.Name);
+                MergeTable(variables, dstSchema, table);
+            }
         }
 
         private void MergeTable(List<Variable> variables,
