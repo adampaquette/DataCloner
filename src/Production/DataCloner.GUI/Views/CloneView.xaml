@@ -6,12 +6,12 @@
              xmlns:local="clr-namespace:DataCloner.GUI.Views"
              xmlns:sn="http://scintillanet.codeplex.com"
              mc:Ignorable="d" 
-             Loaded="Window_Loaded">
-    <Grid>
-        <TabControl Margin="0,0,0,188">
+             Loaded="Window_Loaded" d:DesignWidth="382" d:DesignHeight="495">
+    <Grid Height="Auto" VerticalAlignment="Stretch" Margin="0">
+        <TabControl Margin="0,0,0,49" Height="Auto" VerticalAlignment="Stretch">
             <TabItem Header="Paramètres">
-                <Grid>
-                    <GroupBox x:Name="groupBox1" Header="Environnements" Margin="10,10,0,0" Height="244" VerticalAlignment="Top" HorizontalAlignment="Left" Width="187">
+                <Grid Height="408" VerticalAlignment="Top">
+                    <GroupBox x:Name="groupBox1" Header="Environnements" Margin="10,10,0,0" Height="264" VerticalAlignment="Top" HorizontalAlignment="Left" Width="187">
                         <Grid>
                             <Label x:Name="label1" Content="Application :" Margin="4,4,0,0" Height="29" VerticalAlignment="Top" HorizontalAlignment="Left" Width="99"/>
                             <ComboBox x:Name="cbApp" Margin="10,33,10,0" 
@@ -41,7 +41,7 @@
 													SelectionChanged="cbDestinationEnvir_SelectionChanged" RenderTransformOrigin="0.498,0.591"/>
                         </Grid>
                     </GroupBox>
-                    <GroupBox x:Name="groupBox" Header="Données sources" Margin="202,10,0,0" Height="362" VerticalAlignment="Top" HorizontalAlignment="Left" Width="174">
+                    <GroupBox x:Name="groupBox" Header="Données sources" Margin="202,10,0,0" Height="384" VerticalAlignment="Top" HorizontalAlignment="Left" Width="169">
                         <Grid>
                             <Label Content="Serveur : " Margin="10,10,0,0" Height="29" VerticalAlignment="Top" HorizontalAlignment="Left" Width="99"/>
                             <ComboBox x:Name="cbServer" Margin="10,39,10,0" 
@@ -64,10 +64,10 @@
 													VerticalAlignment="Top" 
 													SelectionChanged="cbColonne_SelectionChanged"/>
                             <Label Content="Valeur : " Margin="10,279,0,0" Height="29" VerticalAlignment="Top" HorizontalAlignment="Left" Width="99" RenderTransformOrigin="-0.485,4.172"/>
-                            <TextBox x:Name="txtValeur" Margin="10,308,10,10"/>
+                            <TextBox x:Name="txtValeur" Margin="10,306,10,0" Height="26" VerticalAlignment="Top"/>
                         </Grid>
                     </GroupBox>
-                    <GroupBox Header="Paramètres" Margin="10,259,0,0" Height="113" VerticalAlignment="Top" HorizontalAlignment="Left" Width="187">
+                    <GroupBox Header="Paramètres" Margin="10,281,0,0" Height="113" VerticalAlignment="Top" HorizontalAlignment="Left" Width="187">
                         <Grid>
                             <CheckBox x:Name="chkSimulation" Content="Simulation" Margin="10,10,0,0" HorizontalAlignment="Left" Width="100" Height="27" VerticalAlignment="Top" Checked="chkSimulation_Checked"/>
                             <CheckBox x:Name="chkOptimisation" Content="Optimisation" Margin="10,34,0,0" HorizontalAlignment="Left" Width="100" Height="27" VerticalAlignment="Top" Checked="chkOptimisation_Checked"/>
@@ -77,63 +77,30 @@
             </TabItem>
             <TabItem Header="Logs">
                 <Grid>
-                    <TextBlock Text="Statut : " Margin="0,10,0,347" />
+                    <TextBlock Text="Statut : " Margin="10,10,10,369" />
                     <RichTextBox  x:Name="rtbStatus" AcceptsReturn="True" IsReadOnly="True" VerticalScrollBarVisibility="Auto"
-                                  Margin="0,35,0,0" />
+                                  Margin="10,35,10,0"
+                                  BorderThickness="1" BorderBrush="{StaticResource AccentColorBrush}"/>
                 </Grid>
             </TabItem>
             <TabItem Header="Requête">
                 <Grid>
-                    <TextBlock Text="Requête SQL générée (les valeurs ne sont pas formattées) : " Margin="0,10,0,347" />
+                    <TextBlock Text="Requête SQL générée (les valeurs ne sont pas formattées) : " Margin="10,10,10,347" />
                     <sn:ScintillaWPF HorizontalAlignment="Stretch" VerticalAlignment="Stretch" x:Name="scintilla" 
-												 Margin="0,35,0,0" IsReadOnly="True">
+									 Margin="10,35,10,0" IsReadOnly="True" BorderStyle="None"
+                                     BorderThickness="1" BorderBrush="{StaticResource AccentColorBrush}">
                         <sn:ConfigurationManager Language="mssql" />
-                        <!-- IsVisible IsEnabled -->
-                        <!--sn:Annotations AnnotationVisibility="Standard" />
-									<sn:AutoComplete AutomaticLengthEntered="True" />
-									<sn:CallTip BackColor="Red" />
-									<sn:Caret HighlightCurrentLine="True" CurrentLineBackgroundColor="#40FFFF00" />
-									<sn:Clipboard ConvertLineBreaksOnPaste="False" />
-									<sn:Commands AllowDuplicateBindings="False" />									
-									<sn:DocumentNavigation NavigationPointTimeout="20" />
-									<sn:DropMarkers SharedStackName="SomeSharedName" />
-									<sn:EndOfLine IsEndOfLineVisible="True" />
-									<sn:Folding IsFoldingEnabled="True" MarkerScheme="CirclePlusMinus" />
-									<sn:HotspotStyle ActiveUnderline="True" />
-									<sn:Indentation BackspaceUnindents="True" />
-									<sn:Lexing Lexer="Css" /-->
                         <sn:LineWrapping VisualFlags="End" />
-                        <!-- This is the same as SCide -->
-                        <!--sn:LongLines EdgeMode="Background" /-->
                         <sn:Margins>
-                            <!-- This is the same as SCide -->
                             <sn:Margin0 Width="35" />
                             <sn:Margin1 Width="5" AutoToggleMarkerNumber="0" IsClickable="false" />
                             <sn:Margin2 Width="0" />
                         </sn:Margins>
-                        <!--sn:Markers>
-										<sn:FolderMarker BackColor="Green" />
-										<sn:FolderOpenMarker Symbol="ShortArrow" />
-									</sn:Markers>
-									<sn:Scrolling ScrollBars="Both" /-->
                     </sn:ScintillaWPF>
                 </Grid>
             </TabItem>
         </TabControl>
-        <ListView x:Name="lvResults" Margin="10,0,10,10" Height="96" VerticalAlignment="Bottom">
-            <ListView.View>
-                <GridView>
-                    <GridViewColumn/>
-                </GridView>
-            </ListView.View>
-        </ListView>
-        <Label x:Name="label" Content="Nombre de copies :" HorizontalAlignment="Left" Margin="10,0,0,154" RenderTransformOrigin="0.553,1.586" Height="29" VerticalAlignment="Bottom" />
-        <TextBlock Text="{Binding ElementName=sliderCopy, Path=Value, UpdateSourceTrigger=PropertyChanged}"  HorizontalAlignment="Left" Margin="129,0,0,161" RenderTransformOrigin="0.553,1.586" Width="39" Height="17" VerticalAlignment="Bottom"/>
-        <Slider x:Name="sliderCopy" Margin="10,0,229,125"
-							Maximum="20" TickFrequency="1" IsSnapToTickEnabled="True" TickPlacement="BottomRight"
-							Minimum="1" Height="24" VerticalAlignment="Bottom"/>
-
-        <Button x:Name="BtnExec" Content="Exécuter" HorizontalAlignment="Right" Margin="0,0,10,137" Width="214" 
-									Click="btnExec_Click" Height="34" VerticalAlignment="Bottom" />
+        <Button x:Name="BtnExec" Content="Exécuter" Margin="10,0,10,10" 
+				Click="btnExec_Click" Height="33" VerticalAlignment="Bottom" />
     </Grid>
 </UserControl>

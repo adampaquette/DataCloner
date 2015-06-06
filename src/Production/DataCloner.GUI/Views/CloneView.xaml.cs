@@ -303,7 +303,7 @@ namespace DataCloner.GUI.Views
                     Schema = _selectedSchema,
                     Table = _selectedTable,
                     Columns = new ColumnsWithValue { { _selectedColumn, txtValeur.Text } },
-                    NbCopies = sliderCopy.Value
+                    NbCopies = 1
                 });
                 BtnExec.IsEnabled = false;
             }

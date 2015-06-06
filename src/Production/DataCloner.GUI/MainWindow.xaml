@@ -1,12 +1,15 @@
-﻿<Window
+﻿<m:MetroWindow
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
 		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" 
 		xmlns:sn="http://scintillanet.codeplex.com"
+        xmlns:m="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         xmlns:v="clr-namespace:DataCloner.GUI.Views"
 		x:Class="DataCloner.GUI.MainWindow" 
-        Title="DataCloner GUI" Height="647" Width="645" MinHeight="655" MinWidth="645">
+        Title="DataCloner GUI" Height="550" Width="645" MinHeight="550" MinWidth="645"
+        ShowIconOnTitleBar="True" TitleCaps="False" ResizeMode="CanResizeWithGrip"
+        GlowBrush="{DynamicResource AccentColorBrush}">
 	<Window.Resources>
 		<Style x:Key="RoundedTab" TargetType="{x:Type TabItem}">
 			<Setter Property="Template">
@@ -34,12 +37,9 @@
 				</Setter.Value>
 			</Setter>
 		</Style>
-		<Style TargetType="{x:Type Button}">
-			<Setter Property="Background" Value="Coral"/>
-		</Style>
 	</Window.Resources>
 	<Grid Background="#FFEEEBE6">
-		<TabControl BorderThickness="1 1 1 1" Margin="10" TabStripPlacement="Left">
+		<TabControl BorderThickness="1 1 1 1" Margin="10,10,0,10" TabStripPlacement="Left">
 			<TabItem Style="{StaticResource RoundedTab}">
 				<TabItem.Header>
 					<StackPanel Orientation="Vertical">
@@ -69,4 +69,4 @@
             </TabItem>
 		</TabControl>
 	</Grid>
-</Window>
+</m:MetroWindow>
