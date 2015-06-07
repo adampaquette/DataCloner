@@ -8,7 +8,10 @@
              d:DesignHeight="300" d:DesignWidth="300"
              DataContext="{Binding Source={StaticResource Locator}, Path=ConnectionString}">
     <Grid>
-            <TextBlock Text="Id :" Margin="10,10,269,268"/>
-            <TextBlock Text="{Binding Id}" Margin="46,10,196,268"/>
+        <TextBlock Text="Id :" Margin="10,10,269,268"/>
+        <TextBlock Text="{Binding Id}" Margin="46,10,196,268"/>
+        <TextBox Name="txtId" Text="{Binding Id, Mode=TwoWay}" Margin="120,10,0,0" Height="26" VerticalAlignment="Top" HorizontalAlignment="Left" Width="56"/>
+        <TextBlock Text="{Binding ProviderName}" Margin="46,41,196,237"/>
+        <TextBox Name="txtProviderName" Text="{Binding ProviderName, Mode=TwoWay}" Margin="120,41,0,0" Height="26" VerticalAlignment="Top" HorizontalAlignment="Left" Width="56"/>
     </Grid>
 </UserControl>

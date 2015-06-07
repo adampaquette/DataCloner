@@ -16,9 +16,33 @@ namespace DataCloner.GUI.ViewModel
             set { Set("Id", ref _id, value); }
         }
 
-        public ConnectionStringViewModel ()
+        public string Name
         {
-            Id = 12356;
+            get { return _name; }
+            set { Set("Name", ref _name, value); }
+        }
+
+        public string ProviderName
+        {
+            get { return _providerName; }
+            set { Set("ProviderName", ref _providerName, value); }
+        }
+
+        public string ConnectionString
+        {
+            get { return _connectionString; }
+            set { Set("ConnectionString", ref _connectionString, value); }
+        }
+
+        public ConnectionStringViewModel()
+        {
+            if (IsInDesignMode)
+            {
+                Id = 1;
+                Name = "UNI";
+                ProviderName = "System.Data.SqlClient";
+                ConnectionString = @"Data Source=.\SQLEXPRESS;Integrated Security=True;Database=northwind;";
+            }
         }
     }
 }
