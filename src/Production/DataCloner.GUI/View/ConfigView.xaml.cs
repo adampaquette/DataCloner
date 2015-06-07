@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace DataCloner.GUI.Views
+namespace DataCloner.GUI.View
 {
     /// <summary>
     /// Interaction logic for ConfigView.xaml

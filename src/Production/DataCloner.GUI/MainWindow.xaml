@@ -5,68 +5,77 @@
 		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" 
 		xmlns:sn="http://scintillanet.codeplex.com"
         xmlns:m="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
-        xmlns:v="clr-namespace:DataCloner.GUI.Views"
+        xmlns:v="clr-namespace:DataCloner.GUI.View"
 		x:Class="DataCloner.GUI.MainWindow" 
-        Title="DataCloner GUI" Height="550" Width="645" MinHeight="550" MinWidth="645"
+        Title="DataCloner V0.1" Height="550" Width="645" MinHeight="550" MinWidth="645"
         ShowIconOnTitleBar="True" TitleCaps="False" ResizeMode="CanResizeWithGrip"
         GlowBrush="{DynamicResource AccentColorBrush}">
-	<Window.Resources>
-		<Style x:Key="RoundedTab" TargetType="{x:Type TabItem}">
-			<Setter Property="Template">
-				<Setter.Value>
-					<ControlTemplate TargetType="{x:Type TabItem}">
-						<Border x:Name="Border" BorderThickness="2,2,0,2" BorderBrush="Gainsboro" 
-										CornerRadius="7,0,0,7" Margin="0,10" Padding="5,10">
-							<ContentPresenter x:Name="ContentSite"
+    <Window.Resources>
+        <Style x:Key="RoundedTab" TargetType="{x:Type TabItem}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type TabItem}">
+                        <Border x:Name="Border" BorderThickness="2,2,2,2" BorderBrush="Gainsboro" 
+										CornerRadius="7,7,7,7" Margin="0,10" Padding="5,10">
+                            <ContentPresenter x:Name="ContentSite"
 										VerticalAlignment="Center"
 										HorizontalAlignment="Center"
 										ContentSource="Header"/>
-						</Border>
-						<ControlTemplate.Triggers>
-							<Trigger Property="IsSelected" Value="True">
-								<Setter TargetName="Border" Property="Background" Value="#ffffff" />
-								<Setter TargetName="Border" Property="BorderThickness" Value="1 1 0 1"/>
-							</Trigger>
-							<Trigger Property="IsSelected" Value="False">
-								<Setter TargetName="Border" Property="Background" Value="#FFEEEBE6" />
-								<Setter TargetName="Border" Property="BorderThickness" Value="1 1 0 1"/>
-								<Setter TargetName="Border" Property="BorderBrush"  Value="Transparent"/>
-							</Trigger>
-						</ControlTemplate.Triggers>
-					</ControlTemplate>
-				</Setter.Value>
-			</Setter>
-		</Style>
-	</Window.Resources>
-	<Grid Background="#FFEEEBE6">
-		<TabControl BorderThickness="1 1 1 1" Margin="10,10,0,10" TabStripPlacement="Left">
-			<TabItem Style="{StaticResource RoundedTab}">
-				<TabItem.Header>
-					<StackPanel Orientation="Vertical">
-						<Image Source="Resources/seo1.png" Height="45" Width="auto"/>
-						<TextBlock Text="Tableau de board" Margin="2,0,0,0" VerticalAlignment="Center" />
-					</StackPanel>
-				</TabItem.Header>
-			</TabItem>
-			<TabItem Style="{StaticResource RoundedTab}">
-				<TabItem.Header>
-					<StackPanel Orientation="Vertical">
-						<Image Source="Resources/settings48.png" Height="45" Width="auto"/>
-						<TextBlock Text="Configuration" Margin="2,0,0,0" VerticalAlignment="Center" />
-					</StackPanel>
-				</TabItem.Header>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="Border" Property="Background" Value="#ffffff" />
+                                <Setter TargetName="Border" Property="BorderThickness" Value="1 1 1 1"/>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="False">
+                                <Setter TargetName="Border" Property="Background" Value="#FFEEEBE6" />
+                                <Setter TargetName="Border" Property="BorderThickness" Value="1 1 1 1"/>
+                                <Setter TargetName="Border" Property="BorderBrush"  Value="Transparent"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+    <m:MetroWindow.RightWindowCommands>
+        <m:WindowCommands>
+            <Button Content="Application"/>
+        </m:WindowCommands>
+    </m:MetroWindow.RightWindowCommands>
+    <Grid Background="#FFEEEBE6">
+        <TabControl BorderThickness="1 1 1 1" Margin="10,10,10,10" TabStripPlacement="Left">
+            <TabItem Style="{StaticResource RoundedTab}">
+                <TabItem.Header>
+                    <StackPanel Orientation="Vertical">
+                        <Image Source="Resources/seo1.png" Height="45" Width="auto"/>
+                        <TextBlock Text="Tableau de board" Margin="2,0,0,0" VerticalAlignment="Center" />
+                    </StackPanel>
+                </TabItem.Header>
+                <Grid>
+                    <TextBlock Text="Data Cloner V0.1" FontSize="30" FontWeight="Bold" HorizontalAlignment="Center"
+                            Foreground="{StaticResource AccentColorBrush}"/>
+                </Grid>
+            </TabItem>
+            <TabItem Style="{StaticResource RoundedTab}">
+                <TabItem.Header>
+                    <StackPanel Orientation="Vertical">
+                        <Image Source="Resources/settings48.png" Height="45" Width="auto"/>
+                        <TextBlock Text="Configuration" Margin="2,0,0,0" VerticalAlignment="Center" />
+                    </StackPanel>
+                </TabItem.Header>
                 <v:ConfigView/>
-			</TabItem>
-			<TabItem Style="{StaticResource RoundedTab}"
+            </TabItem>
+            <TabItem Style="{StaticResource RoundedTab}"
 					 IsSelected="True">
-				<TabItem.Header>
-					<StackPanel Orientation="Vertical">
-						<Image Source="Resources/database31.png" Height="45" Width="auto"/>
-						<TextBlock Text="Clônage" Margin="2,0,0,0" VerticalAlignment="Center" />
-					</StackPanel>
-				</TabItem.Header>
+                <TabItem.Header>
+                    <StackPanel Orientation="Vertical">
+                        <Image Source="Resources/database31.png" Height="45" Width="auto"/>
+                        <TextBlock Text="Clônage" Margin="2,0,0,0" VerticalAlignment="Center" />
+                    </StackPanel>
+                </TabItem.Header>
                 <v:CloneView />
             </TabItem>
-		</TabControl>
-	</Grid>
+        </TabControl>
+    </Grid>
 </m:MetroWindow>

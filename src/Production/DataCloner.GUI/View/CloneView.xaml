@@ -1,10 +1,11 @@
-﻿<UserControl x:Class="DataCloner.GUI.Views.CloneView"
+﻿<UserControl x:Class="DataCloner.GUI.View.CloneView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:DataCloner.GUI.Views"
+             xmlns:local="clr-namespace:DataCloner.GUI.View"
              xmlns:sn="http://scintillanet.codeplex.com"
+             xmlns:m="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
              mc:Ignorable="d" 
              Loaded="Window_Loaded" d:DesignWidth="382" d:DesignHeight="495">
     <Grid Height="Auto" VerticalAlignment="Stretch" Margin="0">
@@ -20,7 +21,7 @@
 													SelectedValuePath="Id"
 													DisplayMemberPath="Name"
 													SelectionChanged="CbApp_OnSelectionChanged" />
-                            <TextBlock HorizontalAlignment="Left" Text="DbType d'extraction : " VerticalAlignment="Top" Margin="10,60,0,0" RenderTransformOrigin="0.57,0.625"/>
+                            <TextBlock HorizontalAlignment="Left" Text="Type d'extraction : " VerticalAlignment="Top" Margin="10,60,0,0" RenderTransformOrigin="0.57,0.625"/>
                             <ComboBox x:Name="cbDatabaseConfig" 
 													Margin="10,81,10,0" 
 													VerticalAlignment="Top" Height="22"

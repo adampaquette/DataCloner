@@ -13,7 +13,7 @@ using DataCloner.GUI.Properties;
 using System.Windows.Documents;
 using System.Windows.Media;
 
-namespace DataCloner.GUI.Views
+namespace DataCloner.GUI.View
 {
     /// <summary>
     /// Interaction logic for CloneView.xaml
