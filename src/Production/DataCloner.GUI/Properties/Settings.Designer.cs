@@ -154,5 +154,17 @@ namespace DataCloner.GUI.Properties {
                 this["DoOptimisation"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public short DefaultAppId {
+            get {
+                return ((short)(this["DefaultAppId"]));
+            }
+            set {
+                this["DefaultAppId"] = value;
+            }
+        }
     }
 }
