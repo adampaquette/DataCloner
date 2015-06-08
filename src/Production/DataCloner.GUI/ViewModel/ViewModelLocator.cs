@@ -44,12 +44,14 @@ namespace DataCloner.GUI.ViewModel
 
             SimpleIoc.Default.Register<MainViewModel>();
             SimpleIoc.Default.Register<ConfigViewModel>();
-            SimpleIoc.Default.Register<ConnectionStringViewModel>();
+            SimpleIoc.Default.Register<ServerViewModel>();
+            SimpleIoc.Default.Register<ListServerViewModel>();
         }
 
         public MainViewModel Main => ServiceLocator.Current.GetInstance<MainViewModel>();
         public ConfigViewModel Config => ServiceLocator.Current.GetInstance<ConfigViewModel>();
-        public ConnectionStringViewModel ConnectionString => ServiceLocator.Current.GetInstance<ConnectionStringViewModel>();
+        public ServerViewModel Server => ServiceLocator.Current.GetInstance<ServerViewModel>();
+        public ListServerViewModel ListServer => ServiceLocator.Current.GetInstance<ListServerViewModel>();
 
         public static void Cleanup()
         {

@@ -3,7 +3,7 @@ using GalaSoft.MvvmLight;
 
 namespace DataCloner.GUI.ViewModel
 {
-    public class ConnectionStringViewModel : ViewModelBase
+    public class ServerViewModel : ViewModelBase
     {
         private Int16 _id;
         private string _name;
@@ -31,10 +31,10 @@ namespace DataCloner.GUI.ViewModel
         public string ConnectionString
         {
             get { return _connectionString; }
-            set { Set("ConnectionString", ref _connectionString, value); }
+            set { Set("Server", ref _connectionString, value); }
         }
 
-        public ConnectionStringViewModel()
+        public ServerViewModel()
         {
             if (IsInDesignMode)
             {

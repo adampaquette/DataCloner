@@ -124,7 +124,8 @@
     <Compile Include="Model\ConfigModel.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="ViewModel\ConfigViewModel.cs" />
-    <Compile Include="ViewModel\ConnectionStringViewModel.cs" />
+    <Compile Include="ViewModel\ServerViewModel.cs" />
+    <Compile Include="ViewModel\ListServerViewModel.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
     <Compile Include="View\CloneView.xaml.cs">
@@ -133,8 +134,8 @@
     <Compile Include="View\ConfigView.xaml.cs">
       <DependentUpon>ConfigView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\ConnectionStringView.xaml.cs">
-      <DependentUpon>ConnectionStringView.xaml</DependentUpon>
+    <Compile Include="View\ListConnectionStringView.xaml.cs">
+      <DependentUpon>ListConnectionStringView.xaml</DependentUpon>
     </Compile>
     <Page Include="MainWindow.xaml">
       <SubType>Designer</SubType>
@@ -148,7 +149,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\ConnectionStringView.xaml">
+    <Page Include="View\ListConnectionStringView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

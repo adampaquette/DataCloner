@@ -11,7 +11,7 @@ namespace DataCloner.DataClasse.Configuration
 		public Int16 Id { get; set; }
 		[XmlAttribute]
         public string Name { get; set; }
-        [XmlArrayItem("add")]
+        [XmlArrayItem("Add")]
         public List<Connection> ConnectionStrings { get; set; }
         public ModifiersTemplates ModifiersTemplates { get; set; }
         public List<ClonerConfiguration> ClonerConfigurations { get; set; }
