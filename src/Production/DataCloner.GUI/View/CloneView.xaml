@@ -87,7 +87,7 @@
             <TabItem Header="Requête">
                 <Grid>
                     <TextBlock Text="Requête SQL générée (les valeurs ne sont pas formattées) : " Margin="10,10,10,347" />
-                    <sn:ScintillaWPF HorizontalAlignment="Stretch" VerticalAlignment="Stretch" x:Name="scintilla" 
+                    <sn:ScintillaWPF x:Name="scintilla" 
 									 Margin="10,35,10,0" IsReadOnly="True" BorderStyle="None"
                                      BorderThickness="1" BorderBrush="{StaticResource AccentColorBrush}">
                         <sn:ConfigurationManager Language="mssql" />

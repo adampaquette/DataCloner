@@ -10,7 +10,7 @@
     <Grid>
         <TabControl>
             <TabItem Header="Serveurs">
-                <v:ListConnectionStringView/>
+                <v:ListServerView/>
             </TabItem>
             <TabItem Header="Modèles">
                 <StackPanel Grid.Row="1">
