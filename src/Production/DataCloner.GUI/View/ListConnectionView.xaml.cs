@@ -18,9 +18,9 @@ namespace DataCloner.GUI.View
     /// <summary>
     /// Interaction logic for ConnectionStringView.xaml
     /// </summary>
-    public partial class ListServerView : UserControl
+    public partial class ListConnectionView : UserControl
     {
-        public ListServerView()
+        public ListConnectionView()
         {
             InitializeComponent();
         }

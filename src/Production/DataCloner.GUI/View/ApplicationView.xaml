@@ -1,19 +1,18 @@
-﻿<UserControl x:Class="DataCloner.GUI.View.ConfigView"
+﻿<UserControl x:Class="DataCloner.GUI.View.ApplicationView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:v="clr-namespace:DataCloner.GUI.View"
              mc:Ignorable="d" 
-             DataContext="{Binding Source={StaticResource Locator}, Path=Config}"
              d:DesignHeight="434" d:DesignWidth="612">
     <Grid>
         <TabControl>
-            <TabItem Header="Serveurs">
-                <v:ListServerView/>
+            <TabItem Header="Connexions">
+                <v:ListConnectionView DataContext="{Binding Connections}"/>
             </TabItem>
             <TabItem Header="Modèles">
-                <StackPanel Grid.Row="1">
+                <StackPanel Grid.Row="1" Margin="10,0">
                     <TextBlock Text="Templates" />
                     <ListBox Height="57">
                     </ListBox>
@@ -27,7 +26,7 @@
                     </ListBox>
                 </StackPanel>
             </TabItem>
-            <TabItem Header="Configs">
+            <TabItem Header="Types">
 
             </TabItem>
             <TabItem Header="Maps">

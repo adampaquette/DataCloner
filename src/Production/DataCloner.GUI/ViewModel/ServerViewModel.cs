@@ -1,5 +1,7 @@
 ﻿using System;
+using DataCloner.DataClasse.Configuration;
 using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.Ioc;
 
 namespace DataCloner.GUI.ViewModel
 {
@@ -34,6 +36,7 @@ namespace DataCloner.GUI.ViewModel
             set { Set("Server", ref _connectionString, value); }
         }
 
+        [PreferredConstructor]
         public ServerViewModel()
         {
             if (IsInDesignMode)
@@ -43,6 +46,14 @@ namespace DataCloner.GUI.ViewModel
                 ProviderName = "System.Data.SqlClient";
                 ConnectionString = @"Data Source=.\SQLEXPRESS;Integrated Security=True;Database=northwind;";
             }
+        }
+
+        public ServerViewModel(Connection connection)
+        {
+            Id = connection.Id;
+            Name = connection.Name;
+            ProviderName = connection.ProviderName;
+            ConnectionString = connection.ConnectionString;
         }
     }
 }

@@ -6,7 +6,7 @@
 		xmlns:sn="http://scintillanet.codeplex.com"
         xmlns:m="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         xmlns:v="clr-namespace:DataCloner.GUI.View"
-		x:Class="DataCloner.GUI.MainWindow" 
+		x:Class="DataCloner.GUI.MainView" 
         Title="DataCloner V0.1" Height="550" Width="645" MinHeight="550" MinWidth="645"
         ShowIconOnTitleBar="True" TitleCaps="False" ResizeMode="CanResizeWithGrip"
         GlowBrush="{DynamicResource AccentColorBrush}"
@@ -65,7 +65,7 @@
                         <TextBlock Text="Configuration" Margin="2,0,0,0" VerticalAlignment="Center" />
                     </StackPanel>
                 </TabItem.Header>
-                <v:ConfigView/>
+                <v:ApplicationView DataContext="{Binding CurrentApp}"/>
             </TabItem>
             <TabItem Style="{StaticResource RoundedTab}"
 					 IsSelected="True">

@@ -117,30 +117,31 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Extension.cs" />
-    <Compile Include="MainWindow.xaml.cs">
-      <DependentUpon>MainWindow.xaml</DependentUpon>
+    <Compile Include="MainView.xaml.cs">
+      <DependentUpon>MainView.xaml</DependentUpon>
     </Compile>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Message\SelectedApplicationMessage.cs" />
     <Compile Include="Model\ConfigModel.cs" />
     <Compile Include="Settings.cs" />
-    <Compile Include="ViewModel\ConfigViewModel.cs" />
+    <Compile Include="ViewModel\ApplicationViewModel.cs" />
     <Compile Include="ViewModel\ServerViewModel.cs" />
-    <Compile Include="ViewModel\ListServerViewModel.cs" />
+    <Compile Include="ViewModel\ListConnectionViewModel.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
     <Compile Include="View\CloneView.xaml.cs">
       <DependentUpon>CloneView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\ConfigView.xaml.cs">
-      <DependentUpon>ConfigView.xaml</DependentUpon>
+    <Compile Include="View\ApplicationView.xaml.cs">
+      <DependentUpon>ApplicationView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\ListServerView.xaml.cs">
-      <DependentUpon>ListServerView.xaml</DependentUpon>
+    <Compile Include="View\ListConnectionView.xaml.cs">
+      <DependentUpon>ListConnectionView.xaml</DependentUpon>
     </Compile>
-    <Page Include="MainWindow.xaml">
+    <Page Include="MainView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -148,11 +149,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\ConfigView.xaml">
+    <Page Include="View\ApplicationView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\ListServerView.xaml">
+    <Page Include="View\ListConnectionView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -226,6 +227,7 @@
       <Name>DataCloner</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

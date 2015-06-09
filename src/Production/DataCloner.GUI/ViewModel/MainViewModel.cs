@@ -1,5 +1,6 @@
 using System.Linq;
 using DataCloner.DataClasse.Configuration;
+using DataCloner.GUI.Message;
 using DataCloner.GUI.Properties;
 using GalaSoft.MvvmLight;
 
@@ -8,38 +9,33 @@ namespace DataCloner.GUI.ViewModel
     public class MainViewModel : ViewModelBase
     {
         private Configuration _config;
-        private Application _currentApp;
+        private ApplicationViewModel _currentApp;
 
         public MainViewModel()
         {
             _config = Configuration.Load(Configuration.ConfigFileName);
-            _currentApp = _config.Applications.FirstOrDefault(a => a.Id == Settings.Default.DefaultAppId);
-            if (_currentApp == null)
-                _currentApp = _config.Applications.FirstOrDefault();
+            var app = _config.Applications.FirstOrDefault(a => a.Id == Settings.Default.DefaultAppId);
+            if (app == null)
+                app = _config.Applications.FirstOrDefault();
 
-            //if (IsInDesignMode)
-            //{
-            //    // Code runs in Blend --> create design time data.
-            //}
-            //else
-            //{
-            //    // Code runs "for real"
-            //}
+            _currentApp = new ApplicationViewModel(app);
         }
 
-        public Application CurrentApp
+        public ApplicationViewModel CurrentApp
         {
             get { return _currentApp; }
             set
             {
-                if (Set("", ref _currentApp, value))
+                if (Set("CurrentApp", ref _currentApp, value))
                 {
                     Settings.Default.DefaultAppId = _currentApp.Id;
-                    RaisePropertyChanged("Application");
+                    RaisePropertyChanged("ApplicationName");
+
+                    MessengerInstance.Send(new SelectedApplicationMessage {Application = _currentApp});
                 }
             }
         }
 
-        public string ApplicationName { get { return _currentApp.Name; } }
+        public string ApplicationName { get { return _currentApp?.Name; } }
     }
 }

@@ -1,14 +1,13 @@
-﻿<UserControl x:Class="DataCloner.GUI.View.ListServerView"
+﻿<UserControl x:Class="DataCloner.GUI.View.ListConnectionView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:DataCloner.GUI.View"
+             xmlns:gui="clr-namespace:DataCloner.GUI"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300"
-             DataContext="{Binding Source={StaticResource Locator}, Path=ListServer}">
-
-    <Grid>
+             d:DesignHeight="300" d:DesignWidth="300">
+    <Grid Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="11*"/>
             <RowDefinition/>
@@ -19,7 +18,9 @@
                   CanUserAddRows="True"
                   CanUserDeleteRows="True"
                   IsReadOnly="False" Margin="0,0,0,5"
-                  Grid.Row="0">
+                  Grid.Row="0"
+                  BorderBrush="{StaticResource AccentColorBrush}"
+                  BorderThickness="1">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Id" Binding="{Binding Id, UpdateSourceTrigger=PropertyChanged}"/>
                 <DataGridTextColumn Header="Nom" Binding="{Binding Name, UpdateSourceTrigger=PropertyChanged}"/>

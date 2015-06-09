@@ -3,9 +3,9 @@ using System.Windows;
 
 namespace DataCloner.GUI
 {
-    public partial class MainWindow : MetroWindow
+    public partial class MainView : MetroWindow
 	{
-		public MainWindow()
+		public MainView()
 		{
 		}
     }

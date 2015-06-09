@@ -7,10 +7,11 @@ using System.Windows.Controls;
 using DataCloner.DataClasse.Configuration;
 using DataCloner.GUI.Properties;
 using GalaSoft.MvvmLight.CommandWpf;
+using GalaSoft.MvvmLight.Ioc;
 
 namespace DataCloner.GUI.ViewModel
 {
-    public class ListServerViewModel : ViewModelBase
+    public class ListConnectionViewModel : ViewModelBase
     {
         private ObservableCollection<ServerViewModel> _servers;
 
@@ -20,27 +21,10 @@ namespace DataCloner.GUI.ViewModel
             set { Set("Servers", ref _servers, value); }
         }
 
-        public ListServerViewModel()
+        [PreferredConstructor]
+        public ListConnectionViewModel()
         {
-            Servers = new ObservableCollection<ServerViewModel>();
-
-            var config = Configuration.Load(Configuration.ConfigFileName);
-            var app = config.Applications.FirstOrDefault(a => a.Id == Settings.Default.DefaultAppId);
-            if (app == null)
-                app = config.Applications.First();
-            foreach (var s in app.ConnectionStrings)
-            {
-                Servers.Add(new ServerViewModel
-                {
-                    ConnectionString = s.ConnectionString,
-                    Id = s.Id,
-                    Name = s.Name,
-                    ProviderName = s.ProviderName
-                });
-            }
-
-            AddCommand = new RelayCommand<DataGrid>((g) => Servers.Add(new ServerViewModel()),
-                                                    (g) => true);
+            AddCommand = new RelayCommand<DataGrid>(g => Servers.Add(new ServerViewModel()), g => true);
             SaveCommand = new RelayCommand<ServerViewModel>(Save, s => true);
 
             if (IsInDesignMode)
@@ -51,6 +35,14 @@ namespace DataCloner.GUI.ViewModel
                     new ServerViewModel()
                 };
             }
+        }
+
+        public ListConnectionViewModel(IEnumerable<Connection> Connections) : base()
+        {
+            _servers = new ObservableCollection<ServerViewModel>();
+
+            foreach (var conn in Connections)
+                _servers.Add(new ServerViewModel(conn));
         }
 
         public RelayCommand<DataGrid> AddCommand { get; private set; }
