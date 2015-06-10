@@ -6,7 +6,7 @@ using GalaSoft.MvvmLight;
 
 namespace DataCloner.GUI.ViewModel
 {
-    public class MainViewModel : ViewModelBase
+    class MainViewModel : ViewModelBase
     {
         private Configuration _config;
         private ApplicationViewModel _currentApp;

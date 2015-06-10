@@ -89,6 +89,7 @@
       <HintPath>.\ScintillaNET.WPF.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Runtime">
@@ -127,8 +128,9 @@
     <Compile Include="Message\SelectedApplicationMessage.cs" />
     <Compile Include="Model\ConfigModel.cs" />
     <Compile Include="Settings.cs" />
+    <Compile Include="ViewModel\AnnotationViewModelBase.cs" />
     <Compile Include="ViewModel\ApplicationViewModel.cs" />
-    <Compile Include="ViewModel\ServerViewModel.cs" />
+    <Compile Include="ViewModel\ConnectionViewModel.cs" />
     <Compile Include="ViewModel\ListConnectionViewModel.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />

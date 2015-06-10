@@ -2,7 +2,7 @@
 
 namespace DataCloner.GUI.Message
 {
-    public class SelectedApplicationMessage
+    internal class SelectedApplicationMessage
     {
         public ApplicationViewModel Application { get; set; }
     }

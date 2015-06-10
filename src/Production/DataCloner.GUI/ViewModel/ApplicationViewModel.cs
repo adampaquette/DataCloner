@@ -1,33 +1,31 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using DataCloner.DataClasse.Configuration;
-using GalaSoft.MvvmLight;
+﻿using DataCloner.DataClasse.Configuration;
 using GalaSoft.MvvmLight.Ioc;
+using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace DataCloner.GUI.ViewModel
 {
-    public class ApplicationViewModel : ViewModelBase
+    class ApplicationViewModel : AnnotationViewModelBase
     {
         public Int16 _id;
         public string _name;
         public ListConnectionViewModel _connections;
 
+        [Required]
         public Int16 Id
         {
             get { return _id; }
             set { Set("Id", ref _id, value); }
         }
 
+        [Required]
         public string Name
         {
             get { return _name; }
             set { Set("Name", ref _name, value); }
         }
 
+        [Required]
         public ListConnectionViewModel Connections
         {
             get { return _connections; }

@@ -13,7 +13,7 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
         <DataGrid Name="dgServers"
-                  ItemsSource="{Binding Servers}"
+                  ItemsSource="{Binding Connections}"
                   AutoGenerateColumns="False"
                   CanUserAddRows="True"
                   CanUserDeleteRows="True"
@@ -22,10 +22,10 @@
                   BorderBrush="{StaticResource AccentColorBrush}"
                   BorderThickness="1">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Id" Binding="{Binding Id, UpdateSourceTrigger=PropertyChanged}"/>
-                <DataGridTextColumn Header="Nom" Binding="{Binding Name, UpdateSourceTrigger=PropertyChanged}"/>
-                <DataGridTextColumn Header="Nom du fournisseur" Binding="{Binding ProviderName, UpdateSourceTrigger=PropertyChanged}"/>
-                <DataGridTextColumn Header="Chaîne de connexion" Binding="{Binding ConnectionString, UpdateSourceTrigger=PropertyChanged}"/>
+                <DataGridTextColumn Header="Id" Binding="{Binding Id, UpdateSourceTrigger=PropertyChanged, NotifyOnValidationError=True, ValidatesOnDataErrors=True}"/>
+                <DataGridTextColumn Header="Nom" Binding="{Binding Name, UpdateSourceTrigger=PropertyChanged, NotifyOnValidationError=True, ValidatesOnDataErrors=True}"/>
+                <DataGridTextColumn Header="Nom du fournisseur" Binding="{Binding ProviderName, UpdateSourceTrigger=PropertyChanged, NotifyOnValidationError=True, ValidatesOnDataErrors=True}"/>
+                <DataGridTextColumn Header="Chaîne de connexion" Binding="{Binding ConnectionString, UpdateSourceTrigger=PropertyChanged, NotifyOnValidationError=True, ValidatesOnDataErrors=True}"/>
             </DataGrid.Columns>
         </DataGrid>
         <StackPanel Grid.Row="1"
