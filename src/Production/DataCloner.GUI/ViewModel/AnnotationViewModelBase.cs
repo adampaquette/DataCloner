@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using GalaSoft.MvvmLight;
+using System.Diagnostics;
 
 namespace DataCloner.GUI.ViewModel
 {
