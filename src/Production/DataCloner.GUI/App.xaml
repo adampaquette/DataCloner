@@ -10,6 +10,26 @@
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.AnimatedSingleRowTabControl.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <vm:ViewModelLocator x:Key="Locator" d:IsDataSource="True" xmlns:vm="clr-namespace:DataCloner.GUI.ViewModel" />
+            <Style x:Key="errorStyle_TextBox" TargetType="{x:Type TextBox}">
+                <Style.Triggers>
+                    <Trigger Property="Validation.HasError" Value="True">
+                        <Setter Property="Background" Value="Red"/>
+                        <Setter Property="ToolTip" 
+                                Value="{Binding RelativeSource={RelativeSource Self},
+                                Path=(Validation.Errors).CurrentItem.ErrorContent}"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+            <Style x:Key="errorStyle_TextBlock" TargetType="{x:Type TextBlock}">
+                <Style.Triggers>
+                    <Trigger Property="Validation.HasError" Value="True">
+                        <Setter Property="Background" Value="Red"/>
+                        <Setter Property="ToolTip" 
+                                Value="{Binding RelativeSource={RelativeSource Self},
+                                Path=(Validation.Errors).CurrentItem.ErrorContent}"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

@@ -125,6 +125,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Message\ErrorNumberChanged.cs" />
     <Compile Include="Message\SelectedApplicationMessage.cs" />
     <Compile Include="Model\ConfigModel.cs" />
     <Compile Include="Settings.cs" />

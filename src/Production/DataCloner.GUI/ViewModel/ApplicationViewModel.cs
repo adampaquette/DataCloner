@@ -15,21 +15,21 @@ namespace DataCloner.GUI.ViewModel
         public Int16 Id
         {
             get { return _id; }
-            set { Set("Id", ref _id, value); }
+            set { Set(ref _id, value); }
         }
 
         [Required]
         public string Name
         {
             get { return _name; }
-            set { Set("Name", ref _name, value); }
+            set { Set(ref _name, value); }
         }
 
         [Required]
         public ListConnectionViewModel Connections
         {
             get { return _connections; }
-            set { Set("Connections", ref _connections, value); }
+            set { Set(ref _connections, value); }
         }
 
         [PreferredConstructor]

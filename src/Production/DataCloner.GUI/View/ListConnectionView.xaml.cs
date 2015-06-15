@@ -24,5 +24,10 @@ namespace DataCloner.GUI.View
         {
             InitializeComponent();
         }
+
+        private void dgServers_Error(object sender, ValidationErrorEventArgs e)
+        {
+            var a = "";
+        }
     }
 }
