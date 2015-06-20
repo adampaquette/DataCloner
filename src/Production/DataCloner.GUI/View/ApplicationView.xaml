@@ -4,8 +4,10 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:v="clr-namespace:DataCloner.GUI.View"
+             xmlns:fw="clr-namespace:DataCloner.GUI.Framework"
              mc:Ignorable="d"
-             d:DesignHeight="300" d:DesignWidth="450">
+             d:DesignHeight="300" d:DesignWidth="450"
+             fw:ValidationHelper.IsEnabled="True" fw:ValidationHelper.IsValid="{Binding IsValid, Mode=OneWayToSource}">
     <Grid>
         <TabControl>
             <TabItem Header="Connexions">

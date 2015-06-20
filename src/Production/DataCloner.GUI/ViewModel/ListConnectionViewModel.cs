@@ -12,7 +12,7 @@ namespace DataCloner.GUI.ViewModel
         public ObservableCollection<ConnectionViewModel> Connections
         {
             get { return _connections; }
-            set { Set(ref _connections, value); }
+            set { ValidateAndSet(ref _connections, value); }
         }
 
         [PreferredConstructor]

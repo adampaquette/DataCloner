@@ -10,26 +10,33 @@ namespace DataCloner.GUI.ViewModel
         public Int16 _id;
         public string _name;
         public ListConnectionViewModel _connections;
+        public bool _isValid = true;
 
         [Required]
         public Int16 Id
         {
             get { return _id; }
-            set { Set(ref _id, value); }
+            set { ValidateAndSet(ref _id, value); }
         }
 
         [Required]
         public string Name
         {
             get { return _name; }
-            set { Set(ref _name, value); }
+            set { ValidateAndSet(ref _name, value); }
         }
 
         [Required]
         public ListConnectionViewModel Connections
         {
             get { return _connections; }
-            set { Set(ref _connections, value); }
+            set { ValidateAndSet(ref _connections, value); }
+        }
+
+        public bool IsValid
+        {
+            get { return _isValid; }
+            set { Set(ref _isValid, value); }
         }
 
         [PreferredConstructor]

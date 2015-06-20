@@ -118,6 +118,9 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Extension.cs" />
+    <Compile Include="Framework\ValidationHelper.cs" />
+    <Compile Include="Framework\ValidationReloadedTracker.cs" />
+    <Compile Include="Framework\ValidationTracker.cs" />
     <Compile Include="MainView.xaml.cs">
       <DependentUpon>MainView.xaml</DependentUpon>
     </Compile>

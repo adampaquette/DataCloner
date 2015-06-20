@@ -16,28 +16,28 @@ namespace DataCloner.GUI.ViewModel
         public Int16 Id
         {
             get { return _id; }
-            set { Set(ref _id, value); }
+            set { ValidateAndSet(ref _id, value); }
         }
 
         [Required]
         public string Name
         {
             get { return _name; }
-            set { Set(ref _name, value); }
+            set { ValidateAndSet(ref _name, value); }
         }
 
         [Required]
         public string ProviderName
         {
             get { return _providerName; }
-            set { Set(ref _providerName, value); }
+            set { ValidateAndSet(ref _providerName, value); }
         }
 
         [Required]
         public string ConnectionString
         {
             get { return _connectionString; }
-            set { Set(ref _connectionString, value); }
+            set { ValidateAndSet(ref _connectionString, value); }
         }
 
         [PreferredConstructor]

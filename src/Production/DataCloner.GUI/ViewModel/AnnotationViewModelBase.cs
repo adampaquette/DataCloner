@@ -9,8 +9,6 @@ namespace DataCloner.GUI.ViewModel
 {
     internal abstract class AnnotationViewModelBase : ViewModelBase
     {
-        private ObservableCollection<ValidationErrorEventArgs> _errors = new ObservableCollection<ValidationErrorEventArgs>();
-
         protected virtual void ValidateProperty(string property, object value)
         {
             var ctx = new ValidationContext(this, null, null);
@@ -18,20 +16,15 @@ namespace DataCloner.GUI.ViewModel
             Validator.ValidateProperty(value, ctx);
         }
 
-        protected bool Set<T>(ref T field, T newValue = default(T), [CallerMemberName]string propertyName = null, bool broadcast = false)
+        protected bool ValidateAndSet<T>(ref T field, T newValue = default(T), [CallerMemberName]string propertyName = null, bool broadcast = false)
         {
             ValidateProperty(propertyName, newValue);
-            return base.Set(propertyName, ref field, newValue, broadcast);
+            return Set(propertyName, ref field, newValue, broadcast);
         }
 
-        protected ObservableCollection<ValidationErrorEventArgs> Errors
+        protected bool Set<T>(ref T field, T newValue = default(T), [CallerMemberName]string propertyName = null, bool broadcast = false)
         {
-            get { return _errors; }
-            set
-            {
-                _errors = value;
-                MessengerInstance.Send(new ErrorEvent { Error = null });
-            }
+            return Set(propertyName, ref field, newValue, broadcast);
         }
     }
 }
