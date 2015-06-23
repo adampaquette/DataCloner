@@ -21,7 +21,7 @@ namespace DataCloner.GUI.ViewModel
                 app = _config.Applications.FirstOrDefault();
             _currentApp = new ApplicationViewModel(app);
 
-            SaveCommand = new RelayCommand(Save, () => true);
+            SaveCommand = new RelayCommand(Save, () => _currentApp.IsValid);
         }
 
         public ApplicationViewModel CurrentApp

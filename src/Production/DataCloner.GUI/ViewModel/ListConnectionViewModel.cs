@@ -2,30 +2,31 @@
 using System.Collections.ObjectModel;
 using DataCloner.DataClasse.Configuration;
 using GalaSoft.MvvmLight.Ioc;
+using DataCloner.GUI.Framework;
 
 namespace DataCloner.GUI.ViewModel
 {
-    class ListConnectionViewModel : AnnotationViewModelBase
+    class ListConnectionViewModel : ValidatableModel
     {
         private ObservableCollection<ConnectionViewModel> _connections;
 
         public ObservableCollection<ConnectionViewModel> Connections
         {
             get { return _connections; }
-            set { ValidateAndSet(ref _connections, value); }
+            set { SetPropertyAndValidate(ref _connections, value); }
         }
 
         [PreferredConstructor]
         public ListConnectionViewModel()
         {
-            if (IsInDesignMode)
-            {
-                Connections = new ObservableCollection<ConnectionViewModel>
-                {
-                    new ConnectionViewModel(),
-                    new ConnectionViewModel()
-                };
-            }
+            //if (IsInDesignMode)
+            //{
+            //    Connections = new ObservableCollection<ConnectionViewModel>
+            //    {
+            //        new ConnectionViewModel(),
+            //        new ConnectionViewModel()
+            //    };
+            //}
         }
 
         public ListConnectionViewModel(IEnumerable<Connection> Connections) : base()

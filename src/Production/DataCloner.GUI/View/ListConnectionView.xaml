@@ -13,26 +13,29 @@
                   AutoGenerateColumns="False"
                   CanUserAddRows="True"
                   CanUserDeleteRows="True"                  
-                  BorderBrush="{StaticResource AccentColorBrush}"
                   BorderThickness="1"
-                  Validation.Error="dgServers_Error">
+                  BorderBrush="{StaticResource AccentColorBrush}">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Id" 
                                     ElementStyle="{StaticResource errorStyle_TextBlock}"
                                     EditingElementStyle="{StaticResource errorStyle_TextBox}"
-                                    Binding="{Binding Id, UpdateSourceTrigger=PropertyChanged, NotifyOnValidationError=True}"/>
+                                    Binding="{Binding Id, UpdateSourceTrigger=PropertyChanged, 
+                                    NotifyOnValidationError=True, ValidatesOnExceptions=True}"/>
                 <DataGridTextColumn Header="Nom" 
                                     ElementStyle="{StaticResource errorStyle_TextBlock}"
                                     EditingElementStyle="{StaticResource errorStyle_TextBox}"
-                                    Binding="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, NotifyOnValidationError=True}"/>
+                                    Binding="{Binding Name, UpdateSourceTrigger=PropertyChanged, 
+                                    NotifyOnValidationError=True, ValidatesOnExceptions=True}"/>
                 <DataGridTextColumn Header="Nom du fournisseur" 
                                     ElementStyle="{StaticResource errorStyle_TextBlock}"
                                     EditingElementStyle="{StaticResource errorStyle_TextBox}"
-                                    Binding="{Binding ProviderName, UpdateSourceTrigger=PropertyChanged, NotifyOnValidationError=True}"/>
+                                    Binding="{Binding ProviderName, UpdateSourceTrigger=PropertyChanged, 
+                                    NotifyOnValidationError=True, ValidatesOnExceptions=True}"/>
                 <DataGridTextColumn Header="Chaîne de connexion" 
                                     ElementStyle="{StaticResource errorStyle_TextBlock}"
                                     EditingElementStyle="{StaticResource errorStyle_TextBox}"
-                                    Binding="{Binding ConnectionString, UpdateSourceTrigger=PropertyChanged, NotifyOnValidationError=True}"/>
+                                    Binding="{Binding ConnectionString, UpdateSourceTrigger=PropertyChanged, 
+                                    NotifyOnValidationError=True, ValidatesOnExceptions=True}"/>
             </DataGrid.Columns>
         </DataGrid>
     </Grid>

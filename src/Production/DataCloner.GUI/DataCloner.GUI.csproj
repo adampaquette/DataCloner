@@ -118,6 +118,9 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Extension.cs" />
+    <Compile Include="Framework\Model.cs" />
+    <Compile Include="Framework\ValidatableModel.cs" />
+    <Compile Include="Framework\ValidationErrorsConverter.cs" />
     <Compile Include="Framework\ValidationHelper.cs" />
     <Compile Include="Framework\ValidationReloadedTracker.cs" />
     <Compile Include="Framework\ValidationTracker.cs" />
@@ -132,7 +135,6 @@
     <Compile Include="Message\SelectedApplicationMessage.cs" />
     <Compile Include="Model\ConfigModel.cs" />
     <Compile Include="Settings.cs" />
-    <Compile Include="ViewModel\AnnotationViewModelBase.cs" />
     <Compile Include="ViewModel\ApplicationViewModel.cs" />
     <Compile Include="ViewModel\ConnectionViewModel.cs" />
     <Compile Include="ViewModel\ListConnectionViewModel.cs" />
@@ -205,7 +207,6 @@
     <Resource Include="Resources\database31.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Readme.MvvmlightSnippet.txt" />
     <Content Include="SciLexer.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

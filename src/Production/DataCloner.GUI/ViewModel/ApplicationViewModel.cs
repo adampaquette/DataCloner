@@ -1,11 +1,12 @@
 ﻿using DataCloner.DataClasse.Configuration;
+using DataCloner.GUI.Framework;
 using GalaSoft.MvvmLight.Ioc;
 using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace DataCloner.GUI.ViewModel
 {
-    class ApplicationViewModel : AnnotationViewModelBase
+    class ApplicationViewModel : ValidatableModel
     {
         public Int16 _id;
         public string _name;
@@ -16,27 +17,27 @@ namespace DataCloner.GUI.ViewModel
         public Int16 Id
         {
             get { return _id; }
-            set { ValidateAndSet(ref _id, value); }
+            set { SetPropertyAndValidate(ref _id, value); }
         }
 
         [Required]
         public string Name
         {
             get { return _name; }
-            set { ValidateAndSet(ref _name, value); }
+            set { SetPropertyAndValidate(ref _name, value); }
         }
 
         [Required]
         public ListConnectionViewModel Connections
         {
             get { return _connections; }
-            set { ValidateAndSet(ref _connections, value); }
+            set { SetPropertyAndValidate(ref _connections, value); }
         }
 
         public bool IsValid
         {
             get { return _isValid; }
-            set { Set(ref _isValid, value); }
+            set { SetProperty(ref _isValid, value); }
         }
 
         [PreferredConstructor]

@@ -7,12 +7,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
 namespace DataCloner.GUI.View
 {
     /// <summary>
@@ -23,11 +17,6 @@ namespace DataCloner.GUI.View
         public ListConnectionView()
         {
             InitializeComponent();
-        }
-
-        private void dgServers_Error(object sender, ValidationErrorEventArgs e)
-        {
-            var a = "";
         }
     }
 }

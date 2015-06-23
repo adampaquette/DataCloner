@@ -7,11 +7,12 @@
         xmlns:m="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         xmlns:v="clr-namespace:DataCloner.GUI.View"
 		x:Class="DataCloner.GUI.MainView" 
-        Title="DataCloner V0.1" Height="550" Width="645" MinHeight="550" MinWidth="645"
         ShowIconOnTitleBar="True" TitleCaps="False" ResizeMode="CanResizeWithGrip"
         GlowBrush="{DynamicResource AccentColorBrush}"
+        Title="DataCloner V0.1" Height="550" Width="645" MinHeight="550" MinWidth="645"
         DataContext="{Binding Source={StaticResource Locator}, Path=Main}">
     <Window.Resources>
+
         <Style x:Key="RoundedTab" TargetType="{x:Type TabItem}">
             <Setter Property="Template">
                 <Setter.Value>
@@ -55,7 +56,7 @@
                 </TabItem.Header>
                 <Grid>
                     <TextBlock Text="Data Cloner V0.1" FontSize="30" FontWeight="Bold" HorizontalAlignment="Center"
-                            Foreground="{StaticResource AccentColorBrush}"/>
+                               Foreground="{StaticResource AccentColorBrush}"/>
                 </Grid>
             </TabItem>
             <TabItem Style="{StaticResource RoundedTab}">

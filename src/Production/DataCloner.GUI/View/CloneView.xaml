@@ -81,7 +81,8 @@
                     <TextBlock Text="Statut : " Margin="10,10,10,369" />
                     <RichTextBox  x:Name="rtbStatus" AcceptsReturn="True" IsReadOnly="True" VerticalScrollBarVisibility="Auto"
                                   Margin="10,35,10,0"
-                                  BorderThickness="1" BorderBrush="{StaticResource AccentColorBrush}"/>
+                                  BorderThickness="1"
+                                  BorderBrush="{StaticResource AccentColorBrush}"/>
                 </Grid>
             </TabItem>
             <TabItem Header="Requête">
@@ -89,7 +90,8 @@
                     <TextBlock Text="Requête SQL générée (les valeurs ne sont pas formattées) : " Margin="10,10,10,347" />
                     <sn:ScintillaWPF x:Name="scintilla" 
 									 Margin="10,35,10,0" IsReadOnly="True" BorderStyle="None"
-                                     BorderThickness="1" BorderBrush="{StaticResource AccentColorBrush}">
+                                     BorderThickness="1" 
+                                     BorderBrush="{StaticResource AccentColorBrush}">
                         <sn:ConfigurationManager Language="mssql" />
                         <sn:LineWrapping VisualFlags="End" />
                         <sn:Margins>
