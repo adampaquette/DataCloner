@@ -65,7 +65,7 @@
 													VerticalAlignment="Top" 
 													SelectionChanged="cbColonne_SelectionChanged"/>
                             <Label Content="Valeur : " Margin="10,279,0,0" Height="29" VerticalAlignment="Top" HorizontalAlignment="Left" Width="99" RenderTransformOrigin="-0.485,4.172"/>
-                            <TextBox x:Name="txtValeur" Margin="10,306,10,0" Height="26" VerticalAlignment="Top"/>
+                            <TextBox x:Name="txtValeur" Margin="10,306,0,0" Height="26" VerticalAlignment="Top" Width="137"/>
                         </Grid>
                     </GroupBox>
                     <GroupBox Header="Paramètres" Margin="10,281,0,0" Height="113" VerticalAlignment="Top" HorizontalAlignment="Left" Width="187">

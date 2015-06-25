@@ -17,23 +17,23 @@
                   BorderBrush="{StaticResource AccentColorBrush}">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Id" 
-                                    ElementStyle="{StaticResource errorStyle_TextBlock}"
-                                    EditingElementStyle="{StaticResource errorStyle_TextBox}"
+                                    ElementStyle="{StaticResource TextCellElementStyle}"
+                                    EditingElementStyle="{StaticResource TextCellEditingStyle}"
                                     Binding="{Binding Id, UpdateSourceTrigger=PropertyChanged, 
                                     NotifyOnValidationError=True, ValidatesOnExceptions=True}"/>
                 <DataGridTextColumn Header="Nom" 
-                                    ElementStyle="{StaticResource errorStyle_TextBlock}"
-                                    EditingElementStyle="{StaticResource errorStyle_TextBox}"
+                                    ElementStyle="{StaticResource TextCellElementStyle}"
+                                    EditingElementStyle="{StaticResource TextCellEditingStyle}"
                                     Binding="{Binding Name, UpdateSourceTrigger=PropertyChanged, 
                                     NotifyOnValidationError=True, ValidatesOnExceptions=True}"/>
                 <DataGridTextColumn Header="Nom du fournisseur" 
-                                    ElementStyle="{StaticResource errorStyle_TextBlock}"
-                                    EditingElementStyle="{StaticResource errorStyle_TextBox}"
+                                    ElementStyle="{StaticResource TextCellElementStyle}"
+                                    EditingElementStyle="{StaticResource TextCellEditingStyle}"
                                     Binding="{Binding ProviderName, UpdateSourceTrigger=PropertyChanged, 
                                     NotifyOnValidationError=True, ValidatesOnExceptions=True}"/>
                 <DataGridTextColumn Header="Chaîne de connexion" 
-                                    ElementStyle="{StaticResource errorStyle_TextBlock}"
-                                    EditingElementStyle="{StaticResource errorStyle_TextBox}"
+                                    ElementStyle="{StaticResource TextCellElementStyle}"
+                                    EditingElementStyle="{StaticResource TextCellEditingStyle}"
                                     Binding="{Binding ConnectionString, UpdateSourceTrigger=PropertyChanged, 
                                     NotifyOnValidationError=True, ValidatesOnExceptions=True}"/>
             </DataGrid.Columns>

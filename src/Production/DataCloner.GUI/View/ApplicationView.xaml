@@ -9,6 +9,10 @@
              d:DesignHeight="300" d:DesignWidth="450"
              fw:ValidationHelper.IsEnabled="True" fw:ValidationHelper.IsValid="{Binding IsValid, Mode=OneWayToSource}">
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
         <TabControl>
             <TabItem Header="Connexions">
                 <v:ListConnectionView DataContext="{Binding Connections}"/>
@@ -35,5 +39,6 @@
 
             </TabItem>
         </TabControl>
+        <Button Content="Enregistrer" Command="{Binding SaveCommand}" Height="33" Margin="10" Grid.Row="1"/>
     </Grid>
 </UserControl>

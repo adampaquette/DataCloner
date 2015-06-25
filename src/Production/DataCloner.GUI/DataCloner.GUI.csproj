@@ -153,6 +153,14 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Resources\ControlResources.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\ConverterResources.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\CloneView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -198,13 +206,13 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\settings48.png" />
+    <Resource Include="Resources\Images\settings48.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\seo1.png" />
+    <Resource Include="Resources\Images\seo1.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\database31.png" />
+    <Resource Include="Resources\Images\database31.png" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="SciLexer.dll">

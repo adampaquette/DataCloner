@@ -1,8 +1,11 @@
 ﻿using DataCloner.DataClasse.Configuration;
 using DataCloner.GUI.Framework;
+using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Ioc;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 
 namespace DataCloner.GUI.ViewModel
 {
@@ -37,19 +40,53 @@ namespace DataCloner.GUI.ViewModel
         public bool IsValid
         {
             get { return _isValid; }
-            set { SetProperty(ref _isValid, value); }
+            set
+            {
+                SetProperty(ref _isValid, value);
+                SaveCommand.RaiseCanExecuteChanged();
+            }
         }
 
         [PreferredConstructor]
         public ApplicationViewModel()
         {
+            SaveCommand = new RelayCommand(Save, () => IsValid);
         }
 
-        public ApplicationViewModel(Application app) : base()
+        public ApplicationViewModel(Application app) : this()
         {
             _id = app.Id;
             _name = app.Name;
             _connections = new ListConnectionViewModel(app.ConnectionStrings);
+        }
+
+        public RelayCommand SaveCommand { get; private set; }
+
+        private void Save()
+        {
+            if (!IsValid)
+            {
+                throw new InvalidOperationException("You must not call Save when CanSave returns false.");
+            }
+
+            var config = Configuration.Load(Configuration.ConfigFileName);
+            var app = config.Applications.FirstOrDefault(a => a.Id == Id);
+            app.Id = Id;
+            app.Name = Name;
+            app.ConnectionStrings = new List<Connection>();
+
+            foreach (var conn in Connections.Connections)
+            {
+                app.ConnectionStrings.Add(new Connection
+                {
+                    Id = conn.Id,
+                    Name = conn.Name,
+                    ProviderName = conn.ProviderName,
+                    ConnectionString = conn.ConnectionString
+                });
+            }
+
+            config.Save(Configuration.ConfigFileName);
         }
     }
 }
