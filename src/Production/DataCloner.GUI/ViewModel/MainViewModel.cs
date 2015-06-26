@@ -1,11 +1,7 @@
 using System.Linq;
 using DataCloner.DataClasse.Configuration;
-using DataCloner.GUI.Message;
 using DataCloner.GUI.Properties;
 using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Command;
-using System.Collections.Generic;
-using System;
 
 namespace DataCloner.GUI.ViewModel
 {

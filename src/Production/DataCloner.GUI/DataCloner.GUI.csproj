@@ -210,14 +210,14 @@
     <Resource Include="Resources\Images\database31.png" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Resources\Dlls\SciLexer.dll">
+    <Content Include="SciLexer.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\Dlls\SciLexer64.dll">
+    <Content Include="SciLexer64.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\Dlls\ScintillaNET.dll" />
-    <Content Include="Resources\Dlls\ScintillaNET.WPF.dll" />
+    <Content Include="ScintillaNET.dll" />
+    <Content Include="ScintillaNET.WPF.dll" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.6">
