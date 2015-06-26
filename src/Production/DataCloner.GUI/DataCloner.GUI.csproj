@@ -117,7 +117,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Extension.cs" />
     <Compile Include="Framework\Model.cs" />
     <Compile Include="Framework\ValidatableModel.cs" />
     <Compile Include="Framework\ValidationErrorsConverter.cs" />
@@ -131,10 +130,6 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Message\ErrorNumberChanged.cs" />
-    <Compile Include="Message\SelectedApplicationMessage.cs" />
-    <Compile Include="Model\ConfigModel.cs" />
-    <Compile Include="Settings.cs" />
     <Compile Include="ViewModel\ApplicationViewModel.cs" />
     <Compile Include="ViewModel\ConnectionViewModel.cs" />
     <Compile Include="ViewModel\ListConnectionViewModel.cs" />
@@ -215,14 +210,14 @@
     <Resource Include="Resources\Images\database31.png" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="SciLexer.dll">
+    <Content Include="Resources\Dlls\SciLexer.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="SciLexer64.dll">
+    <Content Include="Resources\Dlls\SciLexer64.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="ScintillaNET.dll" />
-    <Content Include="ScintillaNET.WPF.dll" />
+    <Content Include="Resources\Dlls\ScintillaNET.dll" />
+    <Content Include="Resources\Dlls\ScintillaNET.WPF.dll" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.6">
@@ -242,7 +237,9 @@
       <Name>DataCloner</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Model\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

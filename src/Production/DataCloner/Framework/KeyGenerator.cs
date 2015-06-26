@@ -1,5 +1,6 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
+using System;
 
 namespace DataCloner.Framework
 {
@@ -9,6 +10,8 @@ namespace DataCloner.Framework
 
         public static string GetUniqueKey(int maxSize)
         {
+            if (maxSize < 1) throw new ArgumentException("Max size must be positive");
+
             var data = new byte[1];
             using (var crypto = new RNGCryptoServiceProvider())
             {
