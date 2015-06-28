@@ -52,10 +52,13 @@ namespace DataCloner
 
 		public void Clear()
 		{
+            _nextStepId = 0;
+            _nextVariableId = 0;
+
 			_keyRelationships.Clear();
 			_circularKeyJobs.Clear();
 			_executionPlanByServer.Clear();
-			DataBuilder.ClearBuildersCache();
+			DataBuilder.ClearBuildersCache();            
 		}
 
 		public void Setup(Application app, int mapId, int? configId)
@@ -129,6 +132,7 @@ namespace DataCloner
 		    if (srcRows.Length <= 0) return clonedRows;
 		    var table = Cache.GetTable(riSource);
 
+            //By default the destination server is the source if no road is found.
             var serverDst = new ServerIdentifier
             {
                 ServerId = riSource.ServerId,
@@ -186,6 +190,7 @@ namespace DataCloner
 			var nbRows = srcRows.Length;
 			var table = Cache.GetTable(riSource);
 
+            //By default the destination server is the source if no road is found.
             var serverDst = new ServerIdentifier
             {
                 ServerId = riSource.ServerId,
@@ -243,7 +248,7 @@ namespace DataCloner
 					if (fkValue.Contains(DBNull.Value))
 						continue;
 
-					//Si la foreignkey est déjà dans la table de destination, on l'utilise
+					//Si la foreignkey a déjà été enregistrée, on l'utilise
 					var fkDst = _keyRelationships.GetKey(fk.ServerIdTo, fk.DatabaseTo, fk.SchemaTo, fk.TableTo, fkValue);
 					if (fkDst != null)
 						table.SetFkInDatarow(fk, fkDst, destinationRow);
@@ -260,15 +265,16 @@ namespace DataCloner
 							Columns = table.BuildKeyFromDerivativeDataRow(fk, currentRow)
 						};
 
-						//On ne copie pas la ligne si la table est statique
+						//On ne duplique pas la ligne si la table est statique
 						if (fkTable.IsStatic)
 						{
 							var fkRow = _dispatcher.Select(riFk);
 							fkDestinationExists = fkRow.Length == 1;
-
-							//Si la ligne existe déjà, on l'utilise
+							
 							if (fkRow.Length > 1)
 								throw new Exception("The FK is not unique.");
+
+                            //Si la ligne existe déjà, on l'utilise
 							if (fkDestinationExists)
 							{
 								//Sauve la clef
@@ -365,7 +371,7 @@ namespace DataCloner
 			if (riNewFk == null)
 				throw new ArgumentNullException(nameof(riNewFk));
 			if (!riNewFk.Columns.Any())
-				throw new Exception("BuildExecutionPlan failed to return a foreign key value.");
+				throw new Exception("Failed to return a foreign key value.");
 
 			//La FK (ou unique constraint) n'est pas necessairement la PK donc on réobtient la ligne car
 			//BuildExecutionPlan retourne toujours la PK.
@@ -579,6 +585,10 @@ namespace DataCloner
 			});
 		}
 
+        /// <summary>
+        /// We reset the variables for the API to regenerate them.
+        /// </summary>
+        /// <param name="planByServer"></param>
 		private void ResetExecutionPlan(Dictionary<Int16, ExecutionPlan> planByServer)
 		{
 			foreach (var server in planByServer)

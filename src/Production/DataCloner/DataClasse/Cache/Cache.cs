@@ -49,15 +49,15 @@ namespace DataCloner.DataClasse.Cache
             bf.Serialize(configData, map);
             bf.Serialize(configData, app.ConnectionStrings);
 
-            ClonerConfiguration clonerConfig = null;
-            if (map.UsableConfigs != null && map.UsableConfigs.Split(',').ToList().Contains(configId.ToString()))
+            ClonerBehaviour clonerBehaviour = null;
+            if (map.UsableBehaviours != null && map.UsableBehaviours.Split(',').ToList().Contains(configId.ToString()))
             {
-                clonerConfig = app.ClonerConfigurations.FirstOrDefault(c => c.Id == configId);
-                if (clonerConfig == null)
+                clonerBehaviour = app.ClonerBehaviours.FirstOrDefault(c => c.Id == configId);
+                if (clonerBehaviour == null)
                     throw new KeyNotFoundException(
                         $"There is no cloner configuration '{configId}' in the configuration for the appName name '{app.Name}'.");
 
-                bf.Serialize(configData, clonerConfig);
+                bf.Serialize(configData, clonerBehaviour);
                 bf.Serialize(configData, app.ModifiersTemplates);
             }
             configData.Position = 0;
@@ -75,11 +75,11 @@ namespace DataCloner.DataClasse.Cache
                 dispatcher.InitProviders(cache);
             //We rebuild the cache
             else
-                cache = BuildCache(dispatcher, cacheFileName, app, clonerConfig, map, configHash);
+                cache = BuildCache(dispatcher, cacheFileName, app, clonerBehaviour, map, configHash);
         }
 
         private static Cache BuildCache(IQueryDispatcher dispatcher, string cacheFileName,
-                                        Application app, ClonerConfiguration clonerConfig,
+                                        Application app, ClonerBehaviour clonerBehaviour,
                                         Map map, string configHash)
         {
             var cache = new Cache { ConfigFileHash = configHash, ServerMap = map };
@@ -105,8 +105,8 @@ namespace DataCloner.DataClasse.Cache
                     provider.GetUniqueKeys(cache.DatabasesSchema.LoadUniqueKeys, database);
                 }
             }
-            clonerConfig.Build(app.ModifiersTemplates, map.Variables);
-            cache.DatabasesSchema.FinalizeCache(clonerConfig);
+            var behaviour = clonerBehaviour.Build(app.ModifiersTemplates, map.Variables);
+            cache.DatabasesSchema.FinalizeCache(behaviour);
 
             //Save cache
             cache.Save(cacheFileName);

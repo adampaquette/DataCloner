@@ -100,8 +100,9 @@
     <Compile Include="DataClasse\Cache\ITableSchema.cs" />
     <Compile Include="DataClasse\Cache\ServerIdentifier.cs" />
     <Compile Include="DataClasse\CircularKeyJob.cs" />
+    <Compile Include="DataClasse\ClonerBehaviorExtension.cs" />
     <Compile Include="DataClasse\Configuration\Application.cs" />
-    <Compile Include="DataClasse\Configuration\ClonerConfiguration.cs" />
+    <Compile Include="DataClasse\Configuration\ClonerBehaviour.cs" />
     <Compile Include="DataClasse\Configuration\Map.cs" />
     <Compile Include="DataClasse\ColumnsWithValue.cs" />
     <Compile Include="DataClasse\Configuration\ModifiersTemplates.cs" />

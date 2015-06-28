@@ -325,14 +325,14 @@ namespace DataCloner.DataClasse.Cache
         /// <summary>
         /// Termine la construction de la cache.
         /// </summary>
-        /// <param name="config"></param>
+        /// <param name="behaviour"></param>
         /// <remarks>Le schéma de la BD doit préalablement avoir été obtenu. GetColumns() et GetForeignKeys()</remarks>
-        internal void FinalizeCache(ClonerConfiguration config)
+        internal void FinalizeCache(ClonerBehaviour behaviour)
         {
             GenerateCommands();
-            MergeFkConfig(config);
+            MergeFk(behaviour);
             GenerateDerivativeTables();
-            MergeCacheAndUserConfig(config);
+            FinalizeMerge(behaviour);
         }
 
         private void GenerateCommands()
@@ -454,28 +454,26 @@ namespace DataCloner.DataClasse.Cache
             }
         }
 
-        //TODO : Faire une fonctione qui va chercher un template dans la config
-        //TODO : Faire des fonctions de merge par Serveur / Database / schema.
-        private void MergeFkConfig(ClonerConfiguration config)
+        private void MergeFk(ClonerBehaviour behaviour)
         {
-            if (config == null)
+            if (behaviour == null)
                 return;
 
             foreach (var server in this)
             {
-                var serConfig = config.Servers.Find(s => s.Id == server.Key.ToString());
-                if (serConfig != null)
+                var serModifier = behaviour.Servers.Find(s => s.Id == server.Key.ToString());
+                if (serModifier != null)
                 {
                     foreach (var database in server.Value)
                     {
-                        var dbConfig = serConfig.Databases.Find(d => d.Name == database.Key);
-                        if (dbConfig != null)
+                        var dbModifier = serModifier.Databases.Find(d => d.Name == database.Key);
+                        if (dbModifier != null)
                         {
                             foreach (var schema in database.Value)
                             {
-                                var scheConfig = dbConfig.Schemas.Find(s => s.Name == schema.Key);
-                                if (scheConfig != null)
-                                    MergeFkConfigSchema(schema.Value, scheConfig.Tables);
+                                var scheModifier = dbModifier.Schemas.Find(s => s.Name == schema.Key);
+                                if (scheModifier != null)
+                                    MergeFkModifierSchema(schema.Value, scheModifier.Tables);
                             }
                         }
                     }
@@ -483,19 +481,19 @@ namespace DataCloner.DataClasse.Cache
             }
         }
         
-        private void MergeFkConfigSchema(TableSchema[] tablesCache, List<TableModifier> tablesConfig)
+        private void MergeFkModifierSchema(TableSchema[] tablesCache, List<TableModifier> tablesModifier)
         {
             foreach (var table in tablesCache)
             {
-                var tblConfig = tablesConfig.Find(t => t.Name == table.Name);
-                if (tblConfig != null)
+                var tblModifier = tablesModifier.Find(t => t.Name == table.Name);
+                if (tblModifier != null)
                 {
                     //On affecte les changements de la configuration
 
                     //On supprime les clefs
-                    foreach (var fkConfig in tblConfig.ForeignKeys.ForeignKeyRemove)
+                    foreach (var fkModifier in tblModifier.ForeignKeys.ForeignKeyRemove)
                     {
-                        foreach (var colConfig in fkConfig.Columns)
+                        foreach (var colConfig in fkModifier.Columns)
                         {
                             for (var j = 0; j < table.ForeignKeys.Count(); j++)
                             {
@@ -520,15 +518,15 @@ namespace DataCloner.DataClasse.Cache
                     }
 
                     //On ajoute les clefs
-                    foreach (var fkConfig in tblConfig.ForeignKeys.ForeignKeyAdd)
+                    foreach (var fkModifier in tblModifier.ForeignKeys.ForeignKeyAdd)
                     {
                         var newFk = new ForeignKey
                         {
-                            ServerIdTo = Int16.Parse(fkConfig.ServerId),
-                            DatabaseTo = fkConfig.Database,
-                            SchemaTo = fkConfig.Schema,
-                            TableTo = fkConfig.Table,
-                            Columns = (from fk in fkConfig.Columns select new ForeignKeyColumn { NameFrom = fk.NameFrom, NameTo = fk.NameTo }).ToArray()
+                            ServerIdTo = Int16.Parse(fkModifier.ServerId),
+                            DatabaseTo = fkModifier.Database,
+                            SchemaTo = fkModifier.Schema,
+                            TableTo = fkModifier.Table,
+                            Columns = (from fk in fkModifier.Columns select new ForeignKeyColumn { NameFrom = fk.NameFrom, NameTo = fk.NameTo }).ToArray()
                         };
 
                         table.ForeignKeys.Add(newFk);
@@ -537,49 +535,49 @@ namespace DataCloner.DataClasse.Cache
             }            
         }
 
-        private void MergeCacheAndUserConfig(ClonerConfiguration config)
+        private void FinalizeMerge(ClonerBehaviour behaviour)
         {
-            if (config == null)
+            if (behaviour == null)
                 return;
 
             foreach (var server in this)
             {
-                var serConfig = config.Servers.Find(s => s.Id == server.Key.ToString());
-                if (serConfig != null)
+                var serModifier = behaviour.Servers.Find(s => s.Id == server.Key.ToString());
+                if (serModifier != null)
                 {
                     foreach (var database in server.Value)
                     {
-                        var dbConfig = serConfig.Databases.Find(d => d.Name == database.Key);
-                        if (dbConfig != null)
+                        var dbModifier = serModifier.Databases.Find(d => d.Name == database.Key);
+                        if (dbModifier != null)
                         {
                             foreach (var schema in database.Value)
                             {
-                                var scheConfig = dbConfig.Schemas.Find(s => s.Name == schema.Key);
-                                if (scheConfig != null)
+                                var scheModifier = dbModifier.Schemas.Find(s => s.Name == schema.Key);
+                                if (scheModifier != null)
                                 {
                                     foreach (var table in schema.Value)
                                     {
-                                        var tblConfig = scheConfig.Tables.Find(t => t.Name == table.Name);
-                                        if (tblConfig != null)
+                                        var tblModifier = scheModifier.Tables.Find(t => t.Name == table.Name);
+                                        if (tblModifier != null)
                                         {
                                             //On affecte les changements de la configuration
-                                            table.IsStatic = tblConfig.IsStatic;
+                                            table.IsStatic = tblModifier.IsStatic;
 
                                             //Derivative tables
-                                            var globalAccess = tblConfig.DerativeTables.GlobalAccess;
-                                            var globalCascade = tblConfig.DerativeTables.Cascade;
+                                            var globalAccess = tblModifier.DerativeTables.GlobalAccess;
+                                            var globalCascade = tblModifier.DerativeTables.Cascade;
 
                                             foreach (var derivTbl in table.DerivativeTables)
                                             {
-                                                var derivTblConfig = tblConfig.DerativeTables.DerativeSubTables
+                                                var derivTblModifier = tblModifier.DerativeTables.DerativeSubTables
                                                                               .FirstOrDefault(t => t.ServerId == derivTbl.ServerId.ToString() &&
                                                                                               t.Database == derivTbl.Database &&
                                                                                               t.Schema == derivTbl.Schema &&
                                                                                               t.Table == derivTbl.Table);
-                                                if (derivTblConfig != null)
+                                                if (derivTblModifier != null)
                                                 {
-                                                    derivTbl.Access = derivTblConfig.Access;
-                                                    derivTbl.Cascade = derivTblConfig.Cascade;
+                                                    derivTbl.Access = derivTblModifier.Access;
+                                                    derivTbl.Cascade = derivTblModifier.Cascade;
                                                 }
                                                 else
                                                 {
@@ -589,7 +587,7 @@ namespace DataCloner.DataClasse.Cache
                                             }
 
                                             //Data builder
-                                            foreach (var builderCol in tblConfig.DataBuilders)
+                                            foreach (var builderCol in tblModifier.DataBuilders)
                                             {
                                                 var col = table.ColumnsDefinition.FirstOrDefault(c => c.Name == builderCol.Name);
                                                 if (col != null)

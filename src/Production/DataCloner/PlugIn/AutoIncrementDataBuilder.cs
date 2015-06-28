@@ -17,14 +17,18 @@ namespace DataCloner.PlugIn
                 IncrementNumber(cacheId);
             else
             {
+                object value;
+
                 switch (engine)
                 {
                     case DbEngine.MySql:
-                        AutoIncrementCache.Add(cacheId, GetNewKeyMySql(conn, database, table, column));
+                        value = GetNewKeyMySql(conn, database, table, column);
                         break;
                     default:
                         throw new NotSupportedException();
                 }
+
+                AutoIncrementCache.Add(cacheId, value);
             }
             return AutoIncrementCache[cacheId];
         }

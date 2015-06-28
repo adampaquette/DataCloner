@@ -104,7 +104,7 @@ namespace DataCloner.Tests
                 }
             };
 
-            var clonerConfig = new ClonerConfiguration
+            var clonerBehaviour = new ClonerBehaviour
             {
                 Id = 1,
                 Name = "Basic clone",
@@ -112,7 +112,7 @@ namespace DataCloner.Tests
                 Servers = new List<ServerModifier> { server1 }
             };
 
-            app.ClonerConfigurations.Add(clonerConfig);
+            app.ClonerBehaviours.Add(clonerBehaviour);
 
             app.Maps = new List<Map>
             {
@@ -120,7 +120,7 @@ namespace DataCloner.Tests
                 {
                      From = "UNI",
                      To = "FON",
-                     UsableConfigs = "1,2",
+                     UsableBehaviours = "1,2",
                      Variables = new List<Variable>
                      {
                          new Variable { Name = "", Value=""}

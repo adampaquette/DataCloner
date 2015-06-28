@@ -74,15 +74,15 @@ namespace DataCloner.GUI.View
                 Settings.Default.ApplicationId = _selectedApp.Id;
                 Settings.Default.Save();
 
-                cbDatabaseConfig.ItemsSource = _selectedApp.ClonerConfigurations;
+                cbDatabaseConfig.ItemsSource = _selectedApp.ClonerBehaviours;
 
                 //Tente de charger la préférence utilisateur
-                var config = _selectedApp.ClonerConfigurations.FirstOrDefault(c => c.Id == Settings.Default.DatabaseConfigId);
+                var config = _selectedApp.ClonerBehaviours.FirstOrDefault(c => c.Id == Settings.Default.DatabaseConfigId);
                 if (config != null)
                     cbDatabaseConfig.SelectedItem = config;
                 else
                 {
-                    if (_selectedApp.ClonerConfigurations.Count == 1)
+                    if (_selectedApp.ClonerBehaviours.Count == 1)
                         cbDatabaseConfig.SelectedIndex = 0;
                 }
             }
@@ -90,7 +90,7 @@ namespace DataCloner.GUI.View
 
         private void CbDatabaseConfig_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            _maps = _selectedApp?.Maps?.Where(m => m.UsableConfigs.Split(',').Contains(cbDatabaseConfig.SelectedValue.ToString()));
+            _maps = _selectedApp?.Maps?.Where(m => m.UsableBehaviours.Split(',').Contains(cbDatabaseConfig.SelectedValue.ToString()));
             if (_maps != null)
             {
                 Settings.Default.DatabaseConfigId = (Int16)cbDatabaseConfig.SelectedValue;
@@ -107,6 +107,8 @@ namespace DataCloner.GUI.View
                     if (_maps.Count() == 1)
                         cbSourceEnvir.SelectedIndex = 0;
                 }
+                //Force dans le cas oû l'environnement ne change pas
+                cbSourceEnvir_SelectionChanged(null, null);
             }
         }
 
@@ -120,13 +122,13 @@ namespace DataCloner.GUI.View
 
                 var _mapsTo = _maps.Where(m =>
                         m.From == _fromMaps.From &&
-                        m.UsableConfigs.Split(',').Contains(cbDatabaseConfig.SelectedValue.ToString()));
+                        m.UsableBehaviours.Split(',').Contains(cbDatabaseConfig.SelectedValue.ToString()));
                 cbDestinationEnvir.ItemsSource = _mapsTo;
 
                 //Tente de charger la préférence utilisateur
                 var map = _maps?.FirstOrDefault(m => m.From == cbSourceEnvir.SelectedValue.ToString() &&
                                                m.To == Settings.Default.DestinationEnvir &&
-                                               m.UsableConfigs.Split(',').Contains(cbDatabaseConfig.SelectedValue.ToString()));
+                                               m.UsableBehaviours.Split(',').Contains(cbDatabaseConfig.SelectedValue.ToString()));
                 if (map != null)
                     cbDestinationEnvir.SelectedItem = map;
                 else
@@ -134,6 +136,8 @@ namespace DataCloner.GUI.View
                     if (_mapsTo.Count() == 1)
                         cbDestinationEnvir.SelectedIndex = 0;
                 }
+                //Force dans le cas oû l'environnement ne change pas
+                cbDestinationEnvir_SelectionChanged(null, null);
             }
         }
 
@@ -141,7 +145,7 @@ namespace DataCloner.GUI.View
         {
             var map = _maps?.FirstOrDefault(m => m.From == cbSourceEnvir.SelectedValue.ToString() &&
                                                m.To == cbDestinationEnvir.SelectedValue.ToString() &&
-                                               m.UsableConfigs.Split(',').Contains(cbDatabaseConfig.SelectedValue.ToString()));
+                                               m.UsableBehaviours.Split(',').Contains(cbDatabaseConfig.SelectedValue.ToString()));
             if (map != null)
             {
                 Settings.Default.DestinationEnvir = cbDestinationEnvir.SelectedValue.ToString();
@@ -291,6 +295,7 @@ namespace DataCloner.GUI.View
             {
                 rtbStatus.AppendText("Cloning started");
                 _cloner.OptimiseExecutionPlan = (bool)chkOptimisation.IsChecked;
+                _cloner.Clear();
 
                 scintilla.IsReadOnly = false;
                 scintilla.Text = string.Empty;
