@@ -27,7 +27,7 @@ namespace DataCloner.DataClasse.Cache
             DatabasesSchema = new DatabasesSchema();
         }
 
-        public static void Init(IQueryDispatcher dispatcher, Application app, int mapId, int? configId, ref Cache cache)
+        public static void Initialize(IQueryDispatcher dispatcher, Application app, int mapId, int? behaviourId, ref Cache cache)
         {
             if (dispatcher == null) throw new ArgumentNullException(nameof(dispatcher));
             if (app == null) throw new ArgumentNullException(nameof(app));
@@ -38,8 +38,8 @@ namespace DataCloner.DataClasse.Cache
                 throw new Exception($"Map id '{mapId}' not found in configuration file for application '{app.Name}'!");
 
             var cacheFileName = app.Name + " _" + map.From + "-" + map.To;
-            if (configId != null)
-                cacheFileName += "_" + configId;
+            if (behaviourId != null)
+                cacheFileName += "_" + behaviourId;
             cacheFileName += ".cache";
 
             //Hash the selected map, connnectionStrings and the cloner 
@@ -50,12 +50,12 @@ namespace DataCloner.DataClasse.Cache
             bf.Serialize(configData, app.ConnectionStrings);
 
             ClonerBehaviour clonerBehaviour = null;
-            if (map.UsableBehaviours != null && map.UsableBehaviours.Split(',').ToList().Contains(configId.ToString()))
+            if (map.UsableBehaviours != null && map.UsableBehaviours.Split(',').ToList().Contains(behaviourId.ToString()))
             {
-                clonerBehaviour = app.ClonerBehaviours.FirstOrDefault(c => c.Id == configId);
+                clonerBehaviour = app.ClonerBehaviours.FirstOrDefault(c => c.Id == behaviourId);
                 if (clonerBehaviour == null)
                     throw new KeyNotFoundException(
-                        $"There is no cloner configuration '{configId}' in the configuration for the appName name '{app.Name}'.");
+                        $"There is no behaviour '{behaviourId}' in the configuration for the appName name '{app.Name}'.");
 
                 bf.Serialize(configData, clonerBehaviour);
                 bf.Serialize(configData, app.ModifiersTemplates);
@@ -78,6 +78,45 @@ namespace DataCloner.DataClasse.Cache
                 cache = BuildCache(dispatcher, cacheFileName, app, clonerBehaviour, map, configHash);
         }
 
+        public static void InitializeSchema(IQueryDispatcher dispatcher, Application app, ref Cache cache)
+        {
+            if (dispatcher == null) throw new ArgumentNullException(nameof(dispatcher));
+            if (app == null) throw new ArgumentNullException(nameof(app));
+            if (!app.ConnectionStrings?.Any() ?? false) throw new NullReferenceException("ConnectionStrings");
+
+            var cacheFileName = app.Name + ".schema";
+
+            //Hash the connnectionStrings to see if it match the last build
+            var configData = new MemoryStream();
+            var bf = new BinaryFormatter();            
+            bf.Serialize(configData, app.ConnectionStrings);
+            configData.Position = 0;
+
+            HashAlgorithm murmur = MurmurHash.Create32(managed: false);
+            var configHash = Encoding.Default.GetString(murmur.ComputeHash(configData));
+
+            //If in-memory cache is good, we use it
+            if (cache?.ConfigFileHash == configHash)
+                return;
+            //If cache on disk is good, we use it
+            cache = Load(cacheFileName, configHash);
+            if (cache != null)
+                dispatcher.InitProviders(cache);
+            //We rebuild the cache
+            else
+                cache = BuildSchema(dispatcher, cacheFileName, app.ConnectionStrings , configHash);
+        }
+
+        /// <summary>
+        /// Also merge user configs
+        /// </summary>
+        /// <param name="dispatcher"></param>
+        /// <param name="cacheFileName"></param>
+        /// <param name="app"></param>
+        /// <param name="clonerBehaviour"></param>
+        /// <param name="map"></param>
+        /// <param name="configHash"></param>
+        /// <returns></returns>
         private static Cache BuildCache(IQueryDispatcher dispatcher, string cacheFileName,
                                         Application app, ClonerBehaviour clonerBehaviour,
                                         Map map, string configHash)
@@ -91,10 +130,45 @@ namespace DataCloner.DataClasse.Cache
             foreach (var cs in app.ConnectionStrings.Where(c=>serversSource.Contains(c.Id.ToString())))
                 cache.ConnectionStrings.Add(new Connection(cs.Id, cs.ProviderName, cs.ConnectionString));
 
+            FetchSchema(dispatcher, cache.ConnectionStrings, ref cache);
+            var behaviour = clonerBehaviour.Build(app.ModifiersTemplates, map.Variables);
+            cache.DatabasesSchema.FinalizeCache(behaviour);
+
+            //Save cache
+            cache.Save(cacheFileName);
+            return cache;
+        }
+
+        /// <summary>
+        /// Only build the database schema.
+        /// </summary>
+        /// <param name="dispatcher"></param>
+        /// <param name="cacheFileName"></param>
+        /// <param name="connections"></param>
+        /// <param name="configHash"></param>
+        /// <returns></returns>
+        private static Cache BuildSchema(IQueryDispatcher dispatcher, string cacheFileName,
+                                         List<Configuration.Connection> connections, string configHash)
+        {
+            var cache = new Cache { ConfigFileHash = configHash };
+
+            //Copy connection strings
+            foreach (var cs in connections)
+                cache.ConnectionStrings.Add(new Connection(cs.Id, cs.ProviderName, cs.ConnectionString));
+            
+            FetchSchema(dispatcher, cache.ConnectionStrings, ref cache);
+            cache.DatabasesSchema.FinalizeSchema();
+
+            //Save cache
+            cache.Save(cacheFileName);
+            return cache;
+        }
+
+        private static void FetchSchema(IQueryDispatcher dispatcher, List<Connection> connections, ref Cache cache)
+        {
             dispatcher.InitProviders(cache);
 
-            //Start fetching each server
-            foreach (var cs in app.ConnectionStrings)
+            foreach (var cs in connections)
             {
                 var provider = dispatcher.GetQueryHelper(cs.Id);
 
@@ -105,12 +179,6 @@ namespace DataCloner.DataClasse.Cache
                     provider.GetUniqueKeys(cache.DatabasesSchema.LoadUniqueKeys, database);
                 }
             }
-            var behaviour = clonerBehaviour.Build(app.ModifiersTemplates, map.Variables);
-            cache.DatabasesSchema.FinalizeCache(behaviour);
-
-            //Save cache
-            cache.Save(cacheFileName);
-            return cache;
         }
 
         public void Serialize(Stream stream)

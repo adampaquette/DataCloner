@@ -323,7 +323,7 @@ namespace DataCloner.DataClasse.Cache
         }
 
         /// <summary>
-        /// Termine la construction de la cache.
+        /// Termine la construction de la cache avec les configurations utilisateurs.
         /// </summary>
         /// <param name="behaviour"></param>
         /// <remarks>Le schéma de la BD doit préalablement avoir été obtenu. GetColumns() et GetForeignKeys()</remarks>
@@ -333,6 +333,15 @@ namespace DataCloner.DataClasse.Cache
             MergeFk(behaviour);
             GenerateDerivativeTables();
             FinalizeMerge(behaviour);
+        }
+
+        /// <summary>
+        /// Termine la construction du schema de base de la BD.
+        /// </summary>
+        /// <remarks>Le schéma de la BD doit préalablement avoir été obtenu. GetColumns() et GetForeignKeys()</remarks>
+        internal void FinalizeSchema()
+        {
+            GenerateDerivativeTables();
         }
 
         private void GenerateCommands()

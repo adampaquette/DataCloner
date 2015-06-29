@@ -35,7 +35,7 @@ namespace DataCloner
 			_circularKeyJobs = new List<CircularKeyJob>();
 			_executionPlanByServer = new Dictionary<short, ExecutionPlan>();
 			_dispatcher = new QueryDispatcher();
-			_cacheInitialiser = Cache.Init;
+			_cacheInitialiser = Cache.Initialize;
 		}
 
 		internal Cloner(IQueryDispatcher dispatcher, Cache.CacheInitialiser cacheInit)
