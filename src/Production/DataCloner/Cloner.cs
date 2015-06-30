@@ -21,8 +21,9 @@ namespace DataCloner
 
 	    private int _nextVariableId;
 		private int _nextStepId;
+        private DatabasesSchema Schema { get { return Cache?.DatabasesSchema; } }
 
-	    public Cache Cache;
+        public Cache Cache;
 		public bool EnforceIntegrity { get; set; }
         public bool OptimiseExecutionPlan { get; set; }
 
@@ -130,7 +131,7 @@ namespace DataCloner
 			var clonedRows = new List<IRowIdentifier>();
 			var srcRows = _dispatcher.Select(riSource);
 		    if (srcRows.Length <= 0) return clonedRows;
-		    var table = Cache.GetTable(riSource);
+		    var table = Schema.GetTable(riSource);
 
             //By default the destination server is the source if no road is found.
             var serverDst = new ServerIdentifier
@@ -188,7 +189,7 @@ namespace DataCloner
 		{
 			var srcRows = _dispatcher.Select(riSource);
 			var nbRows = srcRows.Length;
-			var table = Cache.GetTable(riSource);
+			var table = Schema.GetTable(riSource);
 
             //By default the destination server is the source if no road is found.
             var serverDst = new ServerIdentifier
@@ -255,7 +256,7 @@ namespace DataCloner
 					else
 					{
 						var fkDestinationExists = false;
-						var fkTable = Cache.GetTable(fk);
+						var fkTable = Schema.GetTable(fk);
 						var riFk = new RowIdentifier
 						{
 							ServerId = fk.ServerIdTo,
@@ -447,7 +448,7 @@ namespace DataCloner
 
 			foreach (var dt in derivativeTable)
 			{
-				var tableDt = Cache.GetTable(dt);
+				var tableDt = Schema.GetTable(dt);
 				if (dt.Access == DerivativeTableAccess.Forced && dt.Cascade)
 					getDerivatives = true;
 
@@ -508,8 +509,8 @@ namespace DataCloner
 		{
 			foreach (var job in _circularKeyJobs)
 			{
-				var baseTable = Cache.GetTable(job.SourceBaseRowStartPoint);
-				var fkTable = Cache.GetTable(job.SourceFkRowStartPoint);
+				var baseTable = Schema.GetTable(job.SourceBaseRowStartPoint);
+				var fkTable = Schema.GetTable(job.SourceFkRowStartPoint);
 				var pkDestinationRow = _keyRelationships.GetKey(job.SourceBaseRowStartPoint);
 				var keyDestinationFkRow = _keyRelationships.GetKey(job.SourceFkRowStartPoint);
 

@@ -107,8 +107,8 @@ namespace DataCloner.DataAccess
         public override ISqlTypeConverter TypeConverter => _typeConverter;
         public override ISqlWriter SqlWriter => _sqlWriter;
 
-        public QueryHelperMsSql(Cache cache, string connectionString, Int16 serverId)
-            : base(cache, ProviderName, connectionString, serverId)
+        public QueryHelperMsSql(DatabasesSchema schema, string connectionString, Int16 serverId)
+            : base(schema, ProviderName, connectionString, serverId)
         {
             
         }

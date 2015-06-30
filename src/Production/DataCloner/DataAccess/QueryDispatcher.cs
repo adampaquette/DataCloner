@@ -23,7 +23,7 @@ namespace DataCloner.DataAccess
             _queryHelpers = new Dictionary<short, IQueryHelper>();
 
             foreach (var conn in cache.ConnectionStrings)
-                _queryHelpers.Add(conn.Id, QueryHelperFactory.GetQueryHelper(cache, conn.ProviderName, conn.ConnectionString, conn.Id));
+                _queryHelpers.Add(conn.Id, QueryHelperFactory.GetQueryHelper(cache.DatabasesSchema, conn.ProviderName, conn.ConnectionString, conn.Id));
         }
     }
 }

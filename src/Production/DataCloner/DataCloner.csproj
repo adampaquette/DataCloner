@@ -96,7 +96,7 @@
     <Compile Include="DataAccess\QueryHelperFactory.cs" />
     <Compile Include="DataAccess\QueryHelperMySQL.cs" />
     <Compile Include="DataAccess\SqlType.cs" />
-    <Compile Include="DataClasse\Cache\CacheExtensions.cs" />
+    <Compile Include="DataClasse\Cache\DatabasesSchemaExtensions.cs" />
     <Compile Include="DataClasse\Cache\ITableSchema.cs" />
     <Compile Include="DataClasse\Cache\ServerIdentifier.cs" />
     <Compile Include="DataClasse\CircularKeyJob.cs" />

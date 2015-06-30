@@ -13,7 +13,7 @@ namespace DataCloner.DataAccess
 {
     internal abstract class AbstractQueryHelper : IQueryHelper
     {
-        private readonly Cache _cache;
+        private readonly DatabasesSchema _schema;
         private readonly Int16 _serverIdCtx;
 
         protected abstract string SqlGetDatabasesName { get; }
@@ -29,10 +29,10 @@ namespace DataCloner.DataAccess
         public abstract ISqlTypeConverter TypeConverter { get; }
         public abstract ISqlWriter SqlWriter { get; }
 
-        protected AbstractQueryHelper(Cache cache, string providerName, string connectionString, Int16 serverId)
+        protected AbstractQueryHelper(DatabasesSchema schema, string providerName, string connectionString, Int16 serverId)
         {
             var factory = DbProviderFactories.GetFactory(providerName);
-            _cache = cache;
+            _schema = schema;
             Connection = factory.CreateConnection();
             Connection.ConnectionString = connectionString;
 
@@ -142,7 +142,7 @@ namespace DataCloner.DataAccess
         public object[][] Select(IRowIdentifier row)
         {
             var rows = new List<object[]>();
-            var schema = _cache.GetTable(row);
+            var schema = _schema.GetTable(row);
             var query = new StringBuilder(schema.SelectCommand);
             var nbParams = row.Columns.Count;
 
@@ -316,7 +316,7 @@ namespace DataCloner.DataAccess
 
         internal void GemerateInsertStatment(InsertStep step, IDbCommand cmd, StringBuilder sql, ref int nbParams)
         {
-            var schema = _cache.GetTable(step.DestinationTable);
+            var schema = _schema.GetTable(step.DestinationTable);
             if (schema.ColumnsDefinition.Count() != step.DataRow.Length)
                 throw new Exception("The step doesn't correspond to schema!");
 

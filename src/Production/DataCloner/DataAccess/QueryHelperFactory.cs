@@ -6,14 +6,14 @@ namespace DataCloner.DataAccess
 {
     internal static class QueryHelperFactory 
     {
-        public static IQueryHelper GetQueryHelper(Cache cache, string providerName, string connectionString, Int16 serverId)
+        public static IQueryHelper GetQueryHelper(DatabasesSchema schema, string providerName, string connectionString, Int16 serverId)
         {
             switch (providerName)
             {
                 case QueryHelperMsSql.ProviderName:
-                    return new QueryHelperMsSql(cache, connectionString, serverId);
+                    return new QueryHelperMsSql(schema, connectionString, serverId);
                 case QueryHelperMySql.ProviderName:
-                    return new QueryHelperMySql(cache, connectionString, serverId);
+                    return new QueryHelperMySql(schema, connectionString, serverId);
                 //case PostgresProvider.ProviderName:
                 //    return new PostgresProvider();
                 //case OracleProvider.ProviderName:
@@ -26,7 +26,7 @@ namespace DataCloner.DataAccess
             throw new Exception("Unkown provider");
         }
 
-        public static IQueryHelper GetQueryHelper(this DbConnection cnx, Cache cache, Int16 serverId)
+        public static IQueryHelper GetQueryHelper(this DbConnection cnx, DatabasesSchema schema, Int16 serverId)
         {
             var type = cnx.GetType().Name;
 
@@ -34,7 +34,7 @@ namespace DataCloner.DataAccess
             //    return new SqlServerProvider();
 
             if (type.StartsWith("MySql"))
-                return new QueryHelperMySql(cache, cnx.ConnectionString, serverId);
+                return new QueryHelperMySql(schema, cnx.ConnectionString, serverId);
 
             //if (type.StartsWith("Npgsql"))
             //    return new PostgresProvider();
