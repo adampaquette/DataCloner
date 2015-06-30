@@ -18,19 +18,7 @@
                 <v:ListConnectionView DataContext="{Binding Connections}"/>
             </TabItem>
             <TabItem Header="Modèles">
-                <StackPanel Grid.Row="1" Margin="10,0">
-                    <TextBlock Text="Templates" />
-                    <ListBox Height="57">
-                    </ListBox>
-                    <TextBlock Text="Configurationss" />
-                    <ListBox Height="57">
-                    </ListBox>
-                    <TextBlock Text="Serveurs" />
-                    <ComboBox />
-                    <TextBlock Text="Tables" />
-                    <ListBox Height="200">
-                    </ListBox>
-                </StackPanel>
+                <v:TemplateView />
             </TabItem>
             <TabItem Header="Types">
 

@@ -1,0 +1,9 @@
+﻿Pour les templates:
+===================
+Dans le ViewModel, avoir 3 listes :
+    1 - Le schéma par défaut (readOnly)
+    2 - Le schéma de la configuration utilisateur (read/write)
+    3 - Une liste qui merge les deux précédentes (read/write)
+
+Chaque fois qu'un Get est fait, on merge les liste et on retourne le résultat.
+Chaque fois qu'une modification est faite, on va dans la config utilisateur pour répliquer les changements.

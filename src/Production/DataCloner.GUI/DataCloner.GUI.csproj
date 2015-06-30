@@ -144,6 +144,9 @@
     <Compile Include="View\ListConnectionView.xaml.cs">
       <DependentUpon>ListConnectionView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\TemplateView.xaml.cs">
+      <DependentUpon>TemplateView.xaml</DependentUpon>
+    </Compile>
     <Page Include="MainView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -165,6 +168,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\ListConnectionView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\TemplateView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -218,6 +225,7 @@
     </Content>
     <Content Include="ScintillaNET.dll" />
     <Content Include="ScintillaNET.WPF.dll" />
+    <Resource Include="TODO.txt" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.6">

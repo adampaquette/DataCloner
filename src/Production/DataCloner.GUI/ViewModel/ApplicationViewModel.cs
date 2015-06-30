@@ -30,8 +30,13 @@ namespace DataCloner.GUI.ViewModel
             set { SetPropertyAndValidate(ref _name, value); }
         }
 
-        [Required]
         public ListConnectionViewModel Connections
+        {
+            get { return _connections; }
+            set { SetPropertyAndValidate(ref _connections, value); }
+        }
+
+        public ListConnectionViewModel Templates
         {
             get { return _connections; }
             set { SetPropertyAndValidate(ref _connections, value); }

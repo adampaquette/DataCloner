@@ -8,18 +8,12 @@
     <vm:ViewModelLocator x:Key="Locator"/>
 
     <SolidColorBrush x:Key="InvalidControlBrush" Color="#E5B8B7"/>
-
+      
     <Style TargetType="TextBox">
         <Setter Property="MinHeight" Value="25"/>
         <Setter Property="MinWidth" Value="100"/>
         <Setter Property="Margin" Value="11,11,0,0"/>
         <Setter Property="HorizontalAlignment" Value="Left"/>
-        <Setter Property="Validation.ErrorTemplate">
-            <Setter.Value>
-                <ControlTemplate/>
-                <!-- Set an empty error template, hide the red rectangle -->
-            </Setter.Value>
-        </Setter>
         <Style.Triggers>
             <Trigger Property="Validation.HasError" Value="true">
                 <Setter Property="Background" Value="{StaticResource InvalidControlBrush}"/>
@@ -35,33 +29,34 @@
         </Style.Triggers>
     </Style>
 
-    <!--<Style TargetType="DataGrid">
-        <Setter Property="AutoGenerateColumns" Value="False"/>
-        <Setter Property="CanUserAddRows" Value="False"/>
-        <Setter Property="CanUserReorderColumns" Value="False"/>
-        <Setter Property="HeadersVisibility" Value="Column"/>
-        <Setter Property="HorizontalGridLinesBrush" Value="LightGray"/>
-        <Setter Property="VerticalGridLinesBrush" Value="LightGray"/>
-    </Style>-->
-
     <Style x:Key="TextCellEditingStyle" TargetType="{x:Type TextBox}">
+        <Setter Property="Validation.ErrorTemplate">
+            <Setter.Value>
+                <ControlTemplate/>
+            </Setter.Value>
+        </Setter>
         <Style.Triggers>
             <Trigger Property="Validation.HasError" Value="True">
                 <Setter Property="Background" Value="Red"/>
                 <Setter Property="ToolTip" 
-                                Value="{Binding RelativeSource={RelativeSource Self},
-                                Path=(Validation.Errors).CurrentItem.ErrorContent}"/>
+                        Value="{Binding RelativeSource={RelativeSource Self},
+                        Path=(Validation.Errors).CurrentItem.ErrorContent}"/>
             </Trigger>
         </Style.Triggers>
     </Style>
     
     <Style x:Key="TextCellElementStyle" TargetType="{x:Type TextBlock}">
+        <Setter Property="Validation.ErrorTemplate">
+            <Setter.Value>
+                <ControlTemplate/>
+            </Setter.Value>
+        </Setter>
         <Style.Triggers>
             <Trigger Property="Validation.HasError" Value="True">
                 <Setter Property="Background" Value="Red"/>
                 <Setter Property="ToolTip" 
-                                Value="{Binding RelativeSource={RelativeSource Self},
-                                Path=(Validation.Errors).CurrentItem.ErrorContent}"/>
+                        Value="{Binding RelativeSource={RelativeSource Self},
+                        Path=(Validation.Errors).CurrentItem.ErrorContent}"/>
             </Trigger>
         </Style.Triggers>
     </Style>

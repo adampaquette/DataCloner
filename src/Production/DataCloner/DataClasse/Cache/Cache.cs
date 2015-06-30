@@ -37,7 +37,7 @@ namespace DataCloner.DataClasse.Cache
             if (map == null)
                 throw new Exception($"Map id '{mapId}' not found in configuration file for application '{app.Name}'!");
 
-            var cacheFileName = app.Name + " _" + map.From + "-" + map.To;
+            var cacheFileName = app.Name + "_" + map.From + "-" + map.To;
             if (behaviourId != null)
                 cacheFileName += "_" + behaviourId;
             cacheFileName += ".cache";
@@ -130,7 +130,7 @@ namespace DataCloner.DataClasse.Cache
             foreach (var cs in app.ConnectionStrings.Where(c=>serversSource.Contains(c.Id.ToString())))
                 cache.ConnectionStrings.Add(new Connection(cs.Id, cs.ProviderName, cs.ConnectionString));
 
-            FetchSchema(dispatcher, cache.ConnectionStrings, ref cache);
+            FetchSchema(dispatcher, ref cache);
             var behaviour = clonerBehaviour.Build(app.ModifiersTemplates, map.Variables);
             cache.DatabasesSchema.FinalizeCache(behaviour);
 
@@ -156,7 +156,7 @@ namespace DataCloner.DataClasse.Cache
             foreach (var cs in connections)
                 cache.ConnectionStrings.Add(new Connection(cs.Id, cs.ProviderName, cs.ConnectionString));
             
-            FetchSchema(dispatcher, cache.ConnectionStrings, ref cache);
+            FetchSchema(dispatcher, ref cache);
             cache.DatabasesSchema.FinalizeSchema();
 
             //Save cache
@@ -164,11 +164,11 @@ namespace DataCloner.DataClasse.Cache
             return cache;
         }
 
-        private static void FetchSchema(IQueryDispatcher dispatcher, List<Connection> connections, ref Cache cache)
+        private static void FetchSchema(IQueryDispatcher dispatcher, ref Cache cache)
         {
             dispatcher.InitProviders(cache);
 
-            foreach (var cs in connections)
+            foreach (var cs in cache.ConnectionStrings)
             {
                 var provider = dispatcher.GetQueryHelper(cs.Id);
 

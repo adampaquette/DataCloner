@@ -1,0 +1,100 @@
+﻿<UserControl x:Class="DataCloner.GUI.View.TemplateView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:DataCloner.GUI.View"
+             mc:Ignorable="d" 
+             d:DesignHeight="472" d:DesignWidth="533">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+        <StackPanel Margin="10,0" MinWidth="200">
+            <TextBlock Text="Serveurs" />
+            <DataGrid Name="dgServers" 
+                      Height="100"
+                      AutoGenerateColumns="False"
+                      CanUserAddRows="True"
+                      CanUserDeleteRows="True"                  
+                      BorderThickness="1"
+                      BorderBrush="{StaticResource AccentColorBrush}">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Id" 
+                                        ElementStyle="{StaticResource TextCellElementStyle}"
+                                        EditingElementStyle="{StaticResource TextCellEditingStyle}"
+                                        Binding="{Binding Id, UpdateSourceTrigger=PropertyChanged, 
+                                        NotifyOnValidationError=True, ValidatesOnExceptions=True}"/>
+                    <DataGridTextColumn Header="TemplateId" 
+                                        ElementStyle="{StaticResource TextCellElementStyle}"
+                                        EditingElementStyle="{StaticResource TextCellEditingStyle}"
+                                        Binding="{Binding TemplateId, UpdateSourceTrigger=PropertyChanged, 
+                                        NotifyOnValidationError=True, ValidatesOnExceptions=True}"/>
+                    <DataGridTextColumn Header="UseTemplateId" 
+                                        ElementStyle="{StaticResource TextCellElementStyle}"
+                                        EditingElementStyle="{StaticResource TextCellEditingStyle}"
+                                        Binding="{Binding UseTemplateId, UpdateSourceTrigger=PropertyChanged, 
+                                        NotifyOnValidationError=True, ValidatesOnExceptions=True}"/>
+                </DataGrid.Columns>
+            </DataGrid>
+            <TextBlock Text="Base de données" />
+            <DataGrid Name="dgDatabase"      
+                      Height="100"
+                      AutoGenerateColumns="False"
+                      CanUserAddRows="True"
+                      CanUserDeleteRows="True"                  
+                      BorderThickness="1"
+                      BorderBrush="{StaticResource AccentColorBrush}">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Name" 
+                                        ElementStyle="{StaticResource TextCellElementStyle}"
+                                        EditingElementStyle="{StaticResource TextCellEditingStyle}"
+                                        Binding="{Binding Name, UpdateSourceTrigger=PropertyChanged, 
+                                        NotifyOnValidationError=True, ValidatesOnExceptions=True}"/>
+                    <DataGridTextColumn Header="TemplateId" 
+                                        ElementStyle="{StaticResource TextCellElementStyle}"
+                                        EditingElementStyle="{StaticResource TextCellEditingStyle}"
+                                        Binding="{Binding TemplateId, UpdateSourceTrigger=PropertyChanged, 
+                                        NotifyOnValidationError=True, ValidatesOnExceptions=True}"/>
+                    <DataGridTextColumn Header="UseTemplateId" 
+                                        ElementStyle="{StaticResource TextCellElementStyle}"
+                                        EditingElementStyle="{StaticResource TextCellEditingStyle}"
+                                        Binding="{Binding UseTemplateId, UpdateSourceTrigger=PropertyChanged, 
+                                        NotifyOnValidationError=True, ValidatesOnExceptions=True}"/>
+                </DataGrid.Columns>
+            </DataGrid>
+            <TextBlock Text="Schéma" />
+            <DataGrid Name="dgSchema"    
+                      Height="100"
+                      AutoGenerateColumns="False"
+                      CanUserAddRows="True"
+                      CanUserDeleteRows="True"                  
+                      BorderThickness="1"
+                      BorderBrush="{StaticResource AccentColorBrush}">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Name" 
+                                        ElementStyle="{StaticResource TextCellElementStyle}"
+                                        EditingElementStyle="{StaticResource TextCellEditingStyle}"
+                                        Binding="{Binding Name, UpdateSourceTrigger=PropertyChanged, 
+                                        NotifyOnValidationError=True, ValidatesOnExceptions=True}"/>
+                    <DataGridTextColumn Header="TemplateId" 
+                                        ElementStyle="{StaticResource TextCellElementStyle}"
+                                        EditingElementStyle="{StaticResource TextCellEditingStyle}"
+                                        Binding="{Binding TemplateId, UpdateSourceTrigger=PropertyChanged, 
+                                        NotifyOnValidationError=True, ValidatesOnExceptions=True}"/>
+                    <DataGridTextColumn Header="UseTemplateId" 
+                                        ElementStyle="{StaticResource TextCellElementStyle}"
+                                        EditingElementStyle="{StaticResource TextCellEditingStyle}"
+                                        Binding="{Binding UseTemplateId, UpdateSourceTrigger=PropertyChanged, 
+                                        NotifyOnValidationError=True, ValidatesOnExceptions=True}"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </StackPanel>
+        <StackPanel Grid.Column="1">
+            <TextBlock Text="Tables" />
+            <ListView Width="150" Height="400" />
+        </StackPanel>
+    </Grid>
+</UserControl>
