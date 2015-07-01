@@ -11,10 +11,11 @@ namespace DataCloner.GUI.ViewModel
 {
     class ApplicationViewModel : ValidatableModel
     {
-        public Int16 _id;
-        public string _name;
-        public ListConnectionViewModel _connections;
-        public bool _isValid = true;
+        private Int16 _id;
+        private string _name;
+        private ListConnectionViewModel _connections;
+        private TemplatesViewModel _templates;
+        private bool _isValid = true;
 
         [Required]
         public Int16 Id
@@ -36,10 +37,10 @@ namespace DataCloner.GUI.ViewModel
             set { SetPropertyAndValidate(ref _connections, value); }
         }
 
-        public ListConnectionViewModel Templates
+        public TemplatesViewModel Templates
         {
-            get { return _connections; }
-            set { SetPropertyAndValidate(ref _connections, value); }
+            get { return _templates; }
+            set { SetPropertyAndValidate(ref _templates, value); }
         }
 
         public bool IsValid
@@ -52,17 +53,15 @@ namespace DataCloner.GUI.ViewModel
             }
         }
 
-        [PreferredConstructor]
-        public ApplicationViewModel()
-        {
-            SaveCommand = new RelayCommand(Save, () => IsValid);
-        }
-
-        public ApplicationViewModel(Application app) : this()
+        public ApplicationViewModel(Application app)
         {
             _id = app.Id;
             _name = app.Name;
             _connections = new ListConnectionViewModel(app.ConnectionStrings);
+
+            _templates = new TemplatesViewModel(app.ModifiersTemplates);
+
+            SaveCommand = new RelayCommand(Save, () => IsValid);
         }
 
         public RelayCommand SaveCommand { get; private set; }

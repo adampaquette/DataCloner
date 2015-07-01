@@ -5,5 +5,13 @@ Dans le ViewModel, avoir 3 listes :
     2 - Le schéma de la configuration utilisateur (read/write)
     3 - Une liste qui merge les deux précédentes (read/write)
 
-Chaque fois qu'un Get est fait, on merge les liste et on retourne le résultat.
+Chaque fois qu'un Get est fait, on merge les listes et on retourne le résultat.
 Chaque fois qu'une modification est faite, on va dans la config utilisateur pour répliquer les changements.
+
+Les éléments sont tous actifs par défaut à moins qu'une suppression soit faite dans la config.
+Si un élément n'est pas trouvé dans le schéma de base, il est ajouté dans le merge.
+
+Une suppression sur un élément de base ne peut être fait.
+Une suppression sur un élément qui ne se retrouve pas dans la cache de base peut être fait.
+
+L'ajout ne peut

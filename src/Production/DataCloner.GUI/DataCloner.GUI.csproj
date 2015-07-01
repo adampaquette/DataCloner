@@ -130,10 +130,12 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Model\ServerModifierModel.cs" />
     <Compile Include="ViewModel\ApplicationViewModel.cs" />
     <Compile Include="ViewModel\ConnectionViewModel.cs" />
     <Compile Include="ViewModel\ListConnectionViewModel.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
+    <Compile Include="ViewModel\TemplatesViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
     <Compile Include="View\CloneView.xaml.cs">
       <DependentUpon>CloneView.xaml</DependentUpon>
@@ -144,8 +146,8 @@
     <Compile Include="View\ListConnectionView.xaml.cs">
       <DependentUpon>ListConnectionView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\TemplateView.xaml.cs">
-      <DependentUpon>TemplateView.xaml</DependentUpon>
+    <Compile Include="View\TemplatesView.xaml.cs">
+      <DependentUpon>TemplatesView.xaml</DependentUpon>
     </Compile>
     <Page Include="MainView.xaml">
       <SubType>Designer</SubType>
@@ -171,7 +173,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\TemplateView.xaml">
+    <Page Include="View\TemplatesView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -245,9 +247,7 @@
       <Name>DataCloner</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Model\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

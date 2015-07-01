@@ -18,7 +18,7 @@
                 <v:ListConnectionView DataContext="{Binding Connections}"/>
             </TabItem>
             <TabItem Header="Modèles">
-                <v:TemplateView />
+                <v:TemplateView DataContext="{Binding Templates}" />
             </TabItem>
             <TabItem Header="Types">
 
