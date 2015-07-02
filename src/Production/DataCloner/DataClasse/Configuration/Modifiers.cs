@@ -5,6 +5,24 @@ using System.Xml.Serialization;
 namespace DataCloner.DataClasse.Configuration
 {
     [Serializable]
+    public class Modifiers
+    {
+        [XmlElement("ServerModifier")]
+        public List<ServerModifier> ServerModifiers { get; set; }
+        [XmlElement("DatabaseModifier")]
+        public List<DatabaseModifier> DatabaseModifiers { get; set; }
+        [XmlElement("SchemaModifier")]
+        public List<SchemaModifier> SchemaModifiers { get; set; }
+
+        public Modifiers()
+        {
+            ServerModifiers = new List<ServerModifier>();
+            DatabaseModifiers = new List<DatabaseModifier>();
+            SchemaModifiers = new List<SchemaModifier>();
+        }
+    }
+
+    [Serializable]
     public class ServerModifier
     {
         [XmlAttribute]
@@ -13,6 +31,8 @@ namespace DataCloner.DataClasse.Configuration
         public Int16 TemplateId { get; set; }
         [XmlAttribute]
         public Int16 UseTemplateId { get; set; }
+        [XmlAttribute]
+        public Int16 BasedOnServerId { get; set; }
         [XmlElement("DatabaseModifier")]
         public List<DatabaseModifier> Databases { get; set; }
 
@@ -31,6 +51,11 @@ namespace DataCloner.DataClasse.Configuration
         public Int16 TemplateId { get; set; }
         [XmlAttribute]
         public Int16 UseTemplateId { get; set; }
+        [XmlAttribute]
+        public Int16 BasedOnServerId { get; set; }
+        [XmlAttribute]
+        public string BasedOnDatabaseName { get; set; }
+
         [XmlElement("SchemaModifier")]
         public List<SchemaModifier> Schemas { get; set; }
 
@@ -49,6 +74,12 @@ namespace DataCloner.DataClasse.Configuration
         public Int16 TemplateId { get; set; }
         [XmlAttribute]
         public Int16 UseTemplateId { get; set; }
+        [XmlAttribute]
+        public Int16 BasedOnServerId { get; set; }
+        [XmlAttribute]
+        public string BasedOnDatabaseName { get; set; }
+        [XmlAttribute]
+        public string BasedOnSchemaName { get; set; }
         [XmlElement("TableModifier")]
         public List<TableModifier> Tables { get; set; }
 

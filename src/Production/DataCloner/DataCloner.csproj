@@ -105,7 +105,6 @@
     <Compile Include="DataClasse\Configuration\ClonerBehaviour.cs" />
     <Compile Include="DataClasse\Configuration\Map.cs" />
     <Compile Include="DataClasse\ColumnsWithValue.cs" />
-    <Compile Include="DataClasse\Configuration\ModifiersTemplates.cs" />
     <Compile Include="DataClasse\ExecutionPlan.cs" />
     <Compile Include="DataClasse\IExecutionStep.cs" />
     <Compile Include="DataClasse\InsertStep.cs" />

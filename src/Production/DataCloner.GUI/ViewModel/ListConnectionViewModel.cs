@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using DataCloner.DataClasse.Configuration;
-using GalaSoft.MvvmLight.Ioc;
 using DataCloner.GUI.Framework;
 
 namespace DataCloner.GUI.ViewModel
@@ -16,7 +15,6 @@ namespace DataCloner.GUI.ViewModel
             set { SetPropertyAndValidate(ref _connections, value); }
         }
 
-        [PreferredConstructor]
         public ListConnectionViewModel()
         {
             //if (IsInDesignMode)

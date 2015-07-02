@@ -1,7 +1,9 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:fw="clr-namespace:DataCloner.GUI.Framework">
+                    xmlns:fw="clr-namespace:DataCloner.GUI.Framework"
+                    xmlns:Converters="clr-namespace:MahApps.Metro.Converters;assembly=MahApps.Metro">
 
     <fw:ValidationErrorsConverter x:Key="ValidationErrorsConverter" />
+    <Converters:ToUpperConverter x:Key="ToUpperConverter"/>
 
 </ResourceDictionary>

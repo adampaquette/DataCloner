@@ -470,7 +470,7 @@ namespace DataCloner.DataClasse.Cache
 
             foreach (var server in this)
             {
-                var serModifier = behaviour.Servers.Find(s => s.Id == server.Key.ToString());
+                var serModifier = behaviour.Modifiers.ServerModifiers.Find(s => s.Id == server.Key.ToString());
                 if (serModifier != null)
                 {
                     foreach (var database in server.Value)
@@ -551,7 +551,7 @@ namespace DataCloner.DataClasse.Cache
 
             foreach (var server in this)
             {
-                var serModifier = behaviour.Servers.Find(s => s.Id == server.Key.ToString());
+                var serModifier = behaviour.Modifiers.ServerModifiers.Find(s => s.Id == server.Key.ToString());
                 if (serModifier != null)
                 {
                     foreach (var database in server.Value)

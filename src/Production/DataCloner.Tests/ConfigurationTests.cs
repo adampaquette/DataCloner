@@ -109,7 +109,7 @@ namespace DataCloner.Tests
                 Id = 1,
                 Name = "Basic clone",
                 Description = "Only cloning besic data",
-                Servers = new List<ServerModifier> { server1 }
+                //Servers = new List<ServerModifier> { server1 }
             };
 
             app.ClonerBehaviours.Add(clonerBehaviour);

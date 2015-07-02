@@ -27,12 +27,13 @@
                 <TextBlock Text="Serveurs"/>
                 <DataGrid Name="dgServers" 
                           ItemsSource="{Binding ServerModifiers}"
-                          Height="100"
+                          Height="110"
                           AutoGenerateColumns="False"
                           CanUserAddRows="True"
                           CanUserDeleteRows="True"                  
                           BorderThickness="1"
-                          BorderBrush="{StaticResource AccentColorBrush}">
+                          BorderBrush="{StaticResource AccentColorBrush}"
+                          SelectedItem="{Binding SelectedServer, ValidatesOnNotifyDataErrors=False}">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Id" 
                                         ElementStyle="{StaticResource TextCellElementStyle}"
@@ -49,6 +50,26 @@
                                         EditingElementStyle="{StaticResource TextCellEditingStyle}"
                                         Binding="{Binding UseTemplateId, UpdateSourceTrigger=PropertyChanged, 
                                         NotifyOnValidationError=True, ValidatesOnExceptions=True}"/>
+                        <DataGridTemplateColumn Header="BasedOnServerId">
+                            <DataGridTemplateColumn.CellEditingTemplate>
+                                <DataTemplate>
+                                    <ComboBox ItemsSource="{Binding DataContext.Connections, RelativeSource={RelativeSource AncestorType=UserControl}}" 
+                                              DisplayMemberPath="Name"
+                                              SelectedValuePath="Id"
+                                              SelectedValue="{Binding BasedOnServerId, UpdateSourceTrigger=PropertyChanged, 
+                                                             NotifyOnValidationError=True, ValidatesOnExceptions=True}"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellEditingTemplate>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <ComboBox ItemsSource="{Binding DataContext.Connections, RelativeSource={RelativeSource AncestorType=UserControl}}" 
+                                              DisplayMemberPath="Name"
+                                              SelectedValuePath="Id" 
+                                              SelectedValue="{Binding BasedOnServerId, UpdateSourceTrigger=PropertyChanged, 
+                                                             NotifyOnValidationError=True, ValidatesOnExceptions=True}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
                     </DataGrid.Columns>
                 </DataGrid>
             </StackPanel>
@@ -71,13 +92,14 @@
                     <TextBlock Text="Base de données" />
                     <ToggleButton Grid.Column="2" Content="Niveau supérieur" IsChecked="{Binding IsDatabaseTopLevel}" />
                 </Grid>
-                <DataGrid Name="dgDatabase"      
-                      Height="100"
-                      AutoGenerateColumns="False"
-                      CanUserAddRows="True"
-                      CanUserDeleteRows="True"                  
-                      BorderThickness="1"
-                      BorderBrush="{StaticResource AccentColorBrush}">
+                <DataGrid Name="dgDatabase"  
+                          ItemsSource="{Binding SelectedServer.Databases}"
+                          Height="110"
+                          AutoGenerateColumns="False"
+                          CanUserAddRows="True"
+                          CanUserDeleteRows="True"                  
+                          BorderThickness="1"
+                          BorderBrush="{StaticResource AccentColorBrush}">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Name" 
                                         ElementStyle="{StaticResource TextCellElementStyle}"
@@ -106,8 +128,8 @@
                 <TextBlock Text="Schéma" />
                 <ToggleButton Grid.Column="2" Content="Niveau supérieur" IsChecked="{Binding IsSchemaTopLevel}"/>
             </Grid>
-            <DataGrid Name="dgSchema"    
-                      Height="100"
+            <DataGrid Name="dgSchema"   
+                      Height="110"
                       AutoGenerateColumns="False"
                       CanUserAddRows="True"
                       CanUserDeleteRows="True"                  

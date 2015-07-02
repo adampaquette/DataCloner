@@ -13,14 +13,14 @@ namespace DataCloner.DataClasse.Configuration
         public string Name { get; set; }
         [XmlArrayItem("Add")]
         public List<Connection> ConnectionStrings { get; set; }
-        public ModifiersTemplates ModifiersTemplates { get; set; }
+        public Modifiers ModifiersTemplates { get; set; }
         public List<ClonerBehaviour> ClonerBehaviours { get; set; }
         public List<Map> Maps { get; set; }
 
         public Application()
         {
             ConnectionStrings = new List<Connection>();
-            ModifiersTemplates = new ModifiersTemplates();
+            ModifiersTemplates = new Modifiers();
             ClonerBehaviours = new List<ClonerBehaviour>();
             Maps = new List<Map>();
         }

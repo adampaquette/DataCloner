@@ -58,8 +58,7 @@ namespace DataCloner.GUI.ViewModel
             _id = app.Id;
             _name = app.Name;
             _connections = new ListConnectionViewModel(app.ConnectionStrings);
-
-            _templates = new TemplatesViewModel(app.ModifiersTemplates);
+            _templates = new TemplatesViewModel(app.ModifiersTemplates, app.ConnectionStrings);
 
             SaveCommand = new RelayCommand(Save, () => IsValid);
         }

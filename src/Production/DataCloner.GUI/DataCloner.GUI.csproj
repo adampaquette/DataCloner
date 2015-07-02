@@ -80,13 +80,11 @@
       <HintPath>..\packages\MySql.Data.6.9.6\lib\net45\MySql.Data.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="ScintillaNET, Version=2.6.0.0, Culture=neutral, PublicKeyToken=948d6c9751444115, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>.\ScintillaNET.dll</HintPath>
+    <Reference Include="ScintillaNET">
+      <HintPath>..\..\..\lib\ScintillaNET.dll</HintPath>
     </Reference>
-    <Reference Include="ScintillaNET.WPF, Version=2.6.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>.\ScintillaNET.WPF.dll</HintPath>
+    <Reference Include="ScintillaNET.WPF">
+      <HintPath>..\..\..\lib\ScintillaNET.WPF.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -130,6 +128,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Model\DatabaseModifierModel.cs" />
     <Compile Include="Model\ServerModifierModel.cs" />
     <Compile Include="ViewModel\ApplicationViewModel.cs" />
     <Compile Include="ViewModel\ConnectionViewModel.cs" />
@@ -225,8 +224,6 @@
     <Content Include="SciLexer64.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="ScintillaNET.dll" />
-    <Content Include="ScintillaNET.WPF.dll" />
     <Resource Include="TODO.txt" />
   </ItemGroup>
   <ItemGroup>
