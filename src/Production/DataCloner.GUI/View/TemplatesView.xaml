@@ -6,7 +6,8 @@
              xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
              xmlns:local="clr-namespace:DataCloner.GUI.View"
              mc:Ignorable="d" 
-             d:DesignHeight="472" d:DesignWidth="533">
+             d:DesignHeight="472" Width="955"
+             HorizontalAlignment="Left">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
@@ -50,26 +51,6 @@
                                         EditingElementStyle="{StaticResource TextCellEditingStyle}"
                                         Binding="{Binding UseTemplateId, UpdateSourceTrigger=PropertyChanged, 
                                         NotifyOnValidationError=True, ValidatesOnExceptions=True}"/>
-                        <DataGridTemplateColumn Header="BasedOnServerId">
-                            <DataGridTemplateColumn.CellEditingTemplate>
-                                <DataTemplate>
-                                    <ComboBox ItemsSource="{Binding DataContext.Connections, RelativeSource={RelativeSource AncestorType=UserControl}}" 
-                                              DisplayMemberPath="Name"
-                                              SelectedValuePath="Id"
-                                              SelectedValue="{Binding BasedOnServerId, UpdateSourceTrigger=PropertyChanged, 
-                                                             NotifyOnValidationError=True, ValidatesOnExceptions=True}"/>
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellEditingTemplate>
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <ComboBox ItemsSource="{Binding DataContext.Connections, RelativeSource={RelativeSource AncestorType=UserControl}}" 
-                                              DisplayMemberPath="Name"
-                                              SelectedValuePath="Id" 
-                                              SelectedValue="{Binding BasedOnServerId, UpdateSourceTrigger=PropertyChanged, 
-                                                             NotifyOnValidationError=True, ValidatesOnExceptions=True}" />
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
                     </DataGrid.Columns>
                 </DataGrid>
             </StackPanel>
@@ -99,7 +80,8 @@
                           CanUserAddRows="True"
                           CanUserDeleteRows="True"                  
                           BorderThickness="1"
-                          BorderBrush="{StaticResource AccentColorBrush}">
+                          BorderBrush="{StaticResource AccentColorBrush}"
+                          SelectedItem="{Binding SelectedDatabase, ValidatesOnNotifyDataErrors=False}">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Name" 
                                         ElementStyle="{StaticResource TextCellElementStyle}"
@@ -129,12 +111,14 @@
                 <ToggleButton Grid.Column="2" Content="Niveau supérieur" IsChecked="{Binding IsSchemaTopLevel}"/>
             </Grid>
             <DataGrid Name="dgSchema"   
+                      ItemsSource="{Binding SelectedDatabase.Schemas}"
                       Height="110"
                       AutoGenerateColumns="False"
                       CanUserAddRows="True"
                       CanUserDeleteRows="True"                  
                       BorderThickness="1"
-                      BorderBrush="{StaticResource AccentColorBrush}">
+                      BorderBrush="{StaticResource AccentColorBrush}"
+                      SelectedItem="{Binding SelectedSchema, ValidatesOnNotifyDataErrors=False}">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Name" 
                                         ElementStyle="{StaticResource TextCellElementStyle}"
@@ -156,7 +140,129 @@
         </StackPanel>
         <StackPanel Grid.Column="1">
             <TextBlock Text="Tables" />
-            <ListView Width="150" Height="400" />
+            <ListView Name="lvTables" 
+                      Width="150" 
+                      Height="400" 
+                      SelectedItem="{Binding SelectedTable, ValidatesOnNotifyDataErrors=False}"
+                      ItemsSource="{Binding SelectedSchema.Tables}">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Name}"/>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </StackPanel>
+        <StackPanel Grid.Column="2">
+            <TextBlock Text="{Binding SelectedTable.Name}" 
+                       HorizontalAlignment="Center"
+                       FontSize="18"/>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Est statique : "/>
+                <CheckBox IsChecked="{Binding SelectedTable.IsStatic}"/>
+            </StackPanel>
+            <GroupBox Header="Clefs étrangères">
+                <StackPanel>
+                    <DataGrid Name="dgForeignKey"   
+                      ItemsSource="{Binding SelectedTable.ForeignKeys}"
+                      Height="110"
+                      AutoGenerateColumns="False"
+                      CanUserAddRows="True"
+                      CanUserDeleteRows="True"                  
+                      BorderThickness="1"
+                      BorderBrush="{StaticResource AccentColorBrush}"
+                      SelectedItem="{Binding SelectedForeignKey, ValidatesOnNotifyDataErrors=False}">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="ServerIdTo" 
+                                        ElementStyle="{StaticResource TextCellElementStyle}"
+                                        EditingElementStyle="{StaticResource TextCellEditingStyle}"
+                                        Binding="{Binding ServerIdTo, UpdateSourceTrigger=PropertyChanged, 
+                                        NotifyOnValidationError=True, ValidatesOnExceptions=True}"/>
+                            <DataGridTextColumn Header="DatabaseTo" 
+                                        ElementStyle="{StaticResource TextCellElementStyle}"
+                                        EditingElementStyle="{StaticResource TextCellEditingStyle}"
+                                        Binding="{Binding DatabaseTo, UpdateSourceTrigger=PropertyChanged, 
+                                        NotifyOnValidationError=True, ValidatesOnExceptions=True}"/>
+                            <DataGridTextColumn Header="SchemaTo" 
+                                        ElementStyle="{StaticResource TextCellElementStyle}"
+                                        EditingElementStyle="{StaticResource TextCellEditingStyle}"
+                                        Binding="{Binding SchemaTo, UpdateSourceTrigger=PropertyChanged, 
+                                        NotifyOnValidationError=True, ValidatesOnExceptions=True}"/>
+                            <DataGridTextColumn Header="TableTo" 
+                                        ElementStyle="{StaticResource TextCellElementStyle}"
+                                        EditingElementStyle="{StaticResource TextCellEditingStyle}"
+                                        Binding="{Binding TableTo, UpdateSourceTrigger=PropertyChanged, 
+                                        NotifyOnValidationError=True, ValidatesOnExceptions=True}"/>
+                            <DataGridCheckBoxColumn Header="EstSupprimé"                                        
+                                        Binding="{Binding IsDeleted, UpdateSourceTrigger=PropertyChanged}" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <DataGrid Name="dgForeignKeyColumn"   
+                      ItemsSource="{Binding SelectedForeignKey.Columns}"
+                      Height="110"
+                      AutoGenerateColumns="False"
+                      CanUserAddRows="True"
+                      CanUserDeleteRows="True"                  
+                      BorderThickness="1"
+                      BorderBrush="{StaticResource AccentColorBrush}">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Depuis" 
+                                        ElementStyle="{StaticResource TextCellElementStyle}"
+                                        EditingElementStyle="{StaticResource TextCellEditingStyle}"
+                                        Binding="{Binding NameFrom, UpdateSourceTrigger=PropertyChanged, 
+                                        NotifyOnValidationError=True, ValidatesOnExceptions=True}"/>
+                            <DataGridTextColumn Header="Vers" 
+                                        ElementStyle="{StaticResource TextCellElementStyle}"
+                                        EditingElementStyle="{StaticResource TextCellEditingStyle}"
+                                        Binding="{Binding NameTo, UpdateSourceTrigger=PropertyChanged, 
+                                        NotifyOnValidationError=True, ValidatesOnExceptions=True}"/>
+                            <DataGridCheckBoxColumn Header="EstSupprimé" 
+                                        Binding="{Binding IsDeleted, UpdateSourceTrigger=PropertyChanged}"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    
+                </StackPanel>
+            </GroupBox>
+            
+            <GroupBox Header="Tables dérivées">
+                <StackPanel>
+                    <DataGrid Name="dgDerivativeTable"   
+                      ItemsSource="{Binding SelectedTable.DerivativeTables}"
+                      Height="110"
+                      AutoGenerateColumns="False"
+                      CanUserAddRows="True"
+                      CanUserDeleteRows="True"                  
+                      BorderThickness="1"
+                      BorderBrush="{StaticResource AccentColorBrush}"
+                      SelectedItem="{Binding SelectedForeignKey, ValidatesOnNotifyDataErrors=False}">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="ServerId" 
+                                        ElementStyle="{StaticResource TextCellElementStyle}"
+                                        EditingElementStyle="{StaticResource TextCellEditingStyle}"
+                                        Binding="{Binding ServerId, UpdateSourceTrigger=PropertyChanged, 
+                                        NotifyOnValidationError=True, ValidatesOnExceptions=True}"/>
+                            <DataGridTextColumn Header="Database" 
+                                        ElementStyle="{StaticResource TextCellElementStyle}"
+                                        EditingElementStyle="{StaticResource TextCellEditingStyle}"
+                                        Binding="{Binding Database, UpdateSourceTrigger=PropertyChanged, 
+                                        NotifyOnValidationError=True, ValidatesOnExceptions=True}"/>
+                            <DataGridTextColumn Header="Schema" 
+                                        ElementStyle="{StaticResource TextCellElementStyle}"
+                                        EditingElementStyle="{StaticResource TextCellEditingStyle}"
+                                        Binding="{Binding Schema, UpdateSourceTrigger=PropertyChanged, 
+                                        NotifyOnValidationError=True, ValidatesOnExceptions=True}"/>
+                            <DataGridTextColumn Header="Table" 
+                                        ElementStyle="{StaticResource TextCellElementStyle}"
+                                        EditingElementStyle="{StaticResource TextCellEditingStyle}"
+                                        Binding="{Binding Table, UpdateSourceTrigger=PropertyChanged, 
+                                        NotifyOnValidationError=True, ValidatesOnExceptions=True}"/>
+                            <DataGridCheckBoxColumn Header="Cascade"                                        
+                                        Binding="{Binding Cascade, UpdateSourceTrigger=PropertyChanged}"/>
+                            <DataGridCheckBoxColumn Header="EstSupprimé" 
+                                        Binding="{Binding IsDeleted, UpdateSourceTrigger=PropertyChanged}"/>
+                        </DataGrid.Columns>
+                    </DataGrid>                    
+                </StackPanel>
+            </GroupBox>
         </StackPanel>
     </Grid>
 </UserControl>

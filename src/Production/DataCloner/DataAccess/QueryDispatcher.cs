@@ -6,7 +6,7 @@ using DataCloner.DataClasse.Cache;
 
 namespace DataCloner.DataAccess
 {
-    internal class QueryDispatcher : IQueryDispatcher
+    public class QueryDispatcher : IQueryDispatcher
     {
         private Dictionary<Int16, IQueryHelper> _queryHelpers;
 

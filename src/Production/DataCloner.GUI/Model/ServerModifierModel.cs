@@ -1,6 +1,8 @@
-﻿using DataCloner.DataClasse.Configuration;
+﻿using DataCloner.DataClasse.Cache;
+using DataCloner.DataClasse.Configuration;
 using DataCloner.GUI.Framework;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 
@@ -11,7 +13,6 @@ namespace DataCloner.GUI.Model
         private string _id;
         private Int32 _templateId;
         private Int32 _useTemplateId;
-        private Int16 _basedOnServerId;
         private ObservableCollection<DatabaseModifierModel> _databases;
 
         [Required]
@@ -35,13 +36,6 @@ namespace DataCloner.GUI.Model
             set { SetPropertyAndValidate(ref _useTemplateId, value); }
         }
 
-        [Required]
-        public Int16 BasedOnServerId
-        {
-            get { return _basedOnServerId; }
-            set { SetPropertyAndValidate(ref _basedOnServerId, value); }
-        }
-
         public ObservableCollection<DatabaseModifierModel> Databases
         {
             get { return _databases; }
@@ -50,18 +44,28 @@ namespace DataCloner.GUI.Model
 
         public ServerModifierModel()
         {
+            //Pour que le binding puisse créer une nouvelle ligne
         }
 
-        public ServerModifierModel(ServerModifier server)
-        {
-            _id = server.Id;
-            _templateId = server.TemplateId;
-            _useTemplateId = server.UseTemplateId;
-            _basedOnServerId = server.BasedOnServerId;
+        //public ServerModifierModel(ServerModifier server)
+        //{
+        //    _id = server.Id;
+        //    _templateId = server.TemplateId;
+        //    _useTemplateId = server.UseTemplateId;
+        //    _basedOnServerId = server.BasedOnServerId;
 
-            Databases = new ObservableCollection<DatabaseModifierModel>();
-            foreach (var database in server.Databases)
-                Databases.Add(new DatabaseModifierModel(database));
+        //    Databases = new ObservableCollection<DatabaseModifierModel>();
+        //    foreach (var database in server.Databases)
+        //        Databases.Add(new DatabaseModifierModel(database));
+        //}
+
+        public ServerModifierModel(KeyValuePair<Int16, Dictionary<string, Dictionary<string, TableSchema[]>>> defaultSchema)
+        {
+            _id = defaultSchema.Key.ToString();
+
+            _databases = new ObservableCollection<DatabaseModifierModel>();
+            foreach (var database in defaultSchema.Value)
+                _databases.Add(new DatabaseModifierModel(database));
         }
     }
 }

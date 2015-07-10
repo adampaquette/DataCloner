@@ -128,6 +128,11 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Model\DerivativeTableModifierModel.cs" />
+    <Compile Include="Model\ForeignKeyColumnModifierModel.cs" />
+    <Compile Include="Model\ForeignKeyModifierModel.cs" />
+    <Compile Include="Model\TableModifierModel.cs" />
+    <Compile Include="Model\SchemaModifierModel.cs" />
     <Compile Include="Model\DatabaseModifierModel.cs" />
     <Compile Include="Model\ServerModifierModel.cs" />
     <Compile Include="ViewModel\ApplicationViewModel.cs" />

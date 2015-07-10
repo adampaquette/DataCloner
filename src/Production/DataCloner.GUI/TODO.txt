@@ -15,3 +15,25 @@ Une suppression sur un élément de base ne peut être fait.
 Une suppression sur un élément qui ne se retrouve pas dans la cache de base peut être fait.
 
 L'ajout ne peut
+
+
+<DataGridTemplateColumn Header="BasedOnServerId">
+    <DataGridTemplateColumn.CellEditingTemplate>
+        <DataTemplate>
+            <ComboBox ItemsSource="{Binding DataContext.Connections, RelativeSource={RelativeSource AncestorType=UserControl}}" 
+                        DisplayMemberPath="Name"
+                        SelectedValuePath="Id"
+                        SelectedValue="{Binding BasedOnServerId, UpdateSourceTrigger=PropertyChanged, 
+                                        NotifyOnValidationError=True, ValidatesOnExceptions=True}"/>
+        </DataTemplate>
+    </DataGridTemplateColumn.CellEditingTemplate>
+    <DataGridTemplateColumn.CellTemplate>
+        <DataTemplate>
+            <ComboBox ItemsSource="{Binding DataContext.Connections, RelativeSource={RelativeSource AncestorType=UserControl}}" 
+                        DisplayMemberPath="Name"
+                        SelectedValuePath="Id" 
+                        SelectedValue="{Binding BasedOnServerId, UpdateSourceTrigger=PropertyChanged, 
+                                        NotifyOnValidationError=True, ValidatesOnExceptions=True}" />
+        </DataTemplate>
+    </DataGridTemplateColumn.CellTemplate>
+</DataGridTemplateColumn>

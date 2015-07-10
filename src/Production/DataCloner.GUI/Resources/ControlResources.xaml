@@ -10,7 +10,7 @@
 
     <SolidColorBrush x:Key="InvalidControlBrush" Color="#E5B8B7"/>
 
-    <Style TargetType="DataGridColumnHeader">
+    <!--<Style TargetType="DataGridColumnHeader">
         <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="Foreground" Value="White" />
         <Setter Property="TextElement.FontSize" Value="{Binding Controls:ControlsHelper.HeaderFontSize}"/>
@@ -35,7 +35,7 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
-    </Style>
+    </Style>-->
 
     <Style TargetType="TextBox">
         <Setter Property="MinHeight" Value="25"/>

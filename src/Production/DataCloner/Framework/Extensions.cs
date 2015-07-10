@@ -128,5 +128,22 @@ namespace DataCloner.Framework
             if (value == null) return false;
             return value.StartsWith("{$") && value.EndsWith("}");
         }
+
+        public static int ExtractVariable(this string value)
+        {
+            var posStart = value.IndexOf('{');
+            if (posStart == -1) return 0;
+
+            var posStart2 = value.IndexOf('{', posStart + 1);
+            if (posStart2 == -1) return 0;
+
+            var posEnd = value.IndexOf('}', posStart2);
+            if (posEnd == -1) return 0;
+
+            var extractedValue = value.Substring(posStart2, posEnd - posStart2);
+            var result = 0;
+            int.TryParse(extractedValue, out result);
+            return result;
+        }
     }
 }

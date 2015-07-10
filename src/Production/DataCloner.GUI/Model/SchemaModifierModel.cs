@@ -8,12 +8,12 @@ using System.ComponentModel.DataAnnotations;
 
 namespace DataCloner.GUI.Model
 {
-    class DatabaseModifierModel : ValidatableModel
+    class SchemaModifierModel : ValidatableModel
     {
         private string _name;
         private Int32 _templateId;
         private Int32 _useTemplateId;
-        private ObservableCollection<SchemaModifierModel> _schemas;
+        private ObservableCollection<TableModifierModel> _tables;
 
         [Required]
         public string Name
@@ -36,24 +36,25 @@ namespace DataCloner.GUI.Model
             set { SetPropertyAndValidate(ref _useTemplateId, value); }
         }
 
-        public ObservableCollection<SchemaModifierModel> Schemas
+        public ObservableCollection<TableModifierModel> Tables
         {
-            get { return _schemas; }
-            set { SetProperty(ref _schemas, value); }
+            get { return _tables; }
+            set { SetProperty(ref _tables, value); }
         }
 
-        public DatabaseModifierModel()
-        {
+        public SchemaModifierModel()
+        {      
             //Pour que le binding puisse créer une nouvelle ligne
         }
 
-        public DatabaseModifierModel(KeyValuePair<string, Dictionary<string, TableSchema[]>> defaultSchema)
+        public SchemaModifierModel(KeyValuePair<string, TableSchema[]> defaultSchema)
         {
             _name = defaultSchema.Key.ToString();
 
-            _schemas = new ObservableCollection<SchemaModifierModel>();
-            foreach (var schema in defaultSchema.Value)
-                _schemas.Add(new SchemaModifierModel(schema));
+            _tables = new ObservableCollection<TableModifierModel>();
+            foreach (var table in defaultSchema.Value)
+                _tables.Add(new TableModifierModel(table));
+
         }
     }
 }

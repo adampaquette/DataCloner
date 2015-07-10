@@ -1,7 +1,8 @@
-﻿using DataCloner.DataClasse.Configuration;
+﻿using Cache = DataCloner.DataClasse.Cache;
+using DataCloner.DataAccess;
+using DataCloner.DataClasse.Configuration;
 using DataCloner.GUI.Framework;
 using GalaSoft.MvvmLight.Command;
-using GalaSoft.MvvmLight.Ioc;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -16,6 +17,7 @@ namespace DataCloner.GUI.ViewModel
         private ListConnectionViewModel _connections;
         private TemplatesViewModel _templates;
         private bool _isValid = true;
+        private Cache.Cache _defaultSchema;
 
         [Required]
         public Int16 Id
@@ -55,12 +57,14 @@ namespace DataCloner.GUI.ViewModel
 
         public ApplicationViewModel(Application app)
         {
+            SaveCommand = new RelayCommand(Save, () => IsValid);
+
+            Cache.Cache.InitializeSchema(new QueryDispatcher(), app, ref _defaultSchema);
+
             _id = app.Id;
             _name = app.Name;
             _connections = new ListConnectionViewModel(app.ConnectionStrings);
-            _templates = new TemplatesViewModel(app.ModifiersTemplates, app.ConnectionStrings);
-
-            SaveCommand = new RelayCommand(Save, () => IsValid);
+            _templates = new TemplatesViewModel(app.ModifiersTemplates, app.ConnectionStrings, _defaultSchema);
         }
 
         public RelayCommand SaveCommand { get; private set; }
