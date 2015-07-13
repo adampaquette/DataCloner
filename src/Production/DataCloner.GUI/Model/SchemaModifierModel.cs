@@ -1,5 +1,4 @@
 ﻿using DataCloner.DataClasse.Cache;
-using DataCloner.DataClasse.Configuration;
 using DataCloner.GUI.Framework;
 using System;
 using System.Collections.Generic;
@@ -11,8 +10,8 @@ namespace DataCloner.GUI.Model
     class SchemaModifierModel : ValidatableModel
     {
         private string _name;
-        private Int32 _templateId;
-        private Int32 _useTemplateId;
+        private Int16 _templateId;
+        private Int16 _useTemplateId;
         private ObservableCollection<TableModifierModel> _tables;
 
         [Required]
@@ -23,14 +22,14 @@ namespace DataCloner.GUI.Model
         }
 
         [Required]
-        public Int32 TemplateId
+        public Int16 TemplateId
         {
             get { return _templateId; }
             set { SetPropertyAndValidate(ref _templateId, value); }
         }
 
         [Required]
-        public Int32 UseTemplateId
+        public Int16 UseTemplateId
         {
             get { return _useTemplateId; }
             set { SetPropertyAndValidate(ref _useTemplateId, value); }
@@ -54,7 +53,6 @@ namespace DataCloner.GUI.Model
             _tables = new ObservableCollection<TableModifierModel>();
             foreach (var table in defaultSchema.Value)
                 _tables.Add(new TableModifierModel(table));
-
         }
     }
 }

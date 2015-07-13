@@ -11,8 +11,8 @@ namespace DataCloner.GUI.Model
     class DatabaseModifierModel : ValidatableModel
     {
         private string _name;
-        private Int32 _templateId;
-        private Int32 _useTemplateId;
+        private Int16 _templateId;
+        private Int16 _useTemplateId;
         private ObservableCollection<SchemaModifierModel> _schemas;
 
         [Required]
@@ -23,14 +23,14 @@ namespace DataCloner.GUI.Model
         }
 
         [Required]
-        public Int32 TemplateId
+        public Int16 TemplateId
         {
             get { return _templateId; }
             set { SetPropertyAndValidate(ref _templateId, value); }
         }
 
         [Required]
-        public Int32 UseTemplateId
+        public Int16 UseTemplateId
         {
             get { return _useTemplateId; }
             set { SetPropertyAndValidate(ref _useTemplateId, value); }

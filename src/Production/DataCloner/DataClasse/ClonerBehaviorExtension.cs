@@ -42,7 +42,7 @@ namespace DataCloner.DataClasse.Configuration
         {
             //Remplacement de la variable
             if (srvToMerge.Id.IsVariable())
-                srvToMerge.Id = variables.First(v => v.Name == srvToMerge.Id).Value;
+                srvToMerge.Id = variables.First(v => v.Name == srvToMerge.Id.ExtractVariableKey()).Value;
 
             if (!compiledConfig.ContainsKey(srvToMerge.Id))
                 compiledConfig.Add(srvToMerge.Id, srvToMerge);
@@ -75,7 +75,7 @@ namespace DataCloner.DataClasse.Configuration
         {
             //Remplacement de la variable
             if (dbToMerge.Name.IsVariable())
-                dbToMerge.Name = variables.First(v => v.Name == dbToMerge.Name).Value;
+                dbToMerge.Name = variables.First(v => v.Name == dbToMerge.Name.ExtractVariableKey()).Value;
             dbToMerge.Name = dbToMerge.Name.ToLower();
 
             if (!compiledServer.Databases.Exists(d => d.Name == dbToMerge.Name))
@@ -121,7 +121,7 @@ namespace DataCloner.DataClasse.Configuration
         {
             //Remplacement de la variable
             if (schemaToMerge.Name.IsVariable())
-                schemaToMerge.Name = variables.First(v => v.Name == schemaToMerge.Name).Value;
+                schemaToMerge.Name = variables.First(v => v.Name == schemaToMerge.Name.ExtractVariableKey()).Value;
             schemaToMerge.Name = schemaToMerge.Name.ToLower();
 
             if (!compiledDatabase.Schemas.Exists(d => d.Name == schemaToMerge.Name))
@@ -165,7 +165,7 @@ namespace DataCloner.DataClasse.Configuration
         {
             //Remplacement de la variable
             if (tblToMerge.Name.IsVariable())
-                tblToMerge.Name = variables.First(v => v.Name == tblToMerge.Name).Value;
+                tblToMerge.Name = variables.First(v => v.Name == tblToMerge.Name.ExtractVariableKey()).Value;
             tblToMerge.Name = tblToMerge.Name.ToLower();
 
             if (!schema.Tables.Exists(d => d.Name == tblToMerge.Name))

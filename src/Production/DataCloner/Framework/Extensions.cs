@@ -129,20 +129,40 @@ namespace DataCloner.Framework
             return value.StartsWith("{$") && value.EndsWith("}");
         }
 
-        public static int ExtractVariable(this string value)
+        public static string ExtractVariableKey(this string value)
+        {
+            int len;
+            var posStart = value.IndexOf('{');
+            if (posStart != 0) return null;
+
+            posStart = value.IndexOf('{', 1);
+            if (posStart == -1)
+                len = value.Length - 1;
+            else
+                len = posStart;
+
+            return value.Substring(0, len) + "}";
+        }
+
+        public static string ExtractVariableValue(this string value)
         {
             var posStart = value.IndexOf('{');
-            if (posStart == -1) return 0;
+            if (posStart != 0) return null;
 
-            var posStart2 = value.IndexOf('{', posStart + 1);
-            if (posStart2 == -1) return 0;
+            posStart = value.IndexOf('{', 1);
+            if (posStart == -1) return null;
 
-            var posEnd = value.IndexOf('}', posStart2);
-            if (posEnd == -1) return 0;
+            var posEnd = value.IndexOf('}', posStart);
+            if (posEnd == -1) return null;
 
-            var extractedValue = value.Substring(posStart2, posEnd - posStart2);
-            var result = 0;
-            int.TryParse(extractedValue, out result);
+            return value.Substring(posStart, posEnd - posStart);
+        }
+
+        public static Int16 ExtractVariableValueInt16(this string value)
+        {
+            var extractedValue = value.ExtractVariableValue();
+            Int16 result = 0;
+            Int16.TryParse(extractedValue, out result);
             return result;
         }
     }
