@@ -191,6 +191,9 @@ namespace DataCloner.GUI.ViewModel
             var hasChange = false;
             var userConfigSchema = userConfigSchemas.FirstOrDefault(s => s.Name == mergedSchema.Name);
 
+            if (defaultSchema == null)
+                hasChange = true;
+
             //Add new
             if (userConfigSchema == null)
             {
@@ -224,6 +227,9 @@ namespace DataCloner.GUI.ViewModel
             var hasChange = false;
             var userConfigTable = userConfigTables.FirstOrDefault(t => t.Name == mergedTable.Name);
 
+            if (defaultTable == null)
+                hasChange = true;
+
             //Add new
             if (userConfigTable == null)
             {
@@ -232,25 +238,66 @@ namespace DataCloner.GUI.ViewModel
                     Name = mergedTable.Name,
                     IsStatic = mergedTable.IsStatic,
                     DataBuilders = null,
-                    DerativeTables = null,
-                    ForeignKeys = null
+                    DerativeTables = null
                 });
 
                 hasChange = true;
+            }
+
+            //Merge FK
+            foreach (var mergedFk in mergedTable.ForeignKeys)
+            {
+                var defaultFk = defaultTable.ForeignKeys.FirstOrDefault(f => f.ServerIdTo.ToString() == mergedFk.ServerIdTo &&
+                                                                             f.DatabaseTo == mergedFk.DatabaseTo &&
+                                                                             f.SchemaTo == mergedFk.SchemaTo &&
+                                                                             f.TableTo == mergedFk.TableTo);
+                if (MergeForeignKey(mergedFk, userConfigTable.ForeignKeys, defaultFk))
+                    hasChange = true;
+            }
+
+            return hasChange;
+        }
+
+        private bool MergeForeignKey(Model.ForeignKeyModifierModel mergedFk,
+                                     ForeignKeys userConfigFk,
+                                     Cache.IForeignKey defaultFk)
+        {
+            var hasChange = false;
+
+            if (mergedFk.IsDeleted)
+            {
+                //Add column in removed section in user config
+                if (defaultFk != null)
+                {
+                    var isFkFound = userConfigFk.ForeignKeyRemove.Any(f => f.Columns.Any(c => mergedFk.Columns.Any(mc => mc.NameFrom == c.Name)));
+                    if (!isFkFound)
+                    {
+                        var fkRemoveColumns = new List<ForeignKeyRemoveColumn>();
+                        foreach (var fkMergedCol in mergedFk.Columns)
+                            fkRemoveColumns.Add(new ForeignKeyRemoveColumn { Name = fkMergedCol.NameFrom });
+
+                        userConfigFk.ForeignKeyRemove.Add(new ForeignKeyRemove { Columns = fkRemoveColumns });
+                        hasChange = true;
+                    }
+                }
+                else
+                    mergedFk = null;
             }
             else
             {
 
             }
 
+
+
+
             return hasChange;
         }
 
         /// <summary>
-        /// 
+        /// Get the default server schema compiled from the database.
         /// </summary>
         /// <param name="serverId">Could be an Id like 0 or a variable like {$KEY{VALUE}} OR {$SERVER_SOURCE{1}}.</param>
-        /// <returns></returns>
         private Dictionary<string, Dictionary<string, Cache.TableSchema[]>> GetServerSchema(string serverId)
         {
             Int16 id;
@@ -272,6 +319,10 @@ namespace DataCloner.GUI.ViewModel
             return null;
         }
 
+        /// <summary>
+        /// Get the default database schema compiled from the database.
+        /// </summary>
+        /// <param name="databaseName">Could be a name like MyDb or a variable like {$KEY{VALUE}} OR {$DATABASE_SOURCE{1}}.</param>
         private Dictionary<string, Cache.TableSchema[]> GetDatabaseSchema(string databaseName,
             Dictionary<string, Dictionary<string, Cache.TableSchema[]>> serverSchema)
         {
@@ -289,6 +340,10 @@ namespace DataCloner.GUI.ViewModel
             return null;
         }
 
+        /// <summary>
+        /// Get the default schema compiled from the database.
+        /// </summary>
+        /// <param name="schemaName">Could be a name like DBO or a variable like {$KEY{VALUE}} OR {$SCHEMA_SOURCE{1}}.</param>
         private Cache.TableSchema[] GetSchema(string schemaName,
             Dictionary<string, Cache.TableSchema[]> databaseSchema)
         {
