@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using DataCloner.Framework;
+using System.Collections.ObjectModel;
 
 namespace DataCloner.GUI.ViewModel
 {
@@ -125,14 +126,17 @@ namespace DataCloner.GUI.ViewModel
             //Add new
             if (userConfigServer == null)
             {
-                userConfigServer = new ServerModifier
-                {
-                    Id = mergedServer.Id,
-                    TemplateId = mergedServer.TemplateId,
-                    UseTemplateId = mergedServer.UseTemplateId
-                };
+                userConfigServer = new ServerModifier{Id = mergedServer.Id};
                 userConfigServers.Add(userConfigServer);
             }
+
+            //Apply changes
+            userConfigServer.TemplateId = mergedServer.TemplateId;
+            userConfigServer.UseTemplateId = mergedServer.UseTemplateId;
+
+            if (mergedServer.TemplateId != 0 ||
+                mergedServer.UseTemplateId != 0)
+                hasChange = true;
 
             foreach (var mergedDatabase in mergedServer.Databases)
             {
@@ -161,14 +165,17 @@ namespace DataCloner.GUI.ViewModel
             //Add new
             if (userConfigDatabase == null)
             {
-                userConfigDatabase = new DatabaseModifier
-                {
-                    Name = mergedDatabase.Name,
-                    TemplateId = mergedDatabase.TemplateId,
-                    UseTemplateId = mergedDatabase.UseTemplateId
-                };
+                userConfigDatabase = new DatabaseModifier{Name = mergedDatabase.Name};
                 userConfigDatabases.Add(userConfigDatabase);
             }
+
+            //Apply changes
+            userConfigDatabase.TemplateId = mergedDatabase.TemplateId;
+            userConfigDatabase.UseTemplateId = mergedDatabase.UseTemplateId;
+
+            if (mergedDatabase.TemplateId != 0 ||
+                mergedDatabase.UseTemplateId != 0)
+                hasChange = true;
 
             foreach (var mergedSchema in mergedDatabase.Schemas)
             {
@@ -197,14 +204,17 @@ namespace DataCloner.GUI.ViewModel
             //Add new
             if (userConfigSchema == null)
             {
-                userConfigSchema = new SchemaModifier
-                {
-                    Name = mergedSchema.Name,
-                    TemplateId = mergedSchema.TemplateId,
-                    UseTemplateId = mergedSchema.UseTemplateId
-                };
+                userConfigSchema = new SchemaModifier { Name = mergedSchema.Name };
                 userConfigSchemas.Add(userConfigSchema);
             }
+
+            //Apply changes
+            userConfigSchema.TemplateId = mergedSchema.TemplateId;
+            userConfigSchema.UseTemplateId = mergedSchema.UseTemplateId;
+
+            if (mergedSchema.TemplateId != 0 ||
+                mergedSchema.UseTemplateId != 0)
+                hasChange = true;
 
             foreach (var mergedTable in mergedSchema.Tables)
             {
@@ -233,16 +243,14 @@ namespace DataCloner.GUI.ViewModel
             //Add new
             if (userConfigTable == null)
             {
-                userConfigTables.Add(new TableModifier
-                {
-                    Name = mergedTable.Name,
-                    IsStatic = mergedTable.IsStatic,
-                    DataBuilders = null,
-                    DerativeTables = null
-                });
-
-                hasChange = true;
+                userConfigTable = new TableModifier { Name = mergedTable.Name };
+                userConfigTables.Add(userConfigTable);
             }
+
+            userConfigTable.IsStatic = mergedTable.IsStatic;
+
+            if(mergedTable.IsStatic)
+                hasChange = true;
 
             //Merge FK
             foreach (var mergedFk in mergedTable.ForeignKeys)
@@ -251,14 +259,19 @@ namespace DataCloner.GUI.ViewModel
                                                                              f.DatabaseTo == mergedFk.DatabaseTo &&
                                                                              f.SchemaTo == mergedFk.SchemaTo &&
                                                                              f.TableTo == mergedFk.TableTo);
-                if (MergeForeignKey(mergedFk, userConfigTable.ForeignKeys, defaultFk))
+                if (MergeForeignKey(mergedFk, mergedTable.ForeignKeys, userConfigTable.ForeignKeys, defaultFk))
                     hasChange = true;
             }
+
+            //TODO : 
+            //DataBuilders = null,
+            //DerativeTables = null
 
             return hasChange;
         }
 
         private bool MergeForeignKey(Model.ForeignKeyModifierModel mergedFk,
+                                     ObservableCollection<Model.ForeignKeyModifierModel> listMergedFk,
                                      ForeignKeys userConfigFk,
                                      Cache.IForeignKey defaultFk)
         {
@@ -280,16 +293,36 @@ namespace DataCloner.GUI.ViewModel
                         hasChange = true;
                     }
                 }
+                //Fk was created by user and is not in the default schema
                 else
-                    mergedFk = null;
+                {
+                    listMergedFk.Remove(mergedFk);
+
+                    //TODO : REMOVE FORM USERCONFIG
+                }
             }
             else
             {
+                var userFkAdd = userConfigFk.ForeignKeyAdd.FirstOrDefault(f => f.ServerId == mergedFk.ServerIdTo &&
+                                                                               f.Database == mergedFk.DatabaseTo &&
+                                                                               f.Schema == mergedFk.SchemaTo &&
+                                                                               f.Table == mergedFk.TableTo);
 
+                //Modify
+                if (userFkAdd != null)
+                {
+                    foreach (var col in mergedFk.Columns)
+                    {
+
+
+                    }
+                }
+                //Create
+                else
+                {
+
+                }
             }
-
-
-
 
             return hasChange;
         }
