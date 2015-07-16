@@ -8,6 +8,11 @@
              mc:Ignorable="d" 
              d:DesignHeight="472" Width="955"
              HorizontalAlignment="Left">
+    <UserControl.Resources>
+        <Style TargetType="TextBlock">
+            <Setter Property="FontSize" Value="20"/>
+        </Style>
+    </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
@@ -155,7 +160,7 @@
         <StackPanel Grid.Column="2">
             <TextBlock Text="{Binding SelectedTable.Name}" 
                        HorizontalAlignment="Center"
-                       FontSize="18"/>
+                       FontSize="22"/>
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="Est statique : "/>
                 <CheckBox IsChecked="{Binding SelectedTable.IsStatic}"/>
@@ -167,7 +172,7 @@
                       Height="110"
                       AutoGenerateColumns="False"
                       CanUserAddRows="True"
-                      CanUserDeleteRows="True"                  
+                      CanUserDeleteRows="false"                  
                       BorderThickness="1"
                       BorderBrush="{StaticResource AccentColorBrush}"
                       SelectedItem="{Binding SelectedForeignKey, ValidatesOnNotifyDataErrors=False}">
@@ -201,7 +206,7 @@
                       Height="110"
                       AutoGenerateColumns="False"
                       CanUserAddRows="True"
-                      CanUserDeleteRows="True"                  
+                      CanUserDeleteRows="false"                  
                       BorderThickness="1"
                       BorderBrush="{StaticResource AccentColorBrush}">
                         <DataGrid.Columns>
@@ -219,10 +224,10 @@
                                         Binding="{Binding IsDeleted, UpdateSourceTrigger=PropertyChanged}"/>
                         </DataGrid.Columns>
                     </DataGrid>
-                    
+
                 </StackPanel>
             </GroupBox>
-            
+
             <GroupBox Header="Tables dérivées">
                 <StackPanel>
                     <DataGrid Name="dgDerivativeTable"   
@@ -230,7 +235,7 @@
                       Height="110"
                       AutoGenerateColumns="False"
                       CanUserAddRows="True"
-                      CanUserDeleteRows="True"                  
+                      CanUserDeleteRows="false"                  
                       BorderThickness="1"
                       BorderBrush="{StaticResource AccentColorBrush}"
                       SelectedItem="{Binding SelectedForeignKey, ValidatesOnNotifyDataErrors=False}">
@@ -260,7 +265,7 @@
                             <DataGridCheckBoxColumn Header="EstSupprimé" 
                                         Binding="{Binding IsDeleted, UpdateSourceTrigger=PropertyChanged}"/>
                         </DataGrid.Columns>
-                    </DataGrid>                    
+                    </DataGrid>
                 </StackPanel>
             </GroupBox>
         </StackPanel>

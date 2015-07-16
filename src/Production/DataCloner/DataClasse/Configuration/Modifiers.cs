@@ -188,6 +188,11 @@ namespace DataCloner.DataClasse.Configuration
     {
         [XmlElement("Column")]
         public List<ForeignKeyRemoveColumn> Columns { get; set; }
+
+        public ForeignKeyRemove()
+        {
+            Columns = new List<ForeignKeyRemoveColumn>();
+        }        
     }
 
     [Serializable]

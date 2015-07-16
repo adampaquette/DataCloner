@@ -126,7 +126,7 @@ namespace DataCloner.GUI.ViewModel
             //Add new
             if (userConfigServer == null)
             {
-                userConfigServer = new ServerModifier{Id = mergedServer.Id};
+                userConfigServer = new ServerModifier { Id = mergedServer.Id };
                 userConfigServers.Add(userConfigServer);
             }
 
@@ -165,7 +165,7 @@ namespace DataCloner.GUI.ViewModel
             //Add new
             if (userConfigDatabase == null)
             {
-                userConfigDatabase = new DatabaseModifier{Name = mergedDatabase.Name};
+                userConfigDatabase = new DatabaseModifier { Name = mergedDatabase.Name };
                 userConfigDatabases.Add(userConfigDatabase);
             }
 
@@ -249,8 +249,14 @@ namespace DataCloner.GUI.ViewModel
 
             userConfigTable.IsStatic = mergedTable.IsStatic;
 
-            if(mergedTable.IsStatic)
+            if (mergedTable.IsStatic)
                 hasChange = true;
+
+            //Clear
+            userConfigTable.ForeignKeys.ForeignKeyAdd = new List<ForeignKeyAdd>();
+            userConfigTable.ForeignKeys.ForeignKeyRemove = new List<ForeignKeyRemove>();
+            userConfigTable.DerativeTables = new DerativeTable();
+            userConfigTable.DataBuilders = new List<DataBuilder>();
 
             //Merge FK
             foreach (var mergedFk in mergedTable.ForeignKeys)
@@ -267,6 +273,10 @@ namespace DataCloner.GUI.ViewModel
             //DataBuilders = null,
             //DerativeTables = null
 
+            //If no change has been detected with the default config
+            if (!hasChange)
+                userConfigTables.Remove(userConfigTable);
+
             return hasChange;
         }
 
@@ -282,46 +292,42 @@ namespace DataCloner.GUI.ViewModel
                 //Add column in removed section in user config
                 if (defaultFk != null)
                 {
-                    var isFkFound = userConfigFk.ForeignKeyRemove.Any(f => f.Columns.Any(c => mergedFk.Columns.Any(mc => mc.NameFrom == c.Name)));
-                    if (!isFkFound)
-                    {
-                        var fkRemoveColumns = new List<ForeignKeyRemoveColumn>();
-                        foreach (var fkMergedCol in mergedFk.Columns)
-                            fkRemoveColumns.Add(new ForeignKeyRemoveColumn { Name = fkMergedCol.NameFrom });
+                    var fkRemove = new ForeignKeyRemove();
+                    foreach (var fkMergedCol in mergedFk.Columns)
+                        fkRemove.Columns.Add(new ForeignKeyRemoveColumn { Name = fkMergedCol.NameFrom });
 
-                        userConfigFk.ForeignKeyRemove.Add(new ForeignKeyRemove { Columns = fkRemoveColumns });
-                        hasChange = true;
-                    }
+                    userConfigFk.ForeignKeyRemove.Add(fkRemove);
+                    hasChange = true;
                 }
                 //Fk was created by user and is not in the default schema
                 else
-                {
                     listMergedFk.Remove(mergedFk);
-
-                    //TODO : REMOVE FORM USERCONFIG
-                }
             }
             else
             {
-                var userFkAdd = userConfigFk.ForeignKeyAdd.FirstOrDefault(f => f.ServerId == mergedFk.ServerIdTo &&
-                                                                               f.Database == mergedFk.DatabaseTo &&
-                                                                               f.Schema == mergedFk.SchemaTo &&
-                                                                               f.Table == mergedFk.TableTo);
-
-                //Modify
-                if (userFkAdd != null)
+                var fkAdd = new ForeignKeyAdd
                 {
-                    foreach (var col in mergedFk.Columns)
+                    ServerId = mergedFk.ServerIdTo,
+                    Database = mergedFk.DatabaseTo,
+                    Schema = mergedFk.SchemaTo,
+                    Table = mergedFk.TableTo
+                };
+
+                foreach (var mergedFkCol in mergedFk.Columns)
+                {
+                    fkAdd.Columns.Add(new ForeignKeyColumn
                     {
-
-
-                    }
+                        NameFrom = mergedFkCol.NameFrom,
+                        NameTo = mergedFkCol.NameTo
+                    });
                 }
-                //Create
-                else
-                {
 
-                }
+                userConfigFk.ForeignKeyAdd.Add(fkAdd);
+
+                if (defaultFk == null)
+                    hasChange = true;
+
+                //TODO : COMPARE ALL PROPERTY, IF A CHANGE COMPARE TO DEFAULT FK, HASCHANGE = TRUE
             }
 
             return hasChange;
