@@ -6,7 +6,7 @@ namespace DataCloner.GUI.Model
 {
     class DerivativeTableModifierModel : ValidatableModel
     {
-        private short _serverId;
+        private string _serverId;
         private string _database;
         private string _schema;
         private string _table;
@@ -15,7 +15,7 @@ namespace DataCloner.GUI.Model
         private bool _isDeleted;
 
         [Required]
-        public short ServerId
+        public string ServerId
         {
             get { return _serverId; }
             set { SetPropertyAndValidate(ref _serverId, value); }
@@ -70,7 +70,7 @@ namespace DataCloner.GUI.Model
 
         public DerivativeTableModifierModel(IDerivativeTable derivativeTable)
         {
-            _serverId = derivativeTable.ServerId;
+            _serverId = derivativeTable.ServerId.ToString();
             _database = derivativeTable.Database;
             _schema = derivativeTable.Schema;
             _table = derivativeTable.Table;

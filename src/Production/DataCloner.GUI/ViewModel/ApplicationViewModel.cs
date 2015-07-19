@@ -9,6 +9,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using DataCloner.Framework;
 using System.Collections.ObjectModel;
+using DataCloner.GUI.Model;
 
 namespace DataCloner.GUI.ViewModel
 {
@@ -269,9 +270,23 @@ namespace DataCloner.GUI.ViewModel
                     hasChange = true;
             }
 
-            //TODO : 
-            //DataBuilders = null,
-            //DerativeTables = null
+            //Merge derivative table
+            foreach (var mergedDerivativeTable in mergedTable.DerivativeTables)
+            {
+                var defaultDt = defaultTable.DerivativeTables.FirstOrDefault(d => d.ServerId.ToString() == mergedDerivativeTable.ServerId &&
+                                                                                  d.Database == mergedDerivativeTable.Database &&
+                                                                                  d.Schema == mergedDerivativeTable.Schema &&
+                                                                                  d.Table == mergedDerivativeTable.Table);
+                if (MergedDerivativeTable(mergedDerivativeTable, mergedTable.DerivativeTables, userConfigTable.DerativeTables, defaultDt))
+                    hasChange = true;
+            }
+
+            //Merge data builders
+            foreach (var mergedDataBuilder in mergedTable.DataBuilders)
+            {
+                if (MergeDataBuilders(mergedDataBuilder, userConfigTable.DataBuilders))
+                    hasChange = true;
+            }
 
             //If no change has been detected with the default config
             if (!hasChange)
@@ -281,7 +296,7 @@ namespace DataCloner.GUI.ViewModel
         }
 
         private bool MergeForeignKey(Model.ForeignKeyModifierModel mergedFk,
-                                     ObservableCollection<Model.ForeignKeyModifierModel> listMergedFk,
+                                     ObservableCollection<Model.ForeignKeyModifierModel> mergedFks,
                                      ForeignKeys userConfigFk,
                                      Cache.IForeignKey defaultFk)
         {
@@ -301,7 +316,7 @@ namespace DataCloner.GUI.ViewModel
                 }
                 //Fk was created by user and is not in the default schema
                 else
-                    listMergedFk.Remove(mergedFk);
+                    mergedFks.Remove(mergedFk);
             }
             else
             {
@@ -329,6 +344,50 @@ namespace DataCloner.GUI.ViewModel
 
                 //TODO : COMPARE ALL PROPERTY, IF A CHANGE COMPARE TO DEFAULT FK, HASCHANGE = TRUE
             }
+
+            return hasChange;
+        }
+
+        private bool MergedDerivativeTable(DerivativeTableModifierModel mergedDerivativeTable, 
+                                           ObservableCollection<DerivativeTableModifierModel> mergedDerivativeTables, 
+                                           DerativeTable derativeTables, 
+                                           Cache.IDerivativeTable defaultDt)
+        {
+            var hasChange = false;
+
+            if (mergedDerivativeTable.IsDeleted)
+            {
+                //Fk was created by user and is not in the default schema
+                if (defaultDt == null)
+                    mergedDerivativeTables.Remove(mergedDerivativeTable);
+            }
+            else
+            {
+
+            }
+
+            return hasChange;
+        }
+
+
+        private bool MergeDataBuilders(Model.DataBuilderModel mergedDb,
+                                       List<DataBuilder> userConfigDataBuilders)
+        {
+            var hasChange = false;
+            var userConfigDataBuilder = userConfigDataBuilders.FirstOrDefault(d => d.Name == mergedDb.ColumnName);
+
+            if (userConfigDataBuilder == null)
+                userConfigDataBuilder = new DataBuilder();
+
+            userConfigDataBuilder.Name = mergedDb.ColumnName;
+            userConfigDataBuilder.BuilderName = mergedDb.BuilderName;
+
+            if (!string.IsNullOrWhiteSpace(mergedDb.BuilderName))
+                hasChange = true;
+
+            //If no change has been detected with the default config
+            if (!hasChange)
+                userConfigDataBuilders.Remove(userConfigDataBuilder);
 
             return hasChange;
         }

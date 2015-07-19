@@ -20,7 +20,19 @@ namespace DataCloner.GUI.ViewModel
         private ForeignKeyModifierModel _selectedForeignKey;
         private ObservableCollection<Connection> _connections;
         private Cache.Cache _defaultSchema;
+        private ObservableCollection<AccessWithDescription> _accessWithDescriptions;
 
+        public class AccessWithDescription
+        {
+            public DerivativeTableAccess Key { get; set; }
+            public string Description { get; set; }
+        }
+
+        public ObservableCollection<AccessWithDescription> AccessWithDescriptions
+        {
+            get { return _accessWithDescriptions; }
+            set { _accessWithDescriptions = value; }
+        }
 
         public bool IsDatabaseTopLevel
         {
@@ -106,6 +118,13 @@ namespace DataCloner.GUI.ViewModel
             _connections = new ObservableCollection<Connection>();
             _userConfigTemplates = modifiers;
             _defaultSchema = defaultSchema;
+
+            _accessWithDescriptions = new ObservableCollection<AccessWithDescription>
+            {
+                new AccessWithDescription { Key = DerivativeTableAccess.NotSet, Description = "Non déféni" },
+                new AccessWithDescription { Key = DerivativeTableAccess.Denied, Description = "Refusé" },
+                new AccessWithDescription { Key = DerivativeTableAccess.Forced, Description = "Forcé" }
+            };
 
             _connections.Add(new Connection { Id = 0, Name = "" });
             foreach (var conn in conns)

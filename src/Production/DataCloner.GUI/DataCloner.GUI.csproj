@@ -128,6 +128,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Model\DataBuilderModel.cs" />
     <Compile Include="Model\DerivativeTableModifierModel.cs" />
     <Compile Include="Model\ForeignKeyColumnModifierModel.cs" />
     <Compile Include="Model\ForeignKeyModifierModel.cs" />

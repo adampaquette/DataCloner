@@ -11,6 +11,7 @@ namespace DataCloner.GUI.Model
         private bool _isStatic;
         private ObservableCollection<ForeignKeyModifierModel> _foreignKeys;
         private ObservableCollection<DerivativeTableModifierModel> _derivativeTables;
+        private ObservableCollection<DataBuilderModel> _dataBuilders;
 
         [Required]
         public string Name
@@ -38,6 +39,12 @@ namespace DataCloner.GUI.Model
             set { SetProperty(ref _derivativeTables, value); }
         }
 
+        public ObservableCollection<DataBuilderModel> DataBuilders
+        {
+            get { return _dataBuilders; }
+            set { SetProperty(ref _dataBuilders, value); }
+        }
+
         public TableModifierModel()
         {
             //Pour que le binding puisse créer une nouvelle ligne
@@ -55,6 +62,10 @@ namespace DataCloner.GUI.Model
             _derivativeTables = new ObservableCollection<DerivativeTableModifierModel>();
             foreach (var dt in defaultSchema.DerivativeTables)
                 _derivativeTables.Add(new DerivativeTableModifierModel(dt));
+
+            _dataBuilders = new ObservableCollection<DataBuilderModel>();
+            foreach (var col in defaultSchema.ColumnsDefinition)
+                _dataBuilders.Add(new DataBuilderModel(col));
         }
     }
 }
