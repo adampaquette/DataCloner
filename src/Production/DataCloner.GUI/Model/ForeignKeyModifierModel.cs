@@ -59,6 +59,7 @@ namespace DataCloner.GUI.Model
         public ForeignKeyModifierModel()
         {
             //Pour que le binding puisse créer une nouvelle ligne
+            _columns = new ObservableCollection<ForeignKeyColumnModifierModel>();
         }
 
         public ForeignKeyModifierModel(IForeignKey fk)

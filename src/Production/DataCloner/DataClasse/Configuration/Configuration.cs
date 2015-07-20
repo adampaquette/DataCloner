@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Xml;
 using System.Xml.Serialization;
 
 namespace DataCloner.DataClasse.Configuration
@@ -19,12 +20,19 @@ namespace DataCloner.DataClasse.Configuration
 
         public void Save(string path)
         {
-            var xs = new XmlSerializer(GetType());
             var fs = new FileStream(path, FileMode.Create);
+            var ser = new XmlSerializer(GetType());
+            var tw = new XmlTextWriter(fs, System.Text.Encoding.UTF8)
+            {
+                Formatting = Formatting.Indented,
+                Indentation = 4
+            };
+
             var ns = new XmlSerializerNamespaces();
             ns.Add("", "");
+            
+            ser.Serialize(tw, this, ns);
 
-            xs.Serialize(fs, this, ns);
             fs.Close();
         }
 

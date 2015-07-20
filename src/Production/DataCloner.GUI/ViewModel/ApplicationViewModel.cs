@@ -249,34 +249,40 @@ namespace DataCloner.GUI.ViewModel
             }
 
             userConfigTable.IsStatic = mergedTable.IsStatic;
+            userConfigTable.DerativeTables.GlobalAccess = mergedTable.DerativeTablesGlobalAccess;
+            userConfigTable.DerativeTables.GlobalCascade = mergedTable.DerativeTablesGlobalCascade;
 
-            if (mergedTable.IsStatic)
+            if (mergedTable.IsStatic ||
+                mergedTable.DerativeTablesGlobalAccess != DerivativeTableAccess.NotSet ||
+                mergedTable.DerativeTablesGlobalCascade == true)
                 hasChange = true;
 
             //Clear
             userConfigTable.ForeignKeys.ForeignKeyAdd = new List<ForeignKeyAdd>();
-            userConfigTable.ForeignKeys.ForeignKeyRemove = new List<ForeignKeyRemove>();
-            userConfigTable.DerativeTables = new DerativeTable();
+            userConfigTable.ForeignKeys.ForeignKeyRemove = new ForeignKeyRemove();
+            userConfigTable.DerativeTables.DerativeSubTables = new List<DerivativeSubTable>();
             userConfigTable.DataBuilders = new List<DataBuilder>();
 
             //Merge FK
-            foreach (var mergedFk in mergedTable.ForeignKeys)
+            for (int i = mergedTable.ForeignKeys.Count - 1; i >= 0; i--)
             {
+                var mergedFk = mergedTable.ForeignKeys[i];
                 var defaultFk = defaultTable.ForeignKeys.FirstOrDefault(f => f.ServerIdTo.ToString() == mergedFk.ServerIdTo &&
                                                                              f.DatabaseTo == mergedFk.DatabaseTo &&
                                                                              f.SchemaTo == mergedFk.SchemaTo &&
                                                                              f.TableTo == mergedFk.TableTo);
-                if (MergeForeignKey(mergedFk, mergedTable.ForeignKeys, userConfigTable.ForeignKeys, defaultFk))
+                if (MergeForeignKey(mergedFk, mergedTable.ForeignKeys, userConfigTable.ForeignKeys, defaultFk, defaultTable.ColumnsDefinition))
                     hasChange = true;
             }
 
             //Merge derivative table
-            foreach (var mergedDerivativeTable in mergedTable.DerivativeTables)
+            for (int i = mergedTable.DerivativeTables.Count - 1; i >= 0; i--)
             {
+                var mergedDerivativeTable = mergedTable.DerivativeTables[i];
                 var defaultDt = defaultTable.DerivativeTables.FirstOrDefault(d => d.ServerId.ToString() == mergedDerivativeTable.ServerId &&
-                                                                                  d.Database == mergedDerivativeTable.Database &&
-                                                                                  d.Schema == mergedDerivativeTable.Schema &&
-                                                                                  d.Table == mergedDerivativeTable.Table);
+                                                                  d.Database == mergedDerivativeTable.Database &&
+                                                                  d.Schema == mergedDerivativeTable.Schema &&
+                                                                  d.Table == mergedDerivativeTable.Table);
                 if (MergedDerivativeTable(mergedDerivativeTable, mergedTable.DerivativeTables, userConfigTable.DerativeTables, defaultDt))
                     hasChange = true;
             }
@@ -288,6 +294,21 @@ namespace DataCloner.GUI.ViewModel
                     hasChange = true;
             }
 
+            //Cleaning
+            if (!userConfigTable.DataBuilders.Any())
+                userConfigTable.DataBuilders = null;
+            if (!userConfigTable.ForeignKeys.ForeignKeyAdd.Any())
+                userConfigTable.ForeignKeys.ForeignKeyAdd = null;
+            if (!userConfigTable.ForeignKeys.ForeignKeyRemove.Columns.Any())
+                userConfigTable.ForeignKeys.ForeignKeyRemove = null;
+            if (userConfigTable.ForeignKeys.ForeignKeyAdd == null &&
+                userConfigTable.ForeignKeys.ForeignKeyRemove == null)
+                userConfigTable.ForeignKeys = null;
+            if (mergedTable.DerativeTablesGlobalAccess == DerivativeTableAccess.NotSet &&
+                mergedTable.DerativeTablesGlobalCascade == false &&
+                !userConfigTable.DerativeTables.DerativeSubTables.Any())
+                userConfigTable.DerativeTables = null;
+
             //If no change has been detected with the default config
             if (!hasChange)
                 userConfigTables.Remove(userConfigTable);
@@ -298,7 +319,8 @@ namespace DataCloner.GUI.ViewModel
         private bool MergeForeignKey(Model.ForeignKeyModifierModel mergedFk,
                                      ObservableCollection<Model.ForeignKeyModifierModel> mergedFks,
                                      ForeignKeys userConfigFk,
-                                     Cache.IForeignKey defaultFk)
+                                     Cache.IForeignKey defaultFk,
+                                     Cache.IColumnDefinition[] defaultColumns)
         {
             var hasChange = false;
 
@@ -307,17 +329,30 @@ namespace DataCloner.GUI.ViewModel
                 //Add column in removed section in user config
                 if (defaultFk != null)
                 {
-                    var fkRemove = new ForeignKeyRemove();
-                    foreach (var fkMergedCol in mergedFk.Columns)
-                        fkRemove.Columns.Add(new ForeignKeyRemoveColumn { Name = fkMergedCol.NameFrom });
-
-                    userConfigFk.ForeignKeyRemove.Add(fkRemove);
-                    hasChange = true;
+                    for (int i = mergedFk.Columns.Count - 1; i >= 0; i--)
+                    {
+                        var mergedFkCol = mergedFk.Columns[i];
+                        var isDefaultFkColFound = defaultFk.Columns.Any(f => f.NameFrom == mergedFkCol.NameFrom &&
+                                                                             f.NameTo == mergedFkCol.NameTo);
+                        //Fk was created by user and is not in the default schema
+                        if (!isDefaultFkColFound)
+                            mergedFk.Columns.Remove(mergedFkCol);
+                        else
+                        {
+                            var isFkColFound = userConfigFk.ForeignKeyRemove.Columns.Any(f => f.Name == mergedFkCol.NameFrom);
+                            if (!isFkColFound)
+                            {
+                                userConfigFk.ForeignKeyRemove.Columns.Add(new ForeignKeyRemoveColumn { Name = mergedFkCol.NameFrom });
+                                hasChange = true;
+                            }
+                        }
+                    }
                 }
                 //Fk was created by user and is not in the default schema
                 else
                     mergedFks.Remove(mergedFk);
             }
+            //Add / modify a new foreign key
             else
             {
                 var fkAdd = new ForeignKeyAdd
@@ -328,42 +363,80 @@ namespace DataCloner.GUI.ViewModel
                     Table = mergedFk.TableTo
                 };
 
-                foreach (var mergedFkCol in mergedFk.Columns)
+                for (int i = mergedFk.Columns.Count - 1; i >= 0; i--)
                 {
-                    fkAdd.Columns.Add(new ForeignKeyColumn
+                    var mergedFkCol = mergedFk.Columns[i];
+
+                    if (mergedFkCol.IsDeleted)
                     {
-                        NameFrom = mergedFkCol.NameFrom,
-                        NameTo = mergedFkCol.NameTo
-                    });
+                        var isDefaultColFound = defaultColumns.Any(f => f.Name == mergedFkCol.NameFrom);
+                        if (isDefaultColFound)
+                        {
+                            userConfigFk.ForeignKeyRemove.Columns.Add(new ForeignKeyRemoveColumn { Name = mergedFkCol.NameFrom });
+                            hasChange = true;
+                        }
+                        else
+                            mergedFk.Columns.Remove(mergedFkCol);
+                    }
+                    else
+                    {
+                        var isDefaultFkColFound = defaultFk != null &&
+                                                  defaultFk.Columns.Any(f => f.NameFrom == mergedFkCol.NameFrom &&
+                                                                             f.NameTo == mergedFkCol.NameTo);
+                        if (!isDefaultFkColFound)
+                        {
+                            fkAdd.Columns.Add(new ForeignKeyColumn
+                            {
+                                NameFrom = mergedFkCol.NameFrom,
+                                NameTo = mergedFkCol.NameTo
+                            });
+                        }
+                    }
                 }
 
-                userConfigFk.ForeignKeyAdd.Add(fkAdd);
-
-                if (defaultFk == null)
+                if (fkAdd.Columns.Any())
+                {
+                    userConfigFk.ForeignKeyAdd.Add(fkAdd);
                     hasChange = true;
-
-                //TODO : COMPARE ALL PROPERTY, IF A CHANGE COMPARE TO DEFAULT FK, HASCHANGE = TRUE
+                }
             }
+
+            if(!mergedFk.Columns.Any())
+                mergedFks.Remove(mergedFk);
 
             return hasChange;
         }
 
-        private bool MergedDerivativeTable(DerivativeTableModifierModel mergedDerivativeTable, 
-                                           ObservableCollection<DerivativeTableModifierModel> mergedDerivativeTables, 
-                                           DerativeTable derativeTables, 
+        private bool MergedDerivativeTable(DerivativeTableModifierModel mergedDerivativeTable,
+                                           ObservableCollection<DerivativeTableModifierModel> mergedDerivativeTables,
+                                           DerativeTable derativeTable,
                                            Cache.IDerivativeTable defaultDt)
         {
             var hasChange = false;
 
-            if (mergedDerivativeTable.IsDeleted)
+            //Was created by user and is not in the default schema
+            if (mergedDerivativeTable.IsDeleted && defaultDt == null)
             {
-                //Fk was created by user and is not in the default schema
-                if (defaultDt == null)
-                    mergedDerivativeTables.Remove(mergedDerivativeTable);
+                mergedDerivativeTables.Remove(mergedDerivativeTable);
             }
             else
             {
+                if (mergedDerivativeTable.Access != DerivativeTableAccess.NotSet ||
+                    mergedDerivativeTable.Cascade == true ||
+                    defaultDt == null)
+                {
+                    derativeTable.DerativeSubTables.Add(new DerivativeSubTable
+                    {
+                        ServerId = mergedDerivativeTable.ServerId,
+                        Database = mergedDerivativeTable.Database,
+                        Schema = mergedDerivativeTable.Schema,
+                        Table = mergedDerivativeTable.Table,
+                        Access = mergedDerivativeTable.Access,
+                        Cascade = mergedDerivativeTable.Cascade
+                    });
 
+                    hasChange = true;
+                }
             }
 
             return hasChange;
@@ -377,7 +450,10 @@ namespace DataCloner.GUI.ViewModel
             var userConfigDataBuilder = userConfigDataBuilders.FirstOrDefault(d => d.Name == mergedDb.ColumnName);
 
             if (userConfigDataBuilder == null)
+            {
                 userConfigDataBuilder = new DataBuilder();
+                userConfigDataBuilders.Add(userConfigDataBuilder);
+            }
 
             userConfigDataBuilder.Name = mergedDb.ColumnName;
             userConfigDataBuilder.BuilderName = mergedDb.BuilderName;

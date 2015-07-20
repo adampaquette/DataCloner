@@ -33,7 +33,7 @@ namespace DataCloner.Tests
                 DerativeTables = new DerativeTable
                 {
                     GlobalAccess = DerivativeTableAccess.Forced,
-                    Cascade = true,
+                    GlobalCascade = true,
                     DerativeSubTables = new List<DerivativeSubTable>
                     {
                         new DerivativeSubTable
@@ -69,7 +69,7 @@ namespace DataCloner.Tests
                 }
             });
 
-            table1.ForeignKeys.ForeignKeyRemove.Add(new ForeignKeyRemove
+            table1.ForeignKeys.ForeignKeyRemove = new ForeignKeyRemove
             {
                 Columns = new List<ForeignKeyRemoveColumn>
                 {
@@ -82,7 +82,7 @@ namespace DataCloner.Tests
                         Name = "col4"
                     }
                 }
-            });
+            };
 
             var server1 = new ServerModifier
             {

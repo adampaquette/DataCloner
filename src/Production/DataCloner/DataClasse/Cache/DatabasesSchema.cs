@@ -285,7 +285,7 @@ namespace DataCloner.DataClasse.Cache
                     lstSchemaColumn = new List<ColumnDefinition>();
                     previousTable = new TableSchema(currentTable);
                 }
-                
+
                 //Si on change de schema
                 if (currentSchema != previousSchema)
                 {
@@ -308,7 +308,7 @@ namespace DataCloner.DataClasse.Cache
                     IsAutoIncrement = reader.GetBoolean(8)
                 };
                 col.DbType = typeConverter.ConvertFromSql(col.SqlType);
-               
+
                 lstSchemaColumn.Add(col);
 
             } while (reader.Read());
@@ -489,7 +489,7 @@ namespace DataCloner.DataClasse.Cache
                 }
             }
         }
-        
+
         private void MergeFkModifierSchema(TableSchema[] tablesCache, List<TableModifier> tablesModifier)
         {
             foreach (var table in tablesCache)
@@ -500,26 +500,23 @@ namespace DataCloner.DataClasse.Cache
                     //On affecte les changements de la configuration
 
                     //On supprime les clefs
-                    foreach (var fkModifier in tblModifier.ForeignKeys.ForeignKeyRemove)
+                    foreach (var colConfig in tblModifier.ForeignKeys.ForeignKeyRemove.Columns)
                     {
-                        foreach (var colConfig in fkModifier.Columns)
+                        for (var j = 0; j < table.ForeignKeys.Count(); j++)
                         {
-                            for (var j = 0; j < table.ForeignKeys.Count(); j++)
+                            var fk = table.ForeignKeys[j];
+
+                            for (var i = 0; i < fk.Columns.Count(); i++)
                             {
-                                var fk = table.ForeignKeys[j];
-
-                                for (var i = 0; i < fk.Columns.Count(); i++)
+                                if (fk.Columns[i].NameFrom == colConfig.Name)
                                 {
-                                    if (fk.Columns[i].NameFrom == colConfig.Name)
-                                    {
-                                        fk.Columns.RemoveAt(i);
-                                        i--;
+                                    fk.Columns.RemoveAt(i);
+                                    i--;
 
-                                        if (fk.Columns.Length == 0)
-                                        {
-                                            table.ForeignKeys.RemoveAt(j);
-                                            j--;
-                                        }
+                                    if (fk.Columns.Length == 0)
+                                    {
+                                        table.ForeignKeys.RemoveAt(j);
+                                        j--;
                                     }
                                 }
                             }
@@ -541,7 +538,7 @@ namespace DataCloner.DataClasse.Cache
                         table.ForeignKeys.Add(newFk);
                     }
                 }
-            }            
+            }
         }
 
         private void FinalizeMerge(ClonerBehaviour behaviour)
@@ -574,7 +571,7 @@ namespace DataCloner.DataClasse.Cache
 
                                             //Derivative tables
                                             var globalAccess = tblModifier.DerativeTables.GlobalAccess;
-                                            var globalCascade = tblModifier.DerativeTables.Cascade;
+                                            var globalCascade = tblModifier.DerativeTables.GlobalCascade;
 
                                             foreach (var derivTbl in table.DerivativeTables)
                                             {

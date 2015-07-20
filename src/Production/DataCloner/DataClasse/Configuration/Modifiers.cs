@@ -111,7 +111,7 @@ namespace DataCloner.DataClasse.Configuration
         [XmlAttribute]
         public DerivativeTableAccess GlobalAccess { get; set; }
         [XmlAttribute]
-        public bool Cascade { get; set; }
+        public bool GlobalCascade { get; set; }
         [XmlElement("Table")]
         public List<DerivativeSubTable> DerativeSubTables { get; set; }
 
@@ -144,12 +144,12 @@ namespace DataCloner.DataClasse.Configuration
         [XmlElement("Add")]
         public List<ForeignKeyAdd> ForeignKeyAdd { get; set; }
         [XmlElement("Remove")]
-        public List<ForeignKeyRemove> ForeignKeyRemove { get; set; }
+        public ForeignKeyRemove ForeignKeyRemove { get; set; }
 
         public ForeignKeys()
         {
             ForeignKeyAdd = new List<ForeignKeyAdd>();
-            ForeignKeyRemove = new List<ForeignKeyRemove>();
+            ForeignKeyRemove = new ForeignKeyRemove();
         }
     }
 

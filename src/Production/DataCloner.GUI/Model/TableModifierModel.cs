@@ -12,6 +12,8 @@ namespace DataCloner.GUI.Model
         private ObservableCollection<ForeignKeyModifierModel> _foreignKeys;
         private ObservableCollection<DerivativeTableModifierModel> _derivativeTables;
         private ObservableCollection<DataBuilderModel> _dataBuilders;
+        private DerivativeTableAccess _derativeTablesGlobalAccess;
+        private bool _derativeTablesGlobalCascade;
 
         [Required]
         public string Name
@@ -43,6 +45,20 @@ namespace DataCloner.GUI.Model
         {
             get { return _dataBuilders; }
             set { SetProperty(ref _dataBuilders, value); }
+        }
+
+        [Required]
+        public DerivativeTableAccess DerativeTablesGlobalAccess
+        {
+            get { return _derativeTablesGlobalAccess; }
+            set { SetPropertyAndValidate( ref _derativeTablesGlobalAccess, value); }
+        }
+
+        [Required]
+        public bool DerativeTablesGlobalCascade
+        {
+            get { return _derativeTablesGlobalCascade; }
+            set { SetPropertyAndValidate(ref _derativeTablesGlobalCascade,value); }
         }
 
         public TableModifierModel()
