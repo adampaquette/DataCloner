@@ -42,10 +42,10 @@ namespace DataCloner.DataClasse.Configuration
                 if (!Int16.TryParse(road.ServerSrc, out serverSrc))
                 {
                     if(!road.ServerSrc.IsVariable()) 
-                        throw new Exception($"The value '{road.ServerSrc}' is not a valid variable in the map id='{map.Id}'.");
+                        throw new Exception(string.Format("The value '{0}' is not a valid variable in the map id='{1}'.", road.ServerSrc, map.Id ));
                     configVar = map.Variables.FirstOrDefault(v => v.Name == road.ServerSrc);
                     if (configVar == null || !Int16.TryParse(road.ServerSrc, out serverSrc))
-                        throw new Exception($"Variable '{road.ServerSrc}' not found in the map id='{map.Id}'.");
+                        throw new Exception(string.Format("Variable '{0}' not found in the map id='{1}'.", road.ServerSrc, map.Id));
                     configVar = null;
                 }
 
@@ -53,10 +53,10 @@ namespace DataCloner.DataClasse.Configuration
                 if (!Int16.TryParse(road.ServerDst, out serverDst))
                 {
                     if (!road.ServerDst.IsVariable())
-                        throw new Exception($"The value '{road.ServerDst}' is not a valid variable in the map id='{map.Id}'.");
+                        throw new Exception(string.Format("The value '{0}' is not a valid variable in the map id='{1}'.", road.ServerDst, map.Id));
                     configVar = map.Variables.FirstOrDefault(v => v.Name == road.ServerDst);
                     if (configVar == null || !Int16.TryParse(road.ServerDst, out serverDst))
-                        throw new Exception($"Variable '{road.ServerDst}' not found in the map id='{map.Id}'.");
+                        throw new Exception(string.Format("Variable '{0}' not found in the map id='{1}'.", road.ServerDst, map.Id));
                     configVar = null;
                 }
 
@@ -65,7 +65,7 @@ namespace DataCloner.DataClasse.Configuration
                 {
                     configVar = map.Variables.FirstOrDefault(v => v.Name == databaseSrc);
                     if (configVar == null)
-                        throw new Exception($"Variable '{databaseSrc}' not found in the map id='{map.Id}'.");
+                        throw new Exception(string.Format("Variable '{0}' not found in the map id='{1}'.", databaseSrc, map.Id));
                     databaseSrc = configVar.Value;
                 }
                 configVar = null;
@@ -75,7 +75,7 @@ namespace DataCloner.DataClasse.Configuration
                 {
                     configVar = map.Variables.FirstOrDefault(v => v.Name == databaseDst);
                     if (configVar == null)
-                        throw new Exception($"Variable '{databaseDst}' not found in the map id='{map.Id}'.");
+                        throw new Exception(string.Format("Variable '{0}' not found in the map id='{1}'.", databaseDst, map.Id));
                     databaseDst = configVar.Value;
                 }
                 configVar = null;
@@ -85,7 +85,7 @@ namespace DataCloner.DataClasse.Configuration
                 {
                     configVar = map.Variables.FirstOrDefault(v => v.Name == schemaSrc);
                     if (configVar == null)
-                        throw new Exception($"Variable '{schemaSrc}' not found in the map id='{map.Id}'.");
+                        throw new Exception(string.Format("Variable '{0}' not found in the map id='{1}'.", schemaSrc, map.Id));
                     schemaSrc = configVar.Value;
                 }
                 configVar = null;
@@ -95,7 +95,7 @@ namespace DataCloner.DataClasse.Configuration
                 {
                     configVar = map.Variables.FirstOrDefault(v => v.Name == schemaDst);
                     if (configVar == null)
-                        throw new Exception($"Variable '{schemaDst}' not found in the map id='{map.Id}'.");
+                        throw new Exception(string.Format("Variable '{0}' not found in the map id='{1}'.", schemaDst, map.Id));
                     schemaDst = configVar.Value;
                 }
                 configVar = null;

@@ -169,7 +169,7 @@ namespace DataCloner.DataClasse.Cache
             }
             if(!colPkDst.Any())
                 throw new Exception(
-                    $"A problem append with the cache. The derivative table '{derivativeTable.Name}' dosen't have a foreign key to the table '{Name}'.");
+                    string.Format("A problem append with the cache. The derivative table '{0}' dosen't have a foreign key to the table '{1}'.", derivativeTable.Name, Name);
             return colPkDst;
         }
 

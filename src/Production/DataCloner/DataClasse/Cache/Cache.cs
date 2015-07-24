@@ -29,9 +29,9 @@ namespace DataCloner.DataClasse.Cache
 
         public static void Initialize(IQueryDispatcher dispatcher, Application app, int mapId, int? behaviourId, ref Cache cache)
         {
-            if (dispatcher == null) throw new ArgumentNullException(nameof(dispatcher));
-            if (app == null) throw new ArgumentNullException(nameof(app));
-            if (!app.ConnectionStrings?.Any() ?? false) throw new NullReferenceException("ConnectionStrings");
+            if (dispatcher == null) throw new ArgumentNullException("dispatcher");
+            if (app == null) throw new ArgumentNullException("app");
+            if (app.ConnectionStrings != null && !app.ConnectionStrings.Any()) throw new NullReferenceException("ConnectionStrings");
 
             var map = app.Maps.FirstOrDefault(m => m.Id == mapId);
             if (map == null)
@@ -55,7 +55,7 @@ namespace DataCloner.DataClasse.Cache
                 clonerBehaviour = app.ClonerBehaviours.FirstOrDefault(c => c.Id == behaviourId);
                 if (clonerBehaviour == null)
                     throw new KeyNotFoundException(
-                        $"There is no behaviour '{behaviourId}' in the configuration for the appName name '{app.Name}'.");
+                        string.Format("There is no behaviour '{behaviourId}' in the configuration for the appName name '{app.Name}'.");
 
                 bf.Serialize(configData, clonerBehaviour);
                 bf.Serialize(configData, app.ModifiersTemplates);
@@ -80,9 +80,9 @@ namespace DataCloner.DataClasse.Cache
 
         public static void InitializeSchema(IQueryDispatcher dispatcher, Application app, ref Cache cache)
         {
-            if (dispatcher == null) throw new ArgumentNullException(nameof(dispatcher));
-            if (app == null) throw new ArgumentNullException(nameof(app));
-            if (!app.ConnectionStrings?.Any() ?? false) throw new NullReferenceException("ConnectionStrings");
+            if (dispatcher == null) throw new ArgumentNullException("dispatcher");
+            if (app == null) throw new ArgumentNullException("app");
+            if (app.ConnectionStrings != null && !app.ConnectionStrings.Any()) throw new NullReferenceException("ConnectionStrings");
 
             var cacheFileName = app.Name + ".schema";
 

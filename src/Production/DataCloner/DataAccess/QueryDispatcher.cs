@@ -10,13 +10,35 @@ namespace DataCloner.DataAccess
     {
         private Dictionary<Int16, IQueryHelper> _queryHelpers;
 
-        public IQueryHelper this[IServerIdentifier server] => _queryHelpers[server.ServerId];
+        public IQueryHelper this[IServerIdentifier server]
+        {
+            get { return _queryHelpers[server.ServerId]; }
+        }
 
-        public IQueryHelper this[Int16 server] => _queryHelpers[server];
-        public IDbConnection GetConnection(IServerIdentifier server) => _queryHelpers[server.ServerId].Connection;
-        public IDbConnection GetConnection(Int16 server) => _queryHelpers[server].Connection;
-        public IQueryHelper GetQueryHelper(IServerIdentifier server) => _queryHelpers[server.ServerId];
-        public IQueryHelper GetQueryHelper(Int16 server) => _queryHelpers[server];
+        public IQueryHelper this[Int16 server]
+        {
+            get { return _queryHelpers[server]; }
+        }
+
+        public IDbConnection GetConnection(IServerIdentifier server)
+        {
+            return _queryHelpers[server.ServerId].Connection;
+        }
+
+        public IDbConnection GetConnection(Int16 server)
+        {
+            return _queryHelpers[server].Connection;
+        }
+
+        public IQueryHelper GetQueryHelper(IServerIdentifier server)
+        {
+            return _queryHelpers[server.ServerId];
+        }
+
+        public IQueryHelper GetQueryHelper(Int16 server)
+        {
+            return _queryHelpers[server];
+        }
 
         public void InitProviders(Cache cache)
         {

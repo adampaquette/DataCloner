@@ -71,7 +71,7 @@ namespace DataCloner.PlugIn
         private object GetNewKeyMySql(IDbConnection conn, string database, ITableSchema table, IColumnDefinition column)
         {
             var cmd = conn.CreateCommand();
-            cmd.CommandText = $"SELECT MAX({column.Name})+1 FROM {database}.{table.Name}";
+            cmd.CommandText = string.Format("SELECT MAX({0})+1 FROM {1}.{2}", column.Name, database, table.Name);
             conn.Open();
             var result = cmd.ExecuteScalar();
             conn.Close();

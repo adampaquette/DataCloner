@@ -138,7 +138,7 @@ namespace DataCloner.Archive
                     var filePath = Path.Combine(decompressedPath, fileName);
                     var fileSize = bstream.ReadInt64();
                     if (fileSize > Int32.MaxValue)
-                        throw new OverflowException($"File size for {fileName} is larger then 32 bit value.");
+                        throw new OverflowException(string.Format("File size for {0} is larger then 32 bit value.", fileName));
                     var fileSize32 = Convert.ToInt32(fileSize);
 
                     if (!Directory.Exists(decompressedPath))
