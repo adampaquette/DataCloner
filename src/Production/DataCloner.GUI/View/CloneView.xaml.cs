@@ -68,7 +68,10 @@ namespace DataCloner.GUI.View
 
         private void CbApp_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            _selectedApp = _config?.Applications?.FirstOrDefault(a => a.Id == (Int16)cbApp.SelectedValue);
+            if (_config == null || _config.Applications == null)
+                return;
+
+            _selectedApp = _config.Applications.FirstOrDefault(a => a.Id == (Int16)cbApp.SelectedValue);
             if (_selectedApp != null)
             {
                 Settings.Default.ApplicationId = _selectedApp.Id;
@@ -90,7 +93,10 @@ namespace DataCloner.GUI.View
 
         private void CbDatabaseConfig_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            _maps = _selectedApp?.Maps?.Where(m => m.UsableBehaviours.Split(',').Contains(cbDatabaseConfig.SelectedValue.ToString()));
+            if (_selectedApp == null || _selectedApp.Maps == null)
+                return;
+
+            _maps = _selectedApp.Maps.Where(m => m.UsableBehaviours.Split(',').Contains(cbDatabaseConfig.SelectedValue.ToString()));
             if (_maps != null)
             {
                 Settings.Default.DatabaseConfigId = (Int16)cbDatabaseConfig.SelectedValue;
@@ -114,7 +120,9 @@ namespace DataCloner.GUI.View
 
         private void cbSourceEnvir_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            _fromMaps = _maps?.FirstOrDefault(m => m.From == cbSourceEnvir.SelectedValue.ToString());
+            if (_maps == null)
+                return;
+            _fromMaps = _maps.FirstOrDefault(m => m.From == cbSourceEnvir.SelectedValue.ToString());
             if (_fromMaps != null)
             {
                 Settings.Default.SourceEnvir = cbSourceEnvir.SelectedValue.ToString();
@@ -126,7 +134,7 @@ namespace DataCloner.GUI.View
                 cbDestinationEnvir.ItemsSource = _mapsTo;
 
                 //Tente de charger la préférence utilisateur
-                var map = _maps?.FirstOrDefault(m => m.From == cbSourceEnvir.SelectedValue.ToString() &&
+                var map = _maps.FirstOrDefault(m => m.From == cbSourceEnvir.SelectedValue.ToString() &&
                                                m.To == Settings.Default.DestinationEnvir &&
                                                m.UsableBehaviours.Split(',').Contains(cbDatabaseConfig.SelectedValue.ToString()));
                 if (map != null)
@@ -143,7 +151,9 @@ namespace DataCloner.GUI.View
 
         private void cbDestinationEnvir_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var map = _maps?.FirstOrDefault(m => m.From == cbSourceEnvir.SelectedValue.ToString() &&
+            if (_maps == null)
+                return;
+            var map = _maps.FirstOrDefault(m => m.From == cbSourceEnvir.SelectedValue.ToString() &&
                                                m.To == cbDestinationEnvir.SelectedValue.ToString() &&
                                                m.UsableBehaviours.Split(',').Contains(cbDatabaseConfig.SelectedValue.ToString()));
             if (map != null)
@@ -257,7 +267,12 @@ namespace DataCloner.GUI.View
                 Settings.Default.TableSource = _selectedTable;
                 Settings.Default.Save();
 
-                var columns = _cloner.Cache.DatabasesSchema[_selectedServer][_selectedDatabase][_selectedSchema].FirstOrDefault(t => t.Name == _selectedTable)?.ColumnsDefinition.Select(c => c.Name).ToList();
+                var table =
+                    _cloner.Cache.DatabasesSchema[_selectedServer][_selectedDatabase][_selectedSchema].FirstOrDefault(
+                        t => t.Name == _selectedTable);
+                if (table == null)
+                    return;
+                var columns = table.ColumnsDefinition.Select(c => c.Name).ToList();
                 cbColonne.ItemsSource = columns;
 
                 //Tente de charger la préférence utilisateur

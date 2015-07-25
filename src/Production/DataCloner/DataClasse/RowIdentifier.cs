@@ -35,7 +35,10 @@ namespace DataCloner.DataClasse
 
         public bool Equals(IRowIdentifier obj)
         {
-            if (ServerId != obj?.ServerId || Database != obj.Database || Schema != obj.Schema || Table != obj.Table)
+            if (obj == null)
+                return false;
+
+            if (ServerId != obj.ServerId || Database != obj.Database || Schema != obj.Schema || Table != obj.Table)
                 return false;
 
             return Columns.All(col => obj.Columns.ContainsKey(col.Key) && obj.Columns[col.Key].Equals(col.Value));

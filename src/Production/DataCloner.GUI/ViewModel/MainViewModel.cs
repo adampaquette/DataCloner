@@ -32,6 +32,14 @@ namespace DataCloner.GUI.ViewModel
             }
         }
 
-        public string ApplicationName { get { return _currentApp?.Name; } }
+        public string ApplicationName
+        {
+            get
+            {
+                if (_currentApp != null)
+                    return _currentApp.Name;
+                return null;
+            }
+        }
     }
 }

@@ -5,12 +5,14 @@ namespace DataCloner
 	public delegate void QueryCommitingEventHandler(object sender, QueryCommitingEventArgs e);
 	public sealed class QueryCommitingEventArgs : EventArgs
 	{
-		public string Query { get; }
+	    private string _query;
+
+		public string Query { get{return _query;} }
 		public bool Cancel { get; set; }
 
 		public QueryCommitingEventArgs(string query)
 		{
-			Query = query;
+			_query = query;
 		}
 	}
 }

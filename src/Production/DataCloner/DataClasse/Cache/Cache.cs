@@ -35,7 +35,7 @@ namespace DataCloner.DataClasse.Cache
 
             var map = app.Maps.FirstOrDefault(m => m.Id == mapId);
             if (map == null)
-                throw new Exception($"Map id '{mapId}' not found in configuration file for application '{app.Name}'!");
+                throw new Exception(string.Format("Map id '{0}' not found in configuration file for application '{1}'!", mapId, app.Name));
 
             var cacheFileName = app.Name + "_" + map.From + "-" + map.To;
             if (behaviourId != null)
@@ -55,7 +55,7 @@ namespace DataCloner.DataClasse.Cache
                 clonerBehaviour = app.ClonerBehaviours.FirstOrDefault(c => c.Id == behaviourId);
                 if (clonerBehaviour == null)
                     throw new KeyNotFoundException(
-                        string.Format("There is no behaviour '{behaviourId}' in the configuration for the appName name '{app.Name}'.");
+                        string.Format("There is no behaviour '{0}' in the configuration for the appName name '{1}'.", behaviourId, app.Name));
 
                 bf.Serialize(configData, clonerBehaviour);
                 bf.Serialize(configData, app.ModifiersTemplates);
@@ -67,7 +67,7 @@ namespace DataCloner.DataClasse.Cache
             var configHash = Encoding.Default.GetString(murmur.ComputeHash(configData));
 
             //If in-memory cache is good, we use it
-            if (cache?.ConfigFileHash == configHash)
+            if (cache != null && cache.ConfigFileHash == configHash)
                 return;
             //If cache on disk is good, we use it
             cache = Load(cacheFileName, configHash);
@@ -96,7 +96,7 @@ namespace DataCloner.DataClasse.Cache
             var configHash = Encoding.Default.GetString(murmur.ComputeHash(configData));
 
             //If in-memory cache is good, we use it
-            if (cache?.ConfigFileHash == configHash)
+            if (cache != null && cache.ConfigFileHash == configHash)
                 return;
             //If cache on disk is good, we use it
             cache = Load(cacheFileName, configHash);

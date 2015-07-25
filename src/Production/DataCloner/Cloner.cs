@@ -21,9 +21,18 @@ namespace DataCloner
 
 	    private int _nextVariableId;
 		private int _nextStepId;
-        private DatabasesSchema Schema { get { return Cache?.DatabasesSchema; } }
 
-        public Cache Cache;
+	    private DatabasesSchema Schema
+	    {
+	        get
+	        {
+	            if (Cache != null)
+	                return Cache.DatabasesSchema;
+	            return null;
+	        }
+	    }
+
+	    public Cache Cache;
 		public bool EnforceIntegrity { get; set; }
         public bool OptimiseExecutionPlan { get; set; }
 
@@ -41,8 +50,8 @@ namespace DataCloner
 
 		internal Cloner(IQueryDispatcher dispatcher, Cache.CacheInitialiser cacheInit)
 		{
-			if (dispatcher == null) throw new ArgumentNullException(nameof(dispatcher));
-			if (cacheInit == null) throw new ArgumentNullException(nameof(cacheInit));
+			if (dispatcher == null) throw new ArgumentNullException("dispatcher");
+			if (cacheInit == null) throw new ArgumentNullException("cacheInit");
 
 			_keyRelationships = new KeyRelationship();
 			_circularKeyJobs = new List<CircularKeyJob>();
@@ -69,7 +78,7 @@ namespace DataCloner
 
 		public List<IRowIdentifier> Clone(IRowIdentifier riSource, bool getDerivatives)
 		{
-			if (riSource == null) throw new ArgumentNullException(nameof(riSource));
+			if (riSource == null) throw new ArgumentNullException("riSource");
 
 			var rowsGenerating = new Stack<IRowIdentifier>();
 			rowsGenerating.Push(riSource);
@@ -370,13 +379,17 @@ namespace DataCloner
 		private object[] GetDataRow(IRowIdentifier riNewFk)
 		{
 			if (riNewFk == null)
-				throw new ArgumentNullException(nameof(riNewFk));
+				throw new ArgumentNullException("riNewFk");
 			if (!riNewFk.Columns.Any())
 				throw new Exception("Failed to return a foreign key value.");
 
 			//La FK (ou unique constraint) n'est pas necessairement la PK donc on réobtient la ligne car
 			//BuildExecutionPlan retourne toujours la PK.
-			var varId = (riNewFk.Columns.Values.First() as SqlVariable)?.Id;
+		    var sqlVar = riNewFk.Columns.Values.First() as SqlVariable;
+            if(sqlVar==null)
+                throw new Exception();
+
+			var varId = sqlVar.Id;
 
 			foreach (var plan in _executionPlanByServer)
 			{

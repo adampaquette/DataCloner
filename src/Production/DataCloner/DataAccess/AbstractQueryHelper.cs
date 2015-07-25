@@ -15,6 +15,7 @@ namespace DataCloner.DataAccess
     {
         private readonly DatabasesSchema _schema;
         private readonly Int16 _serverIdCtx;
+        private readonly IDbConnection _connection;
 
         protected abstract string SqlGetDatabasesName { get; }
         protected abstract string SqlGetColumns { get; }
@@ -24,17 +25,17 @@ namespace DataCloner.DataAccess
         protected abstract string SqlEnforceIntegrityCheck { get; }
 
         public event QueryCommitingEventHandler QueryCommmiting;
-        public IDbConnection Connection { get; }
+        public IDbConnection Connection { get{return _connection;} }
         public abstract DbEngine Engine { get; }
         public abstract ISqlTypeConverter TypeConverter { get; }
-        public abstract ISqlWriter SqlWriter { get; }
+        public abstract ISqlWriter SqlWriter { get;}
 
         protected AbstractQueryHelper(DatabasesSchema schema, string providerName, string connectionString, Int16 serverId)
         {
             var factory = DbProviderFactories.GetFactory(providerName);
             _schema = schema;
-            Connection = factory.CreateConnection();
-            Connection.ConnectionString = connectionString;
+            _connection = factory.CreateConnection();
+            _connection.ConnectionString = connectionString;
 
             _serverIdCtx = serverId;
         }

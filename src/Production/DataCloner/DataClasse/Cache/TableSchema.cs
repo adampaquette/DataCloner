@@ -10,7 +10,9 @@ namespace DataCloner.DataClasse.Cache
 {
     public sealed class TableSchema : ITableSchema
     {
-        public string Name { get; }
+        private string _name;
+
+        public string Name { get {return _name;} }
         public bool IsStatic { get; set; }
         public string SelectCommand { get; set; }
         public string InsertCommand { get; set; }
@@ -21,7 +23,7 @@ namespace DataCloner.DataClasse.Cache
 
         public TableSchema(string name)
         {
-            Name = name;
+            _name = name;
             DerivativeTables = new IDerivativeTable[] { };
             ForeignKeys = new IForeignKey[] { };
             UniqueKeys = new IUniqueKey[] { };
@@ -169,7 +171,7 @@ namespace DataCloner.DataClasse.Cache
             }
             if(!colPkDst.Any())
                 throw new Exception(
-                    string.Format("A problem append with the cache. The derivative table '{0}' dosen't have a foreign key to the table '{1}'.", derivativeTable.Name, Name);
+                    string.Format("A problem append with the cache. The derivative table '{0}' dosen't have a foreign key to the table '{1}'.", derivativeTable.Name, Name));
             return colPkDst;
         }
 
