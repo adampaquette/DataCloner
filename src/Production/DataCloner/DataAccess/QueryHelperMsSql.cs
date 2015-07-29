@@ -124,9 +124,9 @@ namespace DataCloner.DataAccess
             get
             {
                 return "IF @ACTIVE = 1 BEGIN " +
-                       "    EXEC sp_msforeachtable \"ALTER TABLE ? WITH CHECK CONSTRAINT all;\" " +
+                       "    EXEC sp_MSForEachTable 'ALTER TABLE ? CHECK CONSTRAINT ALL' " +
                        "END ELSE BEGIN " +
-                       "    EXEC sp_msforeachtable \"ALTER TABLE ? NOCHECK CONSTRAINT all;\" " +
+                       "    EXEC sp_msforeachtable 'ALTER TABLE ? NOCHECK CONSTRAINT all;' " +
                        "END;";
             }
         }
