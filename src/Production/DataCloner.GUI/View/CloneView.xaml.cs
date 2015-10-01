@@ -151,29 +151,36 @@ namespace DataCloner.GUI.View
 
         private void cbDestinationEnvir_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (_maps == null)
-                return;
-            var map = _maps.FirstOrDefault(m => m.From == cbSourceEnvir.SelectedValue.ToString() &&
-                                               m.To == cbDestinationEnvir.SelectedValue.ToString() &&
-                                               m.UsableBehaviours.Split(',').Contains(cbDatabaseConfig.SelectedValue.ToString()));
-            if (map != null)
+            try
             {
-                Settings.Default.DestinationEnvir = cbDestinationEnvir.SelectedValue.ToString();
-                Settings.Default.Save();
-
-                var configId = (Int16)cbDatabaseConfig.SelectedValue;
-                _cloner.Setup(_selectedApp, map.Id, configId);
-                Servers = _cloner.Cache.DatabasesSchema.Keys.ToArray().ToList();
-                cbServer.ItemsSource = Servers;
-
-                //Tente de charger la préférence utilisateur
-                if (Servers.Contains(Settings.Default.ServerSource))
-                    cbServer.SelectedItem = Settings.Default.ServerSource;
-                else
+                if (_maps == null)
+                    return;
+                var map = _maps.FirstOrDefault(m => m.From == cbSourceEnvir.SelectedValue.ToString() &&
+                                                   m.To == cbDestinationEnvir.SelectedValue.ToString() &&
+                                                   m.UsableBehaviours.Split(',').Contains(cbDatabaseConfig.SelectedValue.ToString()));
+                if (map != null)
                 {
-                    if (Servers.Count == 1)
-                        cbServer.SelectedIndex = 0;
+                    Settings.Default.DestinationEnvir = cbDestinationEnvir.SelectedValue.ToString();
+                    Settings.Default.Save();
+
+                    var configId = (Int16)cbDatabaseConfig.SelectedValue;
+                    _cloner.Setup(_selectedApp, map.Id, configId);
+                    Servers = _cloner.Cache.DatabasesSchema.Keys.ToArray().ToList();
+                    cbServer.ItemsSource = Servers;
+
+                    //Tente de charger la préférence utilisateur
+                    if (Servers.Contains(Settings.Default.ServerSource))
+                        cbServer.SelectedItem = Settings.Default.ServerSource;
+                    else
+                    {
+                        if (Servers.Count == 1)
+                            cbServer.SelectedIndex = 0;
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Erreur lors de l'initialisation de la cache.\r\n" + ex.ToString(), "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -475,7 +482,7 @@ namespace DataCloner.GUI.View
                 }
                 else
                     p.Inlines.Add(sb.ToString());
-                
+
                 rtbStatus.Document.Blocks.Add(p);
             }
             else if (e.Status == Status.FetchingDerivatives)

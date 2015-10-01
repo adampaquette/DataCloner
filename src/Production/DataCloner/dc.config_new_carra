@@ -24,18 +24,18 @@ Règles
 
 <Configuration>
 	<Applications>
-		<Application Name="RISE">
+		<Application Id="1" Name="RISE">
 			<ConnectionStrings>
-				<add Id="1" Name="UNI" ProviderName="MySql.Data.MySqlClient" ConnectionString="server=UNI;user id=root; password=toor; database=master; pooling=true" />
-				<add Id="2" Name="FON" ProviderName="System.Data.Sqlite" ConnectionString="server=FON;user id=root; password=toor; database=master; pooling=true" />
-                <add Id="3" Name="PROD_PGIS" ProviderName="System.Data.Oracle" ConnectionString="server=PROD_PGIS;user id=root; password=toor; database=master; pooling=true" />
-                <add Id="4" Name="PROD_ARIEL" ProviderName="System.Data.PosgreSql" ConnectionString="server=PROD_ARIEL;user id=root; password=toor; database=master; pooling=true" />
-                <add Id="5" Name="PROD_SIEBEL" ProviderName="System.Data.MsSql" ConnectionString="server=PROD_SIEBEL;user id=root; password=toor; database=master; pooling=true" />
+				<Add Id="1" Name="UNI" ProviderName="MySql.Data.MySqlClient" ConnectionString="server=UNI;user Id=root; password=toor; database=master; pooling=true" />
+				<Add Id="2" Name="FON" ProviderName="System.Data.Sqlite" ConnectionString="server=FON;user Id=root; password=toor; database=master; pooling=true" />
+                <Add Id="3" Name="PROD_PGIS" ProviderName="System.Data.Oracle" ConnectionString="server=PROD_PGIS;user Id=root; password=toor; database=master; pooling=true" />
+                <Add Id="4" Name="PROD_ARIEL" ProviderName="System.Data.PosgreSql" ConnectionString="server=PROD_ARIEL;user Id=root; password=toor; database=master; pooling=true" />
+                <Add Id="5" Name="PROD_SIEBEL" ProviderName="System.Data.MsSql" ConnectionString="server=PROD_SIEBEL;user Id=root; password=toor; database=master; pooling=true" />
 			</ConnectionStrings>
 			<ModifiersTemplates>
-				<ServerModifier id="{$SERVER_SOURCE_PGIS}" templateId="1">
-					<DatabaseModifier Name="PGIScbl" templateId="1">
-						<SchemaModifier Name="dbo" templateId="1">
+				<ServerModifier Id="{$SERVER_SOURCE_PGIS}" TemplateId="1">
+					<DatabaseModifier Name="PGIScbl" TemplateId="1">
+						<SchemaModifier Name="dbo" TemplateId="1">
                             <TableModifier Name="DomaineValeur" IsStatic="true"/>
 							<TableModifier Name="Transmission" IsStatic="false">
 								<!--
@@ -65,25 +65,25 @@ Règles
 						</SchemaModifier>
 					</DatabaseModifier>
 				</ServerModifier>
-   				<ServerModifier id="{$SERVER_SOURCE_ARIEL}" templateId="2">
-               		<DatabaseModifier Name="Ariel" templateId="2"/>
+   				<ServerModifier Id="{$SERVER_SOURCE_ARIEL}" TemplateId="2">
+               		<DatabaseModifier Name="Ariel" TemplateId="2"/>
 				</ServerModifier>
-                <ServerModifier id="{$SERVER_SOURCE_SIEBEL}" templateId="3">
-               		<DatabaseModifier Name="SIEBEL" templateId="3"/>
+                <ServerModifier Id="{$SERVER_SOURCE_SIEBEL}" TemplateId="3">
+               		<DatabaseModifier Name="SIEBEL" TemplateId="3"/>
 				</ServerModifier>
 			</ModifiersTemplates>
-			<ClonerConfigurations>
-				<ClonerConfiguration id="1" Name="Default" Description="Configuration par défaut">	
-					<ServerModifier useTemplateId="1"/>
-                    <ServerModifier useTemplateId="2"/>
-                    <ServerModifier useTemplateId="3"/>
-				</ClonerConfiguration>
-                <ClonerConfiguration id="2" Name="Test" Description="Tests">	
-					<ServerModifier useTemplateId="1" />
-					<ServerModifier id="2" useTemplateId="1" />
-				</ClonerConfiguration>
-			</ClonerConfigurations>
-			<CloneMaps>
+			<ClonerBehaviours>
+				<ClonerBehaviour Id="1" Name="Default" Description="Configuration par défaut">	
+					<ServerModifier UseTemplateId="1"/>
+                    <ServerModifier UseTemplateId="2"/>
+                    <ServerModifier UseTemplateId="3"/>
+				</ClonerBehaviour>
+                <ClonerBehaviour Id="2" Name="Test" Description="Tests">	
+					<ServerModifier UseTemplateId="1" />
+					<ServerModifier Id="2" UseTemplateId="1" />
+				</ClonerBehaviour>
+			</ClonerBehaviours>
+			<Maps>
 				<Map nameFrom="PROD" nameTo="UNI" usableConfigs="1,2">
 					<Variables>
                         <Var Name="{$SERVER_SOURCE_PGIS}" Value="3"/>
@@ -114,7 +114,7 @@ Règles
 					<Road ServerSrc="5" DatabaseSrc="PGIS" SchemaSrc="" />
 					<Road ServerSrc="5" DatabaseSrc="Ariel" SchemaSrc="" />
 				</Map>
-			</CloneMaps>
+			</Maps>
 		</Application>
 	</Applications>
 </Configuration>
