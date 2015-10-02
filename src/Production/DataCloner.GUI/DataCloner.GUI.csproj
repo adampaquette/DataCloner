@@ -138,6 +138,7 @@
     <Compile Include="Model\SchemaModifierModel.cs" />
     <Compile Include="Model\DatabaseModifierModel.cs" />
     <Compile Include="Model\ServerModifierModel.cs" />
+    <Compile Include="Services\ConfigurationService.cs" />
     <Compile Include="ViewModel\ApplicationViewModel.cs" />
     <Compile Include="ViewModel\ConnectionViewModel.cs" />
     <Compile Include="ViewModel\ListConnectionViewModel.cs" />
