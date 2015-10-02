@@ -65,10 +65,7 @@ namespace DataCloner.GUI.ViewModel
 
             Cache.Cache.InitializeSchema(new QueryDispatcher(), app, ref _defaultSchema);
 
-            _id = app.Id;
-            _name = app.Name;
-            _connections = new ListConnectionViewModel(app.ConnectionStrings);
-            _templates = new TemplatesViewModel(app.ModifiersTemplates, app.ConnectionStrings, _defaultSchema);
+            ConfigurationService.Load(this, app, _defaultSchema);
         }
 
         public RelayCommand SaveCommand { get; private set; }

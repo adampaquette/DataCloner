@@ -8,11 +8,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DataCloner.DataAccess;
 
 namespace DataCloner.GUI.Services
 {
     class ConfigurationService
     {
+        #region Save
+
         public static void Save(ApplicationViewModel appVM, Cache.Cache defaultSchema)
         {
             var config = Configuration.Load(Configuration.ConfigFileName);
@@ -414,6 +417,20 @@ namespace DataCloner.GUI.Services
 
             return hasChange;
         }
+
+        #endregion
+
+        #region Load
+
+        public static void Load(ApplicationViewModel appVM, Application app, Cache.Cache defaultSchema)
+        {
+            appVM.Id = app.Id;
+            appVM.Name = app.Name;
+            appVM.Connections = new ListConnectionViewModel(app.ConnectionStrings);
+            appVM.Templates = new TemplatesViewModel(app.ModifiersTemplates, app.ConnectionStrings, defaultSchema);
+        }
+
+        #endregion
 
         /// <summary>
         /// Get the default server schema compiled from the database.
