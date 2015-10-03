@@ -9,8 +9,6 @@ namespace DataCloner.DataAccess
     {
         IQueryHelper this[IServerIdentifier server] { get; }
         IQueryHelper this[Int16 server] { get; }
-        IDbConnection GetConnection(IServerIdentifier server);
-        IDbConnection GetConnection(Int16 server);
         IQueryHelper GetQueryHelper(IServerIdentifier server);
         IQueryHelper GetQueryHelper(Int16 server);
 

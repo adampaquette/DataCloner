@@ -174,9 +174,9 @@ namespace DataCloner.DataClasse.Cache
 
                 foreach (var database in provider.GetDatabasesName())
                 {
-                    provider.GetColumns(cache.DatabasesSchema.LoadColumns, database);
-                    provider.GetForeignKeys(cache.DatabasesSchema.LoadForeignKeys, database);
-                    provider.GetUniqueKeys(cache.DatabasesSchema.LoadUniqueKeys, database);
+                    provider.GetColumns(cache.DatabasesSchema.LoadColumns, cs.Id, database);
+                    provider.GetForeignKeys(cache.DatabasesSchema.LoadForeignKeys, cs.Id, database);
+                    provider.GetUniqueKeys(cache.DatabasesSchema.LoadUniqueKeys, cs.Id, database);
                 }
             }
         }
