@@ -130,6 +130,11 @@ namespace DataCloner.Framework
             return value.StartsWith("{$") && value.EndsWith("}");
         }
 
+        /// <summary>
+        /// Extract variable from a syntaxe like {$KEY{VALUE}} OR {$DATABASE_SOURCE{1}}.
+        /// </summary>
+        /// <param name="value">Variable</param>
+        /// <returns>Key</returns>
         public static string ExtractVariableKey(this string value)
         {
             int len;
@@ -145,6 +150,11 @@ namespace DataCloner.Framework
             return value.Substring(0, len) + "}";
         }
 
+        /// <summary>
+        /// Extract variable from a syntaxe like {$KEY{VALUE}} OR {$DATABASE_SOURCE{1}}.
+        /// </summary>
+        /// <param name="value">Variable</param>
+        /// <returns>Value</returns>
         public static string ExtractVariableValue(this string value)
         {
             var posStart = value.IndexOf('{');
@@ -159,6 +169,11 @@ namespace DataCloner.Framework
             return value.Substring(posStart, posEnd - posStart);
         }
 
+        /// <summary>
+        /// Extract variable from a syntaxe like {$KEY{VALUE}} OR {$DATABASE_SOURCE{1}}.
+        /// </summary>
+        /// <param name="value">Variable</param>
+        /// <returns>Value</returns>
         public static Int16 ExtractVariableValueInt16(this string value)
         {
             var extractedValue = value.ExtractVariableValue();

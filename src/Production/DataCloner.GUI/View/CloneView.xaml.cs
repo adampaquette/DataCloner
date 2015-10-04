@@ -181,6 +181,7 @@ namespace DataCloner.GUI.View
             catch (Exception ex)
             {
                 MessageBox.Show("Erreur lors de l'initialisation de la cache.\r\n" + ex.ToString(), "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+                throw;
             }
         }
 
