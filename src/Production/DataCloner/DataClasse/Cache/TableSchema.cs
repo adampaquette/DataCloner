@@ -5,9 +5,11 @@ using System.IO;
 using System.Linq;
 using DataCloner.DataAccess;
 using DataCloner.Framework;
+using System.Diagnostics;
 
 namespace DataCloner.DataClasse.Cache
 {
+    [DebuggerDisplay("{Name}")]
     public sealed class TableSchema : ITableSchema
     {
         private string _name;
