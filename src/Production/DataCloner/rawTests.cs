@@ -196,10 +196,10 @@ namespace DataCloner
 
 			source.Columns.Clear();
 			source.ServerId = 1;
-			source.Database = "sakila";
-			source.Schema = "";
-			source.Table = "address";
-			source.Columns.Add("address_id", (int)1);
+			source.Database = "northwind";
+			source.Schema = "dbo";
+			source.Table = "customer";
+			source.Columns.Add("customerId", "alfki");
 			dc.Clone(source, true);
 
 			////Référence circulaire basic

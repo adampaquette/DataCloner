@@ -146,8 +146,8 @@ namespace DataCloner.DataAccess
             get { return _sqlWriter; }
         }
 
-        public QueryHelperMsSql(DatabasesSchema schema, string connectionString, Int16 serverId)
-            : base(schema, ProviderName, connectionString, serverId)
+        public QueryHelperMsSql(DatabasesSchema schema, string connectionString)
+            : base(schema, ProviderName, connectionString)
         {
             
         }

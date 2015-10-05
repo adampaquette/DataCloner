@@ -1,13 +1,15 @@
-﻿using System;
+﻿using DataCloner.DataAccess;
+using DataCloner.DataClasse.Configuration;
+using DataCloner.Framework;
+using Murmur;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Security.Cryptography;
 using System.Text;
-using DataCloner.DataAccess;
-using DataCloner.DataClasse.Configuration;
-using Murmur;
 
 namespace DataCloner.DataClasse.Cache
 {
@@ -121,15 +123,29 @@ namespace DataCloner.DataClasse.Cache
                                         Application app, ClonerBehaviour clonerBehaviour,
                                         Map map, string configHash)
         {
-            var cache = new Cache { ConfigFileHash = configHash, ServerMap = map };
+            var cache = new Cache { ConfigFileHash = configHash, ServerMap = map.ConvertToDictionnary() };
 
             //Get servers source
-            var serversSource = map.Roads.Select(r => r.ServerSrc).Distinct();
+            var serversSource = map.Roads.Select(r => r.ServerSrc).Distinct().ToList();
+
+            //Replace variables
+            for (int i = 0; i < serversSource.Count(); i++)
+            {
+                if (serversSource[i].IsVariable())
+                {
+                    var configVar = map.Variables.FirstOrDefault(v => v.Name == serversSource[i]);
+                    if (configVar == null)
+                        throw new Exception(string.Format("The variable '{0}' is not found in the map with id='{1}'.", serversSource[i], map.Id));
+                    serversSource[i] = configVar.Value.ToString();
+                }
+            }
 
             //Copy connection strings
             foreach (var cs in app.ConnectionStrings.Where(c=>serversSource.Contains(c.Id.ToString())))
                 cache.ConnectionStrings.Add(new Connection(cs.Id, cs.ProviderName, cs.ConnectionString));
 
+            Debug.Assert(cache.ConnectionStrings.Count() == 0, "No connectionStrings!");
+            
             FetchSchema(dispatcher, ref cache);
             var behaviour = clonerBehaviour.Build(app.ModifiersTemplates, map.Variables);
             cache.DatabasesSchema.FinalizeCache(behaviour);
@@ -174,9 +190,9 @@ namespace DataCloner.DataClasse.Cache
 
                 foreach (var database in provider.GetDatabasesName())
                 {
-                    provider.GetColumns(cache.DatabasesSchema.LoadColumns, database);
-                    provider.GetForeignKeys(cache.DatabasesSchema.LoadForeignKeys, database);
-                    provider.GetUniqueKeys(cache.DatabasesSchema.LoadUniqueKeys, database);
+                    provider.GetColumns(cache.DatabasesSchema.LoadColumns, cs.Id, database);
+                    provider.GetForeignKeys(cache.DatabasesSchema.LoadForeignKeys, cs.Id, database);
+                    provider.GetUniqueKeys(cache.DatabasesSchema.LoadUniqueKeys, cs.Id, database);
                 }
             }
         }

@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using DataCloner.DataClasse.Cache;
+using System.Diagnostics;
 
 namespace DataCloner.DataClasse
 {
+    [DebuggerDisplay("{SourceTable.ServerId.ToString() + \".\" + SourceTable.Database + \".\" + SourceTable.Schema + \".\" + SourceTable.Table}...")]
 	public class InsertStep : IExecutionStep
     {
         public Int32 StepId { get; set; }

@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 
 namespace DataCloner.DataClasse.Cache
 {
+    [DebuggerDisplay("{ServerId.ToString() + \".\" + Database + \".\" + Schema}")]
     public struct ServerIdentifier
     {
         public Int16 ServerId { get; set; }

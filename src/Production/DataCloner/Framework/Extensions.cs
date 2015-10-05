@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Xml.Serialization;
@@ -129,6 +130,11 @@ namespace DataCloner.Framework
             return value.StartsWith("{$") && value.EndsWith("}");
         }
 
+        /// <summary>
+        /// Extract variable from a syntaxe like {$KEY{VALUE}} OR {$DATABASE_SOURCE{1}}.
+        /// </summary>
+        /// <param name="value">Variable</param>
+        /// <returns>Key</returns>
         public static string ExtractVariableKey(this string value)
         {
             int len;
@@ -144,6 +150,11 @@ namespace DataCloner.Framework
             return value.Substring(0, len) + "}";
         }
 
+        /// <summary>
+        /// Extract variable from a syntaxe like {$KEY{VALUE}} OR {$DATABASE_SOURCE{1}}.
+        /// </summary>
+        /// <param name="value">Variable</param>
+        /// <returns>Value</returns>
         public static string ExtractVariableValue(this string value)
         {
             var posStart = value.IndexOf('{');
@@ -158,12 +169,52 @@ namespace DataCloner.Framework
             return value.Substring(posStart, posEnd - posStart);
         }
 
+        /// <summary>
+        /// Extract variable from a syntaxe like {$KEY{VALUE}} OR {$DATABASE_SOURCE{1}}.
+        /// </summary>
+        /// <param name="value">Variable</param>
+        /// <returns>Value</returns>
         public static Int16 ExtractVariableValueInt16(this string value)
         {
             var extractedValue = value.ExtractVariableValue();
             Int16 result = 0;
             Int16.TryParse(extractedValue, out result);
             return result;
+        }
+
+        /// <summary>
+        /// Build a SQL text query from a DbCommand.
+        /// </summary>
+        /// <param name="dbCommand">The query</param>
+        /// <returns>SQL query</returns>
+        public static string GetGeneratedQuery(this IDbCommand dbCommand)
+        {
+            var query = dbCommand.CommandText;
+            foreach (var parameter in dbCommand.Parameters)
+            {
+                var param = parameter as IDataParameter;
+                string newValue;
+
+                if (param.Direction == ParameterDirection.Output)
+                    newValue = param.ParameterName + "/*" + param.Value.ToString().EscapeSql() + "*/";
+                else
+                    newValue = param.Value.ToString().EscapeSql();
+
+                query = query.Replace(param.ParameterName + " ", newValue + " ");
+                query = query.Replace(param.ParameterName + ",", newValue + ",");
+                query = query.Replace(param.ParameterName + ")", newValue + ")");
+            }
+            return query;
+        }
+
+        internal static string FormatSqlParam(this string value)
+        {
+            return value.Replace(" ", String.Empty);
+        }
+
+        internal static string EscapeSql(this string value)
+        {
+            return value.Replace("'", "''");
         }
     }
 }

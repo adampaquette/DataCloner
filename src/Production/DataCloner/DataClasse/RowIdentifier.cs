@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 
 namespace DataCloner.DataClasse
 {
+    [DebuggerDisplay("{ServerId.ToString() + \".\" + Database + \".\" + Schema + \".\" + Table}...")]
     public class RowIdentifier : IRowIdentifier
     {
         public Int16 ServerId { get; set; }

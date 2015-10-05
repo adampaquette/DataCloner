@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace DataCloner.DataClasse
 {
+    [DebuggerDisplay("SqlVar: Key={Id}, Value={Value}")]
     public class SqlVariable : IEquatable<SqlVariable>
     {
         private Int32 _id;

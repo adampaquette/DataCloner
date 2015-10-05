@@ -115,8 +115,8 @@ namespace DataCloner.DataAccess
             get { return _sqlWriter; }
         }
 
-        public QueryHelperMySql(DatabasesSchema schema, string connectionString, Int16 serverId)
-            : base(schema, ProviderName, connectionString, serverId)
+        public QueryHelperMySql(DatabasesSchema schema, string connectionString)
+            : base(schema, ProviderName, connectionString)
         {
 
         }      

@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace DataCloner.DataClasse
 {
+    [DebuggerDisplay("{ServerId.ToString() + \".\" + Database + \".\" + Schema + \".\" + Table}")]
     public class TableIdentifier : ITableIdentifier
     {
         public Int16 ServerId { get; set; }

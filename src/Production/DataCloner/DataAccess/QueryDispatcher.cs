@@ -20,16 +20,6 @@ namespace DataCloner.DataAccess
             get { return _queryHelpers[server]; }
         }
 
-        public IDbConnection GetConnection(IServerIdentifier server)
-        {
-            return _queryHelpers[server.ServerId].Connection;
-        }
-
-        public IDbConnection GetConnection(Int16 server)
-        {
-            return _queryHelpers[server].Connection;
-        }
-
         public IQueryHelper GetQueryHelper(IServerIdentifier server)
         {
             return _queryHelpers[server.ServerId];
@@ -45,7 +35,7 @@ namespace DataCloner.DataAccess
             _queryHelpers = new Dictionary<short, IQueryHelper>();
 
             foreach (var conn in cache.ConnectionStrings)
-                _queryHelpers.Add(conn.Id, QueryHelperFactory.GetQueryHelper(cache.DatabasesSchema, conn.ProviderName, conn.ConnectionString, conn.Id));
+                _queryHelpers.Add(conn.Id, QueryHelperFactory.GetQueryHelper(cache.DatabasesSchema, conn.ProviderName, conn.ConnectionString));
         }
     }
 }

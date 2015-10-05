@@ -18,9 +18,9 @@ namespace DataCloner.DataAccess
         ISqlWriter SqlWriter { get; }
         DbEngine Engine { get; }
         string[] GetDatabasesName();
-        void GetColumns(ColumnReader reader, String database);
-        void GetForeignKeys(ForeignKeyReader reader, String database);
-        void GetUniqueKeys(UniqueKeyReader reader, string database);
+        void GetColumns(ColumnReader reader, Int16 serverId, String database);
+        void GetForeignKeys(ForeignKeyReader reader, Int16 serverId, String database);
+        void GetUniqueKeys(UniqueKeyReader reader, Int16 serverId, String database);
         object GetLastInsertedPk();
         void EnforceIntegrityCheck(bool active);
         object[][] Select(IRowIdentifier row);
