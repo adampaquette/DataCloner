@@ -1,4 +1,5 @@
 using System.Linq;
+using Cache = DataCloner.DataClasse.Cache;
 using DataCloner.DataClasse.Configuration;
 using DataCloner.GUI.Properties;
 using GalaSoft.MvvmLight;
@@ -16,7 +17,11 @@ namespace DataCloner.GUI.ViewModel
             var app = _config.Applications.FirstOrDefault(a => a.Id == Settings.Default.DefaultAppId);
             if (app == null)
                 app = _config.Applications.FirstOrDefault();
-            _currentApp = new ApplicationViewModel(app);
+
+            var defaultCache = new Cache.Cache();
+            Cache.Cache.InitializeSchema(new QueryDispatcher(), app, ref defaultCache);
+
+            _currentApp = new ApplicationViewModel(app, defaultCache.DatabasesSchema);
         }
 
         public ApplicationViewModel CurrentApp

@@ -18,8 +18,7 @@ namespace DataCloner.GUI.ViewModel
         private SchemaModifierModel _selectedSchema;
         private TableModifierModel _selectedTable;
         private ForeignKeyModifierModel _selectedForeignKey;
-        private ObservableCollection<Connection> _connections;
-        private Cache.Cache _defaultSchema;
+        private Cache.DatabasesSchema _defaultSchema;
         private ObservableCollection<AccessWithDescription> _accessWithDescriptions;
 
         public class AccessWithDescription
@@ -110,13 +109,10 @@ namespace DataCloner.GUI.ViewModel
             }
         }
 
-        public ObservableCollection<Connection> Connections { get { return _connections; } }
-
-        public TemplatesViewModel(Modifiers modifiers, List<Connection> conns, Cache.Cache defaultSchema)
+        public TemplatesViewModel(Modifiers modifiersTemplates, Cache.DatabasesSchema defaultSchema)
         {
             _serverModifiers = new ObservableCollection<ServerModifierModel>();
-            _connections = new ObservableCollection<Connection>();
-            _userConfigTemplates = modifiers;
+            _userConfigTemplates = modifiersTemplates;
             _defaultSchema = defaultSchema;
 
             _accessWithDescriptions = new ObservableCollection<AccessWithDescription>
@@ -126,12 +122,8 @@ namespace DataCloner.GUI.ViewModel
                 new AccessWithDescription { Key = DerivativeTableAccess.Forced, Description = "Forcé" }
             };
 
-            _connections.Add(new Connection { Id = 0, Name = "" });
-            foreach (var conn in conns)
-                _connections.Add(conn);
-
             //Step 1 : Add default serveurs
-            foreach (var server in defaultSchema.DatabasesSchema)
+            foreach (var server in defaultSchema)
             {
                 _serverModifiers.Add(new ServerModifierModel(server));
             }

@@ -21,7 +21,7 @@ namespace DataCloner.GUI.ViewModel
         private ListConnectionViewModel _connections;
         private TemplatesViewModel _templates;
         private bool _isValid = true;
-        private Cache.Cache _defaultSchema;
+        private Cache.DatabasesSchema _defaultSchema;
 
         [Required]
         public Int16 Id
@@ -59,13 +59,15 @@ namespace DataCloner.GUI.ViewModel
             }
         }
 
-        public ApplicationViewModel(Application app)
+        public ApplicationViewModel(Application app, Cache.DatabasesSchema defaultSchema)
         {
             SaveCommand = new RelayCommand(Save, () => IsValid);
 
-            Cache.Cache.InitializeSchema(new QueryDispatcher(), app, ref _defaultSchema);
-
-            ConfigurationService.Load(this, app, _defaultSchema);
+            _defaultSchema = defaultSchema;
+            _id = app.Id;
+            _name = app.Name;
+            _connections = new ListConnectionViewModel(app.ConnectionStrings);
+            _templates = new TemplatesViewModel(app.ModifiersTemplates, _defaultSchema);
         }
 
         public RelayCommand SaveCommand { get; private set; }
@@ -77,7 +79,7 @@ namespace DataCloner.GUI.ViewModel
                 throw new InvalidOperationException("You must not call Save when CanSave returns false.");
             }
 
-            ConfigurationService.Save(this, _defaultSchema);
+            this.Save(_defaultSchema);
         }
     }
 }
