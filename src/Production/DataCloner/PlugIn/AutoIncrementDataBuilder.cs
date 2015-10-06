@@ -24,6 +24,9 @@ namespace DataCloner.PlugIn
                     case DbEngine.MySql:
                         value = GetNewKeyMySql(conn, database, table, column);
                         break;
+                    case DbEngine.SqlServer:
+                        value = GetNewKeyMsSql(conn, database, schema, table, column);
+                        break;
                     default:
                         throw new NotSupportedException();
                 }
@@ -72,9 +75,15 @@ namespace DataCloner.PlugIn
         {
             var cmd = conn.CreateCommand();
             cmd.CommandText = string.Format("SELECT MAX({0})+1 FROM {1}.{2}", column.Name, database, table.Name);
-            conn.Open();
             var result = cmd.ExecuteScalar();
-            conn.Close();
+            return result;
+        }
+
+        private object GetNewKeyMsSql(IDbConnection conn, string database, string schema, ITableSchema table, IColumnDefinition column)
+        {
+            var cmd = conn.CreateCommand();
+            cmd.CommandText = string.Format("SELECT MAX({0})+1 FROM {1}.{2}.{3}", column.Name, database, schema, table.Name);
+            var result = cmd.ExecuteScalar();
             return result;
         }
 

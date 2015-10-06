@@ -90,7 +90,7 @@ namespace DataCloner.DataClasse.Cache
 
             //Hash the connnectionStrings to see if it match the last build
             var configData = new MemoryStream();
-            var bf = new BinaryFormatter();            
+            var bf = new BinaryFormatter();
             bf.Serialize(configData, app.ConnectionStrings);
             configData.Position = 0;
 
@@ -106,7 +106,7 @@ namespace DataCloner.DataClasse.Cache
                 dispatcher.InitProviders(cache);
             //We rebuild the cache
             else
-                cache = BuildSchema(dispatcher, cacheFileName, app.ConnectionStrings , configHash);
+                cache = BuildSchema(dispatcher, cacheFileName, app.ConnectionStrings, configHash);
         }
 
         /// <summary>
@@ -141,11 +141,12 @@ namespace DataCloner.DataClasse.Cache
             }
 
             //Copy connection strings
-            foreach (var cs in app.ConnectionStrings.Where(c=>serversSource.Contains(c.Id.ToString())))
+            foreach (var cs in app.ConnectionStrings.Where(c => serversSource.Contains(c.Id.ToString())))
                 cache.ConnectionStrings.Add(new Connection(cs.Id, cs.ProviderName, cs.ConnectionString));
 
-            Debug.Assert(cache.ConnectionStrings.Count() == 0, "No connectionStrings!");
-            
+            if (cache.ConnectionStrings.Count() == 0)
+                throw new Exception("No connectionStrings!");
+
             FetchSchema(dispatcher, ref cache);
             var behaviour = clonerBehaviour.Build(app.ModifiersTemplates, map.Variables);
             cache.DatabasesSchema.FinalizeCache(behaviour);
@@ -171,7 +172,7 @@ namespace DataCloner.DataClasse.Cache
             //Copy connection strings
             foreach (var cs in connections)
                 cache.ConnectionStrings.Add(new Connection(cs.Id, cs.ProviderName, cs.ConnectionString));
-            
+
             FetchSchema(dispatcher, ref cache);
             cache.DatabasesSchema.FinalizeSchema();
 
