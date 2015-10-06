@@ -12,32 +12,33 @@
             <Setter Property="FontSize" Value="20"/>
         </Style>
     </UserControl.Resources>
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="2*"/>
-            <ColumnDefinition Width="1*"/>
-            <ColumnDefinition Width="3*"/>
-        </Grid.ColumnDefinitions>
-        <!-- Colonne 1 -->
-        <Grid Margin="10,0" MinWidth="200">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
-            <!-- Serveur -->
-            <Grid>
-                <Grid.Style>
-                    <Style TargetType="Grid">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding ShouldHideServers}" Value="true">
-                                <Setter Property="Visibility" Value="Collapsed"/>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </Grid.Style>
-                <GroupBox Header="Serveurs">
-                    <DataGrid Name="dgServers" 
+    <ScrollViewer HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="3*"/>
+            </Grid.ColumnDefinitions>
+            <!-- Colonne 1 -->
+            <Grid Margin="10,0" MinWidth="200">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <!-- Serveur -->
+                <Grid>
+                    <Grid.Style>
+                        <Style TargetType="Grid">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ShouldHideServers}" Value="true">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Grid.Style>
+                    <GroupBox Header="Serveurs">
+                        <DataGrid Name="dgServers" 
                           ItemsSource="{Binding ServerModifiers}"
                           AutoGenerateColumns="False"
                           CanUserAddRows="True"
@@ -45,44 +46,44 @@
                           BorderThickness="1"
                           BorderBrush="{StaticResource AccentColorBrush}"
                           SelectedItem="{Binding SelectedServer, ValidatesOnNotifyDataErrors=False}">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="Id" 
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Id" 
                                         ElementStyle="{StaticResource TextCellElementStyle}"
                                         EditingElementStyle="{StaticResource TextCellEditingStyle}"
                                         Binding="{Binding Id, UpdateSourceTrigger=PropertyChanged, 
                                         NotifyOnValidationError=True, ValidatesOnExceptions=True}"/>
-                            <DataGridTextColumn Header="TemplateId" 
+                                <DataGridTextColumn Header="TemplateId" 
                                         ElementStyle="{StaticResource TextCellElementStyle}"
                                         EditingElementStyle="{StaticResource TextCellEditingStyle}"
                                         Binding="{Binding TemplateId, UpdateSourceTrigger=PropertyChanged, 
                                         NotifyOnValidationError=True, ValidatesOnExceptions=True}"/>
-                            <DataGridTextColumn Header="UseTemplateId" 
+                                <DataGridTextColumn Header="UseTemplateId" 
                                         ElementStyle="{StaticResource TextCellElementStyle}"
                                         EditingElementStyle="{StaticResource TextCellEditingStyle}"
                                         Binding="{Binding UseTemplateId, UpdateSourceTrigger=PropertyChanged, 
                                         NotifyOnValidationError=True, ValidatesOnExceptions=True}"/>
-                        </DataGrid.Columns>
-                    </DataGrid>
-                </GroupBox>
-            </Grid>
-            <!-- Database -->
-            <Grid Grid.Row="1">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
-                <Grid.Style>
-                    <Style TargetType="Grid">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding ShouldHideDatabases}" Value="true">
-                                <Setter Property="Visibility" Value="Collapsed"/>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </Grid.Style>
-                <ToggleButton Grid.Column="2" Content="Niveau supérieur" IsChecked="{Binding IsDatabaseTopLevel}" Visibility="Collapsed" />
-                <GroupBox Header="Base de données" Grid.Row="1">
-                    <DataGrid Name="dgDatabase"  
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </GroupBox>
+                </Grid>
+                <!-- Database -->
+                <Grid Grid.Row="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Grid.Style>
+                        <Style TargetType="Grid">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ShouldHideDatabases}" Value="true">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Grid.Style>
+                    <ToggleButton Grid.Column="2" Content="Niveau supérieur" IsChecked="{Binding IsDatabaseTopLevel}" Visibility="Collapsed" />
+                    <GroupBox Header="Base de données" Grid.Row="1">
+                        <DataGrid Name="dgDatabase"  
                           ItemsSource="{Binding SelectedServer.Databases}"                         
                           AutoGenerateColumns="False"
                           CanUserAddRows="True"
@@ -90,36 +91,36 @@
                           BorderThickness="1"
                           BorderBrush="{StaticResource AccentColorBrush}"
                           SelectedItem="{Binding SelectedDatabase, ValidatesOnNotifyDataErrors=False}">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="Name" 
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Name" 
                                         ElementStyle="{StaticResource TextCellElementStyle}"
                                         EditingElementStyle="{StaticResource TextCellEditingStyle}"
                                         Binding="{Binding Name, UpdateSourceTrigger=PropertyChanged, 
                                         NotifyOnValidationError=True, ValidatesOnExceptions=True}"/>
-                            <DataGridTextColumn Header="TemplateId" 
+                                <DataGridTextColumn Header="TemplateId" 
                                         ElementStyle="{StaticResource TextCellElementStyle}"
                                         EditingElementStyle="{StaticResource TextCellEditingStyle}"
                                         Binding="{Binding TemplateId, UpdateSourceTrigger=PropertyChanged, 
                                         NotifyOnValidationError=True, ValidatesOnExceptions=True}"/>
-                            <DataGridTextColumn Header="UseTemplateId" 
+                                <DataGridTextColumn Header="UseTemplateId" 
                                         ElementStyle="{StaticResource TextCellElementStyle}"
                                         EditingElementStyle="{StaticResource TextCellEditingStyle}"
                                         Binding="{Binding UseTemplateId, UpdateSourceTrigger=PropertyChanged, 
                                         NotifyOnValidationError=True, ValidatesOnExceptions=True}"/>
-                        </DataGrid.Columns>
-                    </DataGrid>
-                </GroupBox>
-            </Grid>
-            <!-- Schema -->
-            <Grid Grid.Row="2">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
-                <ToggleButton Grid.Column="2" Content="Niveau supérieur" IsChecked="{Binding IsSchemaTopLevel}" Visibility="Collapsed" />
-                <GroupBox Header="Schéma" 
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </GroupBox>
+                </Grid>
+                <!-- Schema -->
+                <Grid Grid.Row="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <ToggleButton Grid.Column="2" Content="Niveau supérieur" IsChecked="{Binding IsSchemaTopLevel}" Visibility="Collapsed" />
+                    <GroupBox Header="Schéma" 
                       Grid.Row="1">
-                    <DataGrid Name="dgSchema"   
+                        <DataGrid Name="dgSchema"   
                       ItemsSource="{Binding SelectedDatabase.Schemas}"                      
                       AutoGenerateColumns="False"
                       CanUserAddRows="True"
@@ -127,152 +128,154 @@
                       BorderThickness="1"
                       BorderBrush="{StaticResource AccentColorBrush}"
                       SelectedItem="{Binding SelectedSchema, ValidatesOnNotifyDataErrors=False}">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="Name" 
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Name" 
                                         ElementStyle="{StaticResource TextCellElementStyle}"
                                         EditingElementStyle="{StaticResource TextCellEditingStyle}"
                                         Binding="{Binding Name, UpdateSourceTrigger=PropertyChanged, 
                                         NotifyOnValidationError=True, ValidatesOnExceptions=True}"/>
-                            <DataGridTextColumn Header="TemplateId" 
+                                <DataGridTextColumn Header="TemplateId" 
                                         ElementStyle="{StaticResource TextCellElementStyle}"
                                         EditingElementStyle="{StaticResource TextCellEditingStyle}"
                                         Binding="{Binding TemplateId, UpdateSourceTrigger=PropertyChanged, 
                                         NotifyOnValidationError=True, ValidatesOnExceptions=True}"/>
-                            <DataGridTextColumn Header="UseTemplateId" 
+                                <DataGridTextColumn Header="UseTemplateId" 
                                         ElementStyle="{StaticResource TextCellElementStyle}"
                                         EditingElementStyle="{StaticResource TextCellEditingStyle}"
                                         Binding="{Binding UseTemplateId, UpdateSourceTrigger=PropertyChanged, 
                                         NotifyOnValidationError=True, ValidatesOnExceptions=True}"/>
-                        </DataGrid.Columns>
-                    </DataGrid>
-                </GroupBox>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </GroupBox>
+                </Grid>
             </Grid>
-        </Grid>
-        <!-- Colonne 2 -->
-        <Grid Grid.Column="1">
-            <GroupBox Header="Tables">
-                <ListView Name="lvTables" 
+            <!-- Colonne 2 -->
+            <Grid Grid.Column="1">
+                <GroupBox Header="Tables">
+                    <ListView Name="lvTables" 
                           SelectedItem="{Binding SelectedTable, ValidatesOnNotifyDataErrors=False}"
                           ItemsSource="{Binding SelectedSchema.Tables}"
                           MinWidth="160">
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding Name}"/>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
-            </GroupBox>
-        </Grid>
-        <!-- Colonne 3 -->
-        <Grid Grid.Column="2">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="1.5*"/>
-                <RowDefinition Height="1*"/>
-                <RowDefinition Height="1*"/>
-            </Grid.RowDefinitions>
-            <TextBlock Text="Table"
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Name}"/>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </GroupBox>
+            </Grid>
+            <!-- Colonne 3 -->
+            <Grid Grid.Column="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="1.5*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                </Grid.RowDefinitions>
+                <TextBlock Text="Table"
                        FontWeight="DemiBold"
                        HorizontalAlignment="Center"/>
-            <TextBlock Text="{Binding SelectedTable.Name}" 
+                <TextBlock Text="{Binding SelectedTable.Name}" 
                        HorizontalAlignment="Center"
                        FontSize="22"
                        Grid.Row="1"/>
-            <StackPanel Orientation="Horizontal"
+                <StackPanel Orientation="Horizontal"
                         Grid.Row="2">
-                <TextBlock Text="Est statique : " Margin="10, 0, 0, 0"/>
-                <CheckBox IsChecked="{Binding SelectedTable.IsStatic}"
+                    <TextBlock Text="Est statique : " Margin="10, 0, 0, 0"/>
+                    <CheckBox IsChecked="{Binding SelectedTable.IsStatic}"
                           Margin="0,6"/>
-            </StackPanel>
-            <GroupBox Header="Clefs étrangères"
+                </StackPanel>
+                <GroupBox Header="Clefs étrangères"
                       Grid.Row="3">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-                    <DataGrid Name="dgForeignKey"   
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <DataGrid Name="dgForeignKey"   
                               ItemsSource="{Binding SelectedTable.ForeignKeys}"
                               AutoGenerateColumns="False"
                               CanUserAddRows="True"
                               CanUserDeleteRows="false"                  
                               BorderThickness="1"
+                                  MinHeight="50"
                               BorderBrush="{StaticResource AccentColorBrush}"
                               SelectedItem="{Binding SelectedForeignKey, ValidatesOnNotifyDataErrors=False}">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="ServerIdTo" 
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="ServerIdTo" 
                                         ElementStyle="{StaticResource TextCellElementStyle}"
                                         EditingElementStyle="{StaticResource TextCellEditingStyle}"
                                         Binding="{Binding ServerIdTo, UpdateSourceTrigger=PropertyChanged, 
                                         NotifyOnValidationError=True, ValidatesOnExceptions=True}"/>
-                            <DataGridTextColumn Header="DatabaseTo" 
+                                <DataGridTextColumn Header="DatabaseTo" 
                                         ElementStyle="{StaticResource TextCellElementStyle}"
                                         EditingElementStyle="{StaticResource TextCellEditingStyle}"
                                         Binding="{Binding DatabaseTo, UpdateSourceTrigger=PropertyChanged, 
                                         NotifyOnValidationError=True, ValidatesOnExceptions=True}"/>
-                            <DataGridTextColumn Header="SchemaTo" 
+                                <DataGridTextColumn Header="SchemaTo" 
                                         ElementStyle="{StaticResource TextCellElementStyle}"
                                         EditingElementStyle="{StaticResource TextCellEditingStyle}"
                                         Binding="{Binding SchemaTo, UpdateSourceTrigger=PropertyChanged, 
                                         NotifyOnValidationError=True, ValidatesOnExceptions=True}"/>
-                            <DataGridTextColumn Header="TableTo" 
+                                <DataGridTextColumn Header="TableTo" 
                                         ElementStyle="{StaticResource TextCellElementStyle}"
                                         EditingElementStyle="{StaticResource TextCellEditingStyle}"
                                         Binding="{Binding TableTo, UpdateSourceTrigger=PropertyChanged, 
                                         NotifyOnValidationError=True, ValidatesOnExceptions=True}"/>
-                            <DataGridCheckBoxColumn Header="Supprimer"                                        
+                                <DataGridCheckBoxColumn Header="Supprimer"                                        
                                         Binding="{Binding IsDeleted, UpdateSourceTrigger=PropertyChanged}" />
-                        </DataGrid.Columns>
-                    </DataGrid>
-                    <DataGrid Name="dgForeignKeyColumn" 
+                            </DataGrid.Columns>
+                        </DataGrid>
+                        <DataGrid Name="dgForeignKeyColumn" 
                               Grid.Row="1"
                               ItemsSource="{Binding SelectedForeignKey.Columns}"
                               AutoGenerateColumns="False"
                               CanUserAddRows="True"
                               CanUserDeleteRows="false"                  
                               BorderThickness="1"
+                                  MinHeight="50"
                               BorderBrush="{StaticResource AccentColorBrush}">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="Depuis" 
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Depuis" 
                                         ElementStyle="{StaticResource TextCellElementStyle}"
                                         EditingElementStyle="{StaticResource TextCellEditingStyle}"
                                         Binding="{Binding NameFrom, UpdateSourceTrigger=PropertyChanged, 
                                         NotifyOnValidationError=True, ValidatesOnExceptions=True}"/>
-                            <DataGridTextColumn Header="Vers" 
+                                <DataGridTextColumn Header="Vers" 
                                         ElementStyle="{StaticResource TextCellElementStyle}"
                                         EditingElementStyle="{StaticResource TextCellEditingStyle}"
                                         Binding="{Binding NameTo, UpdateSourceTrigger=PropertyChanged, 
                                         NotifyOnValidationError=True, ValidatesOnExceptions=True}"/>
-                            <DataGridCheckBoxColumn Header="Supprimer" 
+                                <DataGridCheckBoxColumn Header="Supprimer" 
                                         Binding="{Binding IsDeleted, UpdateSourceTrigger=PropertyChanged}"/>
-                        </DataGrid.Columns>
-                    </DataGrid>
-                </Grid>
-            </GroupBox>
-            <GroupBox Header="Tables dérivées"
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Grid>
+                </GroupBox>
+                <GroupBox Header="Tables dérivées"
                       Grid.Row="4">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="Accès global : "
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Accès global : "
                                    FontSize="14"
                                    Margin="0, 5"/>
-                        <ComboBox ItemsSource="{Binding DataContext.AccessWithDescriptions, RelativeSource={RelativeSource AncestorType=UserControl}}" 
+                            <ComboBox ItemsSource="{Binding DataContext.AccessWithDescriptions, RelativeSource={RelativeSource AncestorType=UserControl}}" 
                                                 DisplayMemberPath="Description"
                                                 SelectedValuePath="Key" 
                                                 SelectedValue="{Binding SelectedTable.DerativeTablesGlobalAccess, UpdateSourceTrigger=PropertyChanged, 
                                                                 NotifyOnValidationError=True, ValidatesOnExceptions=True}" />
-                        <TextBlock Text="Cascade globale : "
+                            <TextBlock Text="Cascade globale : "
                                    FontSize="14"
                                    Margin="10, 5, 0, 5"/>
-                        <CheckBox IsChecked="{Binding SelectedTable.DerativeTablesGlobalCascade}" />
-                    </StackPanel>                   
-                    <DataGrid Name="dgDerivativeTable" 
+                            <CheckBox IsChecked="{Binding SelectedTable.DerativeTablesGlobalCascade}" />
+                        </StackPanel>
+                        <DataGrid Name="dgDerivativeTable" 
                               Grid.Row="1"
                               Margin="0, 5,0 ,0"
                               ItemsSource="{Binding SelectedTable.DerivativeTables}"
@@ -280,82 +283,85 @@
                               CanUserAddRows="true"
                               CanUserDeleteRows="false"                  
                               BorderThickness="1"
+                                  MinHeight="50"
                               BorderBrush="{StaticResource AccentColorBrush}"
                               SelectedItem="{Binding SelectedForeignKey, ValidatesOnNotifyDataErrors=False}">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="ServerId"                                             
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="ServerId"                                             
                                             ElementStyle="{StaticResource TextCellElementStyle}"
                                             EditingElementStyle="{StaticResource TextCellEditingStyle}"
                                             Binding="{Binding ServerId, UpdateSourceTrigger=PropertyChanged, 
                                             NotifyOnValidationError=True, ValidatesOnExceptions=True}"/>
-                            <DataGridTextColumn Header="Database" 
+                                <DataGridTextColumn Header="Database" 
                                             ElementStyle="{StaticResource TextCellElementStyle}"
                                             EditingElementStyle="{StaticResource TextCellEditingStyle}"
                                             Binding="{Binding Database, UpdateSourceTrigger=PropertyChanged, 
                                             NotifyOnValidationError=True, ValidatesOnExceptions=True}"/>
-                            <DataGridTextColumn Header="Schema"
+                                <DataGridTextColumn Header="Schema"
                                             ElementStyle="{StaticResource TextCellElementStyle}"
                                             EditingElementStyle="{StaticResource TextCellEditingStyle}"
                                             Binding="{Binding Schema, UpdateSourceTrigger=PropertyChanged, 
                                             NotifyOnValidationError=True, ValidatesOnExceptions=True}"/>
-                            <DataGridTextColumn Header="Table"                                            
+                                <DataGridTextColumn Header="Table"                                            
                                             ElementStyle="{StaticResource TextCellElementStyle}"
                                             EditingElementStyle="{StaticResource TextCellEditingStyle}"
                                             Binding="{Binding Table, UpdateSourceTrigger=PropertyChanged, 
                                             NotifyOnValidationError=True, ValidatesOnExceptions=True}"/>
-                            <DataGridTemplateColumn Header="Accès">
-                                <DataGridTemplateColumn.CellEditingTemplate>
-                                    <DataTemplate>
-                                        <ComboBox ItemsSource="{Binding DataContext.AccessWithDescriptions, RelativeSource={RelativeSource AncestorType=UserControl}}" 
+                                <DataGridTemplateColumn Header="Accès">
+                                    <DataGridTemplateColumn.CellEditingTemplate>
+                                        <DataTemplate>
+                                            <ComboBox ItemsSource="{Binding DataContext.AccessWithDescriptions, RelativeSource={RelativeSource AncestorType=UserControl}}" 
                                                 DisplayMemberPath="Description"
                                                 SelectedValuePath="Key"
                                                 SelectedValue="{Binding Access, UpdateSourceTrigger=PropertyChanged, 
                                                                 NotifyOnValidationError=True, ValidatesOnExceptions=True}"/>
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellEditingTemplate>
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <ComboBox ItemsSource="{Binding DataContext.AccessWithDescriptions, RelativeSource={RelativeSource AncestorType=UserControl}}" 
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellEditingTemplate>
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <ComboBox ItemsSource="{Binding DataContext.AccessWithDescriptions, RelativeSource={RelativeSource AncestorType=UserControl}}" 
                                                 DisplayMemberPath="Description"
                                                 SelectedValuePath="Key" 
                                                 SelectedValue="{Binding Access, UpdateSourceTrigger=PropertyChanged, 
                                                                 NotifyOnValidationError=True, ValidatesOnExceptions=True}" />
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
-                            <DataGridCheckBoxColumn Header="Cascade"                                        
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridCheckBoxColumn Header="Cascade"                                        
                                                 Binding="{Binding Cascade, UpdateSourceTrigger=PropertyChanged}"/>
-                            <DataGridCheckBoxColumn Header="Supprimer" 
+                                <DataGridCheckBoxColumn Header="Supprimer" 
                                                 Binding="{Binding IsDeleted, UpdateSourceTrigger=PropertyChanged}"/>
-                        </DataGrid.Columns>
-                    </DataGrid>
-                </Grid>
-            </GroupBox>
-            <GroupBox Header="Générateurs de donnée"
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Grid>
+                </GroupBox>
+                <GroupBox Header="Générateurs de donnée"
                       Grid.Row="5">
-                <DataGrid Name="dgDataBuilder"   
+                    <DataGrid Name="dgDataBuilder"   
                           ItemsSource="{Binding SelectedTable.DataBuilders}"
                           AutoGenerateColumns="False"
                           CanUserAddRows="True"
                           CanUserDeleteRows="false"                  
                           BorderThickness="1"
+                              MinHeight="50"
                           BorderBrush="{StaticResource AccentColorBrush}"
                           SelectedItem="{Binding SelectedForeignKey, ValidatesOnNotifyDataErrors=False}">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="Nom de colonne" 
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Nom de colonne" 
                                             IsReadOnly="True"
                                             ElementStyle="{StaticResource TextCellElementStyle}"
                                             EditingElementStyle="{StaticResource TextCellEditingStyle}"
                                             Binding="{Binding ColumnName, UpdateSourceTrigger=PropertyChanged, 
                                             NotifyOnValidationError=True, ValidatesOnExceptions=True}"/>
-                        <DataGridTextColumn Header="Nom du générateur" 
+                            <DataGridTextColumn Header="Nom du générateur" 
                                             ElementStyle="{StaticResource TextCellElementStyle}"
                                             EditingElementStyle="{StaticResource TextCellEditingStyle}"
                                             Binding="{Binding BuilderName, UpdateSourceTrigger=PropertyChanged, 
                                             NotifyOnValidationError=True, ValidatesOnExceptions=True}"/>
-                    </DataGrid.Columns>
-                </DataGrid>
-            </GroupBox>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </GroupBox>
+            </Grid>
         </Grid>
-    </Grid>
+    </ScrollViewer>
 </UserControl>

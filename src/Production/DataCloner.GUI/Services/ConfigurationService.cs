@@ -21,7 +21,7 @@ namespace DataCloner.GUI.Services
         /// </summary>
         /// <param name="appVM">In-memory application view model.</param>
         /// <param name="defaultSchema">Schema of the plain old database.</param>
-        public static void Save(this ApplicationViewModel appVM, Cache.Cache defaultSchema)
+        public static void Save(this ApplicationViewModel appVM, Cache.DatabasesSchema defaultSchema)
         {
             var config = Configuration.Load(Configuration.ConfigFileName);
             var app = config.Applications.FirstOrDefault(a => a.Id == appVM.Id);
@@ -56,7 +56,7 @@ namespace DataCloner.GUI.Services
             return connStrings;
         }
 
-        private static Modifiers CreateTemplates(IEnumerable<ServerModifierModel> serverModifiersVM, Cache.Cache defaultSchema)
+        private static Modifiers CreateTemplates(IEnumerable<ServerModifierModel> serverModifiersVM, Cache.DatabasesSchema defaultSchema)
         {
             var userConfigTemplates = new Modifiers();
 
@@ -109,8 +109,8 @@ namespace DataCloner.GUI.Services
         }
 
         private static bool MergeDatabase(Model.DatabaseModifierModel mergedDatabase,
-                                   List<DatabaseModifier> userConfigDatabases,
-                                   Dictionary<string, Cache.TableSchema[]> defaultDatabaseSchema)
+                                          List<DatabaseModifier> userConfigDatabases,
+                                          Dictionary<string, Cache.TableSchema[]> defaultDatabaseSchema)
         {
             var hasChange = false;
             var userConfigDatabase = userConfigDatabases.FirstOrDefault(d => d.Name == mergedDatabase.Name);
@@ -148,8 +148,8 @@ namespace DataCloner.GUI.Services
         }
 
         private static bool MergeSchema(Model.SchemaModifierModel mergedSchema,
-                                List<SchemaModifier> userConfigSchemas,
-                                Cache.TableSchema[] defaultSchema)
+                                        List<SchemaModifier> userConfigSchemas,
+                                        Cache.TableSchema[] defaultSchema)
         {
             var hasChange = false;
             var userConfigSchema = userConfigSchemas.FirstOrDefault(s => s.Name == mergedSchema.Name);
@@ -187,8 +187,8 @@ namespace DataCloner.GUI.Services
         }
 
         private static bool MergeTable(Model.TableModifierModel mergedTable,
-                                List<TableModifier> userConfigTables,
-                                Cache.TableSchema defaultTable)
+                                       List<TableModifier> userConfigTables,
+                                       Cache.TableSchema defaultTable)
         {
             var hasChange = false;
             var userConfigTable = userConfigTables.FirstOrDefault(t => t.Name == mergedTable.Name);
@@ -363,9 +363,9 @@ namespace DataCloner.GUI.Services
         }
 
         private static bool MergedDerivativeTable(DerivativeTableModifierModel mergedDerivativeTable,
-                                           IList<DerivativeTableModifierModel> mergedDerivativeTables,
-                                           DerativeTable derativeTable,
-                                           Cache.IDerivativeTable defaultDt)
+                                                 IList<DerivativeTableModifierModel> mergedDerivativeTables,
+                                                 DerativeTable derativeTable,
+                                                 Cache.IDerivativeTable defaultDt)
         {
             var hasChange = false;
 
@@ -399,7 +399,7 @@ namespace DataCloner.GUI.Services
 
 
         private static bool MergeDataBuilders(Model.DataBuilderModel mergedDb,
-                                       List<DataBuilder> userConfigDataBuilders)
+                                              List<DataBuilder> userConfigDataBuilders)
         {
             var hasChange = false;
             var userConfigDataBuilder = userConfigDataBuilders.FirstOrDefault(d => d.Name == mergedDb.ColumnName);
@@ -440,8 +440,9 @@ namespace DataCloner.GUI.Services
         /// <summary>
         /// Get the default server schema compiled from the database.
         /// </summary>
+        /// <param name="defaultSchema">Schema of the plain old database</param>
         /// <param name="serverId">Could be an Id like 0 or a variable like {$KEY{VALUE}} OR {$SERVER_SOURCE{1}}.</param>
-        private static Dictionary<string, Dictionary<string, Cache.TableSchema[]>> GetServerSchema(Cache.Cache defaultSchema, string serverId)
+        private static Dictionary<string, Dictionary<string, Cache.TableSchema[]>> GetServerSchema(Cache.DatabasesSchema defaultSchema, string serverId)
         {
             Int16 id;
 
@@ -450,14 +451,14 @@ namespace DataCloner.GUI.Services
             //If is a serverId
             if (Int16.TryParse(serverId, out id))
             {
-                if (defaultSchema.DatabasesSchema.ContainsKey(id))
-                    return defaultSchema.DatabasesSchema[id];
+                if (defaultSchema.ContainsKey(id))
+                    return defaultSchema[id];
             }
 
             //If is a variable
             id = serverId.ExtractVariableValueInt16();
-            if (id != 0 && defaultSchema.DatabasesSchema.ContainsKey(id))
-                return defaultSchema.DatabasesSchema[id];
+            if (id != 0 && defaultSchema.ContainsKey(id))
+                return defaultSchema[id];
 
             return null;
         }

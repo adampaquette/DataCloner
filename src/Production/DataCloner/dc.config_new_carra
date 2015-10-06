@@ -84,7 +84,7 @@ Règles
 				</ClonerBehaviour>
 			</ClonerBehaviours>
 			<Maps>
-				<Map nameFrom="PROD" nameTo="UNI" usableConfigs="1,2">
+				<Map From="PROD" To="UNI" UsableBehaviours="1,2">
 					<Variables>
                         <Var Name="{$SERVER_SOURCE_PGIS}" Value="3"/>
                         <Var Name="{$SERVER_SOURCE_ARIEL}" Value="4"/>
@@ -97,7 +97,7 @@ Règles
                     <Road ServerSrc="{$SERVER_SOURCE_SIEBEL}" DatabaseSrc="SIEBELDB" SchemaSrc="dbo" 
 						  ServerDst="1" DatabaseDst="SIEBELDB" SchemaDst="dbo"/>
 				</Map>	
-				<Map nameFrom="UNI" nameTo="PROD" usableConfigs="1">
+				<Map From="UNI" To="PROD" UsableBehaviours="1">
 					<Variables>
                         <Var Name="{$SERVER_SOURCE_PGIS}" Value="1"/>
                         <Var Name="{$SERVER_SOURCE_ARIEL}" Value="1"/>
@@ -110,7 +110,7 @@ Règles
                     <Road ServerSrc="{$SERVER_SOURCE_SIEBEL}" DatabaseSrc="SIEBELDB" SchemaSrc="dbo" 
 						  ServerDst="5" DatabaseDst="SIEBELDB" SchemaDst="dbo"/>
 				</Map>	                
-				<Map nameFrom="File" nameTo="" usableConfigs="2">
+				<Map From="File" To="" UsableBehaviours="2">
 					<Road ServerSrc="5" DatabaseSrc="PGIS" SchemaSrc="" />
 					<Road ServerSrc="5" DatabaseSrc="Ariel" SchemaSrc="" />
 				</Map>

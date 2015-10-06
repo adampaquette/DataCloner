@@ -3,6 +3,7 @@ using Cache = DataCloner.DataClasse.Cache;
 using DataCloner.DataClasse.Configuration;
 using DataCloner.GUI.Properties;
 using GalaSoft.MvvmLight;
+using DataCloner.DataAccess;
 
 namespace DataCloner.GUI.ViewModel
 {

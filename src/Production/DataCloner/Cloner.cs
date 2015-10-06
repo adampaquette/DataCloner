@@ -83,7 +83,7 @@ namespace DataCloner
 			var rowsGenerating = new Stack<IRowIdentifier>();
 			rowsGenerating.Push(riSource);
 
-			_dispatcher[riSource].EnforceIntegrityCheck(EnforceIntegrity);
+			//_dispatcher[riSource].EnforceIntegrityCheck(EnforceIntegrity);
 
 			BuildExecutionPlan(riSource, getDerivatives, false, 0, rowsGenerating);
 			BuildCircularReferencesPlan();
@@ -363,7 +363,7 @@ namespace DataCloner
 				_executionPlanByServer.Add(connId, new ExecutionPlan());
 			_executionPlanByServer[connId].InsertSteps.Add(step);
 
-			//Recopie dans le plan d'exécition pour la performance
+			//Recopie dans le plan d'exécution pour la performance
 			foreach (var sqlVar in step.Variables)
 				_executionPlanByServer[connId].Variables.Add(sqlVar);
 		}
