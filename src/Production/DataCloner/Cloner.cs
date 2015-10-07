@@ -71,9 +71,9 @@ namespace DataCloner
 			DataBuilder.ClearBuildersCache();            
 		}
 
-		public void Setup(Application app, int mapId, int? configId)
+        public void Setup(Application app, int mapId, int? behaviourId)
 		{
-			_cacheInitialiser(_dispatcher, app, mapId, configId, ref Cache);
+            _cacheInitialiser(_dispatcher, app, mapId, behaviourId, ref Cache);
 		}
 
 		public List<IRowIdentifier> Clone(IRowIdentifier riSource, bool getDerivatives)

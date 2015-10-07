@@ -15,7 +15,7 @@ namespace DataCloner.DataClasse.Cache
 {
     public sealed class Cache
     {
-        internal delegate void CacheInitialiser(IQueryDispatcher dispatcher, Application app, int mapId, int? configId, ref Cache cache);
+        internal delegate void CacheInitialiser(IQueryDispatcher dispatcher, Application app, int mapId, int? behaviourId, ref Cache cache);
 
         public string ConfigFileHash { get; set; }
         public Dictionary<ServerIdentifier, ServerIdentifier> ServerMap { get; set; }

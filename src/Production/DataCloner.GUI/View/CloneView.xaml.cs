@@ -151,8 +151,8 @@ namespace DataCloner.GUI.View
 
         private void cbDestinationEnvir_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            try
-            {
+            //try
+            //{
                 if (_maps == null)
                     return;
                 var map = _maps.FirstOrDefault(m => m.From == cbSourceEnvir.SelectedValue.ToString() &&
@@ -177,12 +177,12 @@ namespace DataCloner.GUI.View
                             cbServer.SelectedIndex = 0;
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Erreur lors de l'initialisation de la cache.\r\n" + ex.ToString(), "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
-                throw;
-            }
+            //}
+            //catch (Exception ex)
+            //{
+            //    MessageBox.Show("Erreur lors de l'initialisation de la cache.\r\n" + ex.ToString(), "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+            //    throw;
+            //}
         }
 
         private void cbServer_SelectionChanged(object sender, SelectionChangedEventArgs e)
