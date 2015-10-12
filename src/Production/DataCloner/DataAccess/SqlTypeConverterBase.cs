@@ -4,7 +4,7 @@ using DataCloner.Framework;
 
 namespace DataCloner.DataAccess
 {
-    internal abstract class AbstractSqlTypeConverter : ISqlTypeConverter
+    internal abstract class SqlTypeConverterBase : ISqlTypeConverter
     {
         public DbType ConvertFromSql(SqlType type)
         {

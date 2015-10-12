@@ -12,7 +12,7 @@ using DataCloner.Framework;
 
 namespace DataCloner.DataAccess
 {
-    internal abstract class AbstractQueryHelper : IQueryHelper
+    internal abstract class QueryHelperBase : IQueryHelper
     {
         private readonly DatabasesSchema _schema;
         private readonly IDbConnection _connection;
@@ -30,7 +30,7 @@ namespace DataCloner.DataAccess
         public abstract ISqlTypeConverter TypeConverter { get; }
         public abstract ISqlWriter SqlWriter { get;}
 
-        protected AbstractQueryHelper(DatabasesSchema schema, string providerName, string connectionString)
+        protected QueryHelperBase(DatabasesSchema schema, string providerName, string connectionString)
         {
             var factory = DbProviderFactories.GetFactory(providerName);
             _schema = schema;

@@ -4,7 +4,7 @@ using DataCloner.Generator;
 
 namespace DataCloner.DataAccess
 {
-    internal sealed class QueryHelperMySql : AbstractQueryHelper
+    internal sealed class QueryHelperMySql : QueryHelperBase
     {
         private readonly static ISqlTypeConverter _typeConverter = new SqlTypeConverterMySql();
         private readonly static ISqlWriter _sqlWriter = new SqlWriterMySql();

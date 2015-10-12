@@ -4,7 +4,7 @@ using DataCloner.Generator;
 
 namespace DataCloner.DataAccess
 {
-    internal sealed class QueryHelperMsSql : AbstractQueryHelper
+    internal sealed class QueryHelperMsSql : QueryHelperBase
     {
         private readonly static ISqlTypeConverter _typeConverter = new SqlTypeConverterMsSql();
         private readonly static ISqlWriter _sqlWriter = new SqlWriterMsSql();

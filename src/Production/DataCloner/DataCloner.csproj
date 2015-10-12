@@ -86,8 +86,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Archive\DataArchive.cs" />
-    <Compile Include="DataAccess\AbstractQueryHelper.cs" />
-    <Compile Include="DataAccess\AbstractSqlTypeConverter.cs" />
+    <Compile Include="DataAccess\QueryHelperBase.cs" />
+    <Compile Include="DataAccess\SqlTypeConverterBase.cs" />
     <Compile Include="DataAccess\ISqlTypeConverter.cs" />
     <Compile Include="DataAccess\IQueryDispatcher.cs" />
     <Compile Include="DataAccess\SqlTypeConverterMsSql.cs" />

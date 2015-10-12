@@ -198,7 +198,7 @@ namespace DataCloner
 			source.ServerId = 1;
 			source.Database = "northwind";
 			source.Schema = "dbo";
-			source.Table = "customer";
+			source.Table = "customers";
 			source.Columns.Add("customerId", "alfki");
 			dc.Clone(source, true);
 
