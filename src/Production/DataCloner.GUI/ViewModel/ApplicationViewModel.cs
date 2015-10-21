@@ -16,12 +16,13 @@ namespace DataCloner.GUI.ViewModel
 {
     class ApplicationViewModel : ValidatableModel
     {
-        private Int16 _id;
-        private string _name;
-        private ListConnectionViewModel _connections;
-        private TemplatesViewModel _templates;
+        internal Int16 _id;
+        internal string _name;
+        internal ListConnectionViewModel _connections;
+        internal TemplatesViewModel _templates;
+        internal Cache.DatabasesSchema _defaultSchema;
+        
         private bool _isValid = true;
-        private Cache.DatabasesSchema _defaultSchema;
 
         [Required]
         public Int16 Id
@@ -59,15 +60,9 @@ namespace DataCloner.GUI.ViewModel
             }
         }
 
-        public ApplicationViewModel(Application app, Cache.DatabasesSchema defaultSchema)
+        public ApplicationViewModel()
         {
             SaveCommand = new RelayCommand(Save, () => IsValid);
-
-            _defaultSchema = defaultSchema;
-            _id = app.Id;
-            _name = app.Name;
-            _connections = new ListConnectionViewModel(app.ConnectionStrings);
-            _templates = new TemplatesViewModel(app.ModifiersTemplates, _defaultSchema);
         }
 
         public RelayCommand SaveCommand { get; private set; }

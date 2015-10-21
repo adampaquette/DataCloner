@@ -278,6 +278,7 @@ namespace DataCloner
 						//On ne duplique pas la ligne si la table est statique
 						if (fkTable.IsStatic)
 						{
+                            //TODO : Tester si la FK existe dans la table de destination de clônage et non si la fk existe dans la bd source
 							var fkRow = _dispatcher.Select(riFk);
 							fkDestinationExists = fkRow.Length == 1;
 							

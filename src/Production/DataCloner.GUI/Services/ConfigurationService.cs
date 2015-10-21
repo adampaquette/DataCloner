@@ -427,13 +427,17 @@ namespace DataCloner.GUI.Services
 
         #region Load
 
-        //public static void Load(ApplicationViewModel appVM, Application app, Cache.Cache defaultSchema)
-        //{
-        //    appVM.Id = app.Id;
-        //    appVM.Name = app.Name;
-        //    appVM.Connections = new ListConnectionViewModel(app.ConnectionStrings);
-        //    appVM.Templates = new TemplatesViewModel(app.ModifiersTemplates, app.ConnectionStrings, defaultSchema);
-        //}
+        public static ApplicationViewModel Load(Application app, Cache.DatabasesSchema defaultSchema)
+        {
+            return new ApplicationViewModel
+            {
+                _id = app.Id,
+                _name = app.Name,
+                _connections = new ListConnectionViewModel(app.ConnectionStrings),
+                _templates = new TemplatesViewModel(app.ModifiersTemplates, defaultSchema),
+                _defaultSchema = defaultSchema
+            };               
+        }
 
         #endregion
 

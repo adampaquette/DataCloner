@@ -92,7 +92,7 @@ namespace DataCloner.GUI.Framework
         /// <returns>True if the object is valid, otherwise false.</returns>
         public bool Validate()
         {
-            List<ValidationResult> validationResults = new List<ValidationResult>();
+            var validationResults = new List<ValidationResult>();
             Validator.TryValidateObject(this, new ValidationContext(this), validationResults, true);
             if (validationResults.Any())
             {
@@ -162,7 +162,7 @@ namespace DataCloner.GUI.Framework
         {
             if (string.IsNullOrEmpty(propertyName)) { throw new ArgumentException("The argument propertyName must not be null or empty."); }
             
-            List<ValidationResult> validationResults = new List<ValidationResult>();
+            var validationResults = new List<ValidationResult>();
             Validator.TryValidateProperty(value, new ValidationContext(this) { MemberName = propertyName }, validationResults);
             if (validationResults.Any())
             {
