@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using DataCloner.DataClasse.Configuration;
+using DataCloner.Configuration;
 using DataCloner.Framework;
 using Xunit;
 
@@ -8,15 +8,15 @@ namespace DataCloner.Tests
 {
     public class ConfigurationTests
     {
-        private readonly Configuration _config;
+        private readonly ConfigurationContainer _config;
 
         public ConfigurationTests()
         {
-            _config = new Configuration();
+            _config = new ConfigurationContainer();
 
             var app = new Application {Name = "MainApp"};
-            app.ConnectionStrings.Add(new Connection(1, "PROD", "DataCloner.DataAccess.QueryProviderMySql", "server=localhost;user id=root; password=cdxsza; database=mysql; pooling=false"));
-            app.ConnectionStrings.Add(new Connection(2, "UNI", "DataCloner.DataAccess.QueryProviderMySql", "server=localhost;user id=root; password=cdxsza; database=mysql; pooling=false"));
+            app.ConnectionStrings.Add(new Connection(1, "PROD", "DataCloner.Data.QueryProviderMySql", "server=localhost;user id=root; password=cdxsza; database=mysql; pooling=false"));
+            app.ConnectionStrings.Add(new Connection(2, "UNI", "DataCloner.Data.QueryProviderMySql", "server=localhost;user id=root; password=cdxsza; database=mysql; pooling=false"));
 
             var table1 = new TableModifier
             {
@@ -145,7 +145,7 @@ namespace DataCloner.Tests
             const string fileName = "dcSaveLoadConfigFile.config";
             
             _config.Save(fileName);
-            var configLoaded = Configuration.Load(fileName);
+            var configLoaded = ConfigurationContainer.Load(fileName);
             //var temp = _config.SerializeXml();
 
             File.Delete(fileName);

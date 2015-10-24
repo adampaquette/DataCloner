@@ -1,5 +1,5 @@
-﻿using Cache = DataCloner.DataClasse.Cache;
-using DataCloner.DataClasse.Configuration;
+﻿using Cache = DataCloner.Metadata;
+using DataCloner.Configuration;
 using DataCloner.GUI.Framework;
 using DataCloner.GUI.Model;
 using System.Collections.Generic;
@@ -9,17 +9,20 @@ namespace DataCloner.GUI.ViewModel
 {
     class TemplatesViewModel : ValidatableModel
     {
-        private Modifiers _userConfigTemplates;
-        private bool _isDatabaseTopLevel;
-        private bool _isSchemaTopLevel;
-        private ObservableCollection<ServerModifierModel> _serverModifiers;
+        private static readonly IList<AccessWithDescription> _accessWithDescriptions;
+
         private ServerModifierModel _selectedServer;
         private DatabaseModifierModel _selectedDatabase;
         private SchemaModifierModel _selectedSchema;
         private TableModifierModel _selectedTable;
         private ForeignKeyModifierModel _selectedForeignKey;
-        private Cache.DatabasesSchema _defaultSchema;
-        private ObservableCollection<AccessWithDescription> _accessWithDescriptions;
+        
+        private bool _isDatabaseTopLevel;
+        private bool _isSchemaTopLevel;
+
+        internal ObservableCollection<ServerModifierModel> _serverModifiers;
+        internal ObservableCollection<DatabaseModifierModel> _databaseModifiers;
+        internal ObservableCollection<SchemaModifierModel> _schemaModifiers;
 
         public class AccessWithDescription
         {
@@ -27,10 +30,9 @@ namespace DataCloner.GUI.ViewModel
             public string Description { get; set; }
         }
 
-        public ObservableCollection<AccessWithDescription> AccessWithDescriptions
+        public IList<AccessWithDescription> AccessWithDescriptions
         {
             get { return _accessWithDescriptions; }
-            set { _accessWithDescriptions = value; }
         }
 
         public bool IsDatabaseTopLevel
@@ -109,27 +111,14 @@ namespace DataCloner.GUI.ViewModel
             }
         }
 
-        public TemplatesViewModel(Modifiers modifiersTemplates, Cache.DatabasesSchema defaultSchema)
+        static TemplatesViewModel()
         {
-            _serverModifiers = new ObservableCollection<ServerModifierModel>();
-            _userConfigTemplates = modifiersTemplates;
-            _defaultSchema = defaultSchema;
-
-            _accessWithDescriptions = new ObservableCollection<AccessWithDescription>
+            _accessWithDescriptions = new List<AccessWithDescription>
             {
                 new AccessWithDescription { Key = DerivativeTableAccess.NotSet, Description = "Non déféni" },
                 new AccessWithDescription { Key = DerivativeTableAccess.Denied, Description = "Refusé" },
                 new AccessWithDescription { Key = DerivativeTableAccess.Forced, Description = "Forcé" }
             };
-
-            //Step 1 : Add default serveurs
-            foreach (var server in defaultSchema)
-            {
-                _serverModifiers.Add(new ServerModifierModel(server));
-            }
-
-            //foreach (var server in modifiers.ServerModifiers)
-            //    _serverModifiers.Add(new ServerModifierModel(server));
         }
     }
 }

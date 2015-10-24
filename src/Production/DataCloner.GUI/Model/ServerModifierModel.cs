@@ -1,5 +1,5 @@
-﻿using DataCloner.DataClasse.Cache;
-using DataCloner.DataClasse.Configuration;
+﻿using DataCloner.Metadata;
+using DataCloner.Configuration;
 using DataCloner.GUI.Framework;
 using System;
 using System.Collections.Generic;
@@ -10,10 +10,10 @@ namespace DataCloner.GUI.Model
 {
     class ServerModifierModel : ValidatableModel
     {
-        private string _id;
-        private Int16 _templateId;
-        private Int16 _useTemplateId;
-        private ObservableCollection<DatabaseModifierModel> _databases;
+        internal string _id;
+        internal Int16 _templateId;
+        internal Int16 _useTemplateId;
+        internal ObservableCollection<DatabaseModifierModel> _databases;
 
         [Required]
         public string Id
@@ -47,19 +47,7 @@ namespace DataCloner.GUI.Model
             //Pour que le binding puisse créer une nouvelle ligne
         }
 
-        //public ServerModifierModel(ServerModifier server)
-        //{
-        //    _id = server.Id;
-        //    _templateId = server.TemplateId;
-        //    _useTemplateId = server.UseTemplateId;
-        //    _basedOnServerId = server.BasedOnServerId;
-
-        //    Databases = new ObservableCollection<DatabaseModifierModel>();
-        //    foreach (var database in server.Databases)
-        //        Databases.Add(new DatabaseModifierModel(database));
-        //}
-
-        public ServerModifierModel(KeyValuePair<Int16, Dictionary<string, Dictionary<string, TableSchema[]>>> defaultSchema)
+        public ServerModifierModel(KeyValuePair<Int16, Dictionary<string, Dictionary<string, TableMetadata[]>>> defaultSchema)
         {
             _id = defaultSchema.Key.ToString();
 

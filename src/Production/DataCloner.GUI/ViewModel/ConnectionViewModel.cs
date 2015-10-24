@@ -1,6 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using DataCloner.DataClasse.Configuration;
+using DataCloner.Configuration;
 using GalaSoft.MvvmLight.Ioc;
 using DataCloner.GUI.Framework;
 
@@ -8,10 +8,10 @@ namespace DataCloner.GUI.ViewModel
 {
     class ConnectionViewModel : ValidatableModel
     {
-        private Int16 _id;
-        private string _name;
-        private string _providerName;
-        private string _connectionString;
+        internal Int16 _id;
+        internal string _name;
+        internal string _providerName;
+        internal string _connectionString;
 
         [Required]
         public Int16 Id

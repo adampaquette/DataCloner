@@ -1,4 +1,4 @@
-﻿using DataCloner.DataClasse.Cache;
+﻿using DataCloner.Metadata;
 using DataCloner.GUI.Framework;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;

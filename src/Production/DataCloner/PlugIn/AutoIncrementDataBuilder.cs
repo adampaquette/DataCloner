@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using DataCloner.DataClasse.Cache;
+using DataCloner.Metadata;
 
 namespace DataCloner.PlugIn
 {
@@ -9,7 +9,7 @@ namespace DataCloner.PlugIn
     {
         private static readonly Dictionary<string, object> AutoIncrementCache = new Dictionary<string, object>();
 
-        public object BuildData(IDbConnection conn, DbEngine engine, Int16 serverId, string database, string schema, ITableSchema table, IColumnDefinition column)
+        public object BuildData(IDbConnection conn, DbEngine engine, Int16 serverId, string database, string schema, ITableMetadata table, IColumnDefinition column)
         {
             var cacheId = serverId + database + schema + table.Name + column.Name;
 
@@ -71,7 +71,7 @@ namespace DataCloner.PlugIn
             }
         }
 
-        private object GetNewKeyMySql(IDbConnection conn, string database, ITableSchema table, IColumnDefinition column)
+        private object GetNewKeyMySql(IDbConnection conn, string database, ITableMetadata table, IColumnDefinition column)
         {
             var cmd = conn.CreateCommand();
             cmd.CommandText = string.Format("SELECT MAX({0})+1 FROM {1}.{2}", column.Name, database, table.Name);
@@ -79,7 +79,7 @@ namespace DataCloner.PlugIn
             return result;
         }
 
-        private object GetNewKeyMsSql(IDbConnection conn, string database, string schema, ITableSchema table, IColumnDefinition column)
+        private object GetNewKeyMsSql(IDbConnection conn, string database, string schema, ITableMetadata table, IColumnDefinition column)
         {
             var cmd = conn.CreateCommand();
             cmd.CommandText = string.Format("SELECT MAX({0})+1 FROM {1}.{2}.{3}", column.Name, database, schema, table.Name);

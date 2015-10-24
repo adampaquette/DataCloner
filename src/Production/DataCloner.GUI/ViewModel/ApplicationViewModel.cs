@@ -1,16 +1,9 @@
-﻿using Cache = DataCloner.DataClasse.Cache;
-using DataCloner.DataAccess;
-using DataCloner.DataClasse.Configuration;
-using DataCloner.GUI.Framework;
+﻿using DataCloner.GUI.Framework;
 using DataCloner.GUI.Services;
+using DataCloner.Metadata;
 using GalaSoft.MvvmLight.Command;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using DataCloner.Framework;
-using System.Collections.ObjectModel;
-using DataCloner.GUI.Model;
 
 namespace DataCloner.GUI.ViewModel
 {
@@ -20,7 +13,7 @@ namespace DataCloner.GUI.ViewModel
         internal string _name;
         internal ListConnectionViewModel _connections;
         internal TemplatesViewModel _templates;
-        internal Cache.DatabasesSchema _defaultSchema;
+        internal MetadataPerServer _defaultMetadatas;
         
         private bool _isValid = true;
 
@@ -74,7 +67,7 @@ namespace DataCloner.GUI.ViewModel
                 throw new InvalidOperationException("You must not call Save when CanSave returns false.");
             }
 
-            this.Save(_defaultSchema);
+            this.Save(_defaultMetadatas);
         }
     }
 }

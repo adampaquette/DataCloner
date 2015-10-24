@@ -1,8 +1,8 @@
 ﻿using System;
-using DataCloner.DataAccess;
-using DataCloner.DataClasse;
-using DataCloner.DataClasse.Cache;
-using DataCloner.DataClasse.Configuration;
+using DataCloner.Data;
+using DataCloner.Internal;
+using DataCloner.Metadata;
+using DataCloner.Configuration;
 using NSubstitute;
 using Xunit;
 
@@ -12,7 +12,7 @@ namespace DataCloner.Tests
 	{
 		public class BasicClonerTests
 		{
-			private readonly Cache _cache;
+			private readonly Metadata.MetadataContainer _cache;
 			private readonly Cloner _cloner;
 			private readonly IQueryHelper _queryHelper;
 			private readonly IQueryDispatcher _queryDispatcher;
@@ -23,9 +23,8 @@ namespace DataCloner.Tests
 				_queryHelper = FakeBasicDatabase.CreateData();
 				_queryDispatcher = FakeBasicDatabase.CreateServer(_queryHelper);
 
-				_cloner = new Cloner(_queryDispatcher, 
-					(IQueryDispatcher dispatcher, Application app, int id, int? configId, ref Cache cache) => cache = _cache);
-				_cloner.Setup(null, 0, null);
+                _cloner = new Cloner(_queryDispatcher, (IQueryDispatcher d, Settings s, ref Metadata.MetadataContainer m) => m = _cache);
+				_cloner.Setup(null);
 			}
 
 			#region QueryDispatcher

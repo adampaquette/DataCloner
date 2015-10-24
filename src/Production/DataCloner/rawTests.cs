@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Data;
 using System.Text;
 using DataCloner.Archive;
-using DataCloner.DataClasse;
-using DataCloner.DataClasse.Cache;
-using DataCloner.DataClasse.Configuration;
+using DataCloner.Internal;
+using DataCloner.Metadata;
+using DataCloner.Configuration;
 using DataCloner.Framework;
-using Connection = DataCloner.DataClasse.Cache.Connection;
-using ForeignKeyColumn = DataCloner.DataClasse.Cache.ForeignKeyColumn;
+using ForeignKeyColumn = DataCloner.Metadata.ForeignKeyColumn;
+using DataCloner.Data;
 
 namespace DataCloner
 {
@@ -69,8 +69,8 @@ namespace DataCloner
 			};
 
 			//Cache
-			var ct = new DatabasesSchema();
-			var table = new TableSchema("table1")
+			var ct = new Metadata.MetadataPerServer();
+			var table = new TableMetadata("table1")
 			{
 				IsStatic = false,
 				SelectCommand = "SELECT * FROM TABLE1",
@@ -129,12 +129,12 @@ namespace DataCloner
 			ct.Add(1, "db1", "dbo", table);
 			ct.Add(1, "db2", "dbo", table);
 
-			var config = new Cache
+			var config = new Metadata.MetadataContainer
 			{
 				ConnectionStrings =
-					new List<Connection> { new Connection { Id = 1, ConnectionString = "", ProviderName = "" } },
+					new List<SqlConnection> { new SqlConnection { Id = 1, ConnectionString = "", ProviderName = "" } },
 				ConfigFileHash = "",
-				DatabasesSchema = ct
+				Metadatas = ct
 			};
 
 			//Créaton de l'archive
@@ -160,13 +160,13 @@ namespace DataCloner
 		    var dc = new Cloner {EnforceIntegrity = false};
 		    dc.StatusChanged += OnStatusChanged;
 
-			var config = Configuration.Load(Configuration.ConfigFileName);
+			var config = Configuration.ConfigurationContainer.Load(Configuration.ConfigurationContainer.ConfigFileName);
 			
 			var start = DateTime.Now;
 
 			Console.WriteLine("Cloning started");
 
-			dc.Setup(config.Applications[0], 1, 1);
+			//dc.Setup(config.Applications[0], 1, 1);
 			//source.Columns.Clear();
 			//source.ServerId = 1;
 			//source.Database = "dataclonertestdatabase";

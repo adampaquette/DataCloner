@@ -1,4 +1,4 @@
-﻿using DataCloner.DataClasse.Cache;
+﻿using DataCloner.Metadata;
 using DataCloner.GUI.Framework;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
@@ -66,7 +66,7 @@ namespace DataCloner.GUI.Model
             //Pour que le binding puisse créer une nouvelle ligne
         }
 
-        public TableModifierModel(TableSchema defaultSchema)
+        public TableModifierModel(TableMetadata defaultSchema)
         {
             _name = defaultSchema.Name;
             _isStatic = defaultSchema.IsStatic;

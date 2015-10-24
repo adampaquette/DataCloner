@@ -1,4 +1,4 @@
-﻿using DataCloner.DataClasse.Cache;
+﻿using DataCloner.Metadata;
 using DataCloner.GUI.Framework;
 using System;
 using System.Collections.Generic;
@@ -46,7 +46,7 @@ namespace DataCloner.GUI.Model
             //Pour que le binding puisse créer une nouvelle ligne
         }
 
-        public SchemaModifierModel(KeyValuePair<string, TableSchema[]> defaultSchema)
+        public SchemaModifierModel(KeyValuePair<string, TableMetadata[]> defaultSchema)
         {
             _name = defaultSchema.Key.ToString();
 

@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using DataCloner.DataClasse;
-using DataCloner.DataClasse.Cache;
+using DataCloner.Internal;
+using DataCloner.Metadata;
 using DataCloner.Framework;
 using LZ4;
 
@@ -17,7 +17,7 @@ namespace DataCloner.Archive
 
         public string Description { get; set; }
         public List<RowIdentifier> OriginalQueries { get; set; }
-        public Cache Cache { get; set; }
+        public MetadataContainer Cache { get; set; }
         public List<string> Databases { get; set; }
 
         public DataArchive()
@@ -128,7 +128,7 @@ namespace DataCloner.Archive
                     archiveOut.OriginalQueries.Add(bstream.ReadString().DeserializeXml<RowIdentifier>());
 
                 //Cache 
-                archiveOut.Cache = Cache.Deserialize(istream);
+                archiveOut.Cache = MetadataContainer.Deserialize(istream);
 
                 //Databases
                 var nbDatabases = bstream.ReadInt32();

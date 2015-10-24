@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using DataCloner.DataAccess;
-using DataCloner.DataClasse;
-using DataCloner.DataClasse.Cache;
-using DataCloner.DataClasse.Configuration;
+using DataCloner.Data;
+using DataCloner.Internal;
+using DataCloner.Metadata;
+using DataCloner.Configuration;
 using DataCloner.Framework;
+using DataCloner.Metadata;
 using DataBuilder = DataCloner.PlugIn.DataBuilder;
 
 namespace DataCloner
@@ -14,7 +15,7 @@ namespace DataCloner
 	public class Cloner
 	{
 		private readonly IQueryDispatcher _dispatcher;
-		private readonly Cache.CacheInitialiser _cacheInitialiser;
+		private readonly Metadata.MetadataContainer.Initialiser _metadataInitialiser;
 		private readonly KeyRelationship _keyRelationships;
 		private readonly List<CircularKeyJob> _circularKeyJobs;
 		private readonly Dictionary<Int16, ExecutionPlan> _executionPlanByServer;
@@ -22,17 +23,17 @@ namespace DataCloner
 	    private int _nextVariableId;
 		private int _nextStepId;
 
-	    private DatabasesSchema Schema
+        private Metadata.MetadataPerServer metadata
 	    {
 	        get
 	        {
-	            if (Cache != null)
-	                return Cache.DatabasesSchema;
+	            if (MetadataCtn != null)
+	                return MetadataCtn.Metadatas;
 	            return null;
 	        }
 	    }
 
-	    public Cache Cache;
+        public Metadata.MetadataContainer MetadataCtn;
 		public bool EnforceIntegrity { get; set; }
         public bool OptimiseExecutionPlan { get; set; }
 
@@ -45,19 +46,19 @@ namespace DataCloner
 			_circularKeyJobs = new List<CircularKeyJob>();
 			_executionPlanByServer = new Dictionary<short, ExecutionPlan>();
 			_dispatcher = new QueryDispatcher();
-			_cacheInitialiser = Cache.Initialize;
+            _metadataInitialiser = DataCloner.Metadata.MetadataContainer.VerifyIntegrityWithSettings;
 		}
 
-		internal Cloner(IQueryDispatcher dispatcher, Cache.CacheInitialiser cacheInit)
+		internal Cloner(IQueryDispatcher dispatcher, Metadata.MetadataContainer.Initialiser metadataInit)
 		{
 			if (dispatcher == null) throw new ArgumentNullException("dispatcher");
-			if (cacheInit == null) throw new ArgumentNullException("cacheInit");
+			if (metadataInit == null) throw new ArgumentNullException("cacheInit");
 
 			_keyRelationships = new KeyRelationship();
 			_circularKeyJobs = new List<CircularKeyJob>();
 			_executionPlanByServer = new Dictionary<short, ExecutionPlan>();
 			_dispatcher = dispatcher;
-			_cacheInitialiser = cacheInit;
+			_metadataInitialiser = metadataInit;
 		}
 
 		public void Clear()
@@ -71,9 +72,9 @@ namespace DataCloner
 			DataBuilder.ClearBuildersCache();            
 		}
 
-        public void Setup(Application app, int mapId, int? behaviourId)
+        public void Setup(Settings settings)
 		{
-            _cacheInitialiser(_dispatcher, app, mapId, behaviourId, ref Cache);
+            _metadataInitialiser(_dispatcher, settings, ref MetadataCtn);
 		}
 
 		public List<IRowIdentifier> Clone(IRowIdentifier riSource, bool getDerivatives)
@@ -140,7 +141,7 @@ namespace DataCloner
 			var clonedRows = new List<IRowIdentifier>();
 			var srcRows = _dispatcher.Select(riSource);
 		    if (srcRows.Length <= 0) return clonedRows;
-		    var table = Schema.GetTable(riSource);
+		    var table = metadata.GetTable(riSource);
 
             //By default the destination server is the source if no road is found.
             var serverDst = new ServerIdentifier
@@ -150,8 +151,8 @@ namespace DataCloner
                 Schema = riSource.Schema
             };
 
-            if (Cache.ServerMap.ContainsKey(serverDst))
-                serverDst = Cache.ServerMap[serverDst];
+            if (MetadataCtn.ServerMap.ContainsKey(serverDst))
+                serverDst = MetadataCtn.ServerMap[serverDst];
 
             foreach (var row in srcRows)
 		    {
@@ -198,7 +199,7 @@ namespace DataCloner
 		{
 			var srcRows = _dispatcher.Select(riSource);
 			var nbRows = srcRows.Length;
-			var table = Schema.GetTable(riSource);
+			var table = metadata.GetTable(riSource);
 
             //By default the destination server is the source if no road is found.
             var serverDst = new ServerIdentifier
@@ -208,8 +209,8 @@ namespace DataCloner
                 Schema = riSource.Schema
             };
 
-            if (Cache.ServerMap.ContainsKey(serverDst))
-                serverDst = Cache.ServerMap[serverDst];
+            if (MetadataCtn.ServerMap.ContainsKey(serverDst))
+                serverDst = MetadataCtn.ServerMap[serverDst];
 
 			var riReturn = new RowIdentifier
 			{
@@ -265,7 +266,7 @@ namespace DataCloner
 					else
 					{
 						var fkDestinationExists = false;
-						var fkTable = Schema.GetTable(fk);
+						var fkTable = metadata.GetTable(fk);
 						var riFk = new RowIdentifier
 						{
 							ServerId = fk.ServerIdTo,
@@ -401,7 +402,7 @@ namespace DataCloner
 			throw new Exception();
 		}
 
-		private InsertStep CreateExecutionStep(ITableIdentifier tiSource, ITableIdentifier tiDestination, ITableSchema table, object[] destinationRow, int level)
+		private InsertStep CreateExecutionStep(ITableIdentifier tiSource, ITableIdentifier tiDestination, ITableMetadata table, object[] destinationRow, int level)
 		{
 			var step = new InsertStep
 			{
@@ -454,7 +455,7 @@ namespace DataCloner
 			}
 		}
 
-		private void GetDerivatives(TableSchema sourceTable, object[] sourceRow, bool getDerivatives, int level, 
+		private void GetDerivatives(TableMetadata sourceTable, object[] sourceRow, bool getDerivatives, int level, 
                                     Stack<IRowIdentifier> rowsGenerating)
 		{
 			LogDerivativeStep(level + 1);
@@ -462,7 +463,7 @@ namespace DataCloner
 
 			foreach (var dt in derivativeTable)
 			{
-				var tableDt = Schema.GetTable(dt);
+				var tableDt = metadata.GetTable(dt);
 				if (dt.Access == DerivativeTableAccess.Forced && dt.Cascade)
 					getDerivatives = true;
 
@@ -523,19 +524,19 @@ namespace DataCloner
 		{
 			foreach (var job in _circularKeyJobs)
 			{
-				var baseTable = Schema.GetTable(job.SourceBaseRowStartPoint);
-				var fkTable = Schema.GetTable(job.SourceFkRowStartPoint);
+				var baseTable = metadata.GetTable(job.SourceBaseRowStartPoint);
+				var fkTable = metadata.GetTable(job.SourceFkRowStartPoint);
 				var pkDestinationRow = _keyRelationships.GetKey(job.SourceBaseRowStartPoint);
 				var keyDestinationFkRow = _keyRelationships.GetKey(job.SourceFkRowStartPoint);
 
-				var serverDstBaseTable = Cache.ServerMap[new ServerIdentifier
+				var serverDstBaseTable = MetadataCtn.ServerMap[new ServerIdentifier
 				{
 					ServerId = job.SourceBaseRowStartPoint.ServerId,
 					Database = job.SourceBaseRowStartPoint.Database,
 					Schema = job.SourceBaseRowStartPoint.Schema
 				}];
 
-				var serverDstFkTable = Cache.ServerMap[new ServerIdentifier
+				var serverDstFkTable = MetadataCtn.ServerMap[new ServerIdentifier
 				{
 					ServerId = job.SourceFkRowStartPoint.ServerId,
 					Database = job.SourceFkRowStartPoint.Database,

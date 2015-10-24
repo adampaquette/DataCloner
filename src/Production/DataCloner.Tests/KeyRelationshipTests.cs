@@ -1,6 +1,6 @@
 ﻿using System.Collections;
-using DataCloner.DataClasse;
-using DataCloner.DataClasse.Cache;
+using DataCloner.Internal;
+using DataCloner.Metadata;
 using Xunit;
 
 namespace DataCloner.Tests

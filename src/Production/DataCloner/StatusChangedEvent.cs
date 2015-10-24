@@ -1,5 +1,5 @@
 ﻿using System;
-using DataCloner.DataClasse;
+using DataCloner.Internal;
 
 namespace DataCloner
 {

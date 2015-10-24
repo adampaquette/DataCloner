@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using DataCloner.DataClasse.Configuration;
+using DataCloner.Configuration;
 using DataCloner.GUI.Framework;
 
 namespace DataCloner.GUI.ViewModel
 {
     class ListConnectionViewModel : ValidatableModel
     {
-        private ObservableCollection<ConnectionViewModel> _connections;
+        internal ObservableCollection<ConnectionViewModel> _connections;
 
         public ObservableCollection<ConnectionViewModel> Connections
         {
@@ -25,14 +25,6 @@ namespace DataCloner.GUI.ViewModel
             //        new ConnectionViewModel()
             //    };
             //}
-        }
-
-        public ListConnectionViewModel(IEnumerable<Connection> Connections) : base()
-        {
-            _connections = new ObservableCollection<ConnectionViewModel>();
-
-            foreach (var conn in Connections)
-                _connections.Add(new ConnectionViewModel(conn));
         }
     }
 }

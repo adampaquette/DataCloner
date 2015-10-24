@@ -1,16 +1,16 @@
 using System.Data;
-using DataCloner.DataAccess;
-using DataCloner.DataClasse;
-using DataCloner.DataClasse.Cache;
+using DataCloner.Data;
+using DataCloner.Internal;
+using DataCloner.Metadata;
 using NSubstitute;
 
 namespace DataCloner.Tests
 {
     internal class FakeBasicDatabase
     {
-        internal static Cache CreateDatabaseSchema()
+        internal static MetadataContainer CreateDatabaseSchema()
         {
-            var house = new TableSchema("house")
+            var house = new TableMetadata("house")
             {
                 ColumnsDefinition = new[]
                 {
@@ -31,7 +31,7 @@ namespace DataCloner.Tests
                 }
             };
 
-            var city = new TableSchema("city")
+            var city = new TableMetadata("city")
             {
                 ColumnsDefinition = new[]
                 {
@@ -53,7 +53,7 @@ namespace DataCloner.Tests
                 DerivativeTables = new[] { new DerivativeTable { ServerId = 0, Schema = "", Database = "", Table = "house" } }
             };
 
-            var state = new TableSchema("state")
+            var state = new TableMetadata("state")
             {
                 ColumnsDefinition = new[]
                 {
@@ -75,7 +75,7 @@ namespace DataCloner.Tests
                 DerivativeTables = new[] { new DerivativeTable { ServerId = 0, Schema = "", Database = "", Table = "city" } }
             };
 
-            var country = new TableSchema("country")
+            var country = new TableMetadata("country")
             {
                 ColumnsDefinition = new[]
                 {
@@ -89,7 +89,7 @@ namespace DataCloner.Tests
                 }
             };
 
-            var person = new TableSchema("person")
+            var person = new TableMetadata("person")
             {
                 ColumnsDefinition = new[]
                 {
@@ -119,7 +119,7 @@ namespace DataCloner.Tests
                 }
             };
 
-            var color = new TableSchema("color")
+            var color = new TableMetadata("color")
             {
                 ColumnsDefinition = new[]
                 {
@@ -129,15 +129,15 @@ namespace DataCloner.Tests
                 IsStatic = true
             };
 
-            var cache = new Cache();
+            var cache = new MetadataContainer();
             cache.ServerMap.Add(new ServerIdentifier { Database = "", Schema = "" },
                                 new ServerIdentifier { Database = "", Schema = "" });
-            cache.DatabasesSchema.Add(0, "", "", house);
-            cache.DatabasesSchema.Add(0, "", "", city);
-            cache.DatabasesSchema.Add(0, "", "", state);
-            cache.DatabasesSchema.Add(0, "", "", country);
-            cache.DatabasesSchema.Add(0, "", "", person);
-            cache.DatabasesSchema.Add(0, "", "", color);
+            cache.Metadatas.Add(0, "", "", house);
+            cache.Metadatas.Add(0, "", "", city);
+            cache.Metadatas.Add(0, "", "", state);
+            cache.Metadatas.Add(0, "", "", country);
+            cache.Metadatas.Add(0, "", "", person);
+            cache.Metadatas.Add(0, "", "", color);
 
             return cache;
         }

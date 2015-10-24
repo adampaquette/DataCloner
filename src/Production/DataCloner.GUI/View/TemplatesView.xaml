@@ -276,16 +276,16 @@
                             <CheckBox IsChecked="{Binding SelectedTable.DerativeTablesGlobalCascade}" />
                         </StackPanel>
                         <DataGrid Name="dgDerivativeTable" 
-                              Grid.Row="1"
-                              Margin="0, 5,0 ,0"
-                              ItemsSource="{Binding SelectedTable.DerivativeTables}"
-                              AutoGenerateColumns="False"
-                              CanUserAddRows="true"
-                              CanUserDeleteRows="false"                  
-                              BorderThickness="1"
+                                  Grid.Row="1"
+                                  Margin="0, 5,0 ,0"
+                                  ItemsSource="{Binding SelectedTable.DerivativeTables}"
+                                  AutoGenerateColumns="False"
+                                  CanUserAddRows="true"
+                                  CanUserDeleteRows="false"                  
+                                  BorderThickness="1"
                                   MinHeight="50"
-                              BorderBrush="{StaticResource AccentColorBrush}"
-                              SelectedItem="{Binding SelectedForeignKey, ValidatesOnNotifyDataErrors=False}">
+                                  BorderBrush="{StaticResource AccentColorBrush}"
+                                  SelectedItem="{Binding SelectedForeignKey, ValidatesOnNotifyDataErrors=False}">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="ServerId"                                             
                                             ElementStyle="{StaticResource TextCellElementStyle}"

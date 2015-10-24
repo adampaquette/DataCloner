@@ -1,29 +1,29 @@
 using System.Linq;
-using Cache = DataCloner.DataClasse.Cache;
-using DataCloner.DataClasse.Configuration;
+using DataCloner.Metadata;
+using DataCloner.Configuration;
 using DataCloner.GUI.Properties;
 using GalaSoft.MvvmLight;
-using DataCloner.DataAccess;
+using DataCloner.Data;
 using DataCloner.GUI.Services;
 
 namespace DataCloner.GUI.ViewModel
 {
     class MainViewModel : ViewModelBase
     {
-        private Configuration _config;
+        private ConfigurationContainer _config;
         private ApplicationViewModel _currentApp;
 
         public MainViewModel()
         {
-            _config = Configuration.Load(Configuration.ConfigFileName);
-            var app = _config.Applications.FirstOrDefault(a => a.Id == Settings.Default.DefaultAppId);
+            _config = ConfigurationContainer.Load(ConfigurationContainer.ConfigFileName);
+            var app = _config.Applications.FirstOrDefault(a => a.Id == Properties.Settings.Default.DefaultAppId);
             if (app == null)
                 app = _config.Applications.FirstOrDefault();
 
-            var defaultCache = new Cache.Cache();
-            Cache.Cache.InitializeSchema(new QueryDispatcher(), app, ref defaultCache);
+            var defaultCache = new MetadataContainer();
+            MetadataContainer.VerifyIntegrityOfSqlMetadata(new QueryDispatcher(), app, ref defaultCache);
 
-            _currentApp = ConfigurationService.Load(app, defaultCache.DatabasesSchema);
+            _currentApp = ConfigurationService.Load(app, defaultCache.Metadatas);
         }
 
         public ApplicationViewModel CurrentApp
@@ -33,7 +33,7 @@ namespace DataCloner.GUI.ViewModel
             {
                 if (Set(ref _currentApp, value))
                 {
-                    Settings.Default.DefaultAppId = _currentApp.Id;
+                    Properties.Settings.Default.DefaultAppId = _currentApp.Id;
                     RaisePropertyChanged("ApplicationName");
                 }
             }

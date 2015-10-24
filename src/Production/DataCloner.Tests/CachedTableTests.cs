@@ -1,7 +1,7 @@
 ﻿using System.Data;
 using System.IO;
 using System.Linq;
-using DataCloner.DataClasse.Cache;
+using DataCloner.Metadata;
 using DataCloner.Framework;
 using Xunit;
 
@@ -9,13 +9,13 @@ namespace DataCloner.Tests
 {
     public class CachedTableTests
     {
-        private readonly DatabasesSchema _cache;
-        private readonly TableSchema _table;
+        private readonly Metadata.MetadataPerServer _cache;
+        private readonly TableMetadata _table;
 
         public CachedTableTests()
-        { 
-            _cache = new DatabasesSchema();
-            _table = new TableSchema("table1")
+        {
+            _cache = new Metadata.MetadataPerServer();
+            _table = new TableMetadata("table1")
             {
                 IsStatic = false,
                 SelectCommand = "SELECT * FROM TABLE1",
@@ -83,7 +83,7 @@ namespace DataCloner.Tests
 
             _table.Serialize(ms1);
             ms1.Position = 0;
-            var output = TableSchema.Deserialize(ms1);
+            var output = TableMetadata.Deserialize(ms1);
             output.Serialize(ms2);
 
             Assert.True(ms1.ToArray().SequenceEqual(ms2.ToArray()));           
@@ -97,7 +97,7 @@ namespace DataCloner.Tests
 
             _cache.Serialize(ms1);
             ms1.Position = 0;
-            var output = DatabasesSchema.Deserialize(ms1);
+            var output = Metadata.MetadataPerServer.Deserialize(ms1);
             output.Serialize(ms2);
 
             Assert.True(ms1.ToArray().SequenceEqual(ms2.ToArray()));

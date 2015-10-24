@@ -1,0 +1,22 @@
+﻿using System;
+
+namespace DataCloner.Internal
+{
+    public interface IServerIdentifier
+    {
+        Int16 ServerId { get; set; }
+    }
+
+    public interface ITableIdentifier : IServerIdentifier
+    {
+        string Database { get; set; }
+        string Schema { get; set; }
+        string Table { get; set; }
+    }
+
+    public interface IRowIdentifier : ITableIdentifier, IEquatable<IRowIdentifier>
+    {
+        ColumnsWithValue Columns { get; set; }
+        IRowIdentifier Clone();
+    }
+}

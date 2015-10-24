@@ -1,7 +1,7 @@
 using System;
 using System.Data;
-using DataCloner.DataClasse;
-using DataCloner.DataClasse.Cache;
+using DataCloner.Internal;
+using DataCloner.Metadata;
 
 namespace DataCloner.Tests
 {

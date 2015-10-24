@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using DataCloner.DataAccess;
-using DataCloner.DataClasse.Cache;
+using DataCloner.Data;
+using DataCloner.Metadata;
 using DataCloner.Framework;
 
 namespace DataCloner.PlugIn
@@ -20,7 +20,7 @@ namespace DataCloner.PlugIn
             };
         }
 
-        public static object BuildDataColumn(IQueryHelper queryHelper, Int16 serverId, string database, string schema, ITableSchema table, IColumnDefinition col)
+        public static object BuildDataColumn(IQueryHelper queryHelper, Int16 serverId, string database, string schema, ITableMetadata table, IColumnDefinition col)
         {
             IDataBuilder builder = null;
             var mustGenerate = false;
@@ -85,7 +85,7 @@ namespace DataCloner.PlugIn
             return null;
         }
 
-        public static void BuildDataFromTable(IQueryHelper queryHelper, Int16 serverId, string database, string schema, ITableSchema table, object[] dataRow)
+        public static void BuildDataFromTable(IQueryHelper queryHelper, Int16 serverId, string database, string schema, ITableMetadata table, object[] dataRow)
         {
             if (table.ColumnsDefinition.Length != dataRow.Length)
                 throw new ArgumentException(
