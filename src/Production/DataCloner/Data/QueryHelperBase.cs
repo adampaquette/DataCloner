@@ -1,20 +1,20 @@
-﻿using System;
+﻿using DataCloner.Data.Generator;
+using DataCloner.Framework;
+using DataCloner.Internal;
+using DataCloner.Metadata;
+using DataCloner.PlugIn;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Linq;
 using System.Text;
-using DataCloner.Internal;
-using DataCloner.Metadata;
-using DataCloner.Data.Generator;
-using DataCloner.PlugIn;
-using DataCloner.Framework;
 
 namespace DataCloner.Data
 {
     internal abstract class QueryHelperBase : IQueryHelper
     {
-        private readonly Metadata.MetadataPerServer _schema;
+        private readonly MetadataPerServer _metadata;
         private readonly IDbConnection _connection;
 
         protected abstract string SqlGetDatabasesName { get; }
@@ -30,10 +30,10 @@ namespace DataCloner.Data
         public abstract ISqlTypeConverter TypeConverter { get; }
         public abstract ISqlWriter SqlWriter { get;}
 
-        protected QueryHelperBase(Metadata.MetadataPerServer schema, string providerName, string connectionString)
+        protected QueryHelperBase(MetadataPerServer metadata, string providerName, string connectionString)
         {
             var factory = DbProviderFactories.GetFactory(providerName);
-            _schema = schema;
+            _metadata = metadata;
             _connection = factory.CreateConnection();
             _connection.ConnectionString = connectionString;
         }
@@ -141,8 +141,8 @@ namespace DataCloner.Data
         public object[][] Select(IRowIdentifier row)
         {
             var rows = new List<object[]>();
-            var schema = _schema.GetTable(row);
-            var query = new StringBuilder(schema.SelectCommand);
+            var tableMetadata = _metadata.GetTable(row);
+            var query = new StringBuilder(tableMetadata.SelectCommand);
             var nbParams = row.Columns.Count;
 
             using (var cmd = Connection.CreateCommand())
@@ -293,19 +293,19 @@ namespace DataCloner.Data
 
         internal void GemerateInsertStatment(InsertStep step, IDbCommand cmd, StringBuilder sql, ref int nbParams)
         {
-            var schema = _schema.GetTable(step.DestinationTable);
-            if (schema.ColumnsDefinition.Count() != step.DataRow.Length)
+            var tableMetadata = _metadata.GetTable(step.DestinationTable);
+            if (tableMetadata.ColumnsDefinition.Count() != step.DataRow.Length)
                 throw new Exception("The step doesn't correspond to schema!");
 
             var insertWriter = SqlWriter.GetInsertWriter()
-                               .AppendColumns(step.DestinationTable, schema.ColumnsDefinition);
+                               .AppendColumns(step.DestinationTable, tableMetadata.ColumnsDefinition);
 
             var sbPostInsert = new StringBuilder();
 
             //Valeurs des colonnes
-            for (var i = 0; i < schema.ColumnsDefinition.Count(); i++)
+            for (var i = 0; i < tableMetadata.ColumnsDefinition.Count(); i++)
             {
-                var col = schema.ColumnsDefinition[i];
+                var col = tableMetadata.ColumnsDefinition[i];
                 var sqlVar = step.DataRow[i] as SqlVariable;
 
                 //Variable à générer
@@ -354,7 +354,7 @@ namespace DataCloner.Data
                     //C'est une valeur brute
                     else
                     {
-                        var sqlVarName = "@" + schema.ColumnsDefinition[i].Name.FormatSqlParam() + step.StepId;
+                        var sqlVarName = "@" + tableMetadata.ColumnsDefinition[i].Name.FormatSqlParam() + step.StepId;
                         var p = cmd.CreateParameter();
                         p.ParameterName = sqlVarName;
                         p.Value = step.DataRow[i];

@@ -69,7 +69,7 @@ namespace DataCloner
 			};
 
 			//Cache
-			var ct = new Metadata.MetadataPerServer();
+			var ct = new MetadataPerServer();
 			var table = new TableMetadata("table1")
 			{
 				IsStatic = false,
@@ -129,7 +129,7 @@ namespace DataCloner
 			ct.Add(1, "db1", "dbo", table);
 			ct.Add(1, "db2", "dbo", table);
 
-			var config = new Metadata.MetadataContainer
+			var config = new MetadataContainer
 			{
 				ConnectionStrings =
 					new List<SqlConnection> { new SqlConnection { Id = 1, ConnectionString = "", ProviderName = "" } },

@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using DataCloner.Internal;
+﻿using DataCloner.Internal;
 using DataCloner.Metadata;
+using System;
+using System.Collections.Generic;
 
 namespace DataCloner.Data
 {

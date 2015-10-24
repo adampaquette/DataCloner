@@ -1,7 +1,6 @@
-﻿using System;
-using System.Data;
-using DataCloner.Internal;
+﻿using DataCloner.Internal;
 using DataCloner.Metadata;
+using System;
 
 namespace DataCloner.Data
 {

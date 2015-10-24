@@ -1,12 +1,12 @@
-﻿using System;
+﻿using DataCloner.Configuration;
+using DataCloner.Data;
+using DataCloner.Framework;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
-using DataCloner.Data;
-using DataCloner.Configuration;
-using DataCloner.Framework;
 
 namespace DataCloner.Metadata
 {

@@ -1,6 +1,5 @@
-﻿using System;
+﻿using DataCloner.Data.Generator;
 using DataCloner.Metadata;
-using DataCloner.Data.Generator;
 
 namespace DataCloner.Data
 {
@@ -115,7 +114,7 @@ namespace DataCloner.Data
             get { return _sqlWriter; }
         }
 
-        public QueryHelperMySql(Metadata.MetadataPerServer schema, string connectionString)
+        public QueryHelperMySql(MetadataPerServer schema, string connectionString)
             : base(schema, ProviderName, connectionString)
         {
 

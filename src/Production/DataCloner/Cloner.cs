@@ -1,21 +1,19 @@
-﻿using System;
+﻿using DataCloner.Data;
+using DataCloner.Framework;
+using DataCloner.Internal;
+using DataCloner.Metadata;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using DataCloner.Data;
-using DataCloner.Internal;
-using DataCloner.Metadata;
-using DataCloner.Configuration;
-using DataCloner.Framework;
-using DataCloner.Metadata;
 using DataBuilder = DataCloner.PlugIn.DataBuilder;
 
 namespace DataCloner
 {
-	public class Cloner
+    public class Cloner
 	{
 		private readonly IQueryDispatcher _dispatcher;
-		private readonly Metadata.MetadataContainer.Initialiser _metadataInitialiser;
+		private readonly MetadataContainer.Initialiser _metadataInitialiser;
 		private readonly KeyRelationship _keyRelationships;
 		private readonly List<CircularKeyJob> _circularKeyJobs;
 		private readonly Dictionary<Int16, ExecutionPlan> _executionPlanByServer;
@@ -23,7 +21,7 @@ namespace DataCloner
 	    private int _nextVariableId;
 		private int _nextStepId;
 
-        private Metadata.MetadataPerServer metadata
+        private MetadataPerServer metadata
 	    {
 	        get
 	        {
@@ -33,7 +31,7 @@ namespace DataCloner
 	        }
 	    }
 
-        public Metadata.MetadataContainer MetadataCtn;
+        public MetadataContainer MetadataCtn;
 		public bool EnforceIntegrity { get; set; }
         public bool OptimiseExecutionPlan { get; set; }
 
@@ -46,10 +44,10 @@ namespace DataCloner
 			_circularKeyJobs = new List<CircularKeyJob>();
 			_executionPlanByServer = new Dictionary<short, ExecutionPlan>();
 			_dispatcher = new QueryDispatcher();
-            _metadataInitialiser = DataCloner.Metadata.MetadataContainer.VerifyIntegrityWithSettings;
+            _metadataInitialiser = MetadataContainer.VerifyIntegrityWithSettings;
 		}
 
-		internal Cloner(IQueryDispatcher dispatcher, Metadata.MetadataContainer.Initialiser metadataInit)
+		internal Cloner(IQueryDispatcher dispatcher, MetadataContainer.Initialiser metadataInit)
 		{
 			if (dispatcher == null) throw new ArgumentNullException("dispatcher");
 			if (metadataInit == null) throw new ArgumentNullException("cacheInit");

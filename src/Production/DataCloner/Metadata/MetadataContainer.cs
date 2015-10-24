@@ -1,10 +1,9 @@
-﻿using DataCloner.Data;
-using DataCloner.Configuration;
+﻿using DataCloner.Configuration;
+using DataCloner.Data;
 using DataCloner.Framework;
 using Murmur;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;

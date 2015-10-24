@@ -1,12 +1,12 @@
-﻿using System;
+﻿using DataCloner.Metadata;
+using System;
 using System.Data.Common;
-using DataCloner.Metadata;
 
 namespace DataCloner.Data
 {
     internal static class QueryHelperFactory 
     {
-        public static IQueryHelper GetQueryHelper(Metadata.MetadataPerServer schema, string providerName, string connectionString)
+        public static IQueryHelper GetQueryHelper(MetadataPerServer schema, string providerName, string connectionString)
         {
             switch (providerName)
             {
@@ -26,7 +26,7 @@ namespace DataCloner.Data
             throw new Exception("Unkown provider");
         }
 
-        public static IQueryHelper GetQueryHelper(this DbConnection cnx, Metadata.MetadataPerServer schema)
+        public static IQueryHelper GetQueryHelper(this DbConnection cnx, MetadataPerServer schema)
         {
             var type = cnx.GetType().Name;
 

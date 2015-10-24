@@ -1,6 +1,6 @@
-﻿using System;
+﻿using DataCloner.Framework;
+using System;
 using System.Data;
-using DataCloner.Framework;
 
 namespace DataCloner.Data
 {
