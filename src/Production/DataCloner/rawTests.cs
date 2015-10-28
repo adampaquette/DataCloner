@@ -69,7 +69,7 @@ namespace DataCloner
 			};
 
 			//Cache
-			var ct = new MetadataPerServer();
+			var ct = new AppMetadata();
 			var table = new TableMetadata("table1")
 			{
 				IsStatic = false,

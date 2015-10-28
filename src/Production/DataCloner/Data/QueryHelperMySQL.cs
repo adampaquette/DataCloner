@@ -114,7 +114,7 @@ namespace DataCloner.Data
             get { return _sqlWriter; }
         }
 
-        public QueryHelperMySql(MetadataPerServer schema, string connectionString)
+        public QueryHelperMySql(AppMetadata schema, string connectionString)
             : base(schema, ProviderName, connectionString)
         {
 

@@ -19,7 +19,7 @@ namespace DataCloner.GUI.Services
         /// </summary>
         /// <param name="appVM">In-memory application view model.</param>
         /// <param name="defaultSchema">Schema of the plain old database.</param>
-        public static void Save(this ApplicationViewModel appVM, Metadata.MetadataPerServer defaultSchema)
+        public static void Save(this ApplicationViewModel appVM, Metadata.AppMetadata defaultSchema)
         {
             var config = ConfigurationContainer.Load(ConfigurationContainer.ConfigFileName);
             var app = config.Applications.FirstOrDefault(a => a.Id == appVM.Id);
@@ -54,7 +54,7 @@ namespace DataCloner.GUI.Services
             return connStrings;
         }
 
-        private static Modifiers CreateTemplates(IEnumerable<ServerModifierModel> serverModifiersVM, MetadataPerServer defaultSchema)
+        private static Modifiers CreateTemplates(IEnumerable<ServerModifierModel> serverModifiersVM, AppMetadata defaultSchema)
         {
             var userConfigTemplates = new Modifiers();
 
@@ -69,7 +69,7 @@ namespace DataCloner.GUI.Services
 
         private static bool MergeServer(ServerModifierModel mergedServer,
                                         List<ServerModifier> userConfigServers,
-                                        Dictionary<string, Dictionary<string, TableMetadata[]>> defaultServerSchema)
+                                        ServerMetadata defaultServerSchema)
         {
             var hasChange = false;
             var userConfigServer = userConfigServers.FirstOrDefault(s => s.Id == mergedServer.Id);
@@ -109,7 +109,7 @@ namespace DataCloner.GUI.Services
 
         private static bool MergeDatabase(DatabaseModifierModel mergedDatabase,
                                           List<DatabaseModifier> userConfigDatabases,
-                                          Dictionary<string, TableMetadata[]> defaultDatabaseSchema)
+                                          DatabaseMetadata defaultDatabaseSchema)
         {
             var hasChange = false;
             var userConfigDatabase = userConfigDatabases.FirstOrDefault(d => d.Name == mergedDatabase.Name);
@@ -149,7 +149,7 @@ namespace DataCloner.GUI.Services
 
         private static bool MergeSchema(SchemaModifierModel mergedSchema,
                                         List<SchemaModifier> userConfigSchemas,
-                                        TableMetadata[] defaultSchema)
+                                        SchemaMetadata defaultSchema)
         {
             var hasChange = false;
             var userConfigSchema = userConfigSchemas.FirstOrDefault(s => s.Name == mergedSchema.Name);
@@ -428,7 +428,7 @@ namespace DataCloner.GUI.Services
 
         #region Load
 
-        public static ApplicationViewModel Load(Application userConfigApp, MetadataPerServer defaultSchema)
+        public static ApplicationViewModel Load(Application userConfigApp, AppMetadata defaultSchema)
         {
             return new ApplicationViewModel
             {
@@ -461,34 +461,70 @@ namespace DataCloner.GUI.Services
             return lstConns;
         }
 
-        private static TemplatesViewModel LoadTemplates(Modifiers userConfigTemplates, MetadataPerServer defaultMetadata)
+        private static TemplatesViewModel LoadTemplates(Modifiers userConfigTemplates, AppMetadata defaultMetadata)
         {
             var tVM = new TemplatesViewModel
             {
-                _serverModifiers = new ObservableCollection<ServerModifierModel>(),
+                _serverModifiers = LoadServerTemplates(userConfigTemplates.ServerModifiers, defaultMetadata),
                 _databaseModifiers = new ObservableCollection<DatabaseModifierModel>(),
                 _schemaModifiers = new ObservableCollection<SchemaModifierModel>()
             };
 
-            //Step 1 : We show every single element from the user's config. Server's templates, database's templates and schema's templates.
-            foreach (var userConfigServer in userConfigTemplates.ServerModifiers)
+            return tVM;
+        }
+
+        private static ObservableCollection<ServerModifierModel> LoadServerTemplates(List<ServerModifier> userConfigTemplates, AppMetadata defaultMetadata)
+        {
+            var returnVM = new ObservableCollection<ServerModifierModel>();
+
+            //We show every single element from the user's config. 
+            var serversToShow = userConfigTemplates;
+
+            //We add the elements from the default metadata if not present.
+            var userConfigServerIds = userConfigTemplates.Select(s => s.Id.ExtractVariableValueInt16()).Distinct();
+            var serversToAdd = defaultMetadata.Select(s => s.Key).Distinct().Except(userConfigServerIds);
+            serversToShow.AddRange(from s in serversToAdd select new ServerModifier { Id = s.ToString() });
+
+            foreach (var userConfigServer in serversToShow)
             {
                 var defaultSrvMetadata = GetServerMetadata(defaultMetadata, userConfigServer.Id);
-                tVM._serverModifiers.Add(LoadServerTemplate(userConfigServer, defaultSrvMetadata));
+
+                returnVM.Add(new ServerModifierModel
+                {
+                    _id = userConfigServer.Id,
+                    _templateId = userConfigServer.TemplateId,
+                    _useTemplateId = userConfigServer.UseTemplateId,
+                    _description = userConfigServer.Description,
+                    _databases = LoadDatabaseTemplates(userConfigServer.Databases, defaultSrvMetadata)
+                });
             }
 
-            //Step 2 : Then if an element from the default schema is not present, we add it to the list. 
-            var userConfigServerIds = userConfigTemplates.ServerModifiers.Select(s => s.Id.ExtractVariableValueInt16()).Distinct();
-            var serversToAdd = defaultMetadata.Select(s => s.Key).Distinct().Except(userConfigServerIds);
+            return returnVM;
+        }
 
-            foreach (var server in serversToAdd)
-            {
-                var defaultSrvMetadata = defaultMetadata.FirstOrDefault(s => s.Key == server).Value;
-                var newServer = new ServerModifier { Id = server.ToString() };
-                tVM._serverModifiers.Add(LoadServerTemplate(newServer, defaultSrvMetadata));
-            }
+        private static ObservableCollection<DatabaseModifierModel> LoadDatabaseTemplates(List<DatabaseModifier> userConfigTemplates, 
+            ServerMetadata defaultServerMetadata)
+        {
+            var returnVM = new ObservableCollection<DatabaseModifierModel>();
+            
+            //var dVM = new DatabaseModifierModel
+            //{
+            //    _name = userConfigTemplates.Name,
+            //    _description = userConfigTemplates.Description,
+            //    _templateId = userConfigTemplates.TemplateId,
+            //    _useTemplateId = userConfigTemplates.UseTemplateId,
+            //    _schemas = new ObservableCollection<SchemaModifierModel>()
+            //};
 
-            return tVM;
+            //foreach (var userConfigSchema in userConfigTemplates.Schemas)
+            //{
+            //    var defaultSchemaMetadata = GetSchemaMetadata(userConfigSchema.Name, defaultDatabaseMetadata);
+            //    dVM.Schemas.Add(LoadSchemaTemplate(userConfigSchema, defaultSchemaMetadata));
+            //}
+
+            //return dVM;
+
+            return returnVM;
         }
 
 
@@ -498,8 +534,7 @@ namespace DataCloner.GUI.Services
         /// <param name="userConfigServer"></param>
         /// <param name="defaultServerMetadata"></param>
         /// <returns></returns>
-        private static ServerModifierModel LoadServerTemplate(ServerModifier userConfigServer,
-            Dictionary<string, Dictionary<string, TableMetadata[]>> defaultServerMetadata)
+        private static ServerModifierModel LoadServerTemplate(ServerModifier userConfigServer, ServerMetadata defaultServerMetadata)
         {
             var sVM = new ServerModifierModel
             {
@@ -522,7 +557,7 @@ namespace DataCloner.GUI.Services
             return sVM;
         }
 
-        private static DatabaseModifierModel LoadDatabaseTemplate(DatabaseModifier userConfigTemplate, Dictionary<string, TableMetadata[]> defaultDatabaseMetadata)
+        private static DatabaseModifierModel LoadDatabaseTemplate(DatabaseModifier userConfigTemplate, DatabaseMetadata defaultDatabaseMetadata)
         {
             var dVM = new DatabaseModifierModel
             {
@@ -542,7 +577,7 @@ namespace DataCloner.GUI.Services
             return dVM;
         }
 
-        private static SchemaModifierModel LoadSchemaTemplate(SchemaModifier userConfigTemplate, TableMetadata[] defaultSchemaMetadata)
+        private static SchemaModifierModel LoadSchemaTemplate(SchemaModifier userConfigTemplate, SchemaMetadata defaultSchemaMetadata)
         {
             var sVM = new SchemaModifierModel
             {
@@ -615,7 +650,7 @@ namespace DataCloner.GUI.Services
         /// </summary>
         /// <param name="defaultMetadatas">Metadatas of the plain old database</param>
         /// <param name="serverId">Could be an Id like 0 or a variable like {$KEY{VALUE}} OR {$SERVER_SOURCE{1}}.</param>
-        private static Dictionary<string, Dictionary<string, TableMetadata[]>> GetServerMetadata(MetadataPerServer defaultMetadatas, string serverId)
+        private static ServerMetadata GetServerMetadata(AppMetadata defaultMetadatas, string serverId)
         {
             Int16 id;
 
@@ -641,8 +676,7 @@ namespace DataCloner.GUI.Services
         /// </summary>
         /// <param name="databaseName">Could be a name like MyDb or a variable like {$KEY{VALUE}} OR {$DATABASE_SOURCE{1}}.</param>
         /// <param name="serverMetadata">Metadatas</param>
-        private static Dictionary<string, TableMetadata[]> GetDatabaseMetadata(string databaseName,
-            Dictionary<string, Dictionary<string, TableMetadata[]>> serverMetadata)
+        private static DatabaseMetadata GetDatabaseMetadata(string databaseName, ServerMetadata serverMetadata)
         {
             if (String.IsNullOrEmpty(databaseName)) return null;
 
@@ -665,8 +699,7 @@ namespace DataCloner.GUI.Services
         /// </summary>
         /// <param name="schemaName">Could be a name like DBO or a variable like {$KEY{VALUE}} OR {$SCHEMA_SOURCE{1}}.</param>
         /// <param name="databaseMetadata">Metadatas</param>
-        private static TableMetadata[] GetSchemaMetadata(string schemaName,
-            Dictionary<string, TableMetadata[]> databaseMetadata)
+        private static SchemaMetadata GetSchemaMetadata(string schemaName, DatabaseMetadata databaseMetadata)
         {
             if (String.IsNullOrEmpty(schemaName)) return null;
 

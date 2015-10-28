@@ -21,7 +21,7 @@ namespace DataCloner
 	    private int _nextVariableId;
 		private int _nextStepId;
 
-        private MetadataPerServer metadata
+        private AppMetadata metadata
 	    {
 	        get
 	        {

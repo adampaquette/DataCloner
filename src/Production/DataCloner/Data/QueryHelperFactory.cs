@@ -6,7 +6,7 @@ namespace DataCloner.Data
 {
     internal static class QueryHelperFactory 
     {
-        public static IQueryHelper GetQueryHelper(MetadataPerServer schema, string providerName, string connectionString)
+        public static IQueryHelper GetQueryHelper(AppMetadata schema, string providerName, string connectionString)
         {
             switch (providerName)
             {
@@ -26,7 +26,7 @@ namespace DataCloner.Data
             throw new Exception("Unkown provider");
         }
 
-        public static IQueryHelper GetQueryHelper(this DbConnection cnx, MetadataPerServer schema)
+        public static IQueryHelper GetQueryHelper(this DbConnection cnx, AppMetadata schema)
         {
             var type = cnx.GetType().Name;
 

@@ -14,7 +14,7 @@ namespace DataCloner.Data
 {
     internal abstract class QueryHelperBase : IQueryHelper
     {
-        private readonly MetadataPerServer _metadata;
+        private readonly AppMetadata _metadata;
         private readonly IDbConnection _connection;
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace DataCloner.Data
         public abstract ISqlTypeConverter TypeConverter { get; }
         public abstract ISqlWriter SqlWriter { get;}
 
-        protected QueryHelperBase(MetadataPerServer metadata, string providerName, string connectionString)
+        protected QueryHelperBase(AppMetadata metadata, string providerName, string connectionString)
         {
             var factory = DbProviderFactories.GetFactory(providerName);
             _metadata = metadata;

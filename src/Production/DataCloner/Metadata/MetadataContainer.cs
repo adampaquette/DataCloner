@@ -19,13 +19,13 @@ namespace DataCloner.Metadata
         public string ConfigFileHash { get; set; }
         public Dictionary<ServerIdentifier, ServerIdentifier> ServerMap { get; set; }
         public List<SqlConnection> ConnectionStrings { get; set; }
-        public MetadataPerServer Metadatas { get; set; }
+        public AppMetadata Metadatas { get; set; }
 
         public MetadataContainer()
         {
             ServerMap = new Dictionary<ServerIdentifier, ServerIdentifier>();
             ConnectionStrings = new List<SqlConnection>();
-            Metadatas = new MetadataPerServer();
+            Metadatas = new AppMetadata();
         }
 
         /// <summary>
@@ -270,7 +270,7 @@ namespace DataCloner.Metadata
             for (var i = 0; i < nbConnection; i++)
                 config.ConnectionStrings.Add(SqlConnection.Deserialize(stream));
 
-            config.Metadatas = MetadataPerServer.Deserialize(stream);
+            config.Metadatas = AppMetadata.Deserialize(stream);
 
             return config;
         }

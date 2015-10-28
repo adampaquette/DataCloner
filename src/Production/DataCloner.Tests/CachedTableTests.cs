@@ -9,12 +9,12 @@ namespace DataCloner.Tests
 {
     public class CachedTableTests
     {
-        private readonly Metadata.MetadataPerServer _cache;
+        private readonly Metadata.AppMetadata _cache;
         private readonly TableMetadata _table;
 
         public CachedTableTests()
         {
-            _cache = new Metadata.MetadataPerServer();
+            _cache = new Metadata.AppMetadata();
             _table = new TableMetadata("table1")
             {
                 IsStatic = false,
@@ -97,7 +97,7 @@ namespace DataCloner.Tests
 
             _cache.Serialize(ms1);
             ms1.Position = 0;
-            var output = Metadata.MetadataPerServer.Deserialize(ms1);
+            var output = Metadata.AppMetadata.Deserialize(ms1);
             output.Serialize(ms2);
 
             Assert.True(ms1.ToArray().SequenceEqual(ms2.ToArray()));

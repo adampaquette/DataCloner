@@ -96,7 +96,7 @@
     <Compile Include="Data\QueryHelperFactory.cs" />
     <Compile Include="Data\QueryHelperMySQL.cs" />
     <Compile Include="Data\SqlType.cs" />
-    <Compile Include="Metadata\MetadataPerServerExtensions.cs" />
+    <Compile Include="Metadata\AppMetadataExtensions.cs" />
     <Compile Include="Metadata\ITableMetadata.cs" />
     <Compile Include="Internal\ServerIdentifier.cs" />
     <Compile Include="Internal\CircularKeyJob.cs" />
@@ -110,7 +110,7 @@
     <Compile Include="Internal\IExecutionStep.cs" />
     <Compile Include="Internal\InsertStep.cs" />
     <Compile Include="Internal\KeyRelationship.cs" />
-    <Compile Include="Metadata\MetadataPerServer.cs" />
+    <Compile Include="Metadata\AppMetadata.cs" />
     <Compile Include="Metadata\TableMetadata.cs" />
     <Compile Include="Internal\SqlVariable.cs" />
     <Compile Include="Internal\UpdateStep.cs" />

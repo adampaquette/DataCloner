@@ -13,7 +13,7 @@ namespace DataCloner.GUI.ViewModel
         internal string _name;
         internal ListConnectionViewModel _connections;
         internal TemplatesViewModel _templates;
-        internal MetadataPerServer _defaultMetadatas;
+        internal AppMetadata _defaultMetadatas;
         
         private bool _isValid = true;
 

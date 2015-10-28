@@ -145,7 +145,7 @@ namespace DataCloner.Data
             get { return _sqlWriter; }
         }
 
-        public QueryHelperMsSql(MetadataPerServer schema, string connectionString)
+        public QueryHelperMsSql(AppMetadata schema, string connectionString)
             : base(schema, ProviderName, connectionString)
         {
             

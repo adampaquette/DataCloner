@@ -10,12 +10,15 @@ using System.Text;
 
 namespace DataCloner.Metadata
 {
+    public sealed class SchemaMetadata : HashSet<TableMetadata> { }
+    public sealed class DatabaseMetadata : Dictionary<string, SchemaMetadata> { }
+    public sealed class ServerMetadata : Dictionary<string, DatabaseMetadata> { }
+
     /// <summary>
     /// Contient les tables statiques de la base de données
     /// </summary>
     /// <remarks>ServerId / Database / Schema -> TableMetadata[]</remarks>
-    public sealed class MetadataPerServer
-        : Dictionary<Int16, Dictionary<string, Dictionary<string, TableMetadata[]>>>
+    public sealed class AppMetadata : Dictionary<Int16, ServerMetadata>
     {
         public TableMetadata GetTable(Int16 server, string database, string schema, string table)
         {
@@ -32,17 +35,17 @@ namespace DataCloner.Metadata
             schema = schema.ToLower();
 
             if (!ContainsKey(server))
-                Add(server, new Dictionary<string, Dictionary<string, TableMetadata[]>>());
+                Add(server, new ServerMetadata());
 
             if (!this[server].ContainsKey(database))
-                this[server].Add(database, new Dictionary<string, TableMetadata[]>());
+                this[server].Add(database, new DatabaseMetadata());
 
             if (!this[server][database].ContainsKey(schema))
-                this[server][database].Add(schema, new[] { table });
+                this[server][database].Add(schema, new SchemaMetadata { table });
             else
             {
                 if (!this[server][database][schema].Contains(table))
-                    this[server][database][schema] = this[server][database][schema].Add(table);
+                    this[server][database][schema].Add(table);
             }
         }
 
@@ -56,15 +59,15 @@ namespace DataCloner.Metadata
                 this[server][database].ContainsKey(schema) &&
                 this[server][database][schema].Contains(table))
             {
-                this[server][database][schema] = this[server][database][schema].Remove(table);
+                this[server][database][schema].Remove(table);
 
-                if (this[server][database][schema].Length == 0)
+                if (this[server][database][schema].Count == 0)
                 {
                     this[server][database].Remove(schema);
-                    if (!this[server][database].Any())
+                    if (this[server][database].Count == 0)
                     {
                         this[server].Remove(database);
-                        if (!this[server].Any())
+                        if (this[server].Count == 0)
                             Remove(server);
                     }
                 }
@@ -73,7 +76,7 @@ namespace DataCloner.Metadata
             return false;
         }
 
-        public TableMetadata[] this[Int16 server, string database, string schema]
+        public SchemaMetadata this[Int16 server, string database, string schema]
         {
             get
             {
@@ -94,10 +97,10 @@ namespace DataCloner.Metadata
                 schema = schema.ToLower();
 
                 if (!ContainsKey(server))
-                    Add(server, new Dictionary<string, Dictionary<string, TableMetadata[]>>());
+                    Add(server, new ServerMetadata());
 
                 if (!this[server].ContainsKey(database))
-                    this[server].Add(database, new Dictionary<string, TableMetadata[]>());
+                    this[server].Add(database, new DatabaseMetadata());
 
                 if (!this[server][database].ContainsKey(schema))
                     this[server][database].Add(schema, value);
@@ -259,7 +262,7 @@ namespace DataCloner.Metadata
         /// <param name="typeConverter"></param>
 		internal void LoadColumns(IDataReader reader, Int16 serverId, String database, ISqlTypeConverter typeConverter)
         {
-            var lstTable = new List<TableMetadata>();
+            var schemaMetadata = new SchemaMetadata();
             var lstSchemaColumn = new List<ColumnDefinition>();
             string currentSchema;
 
@@ -280,7 +283,7 @@ namespace DataCloner.Metadata
                 if (currentSchema != previousSchema || currentTable != previousTable.Name)
                 {
                     previousTable.ColumnsDefinition = lstSchemaColumn.ToArray();
-                    lstTable.Add(previousTable);
+                    schemaMetadata.Add(previousTable);
 
                     lstSchemaColumn = new List<ColumnDefinition>();
                     previousTable = new TableMetadata(currentTable);
@@ -289,8 +292,8 @@ namespace DataCloner.Metadata
                 //Si on change de schema
                 if (currentSchema != previousSchema)
                 {
-                    this[serverId, database, currentSchema] = lstTable.ToArray();
-                    lstTable = new List<TableMetadata>();
+                    this[serverId, database, currentSchema] = schemaMetadata;
+                    schemaMetadata = new SchemaMetadata();
                 }
 
                 //Ajoute la colonne
@@ -317,8 +320,8 @@ namespace DataCloner.Metadata
             if (lstSchemaColumn.Count > 0)
             {
                 previousTable.ColumnsDefinition = lstSchemaColumn.ToArray();
-                lstTable.Add(previousTable);
-                this[serverId, database, currentSchema] = lstTable.ToArray();
+                schemaMetadata.Add(previousTable);
+                this[serverId, database, currentSchema] = schemaMetadata;
             }
         }
 
@@ -352,10 +355,8 @@ namespace DataCloner.Metadata
                 {
                     foreach (var schema in database.Value)
                     {
-                        var nbTables = schema.Value.Length;
-                        for (var i = 0; i < nbTables; i++)
+                        foreach(var table in schema.Value)
                         {
-                            var table = schema.Value[i];
                             var sbInsert = new StringBuilder("INSERT INTO ");
                             var sbSelect = new StringBuilder("SELECT ");
 
@@ -490,9 +491,9 @@ namespace DataCloner.Metadata
             }
         }
 
-        private void MergeFkModifierSchema(TableMetadata[] tablesCache, List<TableModifier> tablesModifier)
+        private void MergeFkModifierSchema(SchemaMetadata schemaMetadata, List<TableModifier> tablesModifier)
         {
-            foreach (var table in tablesCache)
+            foreach (var table in schemaMetadata)
             {
                 var tblModifier = tablesModifier.Find(t => t.Name == table.Name);
                 if (tblModifier != null)
@@ -614,7 +615,7 @@ namespace DataCloner.Metadata
             Serialize(new BinaryWriter(stream));
         }
 
-        public static MetadataPerServer Deserialize(Stream stream)
+        public static AppMetadata Deserialize(Stream stream)
         {
             return Deserialize(new BinaryReader(stream));
         }
@@ -632,43 +633,43 @@ namespace DataCloner.Metadata
                     stream.Write(database.Value.Count);
                     foreach (var schema in database.Value)
                     {
-                        var nbRows = schema.Value.Length;
+                        var nbRows = schema.Value.Count;
                         stream.Write(schema.Key);
                         stream.Write(nbRows);
-                        for (var i = 0; i < nbRows; i++)
-                            schema.Value[i].Serialize(stream);
+                        foreach (var table in schema.Value)
+                            table.Serialize(stream);
                     }
                 }
             }
         }
 
-        public static MetadataPerServer Deserialize(BinaryReader stream)
+        public static AppMetadata Deserialize(BinaryReader stream)
         {
-            var cTables = new MetadataPerServer();
+            var cTables = new AppMetadata();
 
             var nbServers = stream.ReadInt32();
             for (var n = 0; n < nbServers; n++)
             {
                 var serverId = stream.ReadInt16();
-                cTables.Add(serverId, new Dictionary<string, Dictionary<string, TableMetadata[]>>());
+                cTables.Add(serverId, new ServerMetadata());
 
                 var nbDatabases = stream.ReadInt32();
                 for (var j = 0; j < nbDatabases; j++)
                 {
                     var database = stream.ReadString();
-                    cTables[serverId].Add(database, new Dictionary<string, TableMetadata[]>());
+                    cTables[serverId].Add(database, new DatabaseMetadata());
 
                     var nbSchemas = stream.ReadInt32();
                     for (var k = 0; k < nbSchemas; k++)
                     {
-                        var lstTables = new List<TableMetadata>();
+                        var schemaMetadata = new SchemaMetadata();
                         var schema = stream.ReadString();
 
                         var nbTablesFrom = stream.ReadInt32();
                         for (var l = 0; l < nbTablesFrom; l++)
-                            lstTables.Add(TableMetadata.Deserialize(stream));
+                            schemaMetadata.Add(TableMetadata.Deserialize(stream));
 
-                        cTables[serverId][database].Add(schema, lstTables.ToArray());
+                        cTables[serverId][database].Add(schema, schemaMetadata);
                     }
                 }
             }
