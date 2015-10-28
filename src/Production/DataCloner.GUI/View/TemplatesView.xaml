@@ -52,6 +52,11 @@
                                         EditingElementStyle="{StaticResource TextCellEditingStyle}"
                                         Binding="{Binding Id, UpdateSourceTrigger=PropertyChanged, 
                                         NotifyOnValidationError=True, ValidatesOnExceptions=True}"/>
+                                <DataGridTextColumn Header="Description" 
+                                        ElementStyle="{StaticResource TextCellElementStyle}"
+                                        EditingElementStyle="{StaticResource TextCellEditingStyle}"
+                                        Binding="{Binding Description, UpdateSourceTrigger=PropertyChanged, 
+                                        NotifyOnValidationError=True, ValidatesOnExceptions=True}"/>
                                 <DataGridTextColumn Header="TemplateId" 
                                         ElementStyle="{StaticResource TextCellElementStyle}"
                                         EditingElementStyle="{StaticResource TextCellEditingStyle}"
@@ -97,6 +102,11 @@
                                         EditingElementStyle="{StaticResource TextCellEditingStyle}"
                                         Binding="{Binding Name, UpdateSourceTrigger=PropertyChanged, 
                                         NotifyOnValidationError=True, ValidatesOnExceptions=True}"/>
+                                <DataGridTextColumn Header="Descrition" 
+                                        ElementStyle="{StaticResource TextCellElementStyle}"
+                                        EditingElementStyle="{StaticResource TextCellEditingStyle}"
+                                        Binding="{Binding Descrition, UpdateSourceTrigger=PropertyChanged, 
+                                        NotifyOnValidationError=True, ValidatesOnExceptions=True}"/>
                                 <DataGridTextColumn Header="TemplateId" 
                                         ElementStyle="{StaticResource TextCellElementStyle}"
                                         EditingElementStyle="{StaticResource TextCellEditingStyle}"
@@ -133,6 +143,11 @@
                                         ElementStyle="{StaticResource TextCellElementStyle}"
                                         EditingElementStyle="{StaticResource TextCellEditingStyle}"
                                         Binding="{Binding Name, UpdateSourceTrigger=PropertyChanged, 
+                                        NotifyOnValidationError=True, ValidatesOnExceptions=True}"/>
+                                <DataGridTextColumn Header="Description" 
+                                        ElementStyle="{StaticResource TextCellElementStyle}"
+                                        EditingElementStyle="{StaticResource TextCellEditingStyle}"
+                                        Binding="{Binding Description, UpdateSourceTrigger=PropertyChanged, 
                                         NotifyOnValidationError=True, ValidatesOnExceptions=True}"/>
                                 <DataGridTextColumn Header="TemplateId" 
                                         ElementStyle="{StaticResource TextCellElementStyle}"

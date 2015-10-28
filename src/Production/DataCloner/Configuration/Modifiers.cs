@@ -28,6 +28,8 @@ namespace DataCloner.Configuration
         [XmlAttribute]
         public string Id { get; set; }
         [XmlAttribute]
+        public string Description { get; set; }
+        [XmlAttribute]
         public Int16 TemplateId { get; set; }
         [XmlAttribute]
         public Int16 UseTemplateId { get; set; }
@@ -46,6 +48,8 @@ namespace DataCloner.Configuration
         [XmlAttribute]
         public string Name { get; set; }
         [XmlAttribute]
+        public string Description { get; set; }
+        [XmlAttribute]
         public Int16 TemplateId { get; set; }
         [XmlAttribute]
         public Int16 UseTemplateId { get; set; }
@@ -63,6 +67,8 @@ namespace DataCloner.Configuration
     {
         [XmlAttribute]
         public string Name { get; set; }
+        [XmlAttribute]
+        public string Description { get; set; }
         [XmlAttribute]
         public Int16 TemplateId { get; set; }
         [XmlAttribute]

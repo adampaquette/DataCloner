@@ -1,6 +1,4 @@
-﻿using Cache = DataCloner.Metadata;
-using DataCloner.Configuration;
-using DataCloner.GUI.Framework;
+﻿using DataCloner.GUI.Framework;
 using DataCloner.GUI.Model;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

@@ -17,13 +17,37 @@ namespace DataCloner.Data
         private readonly MetadataPerServer _metadata;
         private readonly IDbConnection _connection;
 
+        /// <summary>
+        /// SQL query
+        /// </summary>
+        /// <remarks>Important : Must get data in lower case format.</remarks>
         protected abstract string SqlGetDatabasesName { get; }
+        /// <summary>
+        /// SQL query
+        /// </summary>
+        /// <remarks>Important : Must get data in lower case format.</remarks>
         protected abstract string SqlGetColumns { get; }
+        /// <summary>
+        /// SQL query
+        /// </summary>
+        /// <remarks>Important : Must get data in lower case format.</remarks>
         protected abstract string SqlGetForeignKeys { get; }
+        /// <summary>
+        /// SQL query
+        /// </summary>
+        /// <remarks>Important : Must get data in lower case format.</remarks>
         protected abstract string SqlGetUniqueKeys { get; }
+        /// <summary>
+        /// SQL query
+        /// </summary>
+        /// <remarks>Important : Must get data in lower case format.</remarks>
         protected abstract string SqlGetLastInsertedPk { get; }
+        /// <summary>
+        /// SQL query
+        /// </summary>
+        /// <remarks>Important : Must get data in lower case format.</remarks>
         protected abstract string SqlEnforceIntegrityCheck { get; }
-
+        
         public event QueryCommitingEventHandler QueryCommmiting;
         public IDbConnection Connection { get{return _connection;} }
         public abstract DbEngine Engine { get; }

@@ -11,6 +11,7 @@ namespace DataCloner.GUI.Model
     class ServerModifierModel : ValidatableModel
     {
         internal string _id;
+        internal string _description;
         internal Int16 _templateId;
         internal Int16 _useTemplateId;
         internal ObservableCollection<DatabaseModifierModel> _databases;
@@ -20,6 +21,12 @@ namespace DataCloner.GUI.Model
         {
             get { return _id; }
             set { SetPropertyAndValidate(ref _id, value); }
+        }
+
+        public string Description
+        {
+            get { return _description; }
+            set { SetPropertyAndValidate(ref _description, value); }
         }
 
         [Required]

@@ -52,13 +52,5 @@ namespace DataCloner.GUI.ViewModel
             //    ConnectionString = @"Data Source=.\SQLEXPRESS;Integrated Security=True;Database=northwind;";
             //}
         }
-
-        public ConnectionViewModel(Connection connection)
-        {
-            Id = connection.Id;
-            Name = connection.Name;
-            ProviderName = connection.ProviderName;
-            ConnectionString = connection.ConnectionString;
-        }
     }
 }

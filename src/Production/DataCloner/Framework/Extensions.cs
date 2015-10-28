@@ -160,10 +160,10 @@ namespace DataCloner.Framework
             var posStart = value.IndexOf('{');
             if (posStart != 0) return null;
 
-            posStart = value.IndexOf('{', 1);
+            posStart = value.IndexOf('{', ++posStart);
             if (posStart == -1) return null;
 
-            var posEnd = value.IndexOf('}', posStart);
+            var posEnd = value.IndexOf('}', ++posStart);
             if (posEnd == -1) return null;
 
             return value.Substring(posStart, posEnd - posStart);

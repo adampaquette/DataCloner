@@ -125,6 +125,49 @@ namespace DataCloner.Metadata
                 container = BuildMetadata(dispatcher, containerFileName, app.ConnectionStrings, configHash);
         }
 
+        public void Serialize(Stream stream)
+        {
+            Serialize(new BinaryWriter(stream));
+        }
+
+        public static MetadataContainer Deserialize(Stream stream)
+        {
+            return Deserialize(new BinaryReader(stream));
+        }
+
+        public void Serialize(BinaryWriter stream)
+        {
+            stream.Write(ConfigFileHash);
+            stream.Write(ServerMap.Count);
+            foreach (var sm in ServerMap)
+            {
+                sm.Key.Serialize(stream);
+                sm.Value.Serialize(stream);
+            }
+            stream.Write(ConnectionStrings.Count);
+            foreach (var cs in ConnectionStrings)
+                cs.Serialize(stream);
+            Metadatas.Serialize(stream);
+
+            stream.Flush();
+        }
+
+        public void Save(string path)
+        {
+            var fs = new FileStream(path, FileMode.Create);
+            Serialize(fs);
+            fs.Close();
+        }
+
+        public static MetadataContainer Deserialize(BinaryReader stream)
+        {
+            var config = new MetadataContainer { ConfigFileHash = stream.ReadString() };
+
+            DeserializeBody(stream, config);
+
+            return config;
+        }
+
         /// <summary>
         /// Also merge user configs
         /// </summary>
@@ -136,8 +179,8 @@ namespace DataCloner.Metadata
         /// <param name="configHash"></param>
         /// <returns></returns>
         private static MetadataContainer BuildMetadataWithSettings(IQueryDispatcher dispatcher, string containerFileName,
-                                                           Application app, ClonerBehaviour clonerBehaviour,
-                                                           Map map, string configHash)
+                                                                   Application app, ClonerBehaviour clonerBehaviour,
+                                                                   Map map, string configHash)
         {
             var container = new MetadataContainer { ConfigFileHash = configHash, ServerMap = map.ConvertToDictionnary() };
 
@@ -181,7 +224,7 @@ namespace DataCloner.Metadata
         /// <param name="configHash"></param>
         /// <returns></returns>
         private static MetadataContainer BuildMetadata(IQueryDispatcher dispatcher, string containerFileName,
-                                               List<Configuration.Connection> connections, string configHash)
+                                                       List<Configuration.Connection> connections, string configHash)
         {
             var container = new MetadataContainer { ConfigFileHash = configHash };
 
@@ -212,45 +255,9 @@ namespace DataCloner.Metadata
                     provider.GetUniqueKeys(container.Metadatas.LoadUniqueKeys, cs.Id, database);
                 }
             }
-        }
+        }      
 
-        public void Serialize(Stream stream)
-        {
-            Serialize(new BinaryWriter(stream));
-        }
-
-        public static MetadataContainer Deserialize(Stream stream)
-        {
-            return Deserialize(new BinaryReader(stream));
-        }
-
-        public void Serialize(BinaryWriter stream)
-        {
-            stream.Write(ConfigFileHash);
-            stream.Write(ServerMap.Count);
-            foreach (var sm in ServerMap)
-            {
-                sm.Key.Serialize(stream);
-                sm.Value.Serialize(stream);
-            }
-            stream.Write(ConnectionStrings.Count);
-            foreach (var cs in ConnectionStrings)
-                cs.Serialize(stream);
-            Metadatas.Serialize(stream);
-
-            stream.Flush();
-        }
-
-        public static MetadataContainer Deserialize(BinaryReader stream)
-        {
-            var config = new MetadataContainer { ConfigFileHash = stream.ReadString() };
-
-            DeserializeBody(stream, config);
-
-            return config;
-        }
-
-        public static MetadataContainer DeserializeBody(BinaryReader stream, MetadataContainer config)
+        private static MetadataContainer DeserializeBody(BinaryReader stream, MetadataContainer config)
         {
             var nbServerMap = stream.ReadInt32();
             for (var i = 0; i < nbServerMap; i++)
@@ -268,7 +275,7 @@ namespace DataCloner.Metadata
             return config;
         }
 
-        public static MetadataContainer TryLoadContainer(string containerFile, string configHash)
+        private static MetadataContainer TryLoadContainer(string containerFile, string configHash)
         {
             MetadataContainer container = null;
 
@@ -288,13 +295,6 @@ namespace DataCloner.Metadata
                 }
             }
             return container;
-        }
-
-        public void Save(string path)
-        {
-            var fs = new FileStream(path, FileMode.Create);
-            Serialize(fs);
-            fs.Close();
         }
     }
 }

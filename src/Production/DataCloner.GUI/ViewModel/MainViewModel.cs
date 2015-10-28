@@ -20,10 +20,10 @@ namespace DataCloner.GUI.ViewModel
             if (app == null)
                 app = _config.Applications.FirstOrDefault();
 
-            var defaultCache = new MetadataContainer();
-            MetadataContainer.VerifyIntegrityOfSqlMetadata(new QueryDispatcher(), app, ref defaultCache);
+            var defaultMetadata = new MetadataContainer();
+            MetadataContainer.VerifyIntegrityOfSqlMetadata(new QueryDispatcher(), app, ref defaultMetadata);
 
-            _currentApp = ConfigurationService.Load(app, defaultCache.Metadatas);
+            _currentApp = ConfigurationService.Load(app, defaultMetadata.Metadatas);
         }
 
         public ApplicationViewModel CurrentApp

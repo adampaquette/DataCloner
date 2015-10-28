@@ -9,16 +9,23 @@ namespace DataCloner.GUI.Model
 {
     class SchemaModifierModel : ValidatableModel
     {
-        private string _name;
-        private Int16 _templateId;
-        private Int16 _useTemplateId;
-        private ObservableCollection<TableModifierModel> _tables;
+        internal string _name;
+        internal string _description;
+        internal Int16 _templateId;
+        internal Int16 _useTemplateId;
+        internal ObservableCollection<TableModifierModel> _tables;
 
         [Required]
         public string Name
         {
             get { return _name; }
             set { SetPropertyAndValidate(ref _name, value); }
+        }
+
+        public string Description
+        {
+            get { return _description; }
+            set { SetPropertyAndValidate(ref _description, value); }
         }
 
         [Required]

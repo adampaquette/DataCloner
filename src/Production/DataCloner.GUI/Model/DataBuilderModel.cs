@@ -6,8 +6,8 @@ namespace DataCloner.GUI.Model
 {
     class DataBuilderModel : ValidatableModel
     {
-        private string _columnsName;
-        private string _builderName;
+        internal string _columnsName;
+        internal string _builderName;
 
         [Required]
         public string ColumnName
@@ -22,10 +22,6 @@ namespace DataCloner.GUI.Model
             set { SetProperty(ref _builderName, value); }
         }
 
-        public DataBuilderModel(IColumnDefinition col)
-        {
-            _columnsName = col.Name;
-            _builderName = col.BuilderName;
-        }
+        public DataBuilderModel() { }
     }
 }

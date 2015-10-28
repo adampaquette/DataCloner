@@ -7,13 +7,13 @@ namespace DataCloner.GUI.Model
 {
     class TableModifierModel : ValidatableModel
     {
-        private string _name;
-        private bool _isStatic;
-        private ObservableCollection<ForeignKeyModifierModel> _foreignKeys;
-        private ObservableCollection<DerivativeTableModifierModel> _derivativeTables;
-        private ObservableCollection<DataBuilderModel> _dataBuilders;
-        private DerivativeTableAccess _derativeTablesGlobalAccess;
-        private bool _derativeTablesGlobalCascade;
+        internal string _name;
+        internal bool _isStatic;
+        internal ObservableCollection<ForeignKeyModifierModel> _foreignKeys;
+        internal ObservableCollection<DerivativeTableModifierModel> _derivativeTables;
+        internal ObservableCollection<DataBuilderModel> _dataBuilders;
+        internal DerivativeTableAccess _derativeTablesGlobalAccess;
+        internal bool _derativeTablesGlobalCascade;
 
         [Required]
         public string Name
@@ -79,9 +79,9 @@ namespace DataCloner.GUI.Model
             foreach (var dt in defaultSchema.DerivativeTables)
                 _derivativeTables.Add(new DerivativeTableModifierModel(dt));
 
-            _dataBuilders = new ObservableCollection<DataBuilderModel>();
-            foreach (var col in defaultSchema.ColumnsDefinition)
-                _dataBuilders.Add(new DataBuilderModel(col));
+            //_dataBuilders = new ObservableCollection<DataBuilderModel>();
+            //foreach (var col in defaultSchema.ColumnsDefinition)
+            //    _dataBuilders.Add(new DataBuilderModel(col));
         }
     }
 }
