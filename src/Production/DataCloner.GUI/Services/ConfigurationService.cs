@@ -478,14 +478,14 @@ namespace DataCloner.GUI.Services
             var returnVM = new ObservableCollection<ServerModifierModel>();
 
             //We show every single element from the user's config. 
-            var serversToShow = userConfigTemplates;
+            var elementsToShow = userConfigTemplates;
 
             //We add the elements from the default metadata if not present.
-            var userConfigServerIds = userConfigTemplates.Select(s => s.Id.ExtractVariableValueInt16()).Distinct();
-            var serversToAdd = defaultMetadata.Select(s => s.Key).Distinct().Except(userConfigServerIds);
-            serversToShow.AddRange(from s in serversToAdd select new ServerModifier { Id = s.ToString() });
+            var userConfigDistinctServers = userConfigTemplates.Select(s => s.Id.ParseConfigVariable().Server).Distinct();
+            var serversToAdd = defaultMetadata.Select(s => s.Key).Distinct().Except(userConfigDistinctServers);
+            elementsToShow.AddRange(from s in serversToAdd select new ServerModifier { Id = s.ToString() });
 
-            foreach (var userConfigServer in serversToShow)
+            foreach (var userConfigServer in elementsToShow)
             {
                 var defaultSrvMetadata = GetServerMetadata(defaultMetadata, userConfigServer.Id);
 
@@ -502,11 +502,19 @@ namespace DataCloner.GUI.Services
             return returnVM;
         }
 
-        private static ObservableCollection<DatabaseModifierModel> LoadDatabaseTemplates(List<DatabaseModifier> userConfigTemplates, 
-            ServerMetadata defaultServerMetadata)
+        private static ObservableCollection<DatabaseModifierModel> LoadDatabaseTemplates(List<DatabaseModifier> userConfigTemplates, ServerMetadata defaultServerMetadata)
         {
             var returnVM = new ObservableCollection<DatabaseModifierModel>();
-            
+
+            //We show every single element from the user's config. 
+            var elementsToShow = userConfigTemplates;
+
+            //We add the elements from the default metadata if not present.
+            //var userConfigDistinctDatabases = userConfigTemplates.Select(s => s.Name.ExtractVariableValue()).Distinct();
+            //var serversToAdd = defaultMetadata.Select(s => s.Key).Distinct().Except(userConfigDistinctDatabases);
+            //elementsToShow.AddRange(from s in serversToAdd select new ServerModifier { Id = s.ToString() });
+
+
             //var dVM = new DatabaseModifierModel
             //{
             //    _name = userConfigTemplates.Name,
@@ -664,7 +672,7 @@ namespace DataCloner.GUI.Services
             }
 
             //If is a variable
-            id = serverId.ExtractVariableValueInt16();
+            id = serverId.ParseConfigVariable().Server;
             if (id != 0 && defaultMetadatas.ContainsKey(id))
                 return defaultMetadatas[id];
 
@@ -687,7 +695,7 @@ namespace DataCloner.GUI.Services
                 return serverMetadata[databaseName];
 
             //If is a variable
-            string name = databaseName.ExtractVariableValue();
+            string name = databaseName.ParseConfigVariable().Database;
             if (name != null && serverMetadata.ContainsKey(name))
                 return serverMetadata[name];
 
@@ -710,7 +718,7 @@ namespace DataCloner.GUI.Services
                 return databaseMetadata[schemaName];
 
             //If is a variable
-            string name = schemaName.ExtractVariableValue();
+            string name = schemaName.ParseConfigVariable().Schema;
             if (name != null && databaseMetadata.ContainsKey(name))
                 return databaseMetadata[name];
 

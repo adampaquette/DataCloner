@@ -86,6 +86,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Archive\DataArchive.cs" />
+    <Compile Include="Configuration\VariableParser.cs" />
     <Compile Include="Data\QueryHelperBase.cs" />
     <Compile Include="Data\SqlTypeConverterBase.cs" />
     <Compile Include="Data\ISqlTypeConverter.cs" />

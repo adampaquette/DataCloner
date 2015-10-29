@@ -122,65 +122,7 @@ namespace DataCloner.Framework
         {
             int i;
             return Int32.TryParse(input, out i) ? (int?)i : null;
-        }
-
-        public static bool IsVariable(this string value)
-        {
-            if (value == null) return false;
-            return value.StartsWith("{$") && value.EndsWith("}");
-        }
-
-        /// <summary>
-        /// Extract variable from a syntaxe like {$KEY{VALUE}} OR {$DATABASE_SOURCE{1}}.
-        /// </summary>
-        /// <param name="value">Variable</param>
-        /// <returns>Key</returns>
-        public static string ExtractVariableKey(this string value)
-        {
-            int len;
-            var posStart = value.IndexOf('{');
-            if (posStart != 0) return null;
-
-            posStart = value.IndexOf('{', 1);
-            if (posStart == -1)
-                len = value.Length - 1;
-            else
-                len = posStart;
-
-            return value.Substring(0, len) + "}";
-        }
-
-        /// <summary>
-        /// Extract variable from a syntaxe like {$KEY{VALUE}} OR {$DATABASE_SOURCE{1}}.
-        /// </summary>
-        /// <param name="value">Variable</param>
-        /// <returns>Value</returns>
-        public static string ExtractVariableValue(this string value)
-        {
-            var posStart = value.IndexOf('{');
-            if (posStart != 0) return null;
-
-            posStart = value.IndexOf('{', ++posStart);
-            if (posStart == -1) return null;
-
-            var posEnd = value.IndexOf('}', ++posStart);
-            if (posEnd == -1) return null;
-
-            return value.Substring(posStart, posEnd - posStart);
-        }
-
-        /// <summary>
-        /// Extract variable from a syntaxe like {$KEY{VALUE}} OR {$DATABASE_SOURCE{1}}.
-        /// </summary>
-        /// <param name="value">Variable</param>
-        /// <returns>Value</returns>
-        public static Int16 ExtractVariableValueInt16(this string value)
-        {
-            var extractedValue = value.ExtractVariableValue();
-            Int16 result = 0;
-            Int16.TryParse(extractedValue, out result);
-            return result;
-        }
+        }      
 
         /// <summary>
         /// Build a SQL text query from a DbCommand.
