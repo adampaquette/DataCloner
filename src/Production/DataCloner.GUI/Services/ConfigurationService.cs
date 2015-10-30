@@ -95,7 +95,7 @@ namespace DataCloner.GUI.Services
 
             foreach (var mergedDatabase in mergedServer.Databases)
             {
-                var defaultDatabaseSchema = GetDatabaseMetadata(mergedDatabase.Name, defaultServerSchema);
+                var defaultDatabaseSchema = GetDatabaseMetadata(defaultServerSchema, mergedDatabase.Name);
                 if (MergeDatabase(mergedDatabase, userConfigServer.Databases, defaultDatabaseSchema))
                     hasChange = true;
             }
@@ -135,7 +135,7 @@ namespace DataCloner.GUI.Services
 
             foreach (var mergedSchema in mergedDatabase.Schemas)
             {
-                var defaultSchema = GetSchemaMetadata(mergedSchema.Name, defaultDatabaseSchema);
+                var defaultSchema = GetSchemaMetadata(defaultDatabaseSchema, mergedSchema.Name);
                 if (MergeSchema(mergedSchema, userConfigDatabase.Schemas, defaultSchema))
                     hasChange = true;
             }
@@ -478,24 +478,24 @@ namespace DataCloner.GUI.Services
             var returnVM = new ObservableCollection<ServerModifierModel>();
 
             //We show every single element from the user's config. 
-            var elementsToShow = userConfigTemplates;
+            var serversToShow = userConfigTemplates;
 
             //We add the elements from the default metadata if not present.
             var userConfigDistinctServers = userConfigTemplates.Select(s => s.Id.ParseConfigVariable().Server).Distinct();
             var serversToAdd = defaultMetadata.Select(s => s.Key).Distinct().Except(userConfigDistinctServers);
-            elementsToShow.AddRange(from s in serversToAdd select new ServerModifier { Id = s.ToString() });
+            serversToShow.AddRange(from s in serversToAdd select new ServerModifier { Id = s.ToString() });
 
-            foreach (var userConfigServer in elementsToShow)
+            foreach (var server in serversToShow)
             {
-                var defaultSrvMetadata = GetServerMetadata(defaultMetadata, userConfigServer.Id);
+                var defaultSrvMetadata = GetServerMetadata(defaultMetadata, server.Id);
 
                 returnVM.Add(new ServerModifierModel
                 {
-                    _id = userConfigServer.Id,
-                    _templateId = userConfigServer.TemplateId,
-                    _useTemplateId = userConfigServer.UseTemplateId,
-                    _description = userConfigServer.Description,
-                    _databases = LoadDatabaseTemplates(userConfigServer.Databases, defaultSrvMetadata)
+                    _id = server.Id,
+                    _templateId = server.TemplateId,
+                    _useTemplateId = server.UseTemplateId,
+                    _description = server.Description,
+                    _databases = LoadDatabaseTemplates(server.Databases, defaultSrvMetadata)
                 });
             }
 
@@ -507,120 +507,80 @@ namespace DataCloner.GUI.Services
             var returnVM = new ObservableCollection<DatabaseModifierModel>();
 
             //We show every single element from the user's config. 
-            var elementsToShow = userConfigTemplates;
+            var databasesToShow = userConfigTemplates;
 
             //We add the elements from the default metadata if not present.
-            //var userConfigDistinctDatabases = userConfigTemplates.Select(s => s.Name.ExtractVariableValue()).Distinct();
-            //var serversToAdd = defaultMetadata.Select(s => s.Key).Distinct().Except(userConfigDistinctDatabases);
-            //elementsToShow.AddRange(from s in serversToAdd select new ServerModifier { Id = s.ToString() });
+            var userConfigDistinctDatabases = userConfigTemplates.Select(s => s.Name.ParseConfigVariable().Database).Distinct();
+            var databasesToAdd = defaultServerMetadata.Select(s => s.Key).Distinct().Except(userConfigDistinctDatabases);
+            databasesToShow.AddRange(from d in databasesToAdd select new DatabaseModifier {  Name = d });
 
+            foreach (var database in databasesToShow)
+            {
+                var defaultDbMetadata = GetDatabaseMetadata(defaultServerMetadata, database.Name);
 
-            //var dVM = new DatabaseModifierModel
-            //{
-            //    _name = userConfigTemplates.Name,
-            //    _description = userConfigTemplates.Description,
-            //    _templateId = userConfigTemplates.TemplateId,
-            //    _useTemplateId = userConfigTemplates.UseTemplateId,
-            //    _schemas = new ObservableCollection<SchemaModifierModel>()
-            //};
-
-            //foreach (var userConfigSchema in userConfigTemplates.Schemas)
-            //{
-            //    var defaultSchemaMetadata = GetSchemaMetadata(userConfigSchema.Name, defaultDatabaseMetadata);
-            //    dVM.Schemas.Add(LoadSchemaTemplate(userConfigSchema, defaultSchemaMetadata));
-            //}
-
-            //return dVM;
+                returnVM.Add(new DatabaseModifierModel
+                {
+                    _name = database.Name,
+                    _templateId = database.TemplateId,
+                    _useTemplateId = database.UseTemplateId,
+                    _description = database.Description,
+                    _schemas = LoadSchemaTemplates(database.Schemas, defaultDbMetadata)
+                });
+            }
 
             return returnVM;
         }
 
-
-        /// <summary>
-        /// We add the templates from the user config then we merge with the default metadata.
-        /// </summary>
-        /// <param name="userConfigServer"></param>
-        /// <param name="defaultServerMetadata"></param>
-        /// <returns></returns>
-        private static ServerModifierModel LoadServerTemplate(ServerModifier userConfigServer, ServerMetadata defaultServerMetadata)
+        private static ObservableCollection<SchemaModifierModel> LoadSchemaTemplates(List<SchemaModifier> userConfigTemplates, DatabaseMetadata defaultDatabaseMetadata)
         {
-            var sVM = new ServerModifierModel
-            {
-                _id = userConfigServer.Id,
-                _templateId = userConfigServer.TemplateId,
-                _useTemplateId = userConfigServer.UseTemplateId,
-                _description = userConfigServer.Description,
-                _databases = new ObservableCollection<DatabaseModifierModel>()
-            };
+            var returnVM = new ObservableCollection<SchemaModifierModel>();
 
-            //Step 1 : We show every single element from the user's config. 
-            foreach (var userConfigDatabase in userConfigServer.Databases)
+            //We show every single element from the user's config. 
+            var schemasToShow = userConfigTemplates;
+
+            //We add the elements from the default metadata if not present.
+            var userConfigDistinctSchemas = userConfigTemplates.Select(s => s.Name.ParseConfigVariable().Schema).Distinct();
+            var schemasToAdd = defaultDatabaseMetadata.Select(s => s.Key).Distinct().Except(userConfigDistinctSchemas);
+            schemasToShow.AddRange(from d in schemasToAdd select new SchemaModifier { Name = d });
+
+            foreach (var schema in schemasToShow)
             {
-                var defaultDatabaseMetadata = GetDatabaseMetadata(userConfigDatabase.Name, defaultServerMetadata);
-                sVM.Databases.Add(LoadDatabaseTemplate(userConfigDatabase, defaultDatabaseMetadata));
+                var defaultSchemaMetadata = GetSchemaMetadata(defaultDatabaseMetadata, schema.Name);
+
+                returnVM.Add(new SchemaModifierModel
+                {
+                    _name = schema.Name,
+                    _templateId = schema.TemplateId,
+                    _useTemplateId = schema.UseTemplateId,
+                    _description = schema.Description,
+                    _tables = LoadTableTemplates(schema.Tables, defaultSchemaMetadata)
+                });
             }
 
-            //Step 2 : Then if an element from the default schema is not present, we add it to the list. 
-
-            return sVM;
+            return returnVM;
         }
 
-        private static DatabaseModifierModel LoadDatabaseTemplate(DatabaseModifier userConfigTemplate, DatabaseMetadata defaultDatabaseMetadata)
+        private static ObservableCollection<TableModifierModel> LoadTableTemplates(List<TableModifier> userConfigTemplates, SchemaMetadata defaultSchemaMetadata)
         {
-            var dVM = new DatabaseModifierModel
-            {
-                _name = userConfigTemplate.Name,
-                _description = userConfigTemplate.Description,
-                _templateId = userConfigTemplate.TemplateId,
-                _useTemplateId = userConfigTemplate.UseTemplateId,
-                _schemas = new ObservableCollection<SchemaModifierModel>()
-            };
+            var returnVM = new ObservableCollection<TableModifierModel>();
 
-            foreach (var userConfigSchema in userConfigTemplate.Schemas)
+            foreach (var table in defaultSchemaMetadata)
             {
-                var defaultSchemaMetadata = GetSchemaMetadata(userConfigSchema.Name, defaultDatabaseMetadata);
-                dVM.Schemas.Add(LoadSchemaTemplate(userConfigSchema, defaultSchemaMetadata));
+                var userConfigTemplate = userConfigTemplates.FirstOrDefault(t => t.Name == table.Name.ToLower());
+
+                returnVM.Add(new TableModifierModel
+                {
+                    _name = table.Name,
+                    _isStatic = table.IsStatic,                  
+                    _dataBuilders = LoadDataBuildersTemplate(userConfigTemplate.DataBuilders, table.ColumnsDefinition) //TODO : CHECK FOR NULL
+                    //_derativeTablesGlobalAccess = 
+                    //_derativeTablesGlobalCascade = 
+                    //_derivativeTables = 
+                    //_foreignKeys = 
+                });
             }
 
-            return dVM;
-        }
-
-        private static SchemaModifierModel LoadSchemaTemplate(SchemaModifier userConfigTemplate, SchemaMetadata defaultSchemaMetadata)
-        {
-            var sVM = new SchemaModifierModel
-            {
-                _name = userConfigTemplate.Name,
-                _description = userConfigTemplate.Description,
-                _templateId = userConfigTemplate.TemplateId,
-                _useTemplateId = userConfigTemplate.UseTemplateId,
-                _tables = new ObservableCollection<TableModifierModel>()
-            };
-
-            foreach (var userConfigTable in userConfigTemplate.Tables)
-            {
-                var defaultTableMetadata = defaultSchemaMetadata.FirstOrDefault(t => t.Name == userConfigTable.Name.ToLower());
-                sVM.Tables.Add(LoadTableTemplate(userConfigTable, defaultTableMetadata));
-            }
-
-            return sVM;
-        }
-
-        private static TableModifierModel LoadTableTemplate(TableModifier userConfigTemplate, TableMetadata defaultTableMetadata)
-        {
-            var tVM = new TableModifierModel
-            {
-                _name = userConfigTemplate.Name,
-                _isStatic = userConfigTemplate.IsStatic
-            };
-
-            tVM._dataBuilders = LoadDataBuildersTemplate(userConfigTemplate.DataBuilders, defaultTableMetadata.ColumnsDefinition);
-            //tVM._derativeTablesGlobalAccess = 
-            //tVM._derativeTablesGlobalCascade = 
-            //tVM._derivativeTables = 
-            //tVM._foreignKeys = 
-
-
-            return tVM;
+            return returnVM;
         }
 
         private static ObservableCollection<DataBuilderModel> LoadDataBuildersTemplate(IList<DataBuilder> userConfigDataBuilders,
@@ -684,7 +644,7 @@ namespace DataCloner.GUI.Services
         /// </summary>
         /// <param name="databaseName">Could be a name like MyDb or a variable like {$KEY{VALUE}} OR {$DATABASE_SOURCE{1}}.</param>
         /// <param name="serverMetadata">Metadatas</param>
-        private static DatabaseMetadata GetDatabaseMetadata(string databaseName, ServerMetadata serverMetadata)
+        private static DatabaseMetadata GetDatabaseMetadata(ServerMetadata serverMetadata, string databaseName)
         {
             if (String.IsNullOrEmpty(databaseName)) return null;
 
@@ -707,7 +667,7 @@ namespace DataCloner.GUI.Services
         /// </summary>
         /// <param name="schemaName">Could be a name like DBO or a variable like {$KEY{VALUE}} OR {$SCHEMA_SOURCE{1}}.</param>
         /// <param name="databaseMetadata">Metadatas</param>
-        private static SchemaMetadata GetSchemaMetadata(string schemaName, DatabaseMetadata databaseMetadata)
+        private static SchemaMetadata GetSchemaMetadata(DatabaseMetadata databaseMetadata, string schemaName)
         {
             if (String.IsNullOrEmpty(schemaName)) return null;
 
