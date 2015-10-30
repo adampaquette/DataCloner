@@ -6,12 +6,13 @@ namespace DataCloner.GUI.Model
 {
     class DerivativeTableModifierModel : ValidatableModel
     {
-        private string _serverId;
-        private string _database;
-        private string _schema;
-        private string _table;
-        private DerivativeTableAccess _access;
-        private bool _cascade;
+        internal string _serverId;
+        internal string _database;
+        internal string _schema;
+        internal string _table;
+        internal DerivativeTableAccess _access;
+        internal bool _cascade;
+
         private bool _isDeleted;
 
         [Required]
@@ -66,16 +67,6 @@ namespace DataCloner.GUI.Model
         public DerivativeTableModifierModel()
         {
             //Pour que le binding puisse créer une nouvelle ligne
-        }
-
-        public DerivativeTableModifierModel(IDerivativeTable derivativeTable)
-        {
-            _serverId = derivativeTable.ServerId.ToString();
-            _database = derivativeTable.Database;
-            _schema = derivativeTable.Schema;
-            _table = derivativeTable.Table;
-            _access = derivativeTable.Access;
-            _cascade = derivativeTable.Cascade;
         }
     }
 }

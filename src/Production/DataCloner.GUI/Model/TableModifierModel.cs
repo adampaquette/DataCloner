@@ -68,16 +68,16 @@ namespace DataCloner.GUI.Model
 
         public TableModifierModel(TableMetadata defaultSchema)
         {
-            _name = defaultSchema.Name;
-            _isStatic = defaultSchema.IsStatic;
+            //_name = defaultSchema.Name;
+            //_isStatic = defaultSchema.IsStatic;
 
-            _foreignKeys = new ObservableCollection<ForeignKeyModifierModel>();
-            foreach (var fk in defaultSchema.ForeignKeys)
-                _foreignKeys.Add(new ForeignKeyModifierModel(fk));
+            //_foreignKeys = new ObservableCollection<ForeignKeyModifierModel>();
+            //foreach (var fk in defaultSchema.ForeignKeys)
+            //    _foreignKeys.Add(new ForeignKeyModifierModel(fk));
 
-            _derivativeTables = new ObservableCollection<DerivativeTableModifierModel>();
-            foreach (var dt in defaultSchema.DerivativeTables)
-                _derivativeTables.Add(new DerivativeTableModifierModel(dt));
+            //_derivativeTables = new ObservableCollection<DerivativeTableModifierModel>();
+            //foreach (var dt in defaultSchema.DerivativeTables)
+            //    _derivativeTables.Add(new DerivativeTableModifierModel(dt));
 
             //_dataBuilders = new ObservableCollection<DataBuilderModel>();
             //foreach (var col in defaultSchema.ColumnsDefinition)

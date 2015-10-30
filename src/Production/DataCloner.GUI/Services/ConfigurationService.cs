@@ -341,7 +341,7 @@ namespace DataCloner.GUI.Services
                                                                              f.NameTo == mergedFkCol.NameTo);
                         if (!isDefaultFkColFound)
                         {
-                            fkAdd.Columns.Add(new ForeignKeyColumn
+                            fkAdd.Columns.Add(new DataCloner.Configuration.ForeignKeyColumn
                             {
                                 NameFrom = mergedFkCol.NameFrom,
                                 NameTo = mergedFkCol.NameTo
@@ -428,15 +428,15 @@ namespace DataCloner.GUI.Services
 
         #region Load
 
-        public static ApplicationViewModel Load(Application userConfigApp, AppMetadata defaultSchema)
+        public static ApplicationViewModel Load(Application userConfigApp, AppMetadata defaultAppMetadata)
         {
             return new ApplicationViewModel
             {
                 _id = userConfigApp.Id,
                 _name = userConfigApp.Name,
                 _connections = LoadConnections(userConfigApp.ConnectionStrings),
-                _templates = LoadTemplates(userConfigApp.ModifiersTemplates, defaultSchema),
-                _defaultMetadatas = defaultSchema
+                _templates = LoadTemplates(userConfigApp.ModifiersTemplates, defaultAppMetadata),
+                _defaultMetadatas = defaultAppMetadata
             };
         }
 
@@ -461,11 +461,11 @@ namespace DataCloner.GUI.Services
             return lstConns;
         }
 
-        private static TemplatesViewModel LoadTemplates(Modifiers userConfigTemplates, AppMetadata defaultMetadata)
+        private static TemplatesViewModel LoadTemplates(Modifiers userConfigTemplates, AppMetadata appMetadata)
         {
             var tVM = new TemplatesViewModel
             {
-                _serverModifiers = LoadServerTemplates(userConfigTemplates.ServerModifiers, defaultMetadata),
+                _serverModifiers = LoadServerTemplates(userConfigTemplates.ServerModifiers, appMetadata),
                 _databaseModifiers = new ObservableCollection<DatabaseModifierModel>(),
                 _schemaModifiers = new ObservableCollection<SchemaModifierModel>()
             };
@@ -473,7 +473,7 @@ namespace DataCloner.GUI.Services
             return tVM;
         }
 
-        private static ObservableCollection<ServerModifierModel> LoadServerTemplates(List<ServerModifier> userConfigTemplates, AppMetadata defaultMetadata)
+        private static ObservableCollection<ServerModifierModel> LoadServerTemplates(List<ServerModifier> userConfigTemplates, AppMetadata appMetadata)
         {
             var returnVM = new ObservableCollection<ServerModifierModel>();
 
@@ -481,13 +481,13 @@ namespace DataCloner.GUI.Services
             var serversToShow = userConfigTemplates;
 
             //We add the elements from the default metadata if not present.
-            var userConfigDistinctServers = userConfigTemplates.Select(s => s.Id.ParseConfigVariable().Server).Distinct();
-            var serversToAdd = defaultMetadata.Select(s => s.Key).Distinct().Except(userConfigDistinctServers);
+            var userConfigDistinctServers = userConfigTemplates.Select(s => s.Id.GetServer()).Distinct();
+            var serversToAdd = appMetadata.Select(s => s.Key).Distinct().Except(userConfigDistinctServers);
             serversToShow.AddRange(from s in serversToAdd select new ServerModifier { Id = s.ToString() });
 
             foreach (var server in serversToShow)
             {
-                var defaultSrvMetadata = GetServerMetadata(defaultMetadata, server.Id);
+                var defaultSrvMetadata = GetServerMetadata(appMetadata, server.Id);
 
                 returnVM.Add(new ServerModifierModel
                 {
@@ -502,7 +502,7 @@ namespace DataCloner.GUI.Services
             return returnVM;
         }
 
-        private static ObservableCollection<DatabaseModifierModel> LoadDatabaseTemplates(List<DatabaseModifier> userConfigTemplates, ServerMetadata defaultServerMetadata)
+        private static ObservableCollection<DatabaseModifierModel> LoadDatabaseTemplates(List<DatabaseModifier> userConfigTemplates, ServerMetadata serverMetadata)
         {
             var returnVM = new ObservableCollection<DatabaseModifierModel>();
 
@@ -510,13 +510,13 @@ namespace DataCloner.GUI.Services
             var databasesToShow = userConfigTemplates;
 
             //We add the elements from the default metadata if not present.
-            var userConfigDistinctDatabases = userConfigTemplates.Select(s => s.Name.ParseConfigVariable().Database).Distinct();
-            var databasesToAdd = defaultServerMetadata.Select(s => s.Key).Distinct().Except(userConfigDistinctDatabases);
-            databasesToShow.AddRange(from d in databasesToAdd select new DatabaseModifier {  Name = d });
+            var userConfigDistinctDatabases = userConfigTemplates.Select(s => s.Name.GetDatabase()).Distinct();
+            var databasesToAdd = serverMetadata.Select(s => s.Key).Distinct().Except(userConfigDistinctDatabases);
+            databasesToShow.AddRange(from d in databasesToAdd select new DatabaseModifier { Name = d });
 
             foreach (var database in databasesToShow)
             {
-                var defaultDbMetadata = GetDatabaseMetadata(defaultServerMetadata, database.Name);
+                var defaultDbMetadata = GetDatabaseMetadata(serverMetadata, database.Name);
 
                 returnVM.Add(new DatabaseModifierModel
                 {
@@ -531,7 +531,7 @@ namespace DataCloner.GUI.Services
             return returnVM;
         }
 
-        private static ObservableCollection<SchemaModifierModel> LoadSchemaTemplates(List<SchemaModifier> userConfigTemplates, DatabaseMetadata defaultDatabaseMetadata)
+        private static ObservableCollection<SchemaModifierModel> LoadSchemaTemplates(List<SchemaModifier> userConfigTemplates, DatabaseMetadata databaseMetadata)
         {
             var returnVM = new ObservableCollection<SchemaModifierModel>();
 
@@ -539,13 +539,13 @@ namespace DataCloner.GUI.Services
             var schemasToShow = userConfigTemplates;
 
             //We add the elements from the default metadata if not present.
-            var userConfigDistinctSchemas = userConfigTemplates.Select(s => s.Name.ParseConfigVariable().Schema).Distinct();
-            var schemasToAdd = defaultDatabaseMetadata.Select(s => s.Key).Distinct().Except(userConfigDistinctSchemas);
+            var userConfigDistinctSchemas = userConfigTemplates.Select(s => s.Name.GetSchema()).Distinct();
+            var schemasToAdd = databaseMetadata.Select(s => s.Key).Distinct().Except(userConfigDistinctSchemas);
             schemasToShow.AddRange(from d in schemasToAdd select new SchemaModifier { Name = d });
 
             foreach (var schema in schemasToShow)
             {
-                var defaultSchemaMetadata = GetSchemaMetadata(defaultDatabaseMetadata, schema.Name);
+                var defaultSchemaMetadata = GetSchemaMetadata(databaseMetadata, schema.Name);
 
                 returnVM.Add(new SchemaModifierModel
                 {
@@ -560,36 +560,51 @@ namespace DataCloner.GUI.Services
             return returnVM;
         }
 
-        private static ObservableCollection<TableModifierModel> LoadTableTemplates(List<TableModifier> userConfigTemplates, SchemaMetadata defaultSchemaMetadata)
+        private static ObservableCollection<TableModifierModel> LoadTableTemplates(List<TableModifier> userConfigTemplates, SchemaMetadata schemaMetadata)
         {
             var returnVM = new ObservableCollection<TableModifierModel>();
 
-            foreach (var table in defaultSchemaMetadata)
+            foreach (var tableMetadata in schemaMetadata)
             {
-                var userConfigTemplate = userConfigTemplates.FirstOrDefault(t => t.Name == table.Name.ToLower());
-
-                returnVM.Add(new TableModifierModel
+                var tableVM = new TableModifierModel
                 {
-                    _name = table.Name,
-                    _isStatic = table.IsStatic,                  
-                    _dataBuilders = LoadDataBuildersTemplate(userConfigTemplate.DataBuilders, table.ColumnsDefinition) //TODO : CHECK FOR NULL
-                    //_derativeTablesGlobalAccess = 
-                    //_derativeTablesGlobalCascade = 
-                    //_derivativeTables = 
-                    //_foreignKeys = 
-                });
+                    _name = tableMetadata.Name,
+                    _isStatic = tableMetadata.IsStatic
+                };
+
+                List<DataBuilder> userConfigDataBuilders = null;
+                List<DerivativeSubTable> userConfigDerivativeSubTable = null;
+
+                var userConfigTemplate = userConfigTemplates.FirstOrDefault(t => t.Name.ToLower() == tableMetadata.Name);
+                if (userConfigTemplate != null)
+                {
+                    userConfigDataBuilders = userConfigTemplate.DataBuilders;
+
+                    if(userConfigTemplate.DerativeTables!= null)
+                    {
+                        tableVM._derativeTablesGlobalAccess = userConfigTemplate.DerativeTables.GlobalAccess;
+                        tableVM._derativeTablesGlobalCascade = userConfigTemplate.DerativeTables.GlobalCascade;
+                        userConfigDerivativeSubTable = userConfigTemplate.DerativeTables.DerativeSubTables;
+                    }
+                }                
+               
+                tableVM._dataBuilders = LoadDataBuildersTemplate(userConfigDataBuilders, tableMetadata.ColumnsDefinition) ;
+                tableVM._derivativeTables = LoadDerivativeTableTemplate(userConfigDerivativeSubTable, tableMetadata.DerivativeTables);
+                //_foreignKeys = 
+                
+                returnVM.Add(tableMetadata);
             }
 
             return returnVM;
         }
 
         private static ObservableCollection<DataBuilderModel> LoadDataBuildersTemplate(IList<DataBuilder> userConfigDataBuilders,
-            IColumnDefinition[] defaultColsMetadata)
+            IColumnDefinition[] colMetadata)
         {
             var dbsVM = new ObservableCollection<DataBuilderModel>();
 
             //Load the default metadata
-            foreach (var colMetadata in defaultColsMetadata)
+            foreach (var colMetadata in colMetadata)
             {
                 dbsVM.Add(new DataBuilderModel
                 {
@@ -599,14 +614,70 @@ namespace DataCloner.GUI.Services
             }
 
             //Merge the user configuration
-            foreach (var userConfigDataBuilder in userConfigDataBuilders)
+            if (userConfigDataBuilders != null)
             {
-                var dVM = dbsVM.FirstOrDefault(db => db.ColumnName == userConfigDataBuilder.Name);
-                if (dVM != null)
-                    dVM.BuilderName = userConfigDataBuilder.BuilderName;
+                foreach (var userConfigDataBuilder in userConfigDataBuilders)
+                {
+                    var dVM = dbsVM.FirstOrDefault(db => db.ColumnName == userConfigDataBuilder.Name);
+                    if (dVM != null)
+                        dVM.BuilderName = userConfigDataBuilder.BuilderName;
+                }
             }
 
             return dbsVM;
+        }
+
+        private static ObservableCollection<DerivativeTableModifierModel> LoadDerivativeTableTemplate(IList<DerivativeSubTable> userConfigDerivativeSubTables,
+            DataCloner.Metadata.DerivativeTable[] derivativeTableMetadata)
+        {
+            var dtsVM = new ObservableCollection<DerivativeTableModifierModel>();
+
+            //Load the default metadata
+            foreach (var dtMetadata in derivativeTableMetadata)
+            {
+                dtsVM.Add(new DerivativeTableModifierModel
+                {
+                    _access = dtMetadata.Access,
+                    _cascade = dtMetadata.Cascade,
+                    _database = dtMetadata.Database, 
+                    _schema = dtMetadata.Schema,
+                    _serverId = dtMetadata.ServerId.ToString(),
+                    _table = dtMetadata.Table
+                });
+            }
+
+            //Merge the user configuration
+            if (userConfigDerivativeSubTables != null)
+            {
+                foreach (var userConfigDt in userConfigDerivativeSubTables)
+                {
+                    var dVM = dtsVM.FirstOrDefault(dt => dt.Table == userConfigDt.Table &&
+                                                         dt.Schema == userConfigDt.Schema &&
+                                                         dt.Database == userConfigDt.Database &&
+                                                         dt.ServerId == userConfigDt.ServerId);
+                    //Modification
+                    if (dVM != null)
+                    {
+                        dVM._access = userConfigDt.Access;
+                        dVM._cascade = userConfigDt.Cascade;
+                    }
+                    //Ajout
+                    else
+                    {
+                        dtsVM.Add(new DerivativeTableModifierModel
+                        {
+                            _access = userConfigDt.Access,
+                            _cascade = userConfigDt.Cascade,
+                            _database = userConfigDt.Database,
+                            _schema = userConfigDt.Schema,
+                            _serverId = userConfigDt.ServerId,
+                            _table = userConfigDt.Table
+                        });
+                    }
+                }
+            }
+
+            return dtsVM;
         }
 
         #endregion

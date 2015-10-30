@@ -330,7 +330,7 @@ namespace DataCloner.Metadata
         }
     }
 
-    internal sealed class ForeignKey : IForeignKey
+    public sealed class ForeignKey : IForeignKey
     {
         public Int16 ServerIdTo { get; set; }
         public string DatabaseTo { get; set; }
@@ -339,18 +339,18 @@ namespace DataCloner.Metadata
         public IForeignKeyColumn[] Columns { get; set; }
     }
 
-    internal sealed class ForeignKeyColumn : IForeignKeyColumn
+    public sealed class ForeignKeyColumn : IForeignKeyColumn
     {
         public string NameFrom { get; set; }
         public string NameTo { get; set; }
     }
 
-    internal sealed class UniqueKey : IUniqueKey
+    public sealed class UniqueKey : IUniqueKey
     {
         public string[] Columns { get; set; }
     }
 
-    internal sealed class ColumnDefinition : IColumnDefinition
+    public sealed class ColumnDefinition : IColumnDefinition
     {
         public string Name { get; set; }
         public DbType DbType { get; set; }
@@ -362,7 +362,7 @@ namespace DataCloner.Metadata
         public string BuilderName { get; set; }
     }
 
-    internal sealed class DerivativeTable : IDerivativeTable
+    public sealed class DerivativeTable : IDerivativeTable
     {
         public Int16 ServerId { get; set; }
         public string Database { get; set; }

@@ -52,9 +52,9 @@ namespace DataCloner.Configuration
                     Int16.TryParse(value.Substring(posVar, posVarEnd - posVar), out server);
                 }
                 else if (i == 1)
-                    database = value.Substring(posVar, posVarEnd - posVar);
+                    database = value.Substring(posVar, posVarEnd - posVar).ToLower();
                 else if (i == 2)
-                    schema = value.Substring(posVar, posVarEnd - posVar);
+                    schema = value.Substring(posVar, posVarEnd - posVar).ToLower();
 
                 currentPos = posVarEnd;
             }
@@ -64,6 +64,31 @@ namespace DataCloner.Configuration
             
             return new ConfigVariable(key, server, database, schema);
         }
+
+        public static Int16 GetServer(this string value)
+        {
+            if (value.IsVariable())
+                return value.ParseConfigVariable().Server;
+
+            Int16 server;
+            Int16.TryParse(value, out server);
+            return server;
+        }
+
+        public static string GetDatabase(this string value)
+        {
+            if (value.IsVariable())
+                return value.ParseConfigVariable().Database;
+            return value.ToLower();
+        }
+
+        public static string GetSchema(this string value)
+        {
+            if (value.IsVariable())
+                return value.ParseConfigVariable().Schema;
+            return value.ToLower();
+        }
+
 
         public static bool IsVariable(this string value)
         {
