@@ -8,13 +8,13 @@ namespace DataCloner.GUI.Model
 {
     class ForeignKeyModifierModel : ValidatableModel
     {
-        private string _serverIdTo;
-        private string _databaseTo;
-        private string _schemaTo;
-        private string _tableTo;
-        private bool _isDeleted;
-        private ObservableCollection<ForeignKeyColumnModifierModel> _columns;
+        internal string _serverIdTo;
+        internal string _databaseTo;
+        internal string _schemaTo;
+        internal string _tableTo;
+        internal ObservableCollection<ForeignKeyColumnModifierModel> _columns;
 
+        private bool _isDeleted;
 
         [Required]
         public string ServerIdTo
@@ -60,18 +60,6 @@ namespace DataCloner.GUI.Model
         {
             //Pour que le binding puisse créer une nouvelle ligne
             _columns = new ObservableCollection<ForeignKeyColumnModifierModel>();
-        }
-
-        public ForeignKeyModifierModel(IForeignKey fk)
-        {
-            _serverIdTo = fk.ServerIdTo.ToString();
-            _databaseTo = fk.DatabaseTo;
-            _schemaTo = fk.SchemaTo;
-            _tableTo = fk.TableTo;
-
-            _columns = new ObservableCollection<ForeignKeyColumnModifierModel>();
-            foreach (var col in fk.Columns)
-                _columns.Add(new ForeignKeyColumnModifierModel(col));
         }
     }
 }

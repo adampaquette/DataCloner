@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DataCloner.Configuration
 {
@@ -35,7 +31,6 @@ namespace DataCloner.Configuration
             if (pos != 0) return null;
 
             int currentPos = 1;
-            int valueCounter = 0;
             Int16 server = 0;
             string key, database, schema;
             key = database = schema = string.Empty;
@@ -96,5 +91,4 @@ namespace DataCloner.Configuration
             return value.StartsWith("{$") && value.EndsWith("}");
         }
     }
-
 }

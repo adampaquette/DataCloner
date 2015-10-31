@@ -7,8 +7,9 @@ namespace DataCloner.GUI.Model
 {
     class ForeignKeyColumnModifierModel : ValidatableModel
     {
-        private string _nameFrom;
-        private string _nameTo;
+        internal string _nameFrom;
+        internal string _nameTo;
+
         private bool _isDeleted;
 
 

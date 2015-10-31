@@ -1,12 +1,11 @@
 ﻿using DataCloner.Configuration;
-using DataCloner.Framework;
 using DataCloner.GUI.Model;
 using DataCloner.GUI.ViewModel;
+using DataCloner.Metadata;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using DataCloner.Metadata;
 
 namespace DataCloner.GUI.Services
 {
@@ -93,11 +92,14 @@ namespace DataCloner.GUI.Services
                 mergedServer.UseTemplateId != 0)
                 hasChange = true;
 
-            foreach (var mergedDatabase in mergedServer.Databases)
+            if (mergedServer.Databases != null)
             {
-                var defaultDatabaseSchema = GetDatabaseMetadata(defaultServerSchema, mergedDatabase.Name);
-                if (MergeDatabase(mergedDatabase, userConfigServer.Databases, defaultDatabaseSchema))
-                    hasChange = true;
+                foreach (var mergedDatabase in mergedServer.Databases)
+                {
+                    var defaultDatabaseSchema = GetDatabaseMetadata(defaultServerSchema, mergedDatabase.Name);
+                    if (MergeDatabase(mergedDatabase, userConfigServer.Databases, defaultDatabaseSchema))
+                        hasChange = true;
+                }
             }
 
             //If no change has been detected with the default config
@@ -133,11 +135,14 @@ namespace DataCloner.GUI.Services
                 mergedDatabase.UseTemplateId != 0)
                 hasChange = true;
 
-            foreach (var mergedSchema in mergedDatabase.Schemas)
+            if (mergedDatabase.Schemas != null)
             {
-                var defaultSchema = GetSchemaMetadata(defaultDatabaseSchema, mergedSchema.Name);
-                if (MergeSchema(mergedSchema, userConfigDatabase.Schemas, defaultSchema))
-                    hasChange = true;
+                foreach (var mergedSchema in mergedDatabase.Schemas)
+                {
+                    var defaultSchema = GetSchemaMetadata(defaultDatabaseSchema, mergedSchema.Name);
+                    if (MergeSchema(mergedSchema, userConfigDatabase.Schemas, defaultSchema))
+                        hasChange = true;
+                }
             }
 
             //If no change has been detected with the default config
@@ -173,11 +178,14 @@ namespace DataCloner.GUI.Services
                 mergedSchema.UseTemplateId != 0)
                 hasChange = true;
 
-            foreach (var mergedTable in mergedSchema.Tables)
+            if (mergedSchema.Tables != null)
             {
-                var defaultTable = defaultSchema.FirstOrDefault(t => t.Name == mergedTable.Name);
-                if (MergeTable(mergedTable, userConfigSchema.Tables, defaultTable))
-                    hasChange = true;
+                foreach (var mergedTable in mergedSchema.Tables)
+                {
+                    var defaultTable = defaultSchema.FirstOrDefault(t => t.Name == mergedTable.Name);
+                    if (MergeTable(mergedTable, userConfigSchema.Tables, defaultTable))
+                        hasChange = true;
+                }
             }
 
             //If no change has been detected with the default config
@@ -574,37 +582,41 @@ namespace DataCloner.GUI.Services
 
                 List<DataBuilder> userConfigDataBuilders = null;
                 List<DerivativeSubTable> userConfigDerivativeSubTable = null;
+                ForeignKeys userConfigFk = null;
 
                 var userConfigTemplate = userConfigTemplates.FirstOrDefault(t => t.Name.ToLower() == tableMetadata.Name);
                 if (userConfigTemplate != null)
                 {
                     userConfigDataBuilders = userConfigTemplate.DataBuilders;
 
-                    if(userConfigTemplate.DerativeTables!= null)
+                    if (userConfigTemplate.DerativeTables != null)
                     {
                         tableVM._derativeTablesGlobalAccess = userConfigTemplate.DerativeTables.GlobalAccess;
                         tableVM._derativeTablesGlobalCascade = userConfigTemplate.DerativeTables.GlobalCascade;
                         userConfigDerivativeSubTable = userConfigTemplate.DerativeTables.DerativeSubTables;
                     }
-                }                
-               
-                tableVM._dataBuilders = LoadDataBuildersTemplate(userConfigDataBuilders, tableMetadata.ColumnsDefinition) ;
+
+                    if (userConfigTemplate.ForeignKeys != null)
+                        userConfigFk = userConfigTemplate.ForeignKeys;
+                }
+
+                tableVM._dataBuilders = LoadDataBuildersTemplate(userConfigDataBuilders, tableMetadata.ColumnsDefinition);
                 tableVM._derivativeTables = LoadDerivativeTableTemplate(userConfigDerivativeSubTable, tableMetadata.DerivativeTables);
-                //_foreignKeys = 
-                
-                returnVM.Add(tableMetadata);
+                tableVM._foreignKeys = LoadForeingKeyTemplate(userConfigFk, tableMetadata.ForeignKeys);
+
+                returnVM.Add(tableVM);
             }
 
             return returnVM;
         }
 
         private static ObservableCollection<DataBuilderModel> LoadDataBuildersTemplate(IList<DataBuilder> userConfigDataBuilders,
-            IColumnDefinition[] colMetadata)
+            IColumnDefinition[] colMetadatas)
         {
             var dbsVM = new ObservableCollection<DataBuilderModel>();
 
             //Load the default metadata
-            foreach (var colMetadata in colMetadata)
+            foreach (var colMetadata in colMetadatas)
             {
                 dbsVM.Add(new DataBuilderModel
                 {
@@ -628,18 +640,18 @@ namespace DataCloner.GUI.Services
         }
 
         private static ObservableCollection<DerivativeTableModifierModel> LoadDerivativeTableTemplate(IList<DerivativeSubTable> userConfigDerivativeSubTables,
-            DataCloner.Metadata.DerivativeTable[] derivativeTableMetadata)
+            IDerivativeTable[] derivativeTableMetadatas)
         {
             var dtsVM = new ObservableCollection<DerivativeTableModifierModel>();
 
             //Load the default metadata
-            foreach (var dtMetadata in derivativeTableMetadata)
+            foreach (var dtMetadata in derivativeTableMetadatas)
             {
                 dtsVM.Add(new DerivativeTableModifierModel
                 {
                     _access = dtMetadata.Access,
                     _cascade = dtMetadata.Cascade,
-                    _database = dtMetadata.Database, 
+                    _database = dtMetadata.Database,
                     _schema = dtMetadata.Schema,
                     _serverId = dtMetadata.ServerId.ToString(),
                     _table = dtMetadata.Table
@@ -678,6 +690,62 @@ namespace DataCloner.GUI.Services
             }
 
             return dtsVM;
+        }
+
+        private static ObservableCollection<ForeignKeyModifierModel> LoadForeingKeyTemplate(ForeignKeys userConfigFks, IForeignKey[] fkMetadatas)
+        {
+            var fksVM = new ObservableCollection<ForeignKeyModifierModel>();
+
+            //Load the default metadata
+            foreach (var fkMetadata in fkMetadatas)
+            {
+                fksVM.Add(new ForeignKeyModifierModel
+                {
+                    _serverIdTo = fkMetadata.ServerIdTo.ToString(),
+                    _databaseTo = fkMetadata.DatabaseTo,
+                    _schemaTo = fkMetadata.SchemaTo,
+                    _tableTo = fkMetadata.TableTo,
+                    _columns = new ObservableCollection<ForeignKeyColumnModifierModel>(                    
+                         (from c in fkMetadata.Columns select new ForeignKeyColumnModifierModel { _nameFrom = c.NameFrom, _nameTo = c.NameTo }))
+                });
+            }
+
+            //Merge the user configuration
+            if (userConfigFks != null)
+            {
+                //Remove
+                foreach (var userConfigfk in userConfigFks.ForeignKeyRemove.Columns)
+                {
+                    var fks = fksVM.Where(f => f.Columns.Any(c => c.NameFrom == userConfigfk.Name));
+                    foreach (var fk in fks)
+                        fk.IsDeleted = true;
+                }
+
+                //Add
+                foreach (var userConfigfk in userConfigFks.ForeignKeyAdd)
+                {
+                    var exists = fksVM.Any(f => f.ServerIdTo == userConfigfk.ServerId.ToString() &&
+                                                f.DatabaseTo == userConfigfk.Database &&
+                                                f.SchemaTo == userConfigfk.Schema &&
+                                                f.TableTo == userConfigfk.Table &&
+                                                f.Columns.Select(c => c.NameFrom + c.NameTo).Intersect(
+                                                    userConfigfk.Columns.Select(c => c.NameFrom + c.NameTo)).Count() == f.Columns.Count);
+                    if (!exists)
+                    {
+                        fksVM.Add(new ForeignKeyModifierModel
+                        {
+                            _serverIdTo = userConfigfk.ServerId,
+                            _databaseTo = userConfigfk.Database,
+                            _schemaTo = userConfigfk.Schema,
+                            _tableTo = userConfigfk.Table,
+                            _columns = new ObservableCollection<ForeignKeyColumnModifierModel>(
+                                (from c in userConfigfk.Columns select new ForeignKeyColumnModifierModel { _nameFrom = c.NameFrom, _nameTo = c.NameTo }))
+                        });
+                    }
+                }
+            }
+
+            return fksVM;
         }
 
         #endregion
