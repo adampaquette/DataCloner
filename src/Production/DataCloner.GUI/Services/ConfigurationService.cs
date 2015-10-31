@@ -89,7 +89,8 @@ namespace DataCloner.GUI.Services
             userConfigServer.Description = mergedServer.Description;
 
             if (mergedServer.TemplateId != 0 ||
-                mergedServer.UseTemplateId != 0)
+                mergedServer.UseTemplateId != 0 ||
+                !String.IsNullOrEmpty(mergedServer.Description))
                 hasChange = true;
 
             if (mergedServer.Databases != null)
@@ -132,7 +133,8 @@ namespace DataCloner.GUI.Services
             userConfigDatabase.Description = mergedDatabase.Description;
 
             if (mergedDatabase.TemplateId != 0 ||
-                mergedDatabase.UseTemplateId != 0)
+                mergedDatabase.UseTemplateId != 0 ||
+                !String.IsNullOrEmpty(mergedDatabase.Description))
                 hasChange = true;
 
             if (mergedDatabase.Schemas != null)
@@ -175,7 +177,8 @@ namespace DataCloner.GUI.Services
             userConfigSchema.Description = mergedSchema.Description;
 
             if (mergedSchema.TemplateId != 0 ||
-                mergedSchema.UseTemplateId != 0)
+                mergedSchema.UseTemplateId != 0 ||
+                !String.IsNullOrEmpty(mergedSchema.Description))
                 hasChange = true;
 
             if (mergedSchema.Tables != null)
@@ -574,12 +577,9 @@ namespace DataCloner.GUI.Services
 
             foreach (var tableMetadata in schemaMetadata)
             {
-                var tableVM = new TableModifierModel
-                {
-                    _name = tableMetadata.Name,
-                    _isStatic = tableMetadata.IsStatic
-                };
-
+                var tableVM = new TableModifierModel();
+                tableVM._name = tableMetadata.Name;
+                
                 List<DataBuilder> userConfigDataBuilders = null;
                 List<DerivativeSubTable> userConfigDerivativeSubTable = null;
                 ForeignKeys userConfigFk = null;
@@ -598,12 +598,14 @@ namespace DataCloner.GUI.Services
 
                     if (userConfigTemplate.ForeignKeys != null)
                         userConfigFk = userConfigTemplate.ForeignKeys;
+
+                    tableVM._isStatic = userConfigTemplate.IsStatic;
                 }
 
                 tableVM._dataBuilders = LoadDataBuildersTemplate(userConfigDataBuilders, tableMetadata.ColumnsDefinition);
                 tableVM._derivativeTables = LoadDerivativeTableTemplate(userConfigDerivativeSubTable, tableMetadata.DerivativeTables);
                 tableVM._foreignKeys = LoadForeingKeyTemplate(userConfigFk, tableMetadata.ForeignKeys);
-
+                
                 returnVM.Add(tableVM);
             }
 
@@ -683,7 +685,7 @@ namespace DataCloner.GUI.Services
                             _database = userConfigDt.Database,
                             _schema = userConfigDt.Schema,
                             _serverId = userConfigDt.ServerId,
-                            _table = userConfigDt.Table
+                            _table = userConfigDt.Table, 
                         });
                     }
                 }
