@@ -160,7 +160,7 @@ namespace DataCloner
 		    var dc = new Cloner {EnforceIntegrity = false};
 		    dc.StatusChanged += OnStatusChanged;
 
-			var config = Configuration.ConfigurationContainer.Load(Configuration.ConfigurationContainer.ConfigFileName);
+			var config = Configuration.ProjectContainer.Load("northWind.dcProj");
 			
 			var start = DateTime.Now;
 

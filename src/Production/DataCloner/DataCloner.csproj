@@ -103,7 +103,6 @@
     <Compile Include="Internal\ServerIdentifier.cs" />
     <Compile Include="Internal\CircularKeyJob.cs" />
     <Compile Include="Configuration\ClonerBehaviorExtension.cs" />
-    <Compile Include="Configuration\Application.cs" />
     <Compile Include="Configuration\ClonerBehaviour.cs" />
     <Compile Include="Configuration\Map.cs" />
     <Compile Include="Internal\ColumnsWithValue.cs" />
@@ -144,7 +143,7 @@
     <Compile Include="Internal\IIdentifier.cs" />
     <Compile Include="Data\IQueryHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Configuration\ConfigurationContainer.cs" />
+    <Compile Include="Configuration\ProjectContainer.cs" />
     <Compile Include="Configuration\Connection.cs" />
     <Compile Include="Configuration\Modifiers.cs" />
     <Compile Include="Settings.cs" />
@@ -184,7 +183,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="dc.config">
+    <None Include="northWind.dcproj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="packages.config">

@@ -7,11 +7,11 @@ namespace DataCloner.Configuration
     [Serializable]
     public class Modifiers
     {
-        [XmlElement("ServerModifier")]
+        [XmlElement("Server")]
         public List<ServerModifier> ServerModifiers { get; set; }
-        [XmlElement("DatabaseModifier")]
+        [XmlElement("Database")]
         public List<DatabaseModifier> DatabaseModifiers { get; set; }
-        [XmlElement("SchemaModifier")]
+        [XmlElement("Schema")]
         public List<SchemaModifier> SchemaModifiers { get; set; }
 
         public Modifiers()
@@ -33,7 +33,7 @@ namespace DataCloner.Configuration
         public Int16 TemplateId { get; set; }
         [XmlAttribute]
         public Int16 UseTemplateId { get; set; }
-        [XmlElement("DatabaseModifier")]
+        [XmlElement("Database")]
         public List<DatabaseModifier> Databases { get; set; }
 
         public ServerModifier()
@@ -53,7 +53,7 @@ namespace DataCloner.Configuration
         public Int16 TemplateId { get; set; }
         [XmlAttribute]
         public Int16 UseTemplateId { get; set; }
-        [XmlElement("SchemaModifier")]
+        [XmlElement("Schema")]
         public List<SchemaModifier> Schemas { get; set; }
 
         public DatabaseModifier()
@@ -73,7 +73,7 @@ namespace DataCloner.Configuration
         public Int16 TemplateId { get; set; }
         [XmlAttribute]
         public Int16 UseTemplateId { get; set; }
-        [XmlElement("TableModifier")]
+        [XmlElement("Table")]
         public List<TableModifier> Tables { get; set; }
 
         public SchemaModifier()

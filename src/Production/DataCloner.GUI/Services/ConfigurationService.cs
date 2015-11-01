@@ -18,23 +18,15 @@ namespace DataCloner.GUI.Services
         /// </summary>
         /// <param name="appVM">In-memory application view model.</param>
         /// <param name="defaultSchema">Schema of the plain old database.</param>
-        public static void Save(this ApplicationViewModel appVM, Metadata.AppMetadata defaultSchema)
+        public static void Save(this ApplicationViewModel appVM, AppMetadata defaultSchema, string path)
         {
-            var config = ConfigurationContainer.Load(ConfigurationContainer.ConfigFileName);
-            var app = config.Applications.FirstOrDefault(a => a.Id == appVM.Id);
+            var proj = new ProjectContainer();
 
-            if (app == null)
-            {
-                app = new Application();
-                app.Id = appVM.Id;
-                config.Applications.Add(app);
-            }
+            proj.Name = appVM.Name;
+            proj.ConnectionStrings = CreateConnectionStrings(appVM.Connections.Connections);
+            proj.ModifiersTemplates = CreateTemplates(appVM.Templates.ServerModifiers, defaultSchema);
 
-            app.Name = appVM.Name;
-            app.ConnectionStrings = CreateConnectionStrings(appVM.Connections.Connections);
-            app.ModifiersTemplates = CreateTemplates(appVM.Templates.ServerModifiers, defaultSchema);
-
-            config.Save(ConfigurationContainer.ConfigFileName);
+            proj.Save(path);
         }
 
         private static List<Connection> CreateConnectionStrings(IEnumerable<ConnectionViewModel> connVM)
@@ -441,14 +433,13 @@ namespace DataCloner.GUI.Services
 
         #region Load
 
-        public static ApplicationViewModel Load(Application userConfigApp, AppMetadata defaultAppMetadata)
+        public static ApplicationViewModel Load(ProjectContainer proj, AppMetadata defaultAppMetadata)
         {
             return new ApplicationViewModel
             {
-                _id = userConfigApp.Id,
-                _name = userConfigApp.Name,
-                _connections = LoadConnections(userConfigApp.ConnectionStrings),
-                _templates = LoadTemplates(userConfigApp.ModifiersTemplates, defaultAppMetadata),
+                _name = proj.Name,
+                _connections = LoadConnections(proj.ConnectionStrings),
+                _templates = LoadTemplates(proj.ModifiersTemplates, defaultAppMetadata),
                 _defaultMetadatas = defaultAppMetadata
             };
         }

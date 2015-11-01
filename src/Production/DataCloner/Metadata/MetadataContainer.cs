@@ -40,12 +40,12 @@ namespace DataCloner.Metadata
         {
             if (dispatcher == null) throw new ArgumentNullException("dispatcher");
             if (settings == null) throw new ArgumentNullException("settings");
-            if (settings.Application == null) throw new ArgumentNullException("app");
-            if (settings.Application.ConnectionStrings != null && 
-                !settings.Application.ConnectionStrings.Any()) throw new NullReferenceException("ConnectionStrings");
+            if (settings.Project == null) throw new ArgumentNullException("app");
+            if (settings.Project.ConnectionStrings != null && 
+                !settings.Project.ConnectionStrings.Any()) throw new NullReferenceException("ConnectionStrings");
 
-            var app = settings.Application;
-            var map = settings.Application.Maps.FirstOrDefault(m => m.Id == settings.MapId);
+            var app = settings.Project;
+            var map = settings.Project.Maps.FirstOrDefault(m => m.Id == settings.MapId);
             if (map == null)
                 throw new Exception(string.Format("Map id '{0}' not found in configuration file for application '{1}'!", settings.MapId, app.Name));
 
@@ -94,20 +94,20 @@ namespace DataCloner.Metadata
         /// Verify if the last build of the container's metadata still match with the sql servers (application's connectionStrings).
         /// </summary>
         /// <param name="dispatcher">Query dispatcher</param>
-        /// <param name="app">Application user config</param>
+        /// <param name="proj">Project config</param>
         /// <param name="container">Metadata container</param>
-        public static void VerifyIntegrityOfSqlMetadata(IQueryDispatcher dispatcher, Application app, ref MetadataContainer container)
+        public static void VerifyIntegrityOfSqlMetadata(IQueryDispatcher dispatcher, ProjectContainer proj, ref MetadataContainer container)
         {
             if (dispatcher == null) throw new ArgumentNullException("dispatcher");
-            if (app == null) throw new ArgumentNullException("app");
-            if (app.ConnectionStrings != null && !app.ConnectionStrings.Any()) throw new NullReferenceException("ConnectionStrings");
+            if (proj == null) throw new ArgumentNullException("app");
+            if (proj.ConnectionStrings != null && !proj.ConnectionStrings.Any()) throw new NullReferenceException("ConnectionStrings");
 
-            var containerFileName = app.Name + ".schema";
+            var containerFileName = proj.Name + ".schema";
 
             //Hash the connnectionStrings to see if it match the last build
             var configData = new MemoryStream();
             var bf = new BinaryFormatter();
-            bf.Serialize(configData, app.ConnectionStrings);
+            bf.Serialize(configData, proj.ConnectionStrings);
             configData.Position = 0;
 
             HashAlgorithm murmur = MurmurHash.Create32(managed: false);
@@ -122,7 +122,7 @@ namespace DataCloner.Metadata
                 dispatcher.InitProviders(container);
             //We rebuild the container
             else
-                container = BuildMetadata(dispatcher, containerFileName, app.ConnectionStrings, configHash);
+                container = BuildMetadata(dispatcher, containerFileName, proj.ConnectionStrings, configHash);
         }
 
         public void Serialize(Stream stream)
@@ -173,13 +173,13 @@ namespace DataCloner.Metadata
         /// </summary>
         /// <param name="dispatcher"></param>
         /// <param name="containerFileName"></param>
-        /// <param name="app"></param>
+        /// <param name="proj"></param>
         /// <param name="clonerBehaviour"></param>
         /// <param name="map"></param>
         /// <param name="configHash"></param>
         /// <returns></returns>
         private static MetadataContainer BuildMetadataWithSettings(IQueryDispatcher dispatcher, string containerFileName,
-                                                                   Application app, ClonerBehaviour clonerBehaviour,
+                                                                   ProjectContainer proj, ClonerBehaviour clonerBehaviour,
                                                                    Map map, string configHash)
         {
             var container = new MetadataContainer { ConfigFileHash = configHash, ServerMap = map.ConvertToDictionnary() };
@@ -204,14 +204,14 @@ namespace DataCloner.Metadata
             //    container.ConnectionStrings.Add(new SqlConnection(cs.Id, cs.ProviderName, cs.ConnectionString));
 
             //Copy connection strings
-            foreach (var cs in app.ConnectionStrings)
+            foreach (var cs in proj.ConnectionStrings)
                 container.ConnectionStrings.Add(new SqlConnection(cs.Id, cs.ProviderName, cs.ConnectionString));
 
             if (container.ConnectionStrings.Count() == 0)
                 throw new Exception("No connectionStrings!");
 
             FetchMetadata(dispatcher, ref container);
-            var behaviour = clonerBehaviour.Build(app.ModifiersTemplates, map.Variables);
+            var behaviour = clonerBehaviour.Build(proj.ModifiersTemplates, map.Variables);
             container.Metadatas.FinalizeMetadata(behaviour);
 
             //Save container

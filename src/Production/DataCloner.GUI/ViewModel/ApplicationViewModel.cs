@@ -67,7 +67,7 @@ namespace DataCloner.GUI.ViewModel
                 throw new InvalidOperationException("You must not call Save when CanSave returns false.");
             }
 
-            this.Save(_defaultMetadatas);
+            this.Save(_defaultMetadatas, "northWind.dcproj");
         }
     }
 }

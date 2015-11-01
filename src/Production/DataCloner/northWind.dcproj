@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="0.1" Name="NorthWind">
+    <ConnectionStrings>
+        <Add Id="1" Name="NorthWind_UNI" ProviderName="System.Data.SqlClient" ConnectionString="Data Source=(localdb)\MSSQLLocalDB;Integrated Security=True;Initial Catalog=Northwind;AttachDbFileName=|DataDirectory|\NORTHWND.mdf" />
+    </ConnectionStrings>
+    <ModifiersTemplates>
+        <ServerModifier Id="{$SERVER_SOURCE_NORTHWIND{1}}" TemplateId="1" >
+            <DatabaseModifier Name="NORTHWIND" TemplateId="1">
+                <SchemaModifier Name="dbo" TemplateId="1">
+                    <TableModifier Name="Employees" IsStatic="true"/>
+                </SchemaModifier>
+            </DatabaseModifier>
+        </ServerModifier>
+    </ModifiersTemplates>
+    <ClonerBehaviours>
+        <ClonerBehaviour Id="1" Name="Default" Description="Configuration par défaut"/>
+        <ClonerBehaviour Id="2" Name="Static" Description="">
+            <Modifiers>
+                <ServerModifier Id="{$SERVER_SOURCE_NORTHWIND}"  UseTemplateId="1"/>
+            </Modifiers>
+        </ClonerBehaviour>
+    </ClonerBehaviours>
+    <Maps>
+        <Map Id="1" From="testMSSQL" To="testMSSQL" UsableBehaviours="1,2">
+            <Variables>
+                <Var Name="{$SERVER_SOURCE_NORTHWIND}" Value="1"/>
+            </Variables>
+            <Road ServerSrc="{$SERVER_SOURCE_NORTHWIND}" DatabaseSrc="northwind" SchemaSrc="dbo"
+					ServerDst="{$SERVER_SOURCE_NORTHWIND}" DatabaseDst="northwind" SchemaDst="dbo"/>
+        </Map>
+    </Maps>
+</Project>

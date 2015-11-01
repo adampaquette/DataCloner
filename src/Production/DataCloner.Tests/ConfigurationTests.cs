@@ -8,15 +8,13 @@ namespace DataCloner.Tests
 {
     public class ConfigurationTests
     {
-        private readonly ConfigurationContainer _config;
+        private readonly ProjectContainer _proj;
 
         public ConfigurationTests()
         {
-            _config = new ConfigurationContainer();
-
-            var app = new Application {Name = "MainApp"};
-            app.ConnectionStrings.Add(new Connection(1, "PROD", "DataCloner.Data.QueryProviderMySql", "server=localhost;user id=root; password=cdxsza; database=mysql; pooling=false"));
-            app.ConnectionStrings.Add(new Connection(2, "UNI", "DataCloner.Data.QueryProviderMySql", "server=localhost;user id=root; password=cdxsza; database=mysql; pooling=false"));
+            _proj = new ProjectContainer {Name = "MainApp"};
+            _proj.ConnectionStrings.Add(new Connection(1, "PROD", "DataCloner.Data.QueryProviderMySql", "server=localhost;user id=root; password=cdxsza; database=mysql; pooling=false"));
+            _proj.ConnectionStrings.Add(new Connection(2, "UNI", "DataCloner.Data.QueryProviderMySql", "server=localhost;user id=root; password=cdxsza; database=mysql; pooling=false"));
 
             var table1 = new TableModifier
             {
@@ -112,9 +110,9 @@ namespace DataCloner.Tests
                 //Servers = new List<ServerModifier> { server1 }
             };
 
-            app.ClonerBehaviours.Add(clonerBehaviour);
+            _proj.ClonerBehaviours.Add(clonerBehaviour);
 
-            app.Maps = new List<Map>
+            _proj.Maps = new List<Map>
             {
                 new Map
                 {
@@ -135,8 +133,6 @@ namespace DataCloner.Tests
                      }
                 }
             };
-
-            _config.Applications.Add(app);
         }
 
         [Fact]
@@ -144,8 +140,8 @@ namespace DataCloner.Tests
         {
             const string fileName = "dcSaveLoadConfigFile.config";
             
-            _config.Save(fileName);
-            var configLoaded = ConfigurationContainer.Load(fileName);
+            _proj.Save(fileName);
+            var configLoaded = ProjectContainer.Load(fileName);
             //var temp = _config.SerializeXml();
 
             File.Delete(fileName);

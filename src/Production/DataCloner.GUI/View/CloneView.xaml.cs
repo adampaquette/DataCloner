@@ -25,8 +25,7 @@ namespace DataCloner.GUI.View
 
         private Cloner _cloner = new Cloner();
         private BackgroundWorker _cloneWorker;
-        private Configuration.ConfigurationContainer _config = Configuration.ConfigurationContainer.Load(Configuration.ConfigurationContainer.ConfigFileName);
-        private DataCloner.Configuration.Application _selectedApp;
+        private ProjectContainer _proj;
         private IEnumerable<Map> _maps;
         private Map _fromMaps;
 
@@ -49,57 +48,37 @@ namespace DataCloner.GUI.View
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            cbApp.ItemsSource = _config.Applications;
-
             chkSimulation.IsChecked = Properties.Settings.Default.IsSimulation;
             chkOptimisation.IsChecked = Properties.Settings.Default.DoOptimisation;
 
+            _proj = ProjectContainer.Load("northWind.dcproj");
+
+            cbDatabaseConfig.ItemsSource = _proj.ClonerBehaviours;
+
             //Tente de charger la préférence utilisateur
-            var app = _config.Applications.FirstOrDefault(a => a.Id == Properties.Settings.Default.ApplicationId);
-            if (app != null)
-                cbApp.SelectedItem = app;
+            var config = _proj.ClonerBehaviours.FirstOrDefault(c => c.Id == Properties.Settings.Default.DatabaseConfigId);
+            if (config != null)
+                cbDatabaseConfig.SelectedItem = config;
             else
             {
-                if (_config.Applications.Count == 1)
-                    cbApp.SelectedIndex = 0;
-            }
-        }
-
-        private void CbApp_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (_config == null || _config.Applications == null)
-                return;
-
-            _selectedApp = _config.Applications.FirstOrDefault(a => a.Id == (Int16)cbApp.SelectedValue);
-            if (_selectedApp != null)
-            {
-                Properties.Settings.Default.ApplicationId = _selectedApp.Id;
-                Properties.Settings.Default.Save();
-
-                cbDatabaseConfig.ItemsSource = _selectedApp.ClonerBehaviours;
-
-                //Tente de charger la préférence utilisateur
-                var config = _selectedApp.ClonerBehaviours.FirstOrDefault(c => c.Id == Properties.Settings.Default.DatabaseConfigId);
-                if (config != null)
-                    cbDatabaseConfig.SelectedItem = config;
-                else
-                {
-                    if (_selectedApp.ClonerBehaviours.Count == 1)
-                        cbDatabaseConfig.SelectedIndex = 0;
-                }
+                if (_proj.ClonerBehaviours.Count == 1)
+                    cbDatabaseConfig.SelectedIndex = 0;
             }
         }
 
         private void CbDatabaseConfig_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (_selectedApp == null || _selectedApp.Maps == null)
+            if (_proj == null || _proj.Maps == null)
                 return;
 
-            _maps = _selectedApp.Maps.Where(m => m.UsableBehaviours.Split(',').Contains(cbDatabaseConfig.SelectedValue.ToString()));
+            _maps = _proj.Maps.Where(m => m.UsableBehaviours.Split(',').Contains(cbDatabaseConfig.SelectedValue.ToString()));
             if (_maps != null)
             {
-                Properties.Settings.Default.DatabaseConfigId = (Int16)cbDatabaseConfig.SelectedValue;
-                Properties.Settings.Default.Save();
+                if (cbDatabaseConfig.SelectedValue != null)
+                {
+                    Properties.Settings.Default.DatabaseConfigId = (Int16)cbDatabaseConfig.SelectedValue;
+                    Properties.Settings.Default.Save();
+                }
 
                 cbSourceEnvir.ItemsSource = _maps;
 
@@ -165,7 +144,7 @@ namespace DataCloner.GUI.View
                 var configId = (Int16)cbDatabaseConfig.SelectedValue;
                 var selectedSettings = new Settings
                 {
-                    Application = _selectedApp,
+                    Project = _proj,
                     MapId = map.Id,
                     BehaviourId = configId
                 };

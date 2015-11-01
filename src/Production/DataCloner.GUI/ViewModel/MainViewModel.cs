@@ -10,20 +10,17 @@ namespace DataCloner.GUI.ViewModel
 {
     class MainViewModel : ViewModelBase
     {
-        private ConfigurationContainer _config;
+        private ProjectContainer _proj;
         private ApplicationViewModel _currentApp;
 
         public MainViewModel()
         {
-            _config = ConfigurationContainer.Load(ConfigurationContainer.ConfigFileName);
-            var app = _config.Applications.FirstOrDefault(a => a.Id == Properties.Settings.Default.DefaultAppId);
-            if (app == null)
-                app = _config.Applications.FirstOrDefault();
+            _proj = ProjectContainer.Load("northWind.dcproj");
 
             var defaultMetadata = new MetadataContainer();
-            MetadataContainer.VerifyIntegrityOfSqlMetadata(new QueryDispatcher(), app, ref defaultMetadata);
+            MetadataContainer.VerifyIntegrityOfSqlMetadata(new QueryDispatcher(), _proj, ref defaultMetadata);
 
-            _currentApp = ConfigurationService.Load(app, defaultMetadata.Metadatas);
+            _currentApp = ConfigurationService.Load(_proj, defaultMetadata.Metadatas);
         }
 
         public ApplicationViewModel CurrentApp
