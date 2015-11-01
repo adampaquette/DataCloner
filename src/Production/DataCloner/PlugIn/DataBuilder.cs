@@ -20,6 +20,15 @@ namespace DataCloner.PlugIn
             };
         }
 
+        public static bool IsDataColumnBuildable(this IColumnDefinition col)
+        {
+            if (!string.IsNullOrWhiteSpace(col.BuilderName))
+                return true;
+            else if (((col.IsPrimary && !col.IsAutoIncrement) || col.IsUniqueKey) && !col.IsForeignKey)
+                return true;
+            return false;
+        }
+
         public static object BuildDataColumn(IQueryHelper queryHelper, Int16 serverId, string database, string schema, ITableMetadata table, IColumnDefinition col)
         {
             IDataBuilder builder = null;

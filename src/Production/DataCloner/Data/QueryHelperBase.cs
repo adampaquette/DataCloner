@@ -381,7 +381,12 @@ namespace DataCloner.Data
                         var sqlVarName = "@" + tableMetadata.ColumnsDefinition[i].Name.FormatSqlParam() + step.StepId;
                         var p = cmd.CreateParameter();
                         p.ParameterName = sqlVarName;
-                        p.Value = step.DataRow[i];
+
+                        if(col.IsDataColumnBuildable())
+                            p.Value = DataBuilder.BuildDataColumn(this, step.DestinationTable.ServerId, step.DestinationTable.Database,
+                                                                  step.DestinationTable.Schema, step.TableSchema, col);
+                        else
+                            p.Value = step.DataRow[i];
                         p.DbType = col.DbType;
                         cmd.Parameters.Add(p);
 

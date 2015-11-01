@@ -60,7 +60,7 @@ namespace DataCloner.GUI.Services
             foreach (var mergedServer in serverModifiersVM)
             {
                 var defaultServerSchema = GetServerMetadata(defaultSchema, mergedServer.Id);
-                MergeServer(mergedServer, userConfigTemplates.ServerModifiers, defaultServerSchema);
+                MergeServer(mergedServer, userConfigTemplates.ServerModifiers, defaultServerSchema, defaultSchema);
             }
 
             return userConfigTemplates;
@@ -68,7 +68,8 @@ namespace DataCloner.GUI.Services
 
         private static bool MergeServer(ServerModifierModel mergedServer,
                                         List<ServerModifier> userConfigServers,
-                                        ServerMetadata defaultServerSchema)
+                                        ServerMetadata defaultServerSchema,
+                                        AppMetadata appMetadata)
         {
             var hasChange = false;
             var userConfigServer = userConfigServers.FirstOrDefault(s => s.Id == mergedServer.Id);
@@ -97,8 +98,8 @@ namespace DataCloner.GUI.Services
             {
                 foreach (var mergedDatabase in mergedServer.Databases)
                 {
-                    var defaultDatabaseSchema = GetDatabaseMetadata(defaultServerSchema, mergedDatabase.Name);
-                    if (MergeDatabase(mergedDatabase, userConfigServer.Databases, defaultDatabaseSchema))
+                    var defaultDatabaseSchema = GetDatabaseMetadata(defaultServerSchema, appMetadata, mergedDatabase.Name);
+                    if (MergeDatabase(mergedDatabase, userConfigServer.Databases, defaultDatabaseSchema, appMetadata))
                         hasChange = true;
                 }
             }
@@ -112,7 +113,8 @@ namespace DataCloner.GUI.Services
 
         private static bool MergeDatabase(DatabaseModifierModel mergedDatabase,
                                           List<DatabaseModifier> userConfigDatabases,
-                                          DatabaseMetadata defaultDatabaseSchema)
+                                          DatabaseMetadata defaultDatabaseSchema,
+                                          AppMetadata appMetadata)
         {
             var hasChange = false;
             var userConfigDatabase = userConfigDatabases.FirstOrDefault(d => d.Name == mergedDatabase.Name);
@@ -141,7 +143,7 @@ namespace DataCloner.GUI.Services
             {
                 foreach (var mergedSchema in mergedDatabase.Schemas)
                 {
-                    var defaultSchema = GetSchemaMetadata(defaultDatabaseSchema, mergedSchema.Name);
+                    var defaultSchema = GetSchemaMetadata(defaultDatabaseSchema, appMetadata, mergedSchema.Name);
                     if (MergeSchema(mergedSchema, userConfigDatabase.Schemas, defaultSchema))
                         hasChange = true;
                 }
@@ -506,14 +508,15 @@ namespace DataCloner.GUI.Services
                     _templateId = server.TemplateId,
                     _useTemplateId = server.UseTemplateId,
                     _description = server.Description,
-                    _databases = LoadDatabaseTemplates(server.Databases, defaultSrvMetadata)
+                    _databases = LoadDatabaseTemplates(server.Databases, defaultSrvMetadata, appMetadata)
                 });
             }
 
             return returnVM;
         }
 
-        private static ObservableCollection<DatabaseModifierModel> LoadDatabaseTemplates(List<DatabaseModifier> userConfigTemplates, ServerMetadata serverMetadata)
+        private static ObservableCollection<DatabaseModifierModel> LoadDatabaseTemplates(List<DatabaseModifier> userConfigTemplates, 
+            ServerMetadata serverMetadata, AppMetadata appMetadata)
         {
             var returnVM = new ObservableCollection<DatabaseModifierModel>();
 
@@ -527,7 +530,7 @@ namespace DataCloner.GUI.Services
 
             foreach (var database in databasesToShow)
             {
-                var defaultDbMetadata = GetDatabaseMetadata(serverMetadata, database.Name);
+                var defaultDbMetadata = GetDatabaseMetadata(serverMetadata, appMetadata, database.Name);
 
                 returnVM.Add(new DatabaseModifierModel
                 {
@@ -535,14 +538,15 @@ namespace DataCloner.GUI.Services
                     _templateId = database.TemplateId,
                     _useTemplateId = database.UseTemplateId,
                     _description = database.Description,
-                    _schemas = LoadSchemaTemplates(database.Schemas, defaultDbMetadata)
+                    _schemas = LoadSchemaTemplates(database.Schemas, defaultDbMetadata, appMetadata)
                 });
             }
 
             return returnVM;
         }
 
-        private static ObservableCollection<SchemaModifierModel> LoadSchemaTemplates(List<SchemaModifier> userConfigTemplates, DatabaseMetadata databaseMetadata)
+        private static ObservableCollection<SchemaModifierModel> LoadSchemaTemplates(List<SchemaModifier> userConfigTemplates, 
+            DatabaseMetadata databaseMetadata, AppMetadata appMetadata)
         {
             var returnVM = new ObservableCollection<SchemaModifierModel>();
 
@@ -556,7 +560,7 @@ namespace DataCloner.GUI.Services
 
             foreach (var schema in schemasToShow)
             {
-                var defaultSchemaMetadata = GetSchemaMetadata(databaseMetadata, schema.Name);
+                var defaultSchemaMetadata = GetSchemaMetadata(databaseMetadata, appMetadata, schema.Name);
 
                 returnVM.Add(new SchemaModifierModel
                 {
@@ -756,16 +760,17 @@ namespace DataCloner.GUI.Services
 
         /// <summary>
         /// Get the default server schema compiled from the database.
+        /// For a config variable, we fetch a static defined server, database and schema from the application's metadata to show "intellisence".
         /// </summary>
         /// <param name="defaultMetadatas">Metadatas of the plain old database</param>
-        /// <param name="serverId">Could be an Id like 0 or a variable like {$KEY{VALUE}} OR {$SERVER_SOURCE{1}}.</param>
+        /// <param name="serverId">Could be an Id like 0 or a variable like {$KEY{SERVER_VALUE}} OR {$SERVER_SOURCE{1}}.</param>
         private static ServerMetadata GetServerMetadata(AppMetadata defaultMetadatas, string serverId)
         {
-            Int16 id;
-
-            if (serverId == null) return null;
+            if (serverId == null)
+                throw new ArgumentNullException("defaultMetadata");
 
             //If is a serverId
+            Int16 id;
             if (Int16.TryParse(serverId, out id))
             {
                 if (defaultMetadatas.ContainsKey(id))
@@ -773,44 +778,53 @@ namespace DataCloner.GUI.Services
             }
 
             //If is a variable
-            id = serverId.ParseConfigVariable().Server;
-            if (id != 0 && defaultMetadatas.ContainsKey(id))
-                return defaultMetadatas[id];
+            var configVar = serverId.ParseConfigVariable();
+            if (configVar != null && configVar.Server != 0 && defaultMetadatas.ContainsKey(configVar.Server))
+                return defaultMetadatas[configVar.Server];
 
-            return null;
+            throw new ConfigurationException(String.Format("Server not found in the configuration. Id : {0}", serverId));
         }
 
         /// <summary>
         /// Get the default database schema compiled from the database.
+        /// For a config variable, we fetch a static defined server, database and schema from the application's metadata to show "intellisence".
         /// </summary>
-        /// <param name="databaseName">Could be a name like MyDb or a variable like {$KEY{VALUE}} OR {$DATABASE_SOURCE{1}}.</param>
-        /// <param name="serverMetadata">Metadatas</param>
-        private static DatabaseMetadata GetDatabaseMetadata(ServerMetadata serverMetadata, string databaseName)
+        /// <param name="databaseName">Could be a name like MyDb or a variable like {$KEY{SERVER_VALUE}{DATABASE_VALUE}} OR {$DATABASE_SOURCE{1}{myDb}}.</param>
+        /// <param name="parentMetadata">Metadatas</param>
+        /// <param name="appMetadata">App metadata</param>
+        private static DatabaseMetadata GetDatabaseMetadata(ServerMetadata parentMetadata, AppMetadata appMetadata, string databaseName)
         {
-            if (String.IsNullOrEmpty(databaseName)) return null;
+            if (String.IsNullOrEmpty(databaseName))
+                throw new ArgumentNullException("databaseName");
 
             databaseName = databaseName.ToLower();
 
             //If is a database name
-            if (serverMetadata.ContainsKey(databaseName))
-                return serverMetadata[databaseName];
+            if (parentMetadata.ContainsKey(databaseName))
+                return parentMetadata[databaseName];
 
             //If is a variable
-            string name = databaseName.ParseConfigVariable().Database;
-            if (name != null && serverMetadata.ContainsKey(name))
-                return serverMetadata[name];
+            var v = databaseName.ParseConfigVariable();
+            if (v != null && 
+                appMetadata.ContainsKey(v.Server) &&
+                appMetadata[v.Server].ContainsKey(v.Database) )
+                 return appMetadata[v.Server][v.Database];
 
-            return null;
+            throw new ConfigurationException(String.Format("Database not found in the configuration. Name : {0}", databaseName));
         }
 
         /// <summary>
         /// Get the default schema compiled from the database.
+        /// For a config variable, we fetch a static defined server, database and schema from the application's metadata to show "intellisence".
         /// </summary>
-        /// <param name="schemaName">Could be a name like DBO or a variable like {$KEY{VALUE}} OR {$SCHEMA_SOURCE{1}}.</param>
+        /// <param name="schemaName">Could be a name like DBO or a variable like {$KEY{SERVER_VALUE}{DATABASE_VALUE}{SCHEMA_VALUE}}
+        ///  OR {$DATABASE_SOURCE{1}{myDb}{dbo}}.</param>
         /// <param name="databaseMetadata">Metadatas</param>
-        private static SchemaMetadata GetSchemaMetadata(DatabaseMetadata databaseMetadata, string schemaName)
+        /// <param name="appMetadata">App metadata</param>
+        private static SchemaMetadata GetSchemaMetadata(DatabaseMetadata databaseMetadata, AppMetadata appMetadata, string schemaName)
         {
-            if (String.IsNullOrEmpty(schemaName)) return null;
+            if (String.IsNullOrEmpty(schemaName))
+                throw new ArgumentNullException("databaseMetadata");
 
             schemaName = schemaName.ToLower();
 
@@ -819,11 +833,14 @@ namespace DataCloner.GUI.Services
                 return databaseMetadata[schemaName];
 
             //If is a variable
-            string name = schemaName.ParseConfigVariable().Schema;
-            if (name != null && databaseMetadata.ContainsKey(name))
-                return databaseMetadata[name];
+            var v = schemaName.ParseConfigVariable();
+            if (v != null &&
+                appMetadata.ContainsKey(v.Server) &&
+                appMetadata[v.Server].ContainsKey(v.Database) &&
+                appMetadata[v.Server][v.Database].ContainsKey(v.Schema))
+                return appMetadata[v.Server][v.Database][v.Schema];
 
-            return null;
+            throw new ConfigurationException(String.Format("Schema not found in the configuration. Name : {0}", schemaName));
         }
 
         #endregion

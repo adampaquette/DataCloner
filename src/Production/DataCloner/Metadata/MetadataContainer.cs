@@ -184,23 +184,27 @@ namespace DataCloner.Metadata
         {
             var container = new MetadataContainer { ConfigFileHash = configHash, ServerMap = map.ConvertToDictionnary() };
 
-            //Get servers source
-            var serversSource = map.Roads.Select(r => r.ServerSrc).Distinct().ToList();
+            ////Get servers source
+            //var serversSource = map.Roads.Select(r => r.ServerSrc).Distinct().ToList();
 
-            //Replace variables
-            for (int i = 0; i < serversSource.Count(); i++)
-            {
-                if (serversSource[i].IsVariable())
-                {
-                    var configVar = map.Variables.FirstOrDefault(v => v.Name == serversSource[i]);
-                    if (configVar == null)
-                        throw new Exception(string.Format("The variable '{0}' is not found in the map with id='{1}'.", serversSource[i], map.Id));
-                    serversSource[i] = configVar.Value.ToString();
-                }
-            }
+            ////Replace variables
+            //for (int i = 0; i < serversSource.Count(); i++)
+            //{
+            //    if (serversSource[i].IsVariable())
+            //    {
+            //        var configVar = map.Variables.FirstOrDefault(v => v.Name == serversSource[i]);
+            //        if (configVar == null)
+            //            throw new Exception(string.Format("The variable '{0}' is not found in the map with id='{1}'.", serversSource[i], map.Id));
+            //        serversSource[i] = configVar.Value.ToString();
+            //    }
+            //}
+
+            ////Copy connection strings
+            //foreach (var cs in app.ConnectionStrings.Where(c => serversSource.Contains(c.Id.ToString())))
+            //    container.ConnectionStrings.Add(new SqlConnection(cs.Id, cs.ProviderName, cs.ConnectionString));
 
             //Copy connection strings
-            foreach (var cs in app.ConnectionStrings.Where(c => serversSource.Contains(c.Id.ToString())))
+            foreach (var cs in app.ConnectionStrings)
                 container.ConnectionStrings.Add(new SqlConnection(cs.Id, cs.ProviderName, cs.ConnectionString));
 
             if (container.ConnectionStrings.Count() == 0)

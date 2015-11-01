@@ -31,6 +31,7 @@ namespace DataCloner.Configuration
             if (pos != 0) return null;
 
             int currentPos = 1;
+            int endPosKey = 0;
             Int16 server = 0;
             string key, database, schema;
             key = database = schema = string.Empty;
@@ -43,7 +44,7 @@ namespace DataCloner.Configuration
 
                 if (i == 0)
                 {
-                    key = value.Substring(2, posVar - 3);
+                    endPosKey = posVar-1;
                     Int16.TryParse(value.Substring(posVar, posVarEnd - posVar), out server);
                 }
                 else if (i == 1)
@@ -56,7 +57,10 @@ namespace DataCloner.Configuration
 
             pos = value.IndexOf('}', currentPos);
             if (pos == -1) return null;
-            
+
+            if (endPosKey == 0) endPosKey = pos;
+            key = value.Substring(2, endPosKey - 2);
+
             return new ConfigVariable(key, server, database, schema);
         }
 
