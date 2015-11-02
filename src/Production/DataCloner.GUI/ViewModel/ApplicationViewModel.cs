@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace DataCloner.GUI.ViewModel
 {
-    class ApplicationViewModel : ValidatableModel
+    class ApplicationViewModel : ValidatableModelBase
     {
         internal Int16 _id;
         internal string _name;

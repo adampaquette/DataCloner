@@ -12,7 +12,7 @@ namespace DataCloner.GUI.Framework
     /// Defines a base class for a model that supports validation.
     /// </summary>
     [Serializable]
-    public abstract class ValidatableModel : Model, INotifyDataErrorInfo
+    public abstract class ValidatableModelBase : ModelBase, INotifyDataErrorInfo
     {
         private static readonly ValidationResult[] noErrors = new ValidationResult[0];
         
@@ -23,9 +23,9 @@ namespace DataCloner.GUI.Framework
 
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ValidatableModel"/> class.
+        /// Initializes a new instance of the <see cref="ValidatableModelBase"/> class.
         /// </summary>
-        protected ValidatableModel()
+        protected ValidatableModelBase()
         {
             this.errors = new Dictionary<string, List<ValidationResult>>();
         }

@@ -5,7 +5,7 @@ using System.Collections.ObjectModel;
 
 namespace DataCloner.GUI.ViewModel
 {
-    class TemplatesViewModel : ValidatableModel
+    class TemplatesViewModel : ValidatableModelBase
     {
         private static readonly IList<AccessWithDescription> _accessWithDescriptions;
 

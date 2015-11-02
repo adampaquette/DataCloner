@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Xml.Serialization;
 
 namespace DataCloner.Configuration
 {
     [Serializable]
-    public class ClonerBehaviour
+    public class Behaviour
     {
         [XmlAttribute]
         public Int16 Id { get; set; }
@@ -18,7 +17,7 @@ namespace DataCloner.Configuration
 
         public Modifiers Modifiers { get; set; }
 
-        public ClonerBehaviour()
+        public Behaviour()
         {
             Modifiers = new Modifiers();
         }

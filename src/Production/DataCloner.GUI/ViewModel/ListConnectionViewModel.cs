@@ -5,7 +5,7 @@ using DataCloner.GUI.Framework;
 
 namespace DataCloner.GUI.ViewModel
 {
-    class ListConnectionViewModel : ValidatableModel
+    class ListConnectionViewModel : ValidatableModelBase
     {
         internal ObservableCollection<ConnectionViewModel> _connections;
 

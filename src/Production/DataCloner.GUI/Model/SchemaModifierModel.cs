@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace DataCloner.GUI.Model
 {
-    class SchemaModifierModel : ValidatableModel
+    class SchemaModifierModel : ValidatableModelBase
     {
         internal string _name;
         internal string _description;

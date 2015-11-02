@@ -6,7 +6,7 @@ using DataCloner.GUI.Framework;
 
 namespace DataCloner.GUI.ViewModel
 {
-    class ConnectionViewModel : ValidatableModel
+    class ConnectionViewModel : ValidatableModelBase
     {
         internal Int16 _id;
         internal string _name;

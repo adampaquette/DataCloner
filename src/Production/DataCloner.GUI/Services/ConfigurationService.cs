@@ -24,7 +24,7 @@ namespace DataCloner.GUI.Services
 
             proj.Name = appVM.Name;
             proj.ConnectionStrings = CreateConnectionStrings(appVM.Connections.Connections);
-            proj.ModifiersTemplates = CreateTemplates(appVM.Templates.ServerModifiers, defaultSchema);
+            proj.Templates = CreateTemplates(appVM.Templates.ServerModifiers, defaultSchema);
 
             proj.Save(path);
         }
@@ -439,7 +439,7 @@ namespace DataCloner.GUI.Services
             {
                 _name = proj.Name,
                 _connections = LoadConnections(proj.ConnectionStrings),
-                _templates = LoadTemplates(proj.ModifiersTemplates, defaultAppMetadata),
+                _templates = LoadTemplates(proj.Templates, defaultAppMetadata),
                 _defaultMetadatas = defaultAppMetadata
             };
         }

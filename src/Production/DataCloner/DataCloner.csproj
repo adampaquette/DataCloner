@@ -102,8 +102,8 @@
     <Compile Include="Metadata\ITableMetadata.cs" />
     <Compile Include="Internal\ServerIdentifier.cs" />
     <Compile Include="Internal\CircularKeyJob.cs" />
-    <Compile Include="Configuration\ClonerBehaviorExtension.cs" />
-    <Compile Include="Configuration\ClonerBehaviour.cs" />
+    <Compile Include="Configuration\BehaviorExtension.cs" />
+    <Compile Include="Configuration\Behaviour.cs" />
     <Compile Include="Configuration\Map.cs" />
     <Compile Include="Internal\ColumnsWithValue.cs" />
     <Compile Include="Configuration\MapExtensions.cs" />

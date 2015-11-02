@@ -4,7 +4,7 @@
         <Add Id="1" Name="NorthWind_UNI" ProviderName="System.Data.SqlClient" ConnectionString="Data Source=(localdb)\MSSQLLocalDB;Integrated Security=True;Initial Catalog=Northwind_UNI;AttachDbFileName=|DataDirectory|\NORTHWND_UNI.mdf" />
         <Add Id="2" Name="NorthWind_FON" ProviderName="System.Data.SqlClient" ConnectionString="Data Source=(localdb)\MSSQLLocalDB;Integrated Security=True;Initial Catalog=Northwind_FON;AttachDbFileName=|DataDirectory|\NORTHWND_FON.mdf" />
     </ConnectionStrings>
-    <ModifiersTemplates>
+    <Templates>
         <Server Id="{$SERVER_SOURCE_NORTHWIND{1}}" Description="CloneCustomer" TemplateId="1" UseTemplateId="0">
             <Database Name="{$DATABASE_SOURCE_NORTHWIND{1}{northwind_uni}}" TemplateId="1" UseTemplateId="0">
                 <Schema Name="dbo" TemplateId="1" UseTemplateId="0">
@@ -34,17 +34,17 @@
                 </Schema>
             </Database>
         </Server>
-    </ModifiersTemplates>
-    <ClonerBehaviours>
-        <ClonerBehaviour Id="1" Name="Default" Description="Configuration par défaut">
+    </Templates>
+    <Behaviours>
+        <Behaviour Id="1" Name="Default" Description="Configuration par défaut">
             <Modifiers />
-        </ClonerBehaviour>
-        <ClonerBehaviour Id="2" Name="Customer" Description="Duplication d'un client">
+        </Behaviour>
+        <Behaviour Id="2" Name="Customer" Description="Duplication d'un client">
             <Modifiers>
                 <Server Id="{$SERVER_SOURCE_NORTHWIND}" TemplateId="0" UseTemplateId="1" />
             </Modifiers>
-        </ClonerBehaviour>
-    </ClonerBehaviours>
+        </Behaviour>
+    </Behaviours>
     <Maps>
         <Map Id="1" From="UNI" To="UNI" UsableBehaviours="1,2">
             <Variables>

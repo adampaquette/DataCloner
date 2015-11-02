@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace DataCloner.GUI.Model
 {
-    class ForeignKeyModifierModel : ValidatableModel
+    class ForeignKeyModifierModel : ValidatableModelBase
     {
         internal string _serverIdTo;
         internal string _databaseTo;

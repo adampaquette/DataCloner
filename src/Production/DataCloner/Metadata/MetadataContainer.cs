@@ -61,16 +61,16 @@ namespace DataCloner.Metadata
             bf.Serialize(configData, map);
             bf.Serialize(configData, app.ConnectionStrings);
 
-            ClonerBehaviour clonerBehaviour = null;
+            Behaviour clonerBehaviour = null;
             if (map.UsableBehaviours != null && map.UsableBehaviours.Split(',').ToList().Contains(settings.BehaviourId.ToString()))
             {
-                clonerBehaviour = app.ClonerBehaviours.FirstOrDefault(c => c.Id == settings.BehaviourId);
+                clonerBehaviour = app.Behaviours.FirstOrDefault(c => c.Id == settings.BehaviourId);
                 if (clonerBehaviour == null)
                     throw new KeyNotFoundException(
                         string.Format("There is no behaviour '{0}' in the configuration for the appName name '{1}'.", settings.BehaviourId, app.Name));
 
                 bf.Serialize(configData, clonerBehaviour);
-                bf.Serialize(configData, app.ModifiersTemplates);
+                bf.Serialize(configData, app.Templates);
             }
             configData.Position = 0;
 
@@ -179,7 +179,7 @@ namespace DataCloner.Metadata
         /// <param name="configHash"></param>
         /// <returns></returns>
         private static MetadataContainer BuildMetadataWithSettings(IQueryDispatcher dispatcher, string containerFileName,
-                                                                   ProjectContainer proj, ClonerBehaviour clonerBehaviour,
+                                                                   ProjectContainer proj, Behaviour clonerBehaviour,
                                                                    Map map, string configHash)
         {
             var container = new MetadataContainer { ConfigFileHash = configHash, ServerMap = map.ConvertToDictionnary() };
@@ -211,7 +211,7 @@ namespace DataCloner.Metadata
                 throw new Exception("No connectionStrings!");
 
             FetchMetadata(dispatcher, ref container);
-            var behaviour = clonerBehaviour.Build(proj.ModifiersTemplates, map.Variables);
+            var behaviour = clonerBehaviour.Build(proj.Templates, map.Variables);
             container.Metadatas.FinalizeMetadata(behaviour);
 
             //Save container

@@ -1,5 +1,4 @@
 ﻿using DataCloner.Metadata;
-using DataCloner.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;

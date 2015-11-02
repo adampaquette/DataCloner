@@ -25,7 +25,7 @@ namespace DataCloner.GUI.View
 
         private Cloner _cloner = new Cloner();
         private BackgroundWorker _cloneWorker;
-        private ProjectContainer _proj;
+        private ProjectContainer _proj = ProjectContainer.Load("northWind.dcproj");
         private IEnumerable<Map> _maps;
         private Map _fromMaps;
 
@@ -51,24 +51,22 @@ namespace DataCloner.GUI.View
             chkSimulation.IsChecked = Properties.Settings.Default.IsSimulation;
             chkOptimisation.IsChecked = Properties.Settings.Default.DoOptimisation;
 
-            _proj = ProjectContainer.Load("northWind.dcproj");
-
-            cbDatabaseConfig.ItemsSource = _proj.ClonerBehaviours;
+            cbDatabaseConfig.ItemsSource = _proj.Behaviours;
 
             //Tente de charger la préférence utilisateur
-            var config = _proj.ClonerBehaviours.FirstOrDefault(c => c.Id == Properties.Settings.Default.DatabaseConfigId);
+            var config = _proj.Behaviours.FirstOrDefault(c => c.Id == Properties.Settings.Default.DatabaseConfigId);
             if (config != null)
                 cbDatabaseConfig.SelectedItem = config;
             else
             {
-                if (_proj.ClonerBehaviours.Count == 1)
+                if (_proj.Behaviours.Count == 1)
                     cbDatabaseConfig.SelectedIndex = 0;
             }
         }
 
         private void CbDatabaseConfig_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (_proj == null || _proj.Maps == null)
+            if (_proj == null || _proj.Maps == null || cbDatabaseConfig.SelectedValue == null)
                 return;
 
             _maps = _proj.Maps.Where(m => m.UsableBehaviours.Split(',').Contains(cbDatabaseConfig.SelectedValue.ToString()));
@@ -98,7 +96,7 @@ namespace DataCloner.GUI.View
 
         private void cbSourceEnvir_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (_maps == null)
+            if (_maps == null || cbSourceEnvir.SelectedValue == null)
                 return;
             _fromMaps = _maps.FirstOrDefault(m => m.From == cbSourceEnvir.SelectedValue.ToString());
             if (_fromMaps != null)
@@ -131,7 +129,7 @@ namespace DataCloner.GUI.View
         {
             //try
             //{
-            if (_maps == null)
+            if (_maps == null || cbDestinationEnvir.SelectedValue == null)
                 return;
             var map = _maps.FirstOrDefault(m => m.From == cbSourceEnvir.SelectedValue.ToString() &&
                                                m.To == cbDestinationEnvir.SelectedValue.ToString() &&

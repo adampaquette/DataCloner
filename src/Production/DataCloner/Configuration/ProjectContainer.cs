@@ -16,15 +16,16 @@ namespace DataCloner.Configuration
         public string Name { get; set; }
         [XmlArrayItem("Add")]
         public List<Connection> ConnectionStrings { get; set; }
-        public Modifiers ModifiersTemplates { get; set; }
-        public List<ClonerBehaviour> ClonerBehaviours { get; set; }
+        public Modifiers Templates { get; set; }
+        [XmlArrayItem("Behaviour")]
+        public List<Behaviour> Behaviours { get; set; }
         public List<Map> Maps { get; set; }
 
         public ProjectContainer()
         {
             ConnectionStrings = new List<Connection>();
-            ModifiersTemplates = new Modifiers();
-            ClonerBehaviours = new List<ClonerBehaviour>();
+            Templates = new Modifiers();
+            Behaviours = new List<Behaviour>();
             Maps = new List<Map>();
         }
 

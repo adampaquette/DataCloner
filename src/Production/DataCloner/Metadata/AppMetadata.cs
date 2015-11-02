@@ -330,7 +330,7 @@ namespace DataCloner.Metadata
         /// </summary>
         /// <param name="behaviour"></param>
         /// <remarks>Le schéma de la BD doit préalablement avoir été obtenu. GetColumns() et GetForeignKeys()</remarks>
-        internal void FinalizeMetadata(ClonerBehaviour behaviour)
+        internal void FinalizeMetadata(Behaviour behaviour)
         {
             GenerateCommands();
             MergeFk(behaviour);
@@ -464,7 +464,7 @@ namespace DataCloner.Metadata
             }
         }
 
-        private void MergeFk(ClonerBehaviour behaviour)
+        private void MergeFk(Behaviour behaviour)
         {
             if (behaviour == null)
                 return;
@@ -542,7 +542,7 @@ namespace DataCloner.Metadata
             }
         }
 
-        private void FinalizeMerge(ClonerBehaviour behaviour)
+        private void FinalizeMerge(Behaviour behaviour)
         {
             if (behaviour == null)
                 return;

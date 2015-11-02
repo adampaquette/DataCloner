@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace DataCloner.GUI.Model
 {
-    class DataBuilderModel : ValidatableModel
+    class DataBuilderModel : ValidatableModelBase
     {
         internal string _columnsName;
         internal string _builderName;

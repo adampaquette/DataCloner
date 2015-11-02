@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace DataCloner.GUI.Model
 {
-    class DerivativeTableModifierModel : ValidatableModel
+    class DerivativeTableModifierModel : ValidatableModelBase
     {
         internal string _serverId;
         internal string _database;

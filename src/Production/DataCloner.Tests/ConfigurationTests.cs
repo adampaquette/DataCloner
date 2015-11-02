@@ -102,7 +102,7 @@ namespace DataCloner.Tests
                 }
             };
 
-            var clonerBehaviour = new ClonerBehaviour
+            var clonerBehaviour = new Behaviour
             {
                 Id = 1,
                 Name = "Basic clone",
@@ -110,7 +110,7 @@ namespace DataCloner.Tests
                 //Servers = new List<ServerModifier> { server1 }
             };
 
-            _proj.ClonerBehaviours.Add(clonerBehaviour);
+            _proj.Behaviours.Add(clonerBehaviour);
 
             _proj.Maps = new List<Map>
             {

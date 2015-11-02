@@ -8,7 +8,7 @@ namespace DataCloner.GUI.Framework
     /// Defines the base class for a model.
     /// </summary>
     [Serializable]
-    public abstract class Model : INotifyPropertyChanged
+    public abstract class ModelBase : INotifyPropertyChanged
     {
         /// <summary>
         /// Occurs when a property value changes.

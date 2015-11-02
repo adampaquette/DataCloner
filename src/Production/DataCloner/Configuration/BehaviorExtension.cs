@@ -1,26 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using DataCloner.Framework;
 
 namespace DataCloner.Configuration
 {
     [Serializable]
-    public static class ClonerBehaviourExtension
+    public static class BehaviourExtension
     {
         /// <summary>
         /// Build the behaviour in-memory from the templates.
         /// </summary>
         /// <param name="templates">Templates of the Application config section.</param>
         /// <param name="variables">Variables of the selected Map config section.</param>
-        public static ClonerBehaviour Build(this ClonerBehaviour behaviour, Modifiers templates, List<Variable> variables)
+        public static Behaviour Build(this Behaviour behaviour, Modifiers templates, List<Variable> variables)
         {
             var compiledServersModifier = new Dictionary<string, ServerModifier>();
 
             foreach (var server in behaviour.Modifiers.ServerModifiers)
                 MergeServer(behaviour, templates, variables, compiledServersModifier, server);
 
-            return new ClonerBehaviour
+            return new Behaviour
             {
                 Id = behaviour.Id,
                 Name = behaviour.Name,
@@ -34,7 +33,7 @@ namespace DataCloner.Configuration
             };
         }
 
-        private static void MergeServer(ClonerBehaviour behaviour,
+        private static void MergeServer(Behaviour behaviour,
                                         Modifiers templates,
                                         List<Variable> variables,
                                         Dictionary<string, ServerModifier> compiledConfig,
@@ -67,7 +66,7 @@ namespace DataCloner.Configuration
             }
         }
 
-        private static void MergeDatabase(ClonerBehaviour behaviour,
+        private static void MergeDatabase(Behaviour behaviour,
                                           Modifiers templates,
                                           List<Variable> variables,
                                           ServerModifier compiledServer,
@@ -113,7 +112,7 @@ namespace DataCloner.Configuration
             }
         }
 
-        private static void MergeSchema(ClonerBehaviour behaviour,
+        private static void MergeSchema(Behaviour behaviour,
                                         Modifiers templates,
                                         List<Variable> variables,
                                         DatabaseModifier compiledDatabase,

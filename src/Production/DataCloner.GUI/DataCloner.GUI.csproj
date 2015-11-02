@@ -117,8 +117,12 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Framework\Model.cs" />
-    <Compile Include="Framework\ValidatableModel.cs" />
+    <Compile Include="Framework\ModelBase.cs" />
+    <Compile Include="UserControls\TreeViewItemBaseViewModel.cs" />
+    <Compile Include="UserControls\TreeViewLazyLoadBase.xaml.cs">
+      <DependentUpon>TreeViewLazyLoadBase.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Framework\ValidatableModelBase.cs" />
     <Compile Include="Framework\ValidationErrorsConverter.cs" />
     <Compile Include="Framework\ValidationHelper.cs" />
     <Compile Include="Framework\ValidationReloadedTracker.cs" />
@@ -143,6 +147,7 @@
     <Compile Include="ViewModel\ConnectionViewModel.cs" />
     <Compile Include="ViewModel\ListConnectionViewModel.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
+    <Compile Include="ViewModel\ProjectTreeViewModel.cs" />
     <Compile Include="ViewModel\TemplatesViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
     <Compile Include="View\CloneView.xaml.cs">
@@ -157,6 +162,10 @@
     <Compile Include="View\TemplatesView.xaml.cs">
       <DependentUpon>TemplatesView.xaml</DependentUpon>
     </Compile>
+    <Page Include="UserControls\TreeViewLazyLoadBase.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -168,10 +177,6 @@
     <Page Include="Resources\ConverterResources.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </Page>
-    <Page Include="View\ConverterResources.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\CloneView.xaml">
       <SubType>Designer</SubType>

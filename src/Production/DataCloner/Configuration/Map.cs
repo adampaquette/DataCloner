@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Xml.Serialization;
-using DataCloner.Metadata;
-using System.Linq;
 
 namespace DataCloner.Configuration
 {

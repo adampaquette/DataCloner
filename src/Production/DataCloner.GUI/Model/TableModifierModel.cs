@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace DataCloner.GUI.Model
 {
-    class TableModifierModel : ValidatableModel
+    class TableModifierModel : ValidatableModelBase
     {
         internal string _name;
         internal bool _isStatic;
