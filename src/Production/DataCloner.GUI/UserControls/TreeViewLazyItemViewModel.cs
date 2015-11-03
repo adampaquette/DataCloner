@@ -16,7 +16,7 @@ namespace DataCloner.GUI.UserControls
             Parent = parent;
             Children = new ObservableCollection<TreeViewLazyItemViewModel>();
 
-            if (lazyLoadChildren)
+            if (lazyLoadChildren && !HasParentDummy)
             {
                 Children.Add(DummyChild);
             }
@@ -63,6 +63,11 @@ namespace DataCloner.GUI.UserControls
         private bool HasDummyChild
         {
             get { return Children.Count == 1 && Children[0] == DummyChild; }
+        }
+
+        private bool HasParentDummy
+        {
+            get { return Parent != null && Parent == DummyChild; }
         }
 
         /// <summary>

@@ -145,9 +145,12 @@
     <Compile Include="Services\ConfigurationService.cs" />
     <Compile Include="ViewModel\ApplicationViewModel.cs" />
     <Compile Include="ViewModel\ConnectionViewModel.cs" />
+    <Compile Include="ViewModel\SolutionExplorer\DatabaseTreeViewModel.cs" />
     <Compile Include="ViewModel\ListConnectionViewModel.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
-    <Compile Include="ViewModel\ProjectTreeViewModel.cs" />
+    <Compile Include="ViewModel\SolutionExplorer\ProjectTreeViewModel.cs" />
+    <Compile Include="ViewModel\SolutionExplorer\SchemaTreeViewModel.cs" />
+    <Compile Include="ViewModel\SolutionExplorer\ServerTreeViewModel.cs" />
     <Compile Include="ViewModel\TemplatesViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
     <Compile Include="View\CloneView.xaml.cs">
