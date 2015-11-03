@@ -14,7 +14,7 @@ namespace DataCloner.GUI.ViewModel
     {
         private ProjectContainer _proj;
         private ApplicationViewModel _currentApp;
-        private ObservableCollection<TreeViewItemBaseViewModel> _treeData;
+        private ObservableCollection<TreeViewLazyItemViewModel> _treeData;
 
         public MainViewModel()
         {
@@ -25,9 +25,29 @@ namespace DataCloner.GUI.ViewModel
 
             _currentApp = ConfigurationService.Load(_proj, defaultMetadata.Metadatas);
 
+            var srv1 = new ProjectTreeViewModel { Text = "Server NorthWind UNI" };
+            var srv2 = new ProjectTreeViewModel { Text = "Server NorthWind FON" };
+            var srv3 = new ProjectTreeViewModel { Text = "Server NorthWind ACC" };
+            var srv4 = new ProjectTreeViewModel { Text = "Server NorthWind PROD" };
 
-            _treeData = new ObservableCollection<TreeViewItemBaseViewModel>();
-            _treeData.Add(new ProjectTreeViewModel { Text="asd" });
+            var project = new ProjectTreeViewModel { Text = "Project Northwind" };
+            project.Children.Add(srv1);
+            project.Children.Add(srv2);
+            project.Children.Add(srv3);
+            project.Children.Add(srv4);
+
+
+            _treeData = new ObservableCollection<TreeViewLazyItemViewModel>();
+            _treeData.Add(project);
+            _treeData.Add(new ProjectTreeViewModel { Text = "agfdllo" });
+            _treeData.Add(new ProjectTreeViewModel { Text = "atregfdsasd" });
+            _treeData.Add(new ProjectTreeViewModel { Text = "aresd" });
+            _treeData.Add(new ProjectTreeViewModel { Text = "stdafgdasgf" });
+            _treeData.Add(new ProjectTreeViewModel { Text = "agfdgfdsd" });
+            _treeData.Add(new ProjectTreeViewModel { Text = "agfdgfsd" });
+            _treeData.Add(new ProjectTreeViewModel { Text = "adgfdsd" });
+            _treeData.Add(new ProjectTreeViewModel { Text = "agrtefdsd" });
+            _treeData.Add(new ProjectTreeViewModel { Text = "aghfdsd" });
         }
 
         public ApplicationViewModel CurrentApp
@@ -43,7 +63,7 @@ namespace DataCloner.GUI.ViewModel
             }
         }
 
-        public ObservableCollection<TreeViewItemBaseViewModel> TreeData
+        public ObservableCollection<TreeViewLazyItemViewModel> TreeData
         {
             get { return _treeData; }
             set { SetProperty(ref _treeData, value); }

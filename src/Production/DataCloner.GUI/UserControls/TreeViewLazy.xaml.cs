@@ -5,9 +5,9 @@ namespace DataCloner.GUI.UserControls
     /// <summary>
     /// Logique d'interaction pour TreeViewLazyLoadBase.xaml
     /// </summary>
-    public partial class TreeViewLazyLoadBase : UserControl
+    public partial class TreeViewLazy : UserControl
     {
-        public TreeViewLazyLoadBase()
+        public TreeViewLazy()
         {
             InitializeComponent();
         }

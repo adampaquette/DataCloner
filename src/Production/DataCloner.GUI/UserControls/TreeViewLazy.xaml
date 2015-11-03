@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="DataCloner.GUI.UserControls.TreeViewLazyLoadBase"
+﻿<UserControl x:Class="DataCloner.GUI.UserControls.TreeViewLazy"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -16,9 +16,9 @@
                 </Style>
             </TreeView.ItemContainerStyle>
             <TreeView.Resources>
-                <DataTemplate DataType="{x:Type uc:TreeViewItemBaseViewModel}">
+                <DataTemplate DataType="{x:Type uc:TreeViewLazyItemViewModel}">
                     <StackPanel Orientation="Horizontal">
-                        <Image Height="16" Width="16" Source="{Binding Image}"/>
+                        <Image Height="16" Width="16"  Margin="10, 2" Source="{Binding Image}"/>
                         <TextBlock Text="{Binding Text}"/>
                     </StackPanel>
                 </DataTemplate>

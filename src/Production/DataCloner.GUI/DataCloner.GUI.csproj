@@ -118,9 +118,9 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Framework\ModelBase.cs" />
-    <Compile Include="UserControls\TreeViewItemBaseViewModel.cs" />
-    <Compile Include="UserControls\TreeViewLazyLoadBase.xaml.cs">
-      <DependentUpon>TreeViewLazyLoadBase.xaml</DependentUpon>
+    <Compile Include="UserControls\TreeViewLazyItemViewModel.cs" />
+    <Compile Include="UserControls\TreeViewLazy.xaml.cs">
+      <DependentUpon>TreeViewLazy.xaml</DependentUpon>
     </Compile>
     <Compile Include="Framework\ValidatableModelBase.cs" />
     <Compile Include="Framework\ValidationErrorsConverter.cs" />
@@ -162,7 +162,7 @@
     <Compile Include="View\TemplatesView.xaml.cs">
       <DependentUpon>TemplatesView.xaml</DependentUpon>
     </Compile>
-    <Page Include="UserControls\TreeViewLazyLoadBase.xaml">
+    <Page Include="UserControls\TreeViewLazy.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -238,6 +238,7 @@
     <Resource Include="Resources\Images\database31.png" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Resources\Images\dcproj.png" />
     <Content Include="SciLexer.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

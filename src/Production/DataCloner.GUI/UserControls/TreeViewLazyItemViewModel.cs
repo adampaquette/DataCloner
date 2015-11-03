@@ -4,17 +4,17 @@ using System.Windows.Media;
 
 namespace DataCloner.GUI.UserControls
 {
-    public class TreeViewItemBaseViewModel : ModelBase
+    public class TreeViewLazyItemViewModel : ModelBase
     {
-        static readonly TreeViewItemBaseViewModel DummyChild = new TreeViewItemBaseViewModel();
+        static readonly TreeViewLazyItemViewModel DummyChild = new TreeViewLazyItemViewModel();
 
         private bool _isSelected;
         private bool _isExpanded;
 
-        protected TreeViewItemBaseViewModel(TreeViewItemBaseViewModel parent, bool lazyLoadChildren)
+        protected TreeViewLazyItemViewModel(TreeViewLazyItemViewModel parent, bool lazyLoadChildren)
         {
             Parent = parent;
-            Children = new ObservableCollection<TreeViewItemBaseViewModel>();
+            Children = new ObservableCollection<TreeViewLazyItemViewModel>();
 
             if (lazyLoadChildren)
             {
@@ -25,10 +25,10 @@ namespace DataCloner.GUI.UserControls
         /// <summary>
         /// For dummy child
         /// </summary>
-        private TreeViewItemBaseViewModel() { }
+        private TreeViewLazyItemViewModel() { }
 
-        public TreeViewItemBaseViewModel Parent { get; private set; }
-        public ObservableCollection<TreeViewItemBaseViewModel> Children { get; private set; }
+        public TreeViewLazyItemViewModel Parent { get; private set; }
+        public ObservableCollection<TreeViewLazyItemViewModel> Children { get; private set; }
         public virtual ImageSource Image { get; protected set; }
         public virtual string Text { get; set; }
 
