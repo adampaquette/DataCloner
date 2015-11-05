@@ -8,7 +8,7 @@ namespace DataCloner.GUI.ViewModel.SolutionExplorer
         private static readonly ImageSource _image = (ImageSource)new ImageSourceConverter().ConvertFromString("pack://application:,,,/Resources/Images/dcproj.png");
 
         public ProjectTreeViewModel()
-            : base(null, true)
+            : base(null, false)
         {
             Image = _image;
         }

@@ -57,7 +57,7 @@
                 <Grid>
                     <TextBlock Text="Data Cloner V0.1" FontSize="30" FontWeight="Bold" HorizontalAlignment="Center"
                                Foreground="{StaticResource AccentColorBrush}"/>
-                    <uc:TreeViewLazy DataContext="{Binding TreeData}" />
+                    <ContentControl Content="{Binding SolutionExplorer}"/>
                 </Grid>
             </TabItem>
             <TabItem Style="{StaticResource RoundedTab}">

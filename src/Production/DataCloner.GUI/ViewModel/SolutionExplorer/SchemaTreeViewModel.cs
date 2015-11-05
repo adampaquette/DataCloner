@@ -5,10 +5,10 @@ namespace DataCloner.GUI.ViewModel.SolutionExplorer
 {
     public class SchemaTreeViewModel : TreeViewLazyItemViewModel
     {
-        private static readonly ImageSource _image = (ImageSource)new ImageSourceConverter().ConvertFromString("pack://application:,,,/Resources/Images/dcproj.png");
+        private static readonly ImageSource _image = (ImageSource)new ImageSourceConverter().ConvertFromString("pack://application:,,,/Resources/Images/schema.png");
 
-        public ProjectTreeViewModel()
-            : base(null, true)
+        public SchemaTreeViewModel()
+            : base(null, false)
         {
             Image = _image;
         }

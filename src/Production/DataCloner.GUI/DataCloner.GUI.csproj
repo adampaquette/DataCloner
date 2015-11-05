@@ -150,6 +150,8 @@
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\SolutionExplorer\ProjectTreeViewModel.cs" />
     <Compile Include="ViewModel\SolutionExplorer\SchemaTreeViewModel.cs" />
+    <Compile Include="ViewModel\SolutionExplorer\SolutionExplorerViewModel.cs" />
+    <Compile Include="ViewModel\SolutionExplorer\TableTreeViewModel.cs" />
     <Compile Include="ViewModel\SolutionExplorer\ServerTreeViewModel.cs" />
     <Compile Include="ViewModel\TemplatesViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
@@ -161,6 +163,9 @@
     </Compile>
     <Compile Include="View\ListConnectionView.xaml.cs">
       <DependentUpon>ListConnectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\SolutionExplorer.xaml.cs">
+      <DependentUpon>SolutionExplorer.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\TemplatesView.xaml.cs">
       <DependentUpon>TemplatesView.xaml</DependentUpon>
@@ -190,6 +195,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\ListConnectionView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\SolutionExplorer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -242,6 +251,10 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Images\dcproj.png" />
+    <Resource Include="Resources\Images\database.png" />
+    <Resource Include="Resources\Images\server.png" />
+    <Resource Include="Resources\Images\table.png" />
+    <Resource Include="Resources\Images\schema.png" />
     <Content Include="SciLexer.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

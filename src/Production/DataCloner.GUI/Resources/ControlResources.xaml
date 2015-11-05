@@ -4,7 +4,8 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
     xmlns:fw="clr-namespace:DataCloner.GUI.Framework"
     xmlns:vm="clr-namespace:DataCloner.GUI.ViewModel"
-    xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro">
+    xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"   
+    xmlns:v="clr-namespace:DataCloner.GUI.View">
 
     <vm:ViewModelLocator x:Key="Locator"/>
 
@@ -88,4 +89,8 @@
             </Trigger>
         </Style.Triggers>
     </Style>
+
+    <DataTemplate DataType="{x:Type vm:SolutionExplorer.SolutionExplorerViewModel}">
+        <v:SolutionExplorer/>
+    </DataTemplate>
 </ResourceDictionary>
