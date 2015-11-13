@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataCloner.GUI", "DataClone
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{91CC970B-F9A0-4F84-B207-B92F777DCE1A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataCloner.IntegrationTests", "DataCloner.IntegrationTests\DataCloner.IntegrationTests.csproj", "{8FF9BDE6-49AE-4A72-9FA3-7965CE77706C}"
+EndProject
 Global
 	GlobalSection(Performance) = preSolution
 		HasPerformanceSessions = true
@@ -32,6 +34,10 @@ Global
 		{76F2E773-EB67-4CD3-9D8C-669CF8101A36}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{76F2E773-EB67-4CD3-9D8C-669CF8101A36}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{76F2E773-EB67-4CD3-9D8C-669CF8101A36}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8FF9BDE6-49AE-4A72-9FA3-7965CE77706C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8FF9BDE6-49AE-4A72-9FA3-7965CE77706C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8FF9BDE6-49AE-4A72-9FA3-7965CE77706C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8FF9BDE6-49AE-4A72-9FA3-7965CE77706C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

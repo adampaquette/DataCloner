@@ -2,7 +2,6 @@
 using DataCloner.Data;
 using DataCloner.Internal;
 using DataCloner.Metadata;
-using DataCloner.Configuration;
 using NSubstitute;
 using Xunit;
 
@@ -12,7 +11,7 @@ namespace DataCloner.Tests
 	{
 		public class BasicClonerTests
 		{
-			private readonly Metadata.MetadataContainer _cache;
+			private readonly MetadataContainer _cache;
 			private readonly Cloner _cloner;
 			private readonly IQueryHelper _queryHelper;
 			private readonly IQueryDispatcher _queryDispatcher;
@@ -23,7 +22,7 @@ namespace DataCloner.Tests
 				_queryHelper = FakeBasicDatabase.CreateData();
 				_queryDispatcher = FakeBasicDatabase.CreateServer(_queryHelper);
 
-                _cloner = new Cloner(_queryDispatcher, (IQueryDispatcher d, Settings s, ref Metadata.MetadataContainer m) => m = _cache);
+                _cloner = new Cloner(_queryDispatcher, (IQueryDispatcher d, Settings s, ref MetadataContainer m) => m = _cache);
 				_cloner.Setup(null);
 			}
 
@@ -32,7 +31,7 @@ namespace DataCloner.Tests
 			[Fact]
 			public void QueryDispatcher_Select_CalledWithRowIdentifierReturnData()
 			{
-				var row = Make.Ri0("color", new ColumnsWithValue { { "id", 1 } });
+				var row = Make.Row("color", "id", 1);
 				var result = _queryDispatcher.Select(row);
 
 				_queryDispatcher.Received().GetQueryHelper(row);
@@ -44,7 +43,7 @@ namespace DataCloner.Tests
 			[Fact]
 			public void QueryDispatcher_GetQueryHelper_CalledWithRowIdentifierReturnData()
 			{
-				var row = Make.Ri0("color", new ColumnsWithValue { { "id", 1 } });
+				var row = Make.Row("color", "id", 1 );
 				var result = _queryDispatcher.GetQueryHelper(row).Select(row);
 
 				_queryDispatcher.Received().GetQueryHelper(row);
@@ -56,7 +55,7 @@ namespace DataCloner.Tests
 			[Fact]
 			public void QueryDispatcher_GetQueryHelper_CalledWithIntegerReturnData()
 			{
-				var row = Make.Ri0("color", new ColumnsWithValue { { "id", 1 } });
+				var row = Make.Row("color", "id", 1);
 				var result = _queryDispatcher.GetQueryHelper(0).Select(row);
 
 				_queryDispatcher.Received().GetQueryHelper(row.ServerId);
@@ -74,7 +73,7 @@ namespace DataCloner.Tests
 			[InlineData(int.MaxValue)]
 			public void Cloner_Clone_Param_ReturnNoRow(int id)
 			{
-				var row = Make.Ri0("color", new ColumnsWithValue { { "id", id } });
+				var row = Make.Row("color",  "id", id);
 				var clones = _cloner.Clone(row, true);
 
 				Assert.Equal(0, clones.Count);
@@ -89,7 +88,7 @@ namespace DataCloner.Tests
 			[Fact]
 			public void Cloner_Clone_OneRowOneTable()
 			{
-				var row = Make.Ri0("color", new ColumnsWithValue { { "id", 1 } });
+				var row = Make.Row("color", "id", 1 );
 				var clones = _cloner.Clone(row, true);
 
 				Assert.Equal(1, clones.Count);
@@ -100,7 +99,7 @@ namespace DataCloner.Tests
 			[Fact]
 			public void Cloner_Clone_RecursiveDontCrash()
 			{
-				var row = Make.Ri0("person", new ColumnsWithValue { { "id", 1 } });
+				var row = Make.Row("person", "id", 1);
 				var clones = _cloner.Clone(row, true);
 
 				Assert.Equal(1, clones.Count);

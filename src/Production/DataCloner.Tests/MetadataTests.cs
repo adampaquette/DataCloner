@@ -7,22 +7,22 @@ using Xunit;
 
 namespace DataCloner.Tests
 {
-    public class CachedTableTests
+    public class MetadataTests
     {
-        private readonly Metadata.AppMetadata _cache;
-        private readonly TableMetadata _table;
+        private readonly AppMetadata _appMD;
+        private readonly TableMetadata _tableMD;
 
-        public CachedTableTests()
+        public MetadataTests()
         {
-            _cache = new Metadata.AppMetadata();
-            _table = new TableMetadata("table1")
+            _appMD = new AppMetadata();
+            _tableMD = new TableMetadata("table1")
             {
                 IsStatic = false,
                 SelectCommand = "SELECT * FROM TABLE1",
                 InsertCommand = "INSERT INTO TABLE1 VALUES(@COL1, @COL2)"
             };
 
-            _table.ColumnsDefinition = _table.ColumnsDefinition.Add(new ColumnDefinition
+            _tableMD.ColumnsDefinition = _tableMD.ColumnsDefinition.Add(new ColumnDefinition
             {
                 Name = "COL1",
                 DbType = DbType.Int32,
@@ -32,7 +32,7 @@ namespace DataCloner.Tests
                 BuilderName = ""
             });
 
-            _table.ColumnsDefinition = _table.ColumnsDefinition.Add(new ColumnDefinition
+            _tableMD.ColumnsDefinition = _tableMD.ColumnsDefinition.Add(new ColumnDefinition
             {
                 Name = "COL2",
                 DbType = DbType.Int32,
@@ -42,7 +42,7 @@ namespace DataCloner.Tests
                 BuilderName = "Builder.NASBuilder"
             });
 
-            _table.DerivativeTables = _table.DerivativeTables.Add(new DerivativeTable
+            _tableMD.DerivativeTables = _tableMD.DerivativeTables.Add(new DerivativeTable
             {
                 ServerId = 1,
                 Database = "db",
@@ -52,7 +52,7 @@ namespace DataCloner.Tests
                 Cascade = true
             });
 
-            _table.DerivativeTables = _table.DerivativeTables.Add(new DerivativeTable
+            _tableMD.DerivativeTables = _tableMD.DerivativeTables.Add(new DerivativeTable
             {
                 ServerId = 1,
                 Database = "db",
@@ -62,7 +62,7 @@ namespace DataCloner.Tests
                 Cascade = false
             });
 
-            _table.ForeignKeys = _table.ForeignKeys.Add(new ForeignKey
+            _tableMD.ForeignKeys = _tableMD.ForeignKeys.Add(new ForeignKey
             {
                 ServerIdTo = 2,
                 DatabaseTo = "db",
@@ -71,17 +71,17 @@ namespace DataCloner.Tests
                 Columns = new[] { new ForeignKeyColumn { NameFrom = "COL1", NameTo = "COL1" } }
             });
 
-            _cache.Add(1, "db1", "dbo", _table);
-            _cache.Add(1, "db2", "dbo", _table);
+            _appMD.Add(1, "db1", "dbo", _tableMD);
+            _appMD.Add(1, "db2", "dbo", _tableMD);
         }
 
         [Fact]
-        public void TableDefBinarySerialization()
+        public void Should_Equal_When_SerializingTheSameTableMetaData()
         {
             var ms1 = new MemoryStream();
             var ms2 = new MemoryStream();
 
-            _table.Serialize(ms1);
+            _tableMD.Serialize(ms1);
             ms1.Position = 0;
             var output = TableMetadata.Deserialize(ms1);
             output.Serialize(ms2);
@@ -90,14 +90,14 @@ namespace DataCloner.Tests
         }
 
         [Fact]
-        public void CachedTablesBinarySerialization()
+        public void Should_Equal_When_SerializingTheSameAppMetadata()
         {
             var ms1 = new MemoryStream();
             var ms2 = new MemoryStream();
 
-            _cache.Serialize(ms1);
+            _appMD.Serialize(ms1);
             ms1.Position = 0;
-            var output = Metadata.AppMetadata.Deserialize(ms1);
+            var output = AppMetadata.Deserialize(ms1);
             output.Serialize(ms2);
 
             Assert.True(ms1.ToArray().SequenceEqual(ms2.ToArray()));

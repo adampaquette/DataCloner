@@ -145,12 +145,12 @@ namespace DataCloner.Tests
         internal static IQueryHelper CreateData()
         {
             var db = Substitute.For<IQueryHelper>();
-            db.Select(Make.Ri0("color", new ColumnsWithValue { { "id", 1 } })).Returns(Make.Obj(1, "orange"));
-            db.Select(Make.Ri0("person", new ColumnsWithValue { { "id", 1 } })).Returns(Make.Obj(1, "joe", 1, 1));
-            db.Select(Make.Ri0("country", new ColumnsWithValue { { "id", 1 } })).Returns(Make.Obj(1));
-            db.Select(Make.Ri0("state", new ColumnsWithValue { { "id", 1 } })).Returns(Make.Obj(1));
-            db.Select(Make.Ri0("city", new ColumnsWithValue { { "id", 1 } })).Returns(Make.Obj(1));
-            db.Select(Make.Ri0("house", new ColumnsWithValue { { "id", 1 } })).Returns(Make.Obj(1));
+            db.Select(Make.Row("color", "id", 1)).Returns(Make.Obj(1, "orange"));
+            db.Select(Make.Row("person", "id", 1)).Returns(Make.Obj(1, "joe", 1, 1));
+            db.Select(Make.Row("country", "id", 1)).Returns(Make.Obj(1));
+            db.Select(Make.Row("state", "id", 1)).Returns(Make.Obj(1));
+            db.Select(Make.Row("city", "id", 1)).Returns(Make.Obj(1));
+            db.Select(Make.Row("house", "id", 1)).Returns(Make.Obj(1));
 
             return db;
         }

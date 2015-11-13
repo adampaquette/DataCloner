@@ -17,7 +17,7 @@ namespace DataCloner.Tests
         }
 
         [Fact]
-        public void GetKeyValueTests()
+        public void Should_ReturnDestinationKey_When_SourceKeyIsSelected()
         {
             var key = _keys.GetKey(1, "db", "dbo", "table1", new object[] { 1, 1 });
             var key2 = _keys.GetKey(1, "db", "dbo", "table1", new object[] { 1, 2 });
