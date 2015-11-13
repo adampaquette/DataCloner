@@ -219,7 +219,7 @@ namespace DataCloner.Data
 
                 foreach (var step in plan.InsertSteps)
                 {
-                    GemerateInsertStatment(step, cmd, query, ref nbParams);
+                    GemerateInsertStatment(step, cmd, query, transaction, ref nbParams);
                     TryExecute(plan, query, transaction, ref cmd, ref nbParams, ref cancel);
                 }
 
@@ -315,7 +315,7 @@ namespace DataCloner.Data
             } while (dr.NextResult());
         }
 
-        internal void GemerateInsertStatment(InsertStep step, IDbCommand cmd, StringBuilder sql, ref int nbParams)
+        internal void GemerateInsertStatment(InsertStep step, IDbCommand cmd, StringBuilder sql, IDbTransaction transaction, ref int nbParams)
         {
             var tableMetadata = _metadata.GetTable(step.DestinationTable);
             if (tableMetadata.ColumnsDefinition.Count() != step.DataRow.Length)
@@ -337,7 +337,7 @@ namespace DataCloner.Data
                 {
                     if (sqlVar == null) throw new NullReferenceException();
 
-                    sqlVar.Value = DataBuilder.BuildDataColumn(this, step.DestinationTable.ServerId, step.DestinationTable.Database,
+                    sqlVar.Value = DataBuilder.BuildDataColumn(this, transaction, step.DestinationTable.ServerId, step.DestinationTable.Database,
                                                                step.DestinationTable.Schema, step.TableSchema, col);
                     insertWriter.AppendValue(sqlVar.Value);
                 }
@@ -383,7 +383,7 @@ namespace DataCloner.Data
                         p.ParameterName = sqlVarName;
 
                         if(col.IsDataColumnBuildable())
-                            p.Value = DataBuilder.BuildDataColumn(this, step.DestinationTable.ServerId, step.DestinationTable.Database,
+                            p.Value = DataBuilder.BuildDataColumn(this, transaction, step.DestinationTable.ServerId, step.DestinationTable.Database,
                                                                   step.DestinationTable.Schema, step.TableSchema, col);
                         else
                             p.Value = step.DataRow[i];

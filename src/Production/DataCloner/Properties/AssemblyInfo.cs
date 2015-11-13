@@ -35,7 +35,6 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
 [assembly: InternalsVisibleTo("DataCloner.Tests")]
-[assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]
-[assembly: InternalsVisibleTo("DataCloner1.Tests")]
-[assembly: InternalsVisibleTo("DataCloner.Explorables")]
+[assembly: InternalsVisibleTo("DataCloner.IntegrationTests")]
+
 

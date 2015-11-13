@@ -1,78 +1,104 @@
-﻿using DataCloner.Data;
+﻿using DataCloner.Configuration;
+using DataCloner.Data;
 using System.Collections.Generic;
-using System.Data.Common;
-using System.IO;
+using System.Linq;
 using Xunit;
-using Xunit.Extensions;
 
 namespace DataCloner.IntegrationTests
 {
-    public class DatabaseFixture
+    public class ClonerTests
     {
-        public List<SqlConnection> Connections { get; set; }
+        private const string TestDatabase = "chinook";
+        private const string TestSchema = "dbo";
+        public static IEnumerable<object[]> SgbdToTest => DatabaseInitializer.Connections;
 
-        public DatabaseFixture()
+        [Theory(Skip = "Generation of the cache files"), MemberData("SgbdToTest")]
+        public void Should_NotFail_When_Settuping(SqlConnection conn)
         {
-            Connections = new List<SqlConnection>
-            {
-                CreateSqlServer()
-            };
+            var cloner = new Cloner();
+            cloner.Setup(Utils.MakeDefaultSettings(conn));
         }
-
-        private SqlConnection CreateSqlServer()
-        {
-            var conn = new SqlConnection
-            {
-                Id = 1,
-                ProviderName = "System.Data.SqlClient",
-                ConnectionString = @"Data Source=(localdb)\MSSQLLocalDB;Integrated Security=True;"
-            };            
-
-            var provider = DbProviderFactories.GetFactory(conn.ProviderName);
-            var c = provider.CreateConnection();
-            c.ConnectionString = conn.ConnectionString;
-
-            using (var cmd = c.CreateCommand())
-            {
-                var sql = File.ReadAllText(@"..\..\Chinook1.4\Chinook_SqlServer.sql");
-                cmd.CommandText = sql;
-
-                c.Open();
-                cmd.ExecuteNonQuery();
-                c.Close();
-            }
-
-            return conn;
-        }
-    }
-
-
-    public class ClonerTests : IClassFixture<DatabaseFixture>
-    {
-        private DatabaseFixture _fixture;
-
-        public ClonerTests(DatabaseFixture fixture)
-        {
-            _fixture = fixture;
-        }
-
-        public static IEnumerable<object[]> SgbdToTest
-        {
-            get
-            {
-                return new[]
-                {
-                    new object[] {1},
-                    new object[] {2}
-                };
-            }
-        }
-
 
         [Theory, MemberData("SgbdToTest")]
-        public void asd(int sqlConnectionId)
+        public void Should_ReturnExpectedRows_When_CloningBasicData(SqlConnection conn)
         {
-            Assert.Equal("1", _fixture.Connections.Count.ToString());
+            //Arrange
+            var cloner = new Cloner();
+            cloner.Setup(Utils.MakeDefaultSettings(conn));
+
+            var source = new RowIdentifier
+            {
+                ServerId = conn.Id,
+                Database = TestDatabase,
+                Schema = TestSchema,
+                Table = "customer",
+                Columns = new ColumnsWithValue
+                {
+                    { "customerid", 1 }
+                }
+            };
+
+            var clonedData = new List<IRowIdentifier>();
+            cloner.QueryCommiting += (s, e) => e.Cancel = true;
+            cloner.StatusChanged += (s, e) =>
+            {
+                if(e.Status == Status.Cloning)
+                    clonedData.Add(e.SourceRow);
+            };
+
+            //Act
+            cloner.Clone(source, false);
+
+            //Assert
+            var expectedData = new List<IRowIdentifier>
+            {
+                new RowIdentifier
+                {
+                     ServerId = conn.Id,
+                     Database = TestDatabase,
+                     Schema = TestSchema,
+                     Table = "customer",
+                     Columns = new ColumnsWithValue
+                     {
+                         { "customerid", 1 }
+                     }
+                },
+                new RowIdentifier
+                {
+                     ServerId = conn.Id,
+                     Database = TestDatabase,
+                     Schema = TestSchema,
+                     Table = "employee",
+                     Columns = new ColumnsWithValue
+                     {
+                         { "employeeid", 3 }
+                     }
+                },
+                new RowIdentifier
+                {
+                     ServerId = conn.Id,
+                     Database = TestDatabase,
+                     Schema = TestSchema,
+                     Table = "employee",
+                     Columns = new ColumnsWithValue
+                     {
+                         { "employeeid", 2 }
+                     }
+                },
+                new RowIdentifier
+                {
+                     ServerId = conn.Id,
+                     Database = TestDatabase,
+                     Schema = TestSchema,
+                     Table = "employee",
+                     Columns = new ColumnsWithValue
+                     {
+                         { "employeeid", 1 }
+                     }
+                }
+            };
+
+            Assert.True(Enumerable.SequenceEqual(clonedData, expectedData));
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace DataCloner.Internal
+namespace DataCloner
 {
     public class ColumnsWithValue : Dictionary<string, object>
     {

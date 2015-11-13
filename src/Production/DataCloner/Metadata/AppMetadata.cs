@@ -335,7 +335,7 @@ namespace DataCloner.Metadata
             GenerateCommands();
             MergeFk(behaviour);
             GenerateDerivativeTables();
-            FinalizeMerge(behaviour);
+            MergeBehaviour(behaviour);
         }
 
         /// <summary>
@@ -542,7 +542,7 @@ namespace DataCloner.Metadata
             }
         }
 
-        private void FinalizeMerge(Behaviour behaviour)
+        private void MergeBehaviour(Behaviour behaviour)
         {
             if (behaviour == null)
                 return;

@@ -1,8 +1,9 @@
-﻿using System;
+﻿using DataCloner.Internal;
+using System;
 using System.Diagnostics;
 using System.Linq;
 
-namespace DataCloner.Internal
+namespace DataCloner
 {
     [DebuggerDisplay("{ServerId.ToString() + \".\" + Database + \".\" + Schema + \".\" + Table}...")]
     public class RowIdentifier : IRowIdentifier

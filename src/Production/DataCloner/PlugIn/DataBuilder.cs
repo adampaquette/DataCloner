@@ -29,7 +29,7 @@ namespace DataCloner.PlugIn
             return false;
         }
 
-        public static object BuildDataColumn(IQueryHelper queryHelper, Int16 serverId, string database, string schema, ITableMetadata table, IColumnDefinition col)
+        public static object BuildDataColumn(IQueryHelper queryHelper, IDbTransaction transaction, Int16 serverId, string database, string schema, ITableMetadata table, IColumnDefinition col)
         {
             IDataBuilder builder = null;
             var mustGenerate = false;
@@ -89,12 +89,12 @@ namespace DataCloner.PlugIn
                 if (builder == null)
                     throw new NullReferenceException(
                         string.Format("Builder '{0}' for column '{1}' is not found. Watch configuration file.", col.BuilderName, col.Name));
-                return builder.BuildData(queryHelper.Connection, queryHelper.Engine, serverId, database, schema, table, col);
+                return builder.BuildData(queryHelper.Connection, transaction, queryHelper.Engine, serverId, database, schema, table, col);
             }
             return null;
         }
 
-        public static void BuildDataFromTable(IQueryHelper queryHelper, Int16 serverId, string database, string schema, ITableMetadata table, object[] dataRow)
+        public static void BuildDataFromTable(IQueryHelper queryHelper, IDbTransaction transaction, Int16 serverId, string database, string schema, ITableMetadata table, object[] dataRow)
         {
             if (table.ColumnsDefinition.Length != dataRow.Length)
                 throw new ArgumentException(
@@ -104,7 +104,7 @@ namespace DataCloner.PlugIn
             for (var i = 0; i < table.ColumnsDefinition.Length; i++)
             {
                 var col = table.ColumnsDefinition[i];
-                dataRow[i] = BuildDataColumn(queryHelper, serverId, database, schema, table, col);
+                dataRow[i] = BuildDataColumn(queryHelper, transaction, serverId, database, schema, table, col);
             }
         }
 

@@ -1,6 +1,5 @@
 ﻿using DataCloner.Configuration;
 using DataCloner.Data;
-using DataCloner.Framework;
 using Murmur;
 using System;
 using System.Collections.Generic;
@@ -40,42 +39,52 @@ namespace DataCloner.Metadata
         {
             if (dispatcher == null) throw new ArgumentNullException("dispatcher");
             if (settings == null) throw new ArgumentNullException("settings");
-            if (settings.Project == null) throw new ArgumentNullException("app");
-            if (settings.Project.ConnectionStrings != null && 
-                !settings.Project.ConnectionStrings.Any()) throw new NullReferenceException("ConnectionStrings");
+            if (settings.Project == null) throw new ArgumentNullException("settings.Project");
+            if (String.IsNullOrWhiteSpace(settings.Project.Name)) throw new ArgumentException("settings.Project.Name");
+            if (settings.Project.ConnectionStrings != null &&
+                !settings.Project.ConnectionStrings.Any())
+                throw new NullReferenceException("settings.Project.ConnectionStrings");
 
-            var app = settings.Project;
-            var map = settings.Project.Maps.FirstOrDefault(m => m.Id == settings.MapId);
-            if (map == null)
-                throw new Exception(string.Format("Map id '{0}' not found in configuration file for application '{1}'!", settings.MapId, app.Name));
-
-            var containerFileName = app.Name + "_" + map.From + "-" + map.To;
-            if (settings.BehaviourId != null)
-                containerFileName += "_" + settings.BehaviourId;
-            containerFileName += ".cache";
+            var project = settings.Project;
+            var containerFileName = project.Name + "_";
+            Map map = null;
+            Behaviour clonerBehaviour = null;
 
             //Hash the selected map, connnectionStrings and the cloner 
             //configuration to see if it match the lasted builded container
             var configData = new MemoryStream();
             var bf = new BinaryFormatter();
-            bf.Serialize(configData, map);
-            bf.Serialize(configData, app.ConnectionStrings);
+            bf.Serialize(configData, project.ConnectionStrings);
 
-            Behaviour clonerBehaviour = null;
-            if (map.UsableBehaviours != null && map.UsableBehaviours.Split(',').ToList().Contains(settings.BehaviourId.ToString()))
+            if (settings.MapId.HasValue)
             {
-                clonerBehaviour = app.Behaviours.FirstOrDefault(c => c.Id == settings.BehaviourId);
-                if (clonerBehaviour == null)
-                    throw new KeyNotFoundException(
-                        string.Format("There is no behaviour '{0}' in the configuration for the appName name '{1}'.", settings.BehaviourId, app.Name));
+                map = settings.Project.Maps.FirstOrDefault(m => m.Id == settings.MapId);
+                if (map == null)
+                    throw new Exception(string.Format("Map id '{0}' not found in configuration file for application '{1}'!", settings.MapId, project.Name));
+                containerFileName += map.From + "-" + map.To;
+                bf.Serialize(configData, map);
 
-                bf.Serialize(configData, clonerBehaviour);
-                bf.Serialize(configData, app.Templates);
+                if (map.UsableBehaviours != null && map.UsableBehaviours.Split(',').ToList().Contains(settings.BehaviourId.ToString()))
+                {
+                    clonerBehaviour = project.Behaviours.FirstOrDefault(c => c.Id == settings.BehaviourId);
+                    if (clonerBehaviour == null)
+                        throw new KeyNotFoundException(
+                            string.Format("There is no behaviour '{0}' in the configuration for the appName name '{1}'.", settings.BehaviourId, project.Name));
+
+                    bf.Serialize(configData, clonerBehaviour);
+                    bf.Serialize(configData, project.Templates);
+                }
             }
-            configData.Position = 0;
+            else
+                containerFileName += "defaultMap";
+
+            if (settings.BehaviourId != null)
+                containerFileName += "_" + settings.BehaviourId;
+            containerFileName += ".cache";
 
             //Hash user config
-            HashAlgorithm murmur = MurmurHash.Create32(managed: false);
+            configData.Position = 0;
+            var murmur = MurmurHash.Create32(managed: false);
             var configHash = Encoding.Default.GetString(murmur.ComputeHash(configData));
 
             //If in-memory container is good, we use it
@@ -87,7 +96,7 @@ namespace DataCloner.Metadata
                 dispatcher.InitProviders(container);
             //We rebuild the container
             else
-                container = BuildMetadataWithSettings(dispatcher, containerFileName, app, clonerBehaviour, map, configHash);
+                container = BuildMetadataWithSettings(dispatcher, containerFileName, project, clonerBehaviour, map, configHash);
         }
 
         /// <summary>
@@ -138,12 +147,19 @@ namespace DataCloner.Metadata
         public void Serialize(BinaryWriter stream)
         {
             stream.Write(ConfigFileHash);
-            stream.Write(ServerMap.Count);
-            foreach (var sm in ServerMap)
+
+            if (ServerMap != null)
             {
-                sm.Key.Serialize(stream);
-                sm.Value.Serialize(stream);
+                stream.Write(ServerMap.Count);
+                foreach (var sm in ServerMap)
+                {
+                    sm.Key.Serialize(stream);
+                    sm.Value.Serialize(stream);
+                }
             }
+            else
+                stream.Write(0);
+
             stream.Write(ConnectionStrings.Count);
             foreach (var cs in ConnectionStrings)
                 cs.Serialize(stream);
@@ -211,7 +227,16 @@ namespace DataCloner.Metadata
                 throw new Exception("No connectionStrings!");
 
             FetchMetadata(dispatcher, ref container);
-            var behaviour = clonerBehaviour.Build(proj.Templates, map.Variables);
+
+            Behaviour behaviour = null;
+            if (clonerBehaviour != null)
+            {
+                List<Variable> vars = null;
+                if (map != null)
+                    vars = map.Variables;
+
+                behaviour = clonerBehaviour.Build(proj.Templates, vars);
+            }
             container.Metadatas.FinalizeMetadata(behaviour);
 
             //Save container
@@ -228,7 +253,7 @@ namespace DataCloner.Metadata
         /// <param name="configHash"></param>
         /// <returns></returns>
         private static MetadataContainer BuildMetadata(IQueryDispatcher dispatcher, string containerFileName,
-                                                       List<Configuration.Connection> connections, string configHash)
+                                                       List<Connection> connections, string configHash)
         {
             var container = new MetadataContainer { ConfigFileHash = configHash };
 
@@ -259,7 +284,7 @@ namespace DataCloner.Metadata
                     provider.GetUniqueKeys(container.Metadatas.LoadUniqueKeys, cs.Id, database);
                 }
             }
-        }      
+        }
 
         private static MetadataContainer DeserializeBody(BinaryReader stream, MetadataContainer config)
         {

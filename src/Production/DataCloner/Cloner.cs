@@ -45,7 +45,7 @@ namespace DataCloner
 			_executionPlanByServer = new Dictionary<short, ExecutionPlan>();
 			_dispatcher = new QueryDispatcher();
             _metadataInitialiser = MetadataContainer.VerifyIntegrityWithSettings;
-		}
+        }
 
 		internal Cloner(IQueryDispatcher dispatcher, MetadataContainer.Initialiser metadataInit)
 		{
