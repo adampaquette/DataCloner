@@ -35,7 +35,7 @@ namespace DataCloner
 		public bool EnforceIntegrity { get; set; }
         public bool OptimiseExecutionPlan { get; set; }
 
-		public event StatusChangedEventHandler StatusChanged;
+        public event StatusChangedEventHandler StatusChanged;
 		public event QueryCommitingEventHandler QueryCommiting;
 
 		public Cloner()
@@ -75,7 +75,7 @@ namespace DataCloner
             _metadataInitialiser(_dispatcher, settings, ref MetadataCtn);
 		}
 
-		public List<IRowIdentifier> Clone(IRowIdentifier riSource, bool getDerivatives)
+		public List<IRowIdentifier> Clone(IRowIdentifier riSource, bool getDerivatives = true)
 		{
 			if (riSource == null) throw new ArgumentNullException("riSource");
 
@@ -464,6 +464,8 @@ namespace DataCloner
 				var tableDt = metadata.GetTable(dt);
 				if (dt.Access == DerivativeTableAccess.Forced && dt.Cascade)
 					getDerivatives = true;
+                else if (dt.Access == DerivativeTableAccess.Denied)
+                    continue;
 
 				var riDt = new RowIdentifier
 				{

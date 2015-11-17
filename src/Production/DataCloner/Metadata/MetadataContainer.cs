@@ -90,13 +90,22 @@ namespace DataCloner.Metadata
             //If in-memory container is good, we use it
             if (container != null && container.ConfigFileHash == configHash)
                 return;
-            //If container on disk is good, we use it
-            container = TryLoadContainer(containerFileName, configHash);
-            if (container != null)
-                dispatcher.InitProviders(container);
+
+            if (!settings.UseInMemoryCacheOnly)
+            {
+                //If container on disk is good, we use it
+                container = TryLoadContainer(containerFileName, configHash);
+                if (container != null)
+                    dispatcher.InitProviders(container);
+                return;
+            }
+
             //We rebuild the container
-            else
-                container = BuildMetadataWithSettings(dispatcher, containerFileName, project, clonerBehaviour, map, configHash);
+            container = BuildMetadataWithSettings(dispatcher, containerFileName, project, clonerBehaviour, map, configHash);
+
+            //Persist container
+            if (!settings.UseInMemoryCacheOnly)
+                container.Save(containerFileName);
         }
 
         /// <summary>
@@ -239,8 +248,6 @@ namespace DataCloner.Metadata
             }
             container.Metadatas.FinalizeMetadata(behaviour);
 
-            //Save container
-            container.Save(containerFileName);
             return container;
         }
 

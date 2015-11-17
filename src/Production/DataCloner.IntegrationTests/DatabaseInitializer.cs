@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data.Common;
 using System.IO;
+using System.Text.RegularExpressions;
 
 namespace DataCloner.IntegrationTests
 {
@@ -33,10 +34,14 @@ namespace DataCloner.IntegrationTests
             using (var cmd = c.CreateCommand())
             {
                 var sql = File.ReadAllText(@"..\..\Chinook1.4\Chinook_SqlServer.sql");
-                cmd.CommandText = sql;
+                var batchs = Regex.Split(sql, "^GO", RegexOptions.Multiline);
 
                 c.Open();
-                cmd.ExecuteNonQuery();
+                foreach (var script in batchs)
+                {
+                    cmd.CommandText = script;
+                    cmd.ExecuteNonQuery();
+                }
                 c.Close();
             }
 
