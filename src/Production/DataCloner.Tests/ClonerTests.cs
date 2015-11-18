@@ -93,7 +93,7 @@ namespace DataCloner.Tests
 
 				Assert.Equal(1, clones.Count);
 				Assert.Equal("color", clones[0].Table);
-				Assert.IsType<SqlVariable>(clones[0].Columns["id"]);
+				Assert.Equal(null, clones[0].Columns["id"]);
 			}
 
 			[Fact]
@@ -104,7 +104,7 @@ namespace DataCloner.Tests
 
 				Assert.Equal(1, clones.Count);
 				Assert.Equal("person", clones[0].Table);
-				Assert.IsType<SqlVariable>(clones[0].Columns["id"]);
+				Assert.Equal(null, clones[0].Columns["id"]);
 			}
 
 			#endregion

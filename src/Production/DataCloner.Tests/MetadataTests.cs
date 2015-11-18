@@ -29,7 +29,7 @@ namespace DataCloner.Tests
                 IsPrimary = true,
                 IsForeignKey = false,
                 IsAutoIncrement = true,
-                BuilderName = ""
+                BuilderName = "",
             });
 
             _tableMD.ColumnsDefinition = _tableMD.ColumnsDefinition.Add(new ColumnDefinition
@@ -39,7 +39,15 @@ namespace DataCloner.Tests
                 IsPrimary = false,
                 IsForeignKey = false,
                 IsAutoIncrement = false,
-                BuilderName = "Builder.NASBuilder"
+                BuilderName = "Builder.NASBuilder",
+                IsUniqueKey = true,
+                SqlType = new Data.SqlType
+                {
+                    DataType = "String",
+                    IsUnsigned = true,
+                    Precision = 3,
+                    Scale = 5
+                }
             });
 
             _tableMD.DerivativeTables = _tableMD.DerivativeTables.Add(new DerivativeTable
@@ -86,7 +94,7 @@ namespace DataCloner.Tests
             var output = TableMetadata.Deserialize(ms1);
             output.Serialize(ms2);
 
-            Assert.True(ms1.ToArray().SequenceEqual(ms2.ToArray()));           
+            Assert.True(ms1.ToArray().SequenceEqual(ms2.ToArray()));
         }
 
         [Fact]

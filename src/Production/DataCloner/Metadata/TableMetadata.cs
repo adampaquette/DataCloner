@@ -360,6 +360,11 @@ namespace DataCloner.Metadata
         public bool IsUniqueKey { get; set; }
         public bool IsAutoIncrement { get; set; }
         public string BuilderName { get; set; }
+
+        public ColumnDefinition()
+        {
+            SqlType = new SqlType();
+        }
     }
 
     public sealed class DerivativeTable : IDerivativeTable
