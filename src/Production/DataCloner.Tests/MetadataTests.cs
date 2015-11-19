@@ -4,6 +4,7 @@ using System.Linq;
 using DataCloner.Metadata;
 using DataCloner.Framework;
 using Xunit;
+using System.Collections.Generic;
 
 namespace DataCloner.Tests
 {
@@ -22,7 +23,7 @@ namespace DataCloner.Tests
                 InsertCommand = "INSERT INTO TABLE1 VALUES(@COL1, @COL2)"
             };
 
-            _tableMD.ColumnsDefinition = _tableMD.ColumnsDefinition.Add(new ColumnDefinition
+            _tableMD.ColumnsDefinition.Add(new ColumnDefinition
             {
                 Name = "COL1",
                 DbType = DbType.Int32,
@@ -32,7 +33,7 @@ namespace DataCloner.Tests
                 BuilderName = "",
             });
 
-            _tableMD.ColumnsDefinition = _tableMD.ColumnsDefinition.Add(new ColumnDefinition
+            _tableMD.ColumnsDefinition.Add(new ColumnDefinition
             {
                 Name = "COL2",
                 DbType = DbType.Int32,
@@ -50,7 +51,7 @@ namespace DataCloner.Tests
                 }
             });
 
-            _tableMD.DerivativeTables = _tableMD.DerivativeTables.Add(new DerivativeTable
+            _tableMD.DerivativeTables.Add(new DerivativeTable
             {
                 ServerId = 1,
                 Database = "db",
@@ -60,7 +61,7 @@ namespace DataCloner.Tests
                 Cascade = true
             });
 
-            _tableMD.DerivativeTables = _tableMD.DerivativeTables.Add(new DerivativeTable
+            _tableMD.DerivativeTables.Add(new DerivativeTable
             {
                 ServerId = 1,
                 Database = "db",
@@ -70,13 +71,16 @@ namespace DataCloner.Tests
                 Cascade = false
             });
 
-            _tableMD.ForeignKeys = _tableMD.ForeignKeys.Add(new ForeignKey
+            _tableMD.ForeignKeys.Add(new ForeignKey
             {
                 ServerIdTo = 2,
                 DatabaseTo = "db",
                 SchemaTo = "dbo",
                 TableTo = "TABLE2",
-                Columns = new[] { new ForeignKeyColumn { NameFrom = "COL1", NameTo = "COL1" } }
+                Columns = new List<ForeignKeyColumn>
+                {
+                    new ForeignKeyColumn { NameFrom = "COL1", NameTo = "COL1" }
+                }
             });
 
             _appMD.Add(1, "db1", "dbo", _tableMD);

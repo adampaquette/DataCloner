@@ -196,10 +196,7 @@ namespace DataCloner.IntegrationTests
                 Database = TestDatabase,
                 Schema = TestSchema,
                 Table = "artist",
-                Columns = new ColumnsWithValue
-                {
-                    { "artistid", 1 }
-                }
+                Columns = new ColumnsWithValue { { "artistid", 1 } }
             };
 
             var clonedData = new List<IRowIdentifier>();
@@ -290,10 +287,7 @@ namespace DataCloner.IntegrationTests
                 Database = TestDatabase,
                 Schema = TestSchema,
                 Table = "artist",
-                Columns = new ColumnsWithValue
-                {
-                    { "artistid", 1 }
-                }
+                Columns = new ColumnsWithValue { { "artistid", 1 } }
             };
 
             var clonedData = new List<IRowIdentifier>();
@@ -376,10 +370,7 @@ namespace DataCloner.IntegrationTests
                 Database = TestDatabase,
                 Schema = TestSchema,
                 Table = "artist",
-                Columns = new ColumnsWithValue
-                {
-                    { "artistid", 1 }
-                }
+                Columns = new ColumnsWithValue { { "artistid", 1 } }
             };
 
             var clonedData = new List<IRowIdentifier>();
@@ -403,6 +394,240 @@ namespace DataCloner.IntegrationTests
                      Schema = TestSchema,
                      Table = "artist",
                      Columns = new ColumnsWithValue { { "artistid", 1 } }
+                }
+            };
+
+            Assert.True(Enumerable.SequenceEqual(clonedData, expectedData));
+        }
+
+        [Theory, MemberData(DbEngine)]
+        public void Cloning_With_StaticTable(SqlConnection conn)
+        {
+            //Arrange
+            var cloner = new Cloner();
+            var config = Utils.MakeDefaultSettings(conn);
+            var tablesConfig = config.GetDefaultSchema();
+            tablesConfig.AddRange(new List<TableModifier>
+            {
+                new TableModifier
+                {
+                    Name = "artist",
+                    IsStatic = true
+                }
+            });
+            cloner.Setup(config);
+
+            var source = new RowIdentifier
+            {
+                ServerId = conn.Id,
+                Database = TestDatabase,
+                Schema = TestSchema,
+                Table = "album",
+                Columns = new ColumnsWithValue { { "albumid", 1 } }
+            };
+
+            var clonedData = new List<IRowIdentifier>();
+            cloner.QueryCommiting += (s, e) => e.Cancel = true;
+            cloner.StatusChanged += (s, e) =>
+            {
+                if (e.Status == Status.Cloning)
+                    clonedData.Add(e.SourceRow);
+            };
+
+            //Act
+            cloner.Clone(source, false);
+
+            //Assert
+            var expectedData = new List<IRowIdentifier>
+            {
+                new RowIdentifier
+                {
+                     ServerId = conn.Id,
+                     Database = TestDatabase,
+                     Schema = TestSchema,
+                     Table = "album",
+                     Columns = new ColumnsWithValue { { "albumid", 1 } }
+                }
+            };
+
+            Assert.True(Enumerable.SequenceEqual(clonedData, expectedData));
+        }
+
+        [Theory, MemberData(DbEngine)]
+        public void Cloning_Should_NotCloneDerivativeOfDependancy(SqlConnection conn)
+        {
+            //Arrange
+            var cloner = new Cloner();
+            var config = Utils.MakeDefaultSettings(conn);
+            cloner.Setup(config);
+
+            var source = new RowIdentifier
+            {
+                ServerId = conn.Id,
+                Database = TestDatabase,
+                Schema = TestSchema,
+                Table = "playlisttrack",
+                Columns = new ColumnsWithValue
+                {
+                    { "playlistid", 1 },
+                    { "trackid", 1 }
+                }
+            };
+
+            var clonedData = new List<IRowIdentifier>();
+            cloner.QueryCommiting += (s, e) => e.Cancel = true;
+            cloner.StatusChanged += (s, e) =>
+            {
+                if (e.Status == Status.Cloning)
+                    clonedData.Add(e.SourceRow);
+            };
+
+            //Act
+            cloner.Clone(source, false);
+
+            //Assert
+            var expectedData = new List<IRowIdentifier>
+            {
+                new RowIdentifier
+                {
+                    ServerId = conn.Id,
+                    Database = TestDatabase,
+                    Schema = TestSchema,
+                    Table = "playlisttrack",
+                    Columns = new ColumnsWithValue
+                    {
+                        { "playlistid", 1 },
+                        { "trackid", 1 }
+                    }
+                },
+                new RowIdentifier
+                {
+                    ServerId = conn.Id,
+                    Database = TestDatabase,
+                    Schema = TestSchema,
+                    Table = "playlist",
+                    Columns = new ColumnsWithValue { { "playlistid", 1} }
+                },
+                new RowIdentifier
+                {
+                    ServerId = conn.Id,
+                    Database = TestDatabase,
+                    Schema = TestSchema,
+                    Table = "track",
+                    Columns = new ColumnsWithValue { { "trackid", 1} }
+                },
+                new RowIdentifier
+                {
+                    ServerId = conn.Id,
+                    Database = TestDatabase,
+                    Schema = TestSchema,
+                    Table = "album",
+                    Columns = new ColumnsWithValue { { "albumid", 1} }
+                },
+                new RowIdentifier
+                {
+                    ServerId = conn.Id,
+                    Database = TestDatabase,
+                    Schema = TestSchema,
+                    Table = "artist",
+                    Columns = new ColumnsWithValue { { "artistid", 1} }
+                },
+                new RowIdentifier
+                {
+                    ServerId = conn.Id,
+                    Database = TestDatabase,
+                    Schema = TestSchema,
+                    Table = "genre",
+                    Columns = new ColumnsWithValue { { "genreid", 1} }
+                },
+                new RowIdentifier
+                {
+                    ServerId = conn.Id,
+                    Database = TestDatabase,
+                    Schema = TestSchema,
+                    Table = "mediatype",
+                    Columns = new ColumnsWithValue { { "mediatypeid", 1} }
+                }
+            };
+
+            Assert.True(Enumerable.SequenceEqual(clonedData, expectedData));
+        }
+
+        [Theory, MemberData(DbEngine)]
+        public void Cloning_With_ForeignKeyAdd(SqlConnection conn)
+        {
+            //Arrange
+            var cloner = new Cloner();
+            var config = Utils.MakeDefaultSettings(conn);
+            var tablesConfig = config.GetDefaultSchema();
+            tablesConfig.AddRange(new List<TableModifier>
+            {
+                new TableModifier
+                {
+                    Name = "artist",
+                    ForeignKeys = new ForeignKeys
+                    {
+                        ForeignKeyAdd = new List<ForeignKeyAdd>
+                        {
+                            new ForeignKeyAdd
+                            {
+                                ServerId = conn.Id.ToString(),
+                                Database = TestDatabase,
+                                Schema = TestSchema,
+                                Table = "playlist",
+                                Columns = new List<ForeignKeyColumn>
+                                {
+                                    new ForeignKeyColumn
+                                    {
+                                        NameFrom ="artistid",
+                                        NameTo = "playlistid"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            cloner.Setup(config);
+
+            var source = new RowIdentifier
+            {
+                ServerId = conn.Id,
+                Database = TestDatabase,
+                Schema = TestSchema,
+                Table = "artist",
+                Columns = new ColumnsWithValue { { "artistid", 1 } }
+            };
+
+            var clonedData = new List<IRowIdentifier>();
+            cloner.QueryCommiting += (s, e) => e.Cancel = true;
+            cloner.StatusChanged += (s, e) =>
+            {
+                if (e.Status == Status.Cloning)
+                    clonedData.Add(e.SourceRow);
+            };
+
+            //Act
+            cloner.Clone(source, false);
+
+            //Assert
+            var expectedData = new List<IRowIdentifier>
+            {
+                new RowIdentifier
+                {
+                     ServerId = conn.Id,
+                     Database = TestDatabase,
+                     Schema = TestSchema,
+                     Table = "artist",
+                     Columns = new ColumnsWithValue { { "artistid", 1 } }
+                },
+                new RowIdentifier
+                {
+                     ServerId = conn.Id,
+                     Database = TestDatabase,
+                     Schema = TestSchema,
+                     Table = "playlist",
+                     Columns = new ColumnsWithValue { { "playlistid", 1 } }
                 }
             };
 

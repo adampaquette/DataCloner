@@ -20,7 +20,7 @@ namespace DataCloner.PlugIn
             };
         }
 
-        public static bool IsDataColumnBuildable(this IColumnDefinition col)
+        public static bool IsDataColumnBuildable(this ColumnDefinition col)
         {
             if (!string.IsNullOrWhiteSpace(col.BuilderName))
                 return true;
@@ -29,7 +29,7 @@ namespace DataCloner.PlugIn
             return false;
         }
 
-        public static object BuildDataColumn(IQueryHelper queryHelper, IDbTransaction transaction, Int16 serverId, string database, string schema, ITableMetadata table, IColumnDefinition col)
+        public static object BuildDataColumn(IQueryHelper queryHelper, IDbTransaction transaction, Int16 serverId, string database, string schema, TableMetadata table, ColumnDefinition col)
         {
             IDataBuilder builder = null;
             var mustGenerate = false;
@@ -94,14 +94,14 @@ namespace DataCloner.PlugIn
             return null;
         }
 
-        public static void BuildDataFromTable(IQueryHelper queryHelper, IDbTransaction transaction, Int16 serverId, string database, string schema, ITableMetadata table, object[] dataRow)
+        public static void BuildDataFromTable(IQueryHelper queryHelper, IDbTransaction transaction, Int16 serverId, string database, string schema, TableMetadata table, object[] dataRow)
         {
-            if (table.ColumnsDefinition.Length != dataRow.Length)
+            if (table.ColumnsDefinition.Count != dataRow.Length)
                 throw new ArgumentException(
                     string.Format("The number of columns defined in the cached table {0} '{1}' is different from the current row '{2}'.",
-                    table.Name, table.ColumnsDefinition.Length, dataRow.Length));
+                    table.Name, table.ColumnsDefinition.Count, dataRow.Length));
 
-            for (var i = 0; i < table.ColumnsDefinition.Length; i++)
+            for (var i = 0; i < table.ColumnsDefinition.Count; i++)
             {
                 var col = table.ColumnsDefinition[i];
                 dataRow[i] = BuildDataColumn(queryHelper, transaction, serverId, database, schema, table, col);

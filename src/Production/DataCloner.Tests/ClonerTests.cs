@@ -1,13 +1,12 @@
-﻿using System;
-using DataCloner.Data;
-using DataCloner.Internal;
+﻿using DataCloner.Data;
 using DataCloner.Metadata;
 using NSubstitute;
+using System;
 using Xunit;
 
 namespace DataCloner.Tests
 {
-	public class ClonerTests
+    public class ClonerTests
 	{
 		public class BasicClonerTests
 		{

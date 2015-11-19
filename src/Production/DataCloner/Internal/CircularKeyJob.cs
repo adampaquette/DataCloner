@@ -6,6 +6,6 @@ namespace DataCloner.Internal
     {
         public IRowIdentifier SourceBaseRowStartPoint { get; set; }
         public IRowIdentifier SourceFkRowStartPoint { get; set; }
-        public IForeignKey ForeignKey { get; set; }
+        public ForeignKey ForeignKey { get; set; }
     }
 }

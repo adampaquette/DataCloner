@@ -100,7 +100,6 @@
     <Compile Include="Data\QueryHelperMySQL.cs" />
     <Compile Include="Data\SqlType.cs" />
     <Compile Include="Metadata\AppMetadataExtensions.cs" />
-    <Compile Include="Metadata\ITableMetadata.cs" />
     <Compile Include="Internal\ServerIdentifier.cs" />
     <Compile Include="Internal\CircularKeyJob.cs" />
     <Compile Include="Configuration\BehaviorExtension.cs" />

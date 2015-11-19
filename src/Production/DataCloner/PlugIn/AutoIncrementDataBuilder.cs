@@ -9,7 +9,7 @@ namespace DataCloner.PlugIn
     {
         private static readonly Dictionary<string, object> AutoIncrementCache = new Dictionary<string, object>();
 
-        public object BuildData(IDbConnection conn, IDbTransaction transaction, DbEngine engine, Int16 serverId, string database, string schema, ITableMetadata table, IColumnDefinition column)
+        public object BuildData(IDbConnection conn, IDbTransaction transaction, DbEngine engine, Int16 serverId, string database, string schema, TableMetadata table, ColumnDefinition column)
         {
             var cacheId = serverId + database + schema + table.Name + column.Name;
 
@@ -71,7 +71,7 @@ namespace DataCloner.PlugIn
             }
         }
 
-        private object GetNewKeyMySql(IDbConnection conn, IDbTransaction transaction, string database, ITableMetadata table, IColumnDefinition column)
+        private object GetNewKeyMySql(IDbConnection conn, IDbTransaction transaction, string database, TableMetadata table, ColumnDefinition column)
         {
             var cmd = conn.CreateCommand();
             cmd.Transaction = transaction;
@@ -80,7 +80,7 @@ namespace DataCloner.PlugIn
             return result;
         }
 
-        private object GetNewKeyMsSql(IDbConnection conn, IDbTransaction transaction, string database, string schema, ITableMetadata table, IColumnDefinition column)
+        private object GetNewKeyMsSql(IDbConnection conn, IDbTransaction transaction, string database, string schema, TableMetadata table, ColumnDefinition column)
         {
             object result = null;
             var cmd = conn.CreateCommand();

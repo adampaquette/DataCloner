@@ -300,7 +300,7 @@ namespace DataCloner
 							if (rowsGenerating.Contains(riFk))
 							{
 								//Affecte la FK à 1 pour les contraintes NOT NULL. EnforceIntegrity doit être désactivé.
-								var nullFk = Enumerable.Repeat<object>(1, fk.Columns.Length).ToArray();
+								var nullFk = Enumerable.Repeat<object>(1, fk.Columns.Count).ToArray();
 								table.SetFkInDatarow(fk, nullFk, destinationRow);
 
 								//On ajoute une tâche pour réassigner la FK "correctement", une fois que toute la chaîne aura été enregistrée.
@@ -400,7 +400,7 @@ namespace DataCloner
 			throw new Exception();
 		}
 
-		private InsertStep CreateExecutionStep(ITableIdentifier tiSource, ITableIdentifier tiDestination, ITableMetadata table, object[] destinationRow, int level)
+		private InsertStep CreateExecutionStep(ITableIdentifier tiSource, TableIdentifier tiDestination, TableMetadata table, object[] destinationRow, int level)
 		{
 			var step = new InsertStep
 			{
@@ -543,11 +543,11 @@ namespace DataCloner
 					Schema = job.SourceFkRowStartPoint.Schema
 				}];
 
-				if (job.ForeignKey.Columns.Length != keyDestinationFkRow.Length)
+				if (job.ForeignKey.Columns.Count != keyDestinationFkRow.Length)
 					throw new Exception("The foreign key defenition is not matching with the values.");
 
 				var fk = new ColumnsWithValue();
-				for (var i = 0; i < job.ForeignKey.Columns.Length; i++)
+				for (var i = 0; i < job.ForeignKey.Columns.Count; i++)
 				{
 					var colName = job.ForeignKey.Columns[i].NameTo;
 					var value = keyDestinationFkRow[i];

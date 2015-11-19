@@ -1,6 +1,5 @@
 ﻿using DataCloner.Data;
 using DataCloner.Framework;
-using DataCloner.Internal;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -11,7 +10,7 @@ using System.Linq;
 namespace DataCloner.Metadata
 {
     [DebuggerDisplay("{Name}")]
-    public sealed class TableMetadata : ITableMetadata
+    public sealed class TableMetadata
     {
         private string _name;
 
@@ -19,21 +18,21 @@ namespace DataCloner.Metadata
         public bool IsStatic { get; set; }
         public string SelectCommand { get; set; }
         public string InsertCommand { get; set; }
-        public IDerivativeTable[] DerivativeTables { get; set; }
-        public IForeignKey[] ForeignKeys { get; set; }
-        public IUniqueKey[] UniqueKeys { get; set; }
-        public IColumnDefinition[] ColumnsDefinition { get; set; }
+        public List<DerivativeTable> DerivativeTables { get; set; }
+        public List<ForeignKey> ForeignKeys { get; set; }
+        public List<UniqueKey> UniqueKeys { get; set; }
+        public List<ColumnDefinition> ColumnsDefinition { get; set; }
 
         public TableMetadata(string name)
         {
             _name = name;
-            DerivativeTables = new IDerivativeTable[] { };
-            ForeignKeys = new IForeignKey[] { };
-            UniqueKeys = new IUniqueKey[] { };
-            ColumnsDefinition = new IColumnDefinition[] { };
+            DerivativeTables = new List<DerivativeTable>();
+            ForeignKeys = new List<ForeignKey>();
+            UniqueKeys = new List<UniqueKey>();
+            ColumnsDefinition = new List<ColumnDefinition>();
         }
 
-        public object[] BuildRawFkFromDataRow(IForeignKey fk, object[] row)
+        public object[] BuildRawFkFromDataRow(ForeignKey fk, object[] row)
         {
             var pk = new List<object>();
             foreach (var t in fk.Columns)
@@ -44,7 +43,7 @@ namespace DataCloner.Metadata
             return pk.ToArray();
         }
 
-        public ColumnsWithValue BuildKeyFromDerivativeDataRow(IForeignKey fk, object[] row)
+        public ColumnsWithValue BuildKeyFromDerivativeDataRow(ForeignKey fk, object[] row)
         {
             var fkValues = new ColumnsWithValue();
             foreach (var t in fk.Columns)
@@ -55,7 +54,7 @@ namespace DataCloner.Metadata
             return fkValues;
         }
 
-        public ColumnsWithValue BuildKeyFromFkDataRow(IForeignKey fk, object[] row)
+        public ColumnsWithValue BuildKeyFromFkDataRow(ForeignKey fk, object[] row)
         {
             var fkValues = new ColumnsWithValue();
             foreach (var col in fk.Columns)
@@ -69,7 +68,7 @@ namespace DataCloner.Metadata
         public object[] BuildRawPkFromDataRow(object[] row)
         {
             var pk = new List<object>();
-            for (var i = 0; i < ColumnsDefinition.Length; i++)
+            for (var i = 0; i < ColumnsDefinition.Count; i++)
             {
                 if (ColumnsDefinition[i].IsPrimary)
                     pk.Add(row[i]);
@@ -80,7 +79,7 @@ namespace DataCloner.Metadata
         public ColumnsWithValue BuildPkFromDataRow(object[] row)
         {
             var pk = new ColumnsWithValue();
-            for (var i = 0; i < ColumnsDefinition.Length; i++)
+            for (var i = 0; i < ColumnsDefinition.Count; i++)
             {
                 if (ColumnsDefinition[i].IsPrimary)
                     pk.Add(ColumnsDefinition[i].Name, row[i]);
@@ -104,11 +103,11 @@ namespace DataCloner.Metadata
         /// <summary>
         /// //On trouve la position de chaque colonne pour affecter la valeur de destination.
         /// </summary>
-        public void SetFkInDatarow(IForeignKey fkDefinition, object[] fkData, object[] destinationRow)
+        public void SetFkInDatarow(ForeignKey fkDefinition, object[] fkData, object[] destinationRow)
         {
-            for (var j = 0; j < fkDefinition.Columns.Length; j++)
+            for (var j = 0; j < fkDefinition.Columns.Count; j++)
             {
-                for (var k = 0; k < ColumnsDefinition.Length; k++)
+                for (var k = 0; k < ColumnsDefinition.Count; k++)
                 {
                     if (fkDefinition.Columns[j].NameFrom == ColumnsDefinition[k].Name)
                         destinationRow[k] = fkData[j];
@@ -116,7 +115,7 @@ namespace DataCloner.Metadata
             }
         }
 
-        public void SetFkFromDatarowInDatarow(TableMetadata fkTable, IForeignKey fk, object[] sourceRow, object[] destinationRow)
+        public void SetFkFromDatarowInDatarow(TableMetadata fkTable, ForeignKey fk, object[] sourceRow, object[] destinationRow)
         {
             foreach (var col in fk.Columns)
             {
@@ -150,12 +149,12 @@ namespace DataCloner.Metadata
             }
         }
 
-        public  ColumnsWithValue BuildDerivativePk(ITableMetadata derivativeTable, object[] sourceRow)
+        public  ColumnsWithValue BuildDerivativePk(TableMetadata derivativeTable, object[] sourceRow)
         {
             var colPkSrc = new ColumnsWithValue();
             var colPkDst = new ColumnsWithValue();
 
-            for (var j = 0; j < ColumnsDefinition.Length; j++)
+            for (var j = 0; j < ColumnsDefinition.Count; j++)
             {
                 if (ColumnsDefinition[j].IsPrimary)
                     colPkSrc.Add(ColumnsDefinition[j].Name, sourceRow[j]);
@@ -203,7 +202,7 @@ namespace DataCloner.Metadata
 
         public void Serialize(BinaryWriter stream)
         {
-            var nbRows = DerivativeTables.Length;
+            var nbRows = DerivativeTables.Count;
             stream.Write(Name ?? "");
             stream.Write(IsStatic);
             stream.Write(SelectCommand ?? "");
@@ -220,7 +219,7 @@ namespace DataCloner.Metadata
                 stream.Write(DerivativeTables[i].Cascade);
             }
 
-            nbRows = ForeignKeys.Length;
+            nbRows = ForeignKeys.Count;
             stream.Write(nbRows);
             for (var i = 0; i < nbRows; i++)
             {
@@ -229,7 +228,7 @@ namespace DataCloner.Metadata
                 stream.Write(ForeignKeys[i].SchemaTo);
                 stream.Write(ForeignKeys[i].TableTo);
 
-                var nbCol = ForeignKeys[i].Columns.Length;
+                var nbCol = ForeignKeys[i].Columns.Count;
                 stream.Write(nbCol);
                 for (var j = 0; j < nbCol; j++)
                 {
@@ -238,7 +237,7 @@ namespace DataCloner.Metadata
                 }
             }
 
-            nbRows = ColumnsDefinition.Length;
+            nbRows = ColumnsDefinition.Count;
             stream.Write(nbRows);
             for (var i = 0; i < nbRows; i++)
             {
@@ -303,7 +302,7 @@ namespace DataCloner.Metadata
                     });
                 }
 
-                fk.Columns = fkColList.ToArray();
+                fk.Columns = fkColList;
                 fkList.Add(fk);
             }
 
@@ -322,35 +321,35 @@ namespace DataCloner.Metadata
             });
             }
 
-            t.DerivativeTables = dtList.ToArray();
-            t.ForeignKeys = fkList.ToArray();
-            t.ColumnsDefinition = schemaColList.ToArray();
+            t.DerivativeTables = dtList;
+            t.ForeignKeys = fkList;
+            t.ColumnsDefinition = schemaColList;
 
             return t;
         }
     }
 
-    public sealed class ForeignKey : IForeignKey
+    public sealed class ForeignKey
     {
         public Int16 ServerIdTo { get; set; }
         public string DatabaseTo { get; set; }
         public string SchemaTo { get; set; }
         public string TableTo { get; set; }
-        public IForeignKeyColumn[] Columns { get; set; }
+        public List<ForeignKeyColumn> Columns { get; set; }
     }
 
-    public sealed class ForeignKeyColumn : IForeignKeyColumn
+    public sealed class ForeignKeyColumn
     {
         public string NameFrom { get; set; }
         public string NameTo { get; set; }
     }
 
-    public sealed class UniqueKey : IUniqueKey
+    public sealed class UniqueKey 
     {
-        public string[] Columns { get; set; }
+        public List<string> Columns { get; set; }
     }
 
-    public sealed class ColumnDefinition : IColumnDefinition
+    public sealed class ColumnDefinition 
     {
         public string Name { get; set; }
         public DbType DbType { get; set; }
@@ -367,7 +366,7 @@ namespace DataCloner.Metadata
         }
     }
 
-    public sealed class DerivativeTable : IDerivativeTable
+    public sealed class DerivativeTable
     {
         public Int16 ServerId { get; set; }
         public string Database { get; set; }

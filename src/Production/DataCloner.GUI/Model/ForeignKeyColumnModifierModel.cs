@@ -38,7 +38,7 @@ namespace DataCloner.GUI.Model
             //Pour que le binding puisse créer une nouvelle ligne
         }
 
-        public ForeignKeyColumnModifierModel(IForeignKeyColumn column)
+        public ForeignKeyColumnModifierModel(ForeignKeyColumn column)
         {
             _nameFrom = column.NameFrom;
             _nameTo = column.NameTo;

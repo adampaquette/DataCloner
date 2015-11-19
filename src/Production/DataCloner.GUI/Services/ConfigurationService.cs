@@ -280,8 +280,8 @@ namespace DataCloner.GUI.Services
         private static bool MergeForeignKey(ForeignKeyModifierModel mergedFk,
                                             IList<ForeignKeyModifierModel> mergedFks,
                                             ForeignKeys userConfigFk,
-                                            IForeignKey defaultFk,
-                                            IColumnDefinition[] defaultColumns)
+                                            ForeignKey defaultFk,
+                                            List<ColumnDefinition> defaultColumns)
         {
             var hasChange = false;
 
@@ -371,7 +371,7 @@ namespace DataCloner.GUI.Services
         private static bool MergedDerivativeTable(DerivativeTableModifierModel mergedDerivativeTable,
                                                  IList<DerivativeTableModifierModel> mergedDerivativeTables,
                                                  DerativeTable derativeTable,
-                                                 IDerivativeTable defaultDt)
+                                                 DerivativeTable defaultDt)
         {
             var hasChange = false;
 
@@ -608,7 +608,7 @@ namespace DataCloner.GUI.Services
         }
 
         private static ObservableCollection<DataBuilderModel> LoadDataBuildersTemplate(IList<DataBuilder> userConfigDataBuilders,
-            IColumnDefinition[] colMetadatas)
+            List<ColumnDefinition> colMetadatas)
         {
             var dbsVM = new ObservableCollection<DataBuilderModel>();
 
@@ -637,7 +637,7 @@ namespace DataCloner.GUI.Services
         }
 
         private static ObservableCollection<DerivativeTableModifierModel> LoadDerivativeTableTemplate(IList<DerivativeSubTable> userConfigDerivativeSubTables,
-            IDerivativeTable[] derivativeTableMetadatas)
+            List<DerivativeTable> derivativeTableMetadatas)
         {
             var dtsVM = new ObservableCollection<DerivativeTableModifierModel>();
 
@@ -689,7 +689,7 @@ namespace DataCloner.GUI.Services
             return dtsVM;
         }
 
-        private static ObservableCollection<ForeignKeyModifierModel> LoadForeingKeyTemplate(ForeignKeys userConfigFks, IForeignKey[] fkMetadatas)
+        private static ObservableCollection<ForeignKeyModifierModel> LoadForeingKeyTemplate(ForeignKeys userConfigFks, List<ForeignKey> fkMetadatas)
         {
             var fksVM = new ObservableCollection<ForeignKeyModifierModel>();
 

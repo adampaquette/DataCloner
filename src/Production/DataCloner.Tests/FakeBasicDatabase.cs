@@ -3,6 +3,7 @@ using DataCloner.Data;
 using DataCloner.Internal;
 using DataCloner.Metadata;
 using NSubstitute;
+using System.Collections.Generic;
 
 namespace DataCloner.Tests
 {
@@ -12,13 +13,13 @@ namespace DataCloner.Tests
         {
             var house = new TableMetadata("house")
             {
-                ColumnsDefinition = new[]
+                ColumnsDefinition = new List<ColumnDefinition>
                 {
                     new ColumnDefinition {Name = "id", IsPrimary = true, DbType = DbType.Int32},
                     new ColumnDefinition {Name = "name", DbType = DbType.String, SqlType = new SqlType{ Precision = 20 } },
                     new ColumnDefinition {Name = "cityId", IsForeignKey = true, DbType = DbType.Int32}
                 },
-                ForeignKeys = new[]
+                ForeignKeys = new List<ForeignKey>
                 {
                     new ForeignKey
                     {
@@ -26,20 +27,23 @@ namespace DataCloner.Tests
                         DatabaseTo = "",
                         SchemaTo = "",
                         TableTo = "city",
-                        Columns = new []{new ForeignKeyColumn {NameFrom = "cityId", NameTo = "id"} }
+                        Columns = new List<ForeignKeyColumn>
+                        {
+                            new ForeignKeyColumn {NameFrom = "cityId", NameTo = "id"}
+                        }
                     }
                 }
             };
 
             var city = new TableMetadata("city")
             {
-                ColumnsDefinition = new[]
+                ColumnsDefinition = new List<ColumnDefinition>
                 {
                     new ColumnDefinition {Name = "id", IsPrimary = true, DbType = DbType.Int32},
                     new ColumnDefinition {Name = "name", DbType = DbType.String,  SqlType = new SqlType{ Precision = 20 }},
                     new ColumnDefinition {Name = "stateId", IsForeignKey = true, DbType = DbType.Int32}
                 },
-                ForeignKeys = new[]
+                ForeignKeys = new List<ForeignKey>
                 {
                     new ForeignKey
                     {
@@ -47,21 +51,27 @@ namespace DataCloner.Tests
                         DatabaseTo = "",
                         SchemaTo = "",
                         TableTo = "state",
-                        Columns = new []{new ForeignKeyColumn {NameFrom = "stateId", NameTo = "id"} }
+                        Columns = new List<ForeignKeyColumn>
+                        {
+                            new ForeignKeyColumn {NameFrom = "stateId", NameTo = "id"}
+                        }
                     }
                 },
-                DerivativeTables = new[] { new DerivativeTable { ServerId = 0, Schema = "", Database = "", Table = "house" } }
+                DerivativeTables = new List<DerivativeTable>
+                {
+                    new DerivativeTable { ServerId = 0, Schema = "", Database = "", Table = "house" }
+                }
             };
 
             var state = new TableMetadata("state")
             {
-                ColumnsDefinition = new[]
+                ColumnsDefinition = new List<ColumnDefinition>
                 {
                     new ColumnDefinition {Name = "id", IsPrimary = true, DbType = DbType.Int32},
                     new ColumnDefinition {Name = "name", DbType = DbType.String,  SqlType = new SqlType{ Precision = 20 }},
                     new ColumnDefinition {Name = "countryId", IsForeignKey = true, DbType = DbType.Int32}
                 },
-                ForeignKeys = new[]
+                ForeignKeys = new List<ForeignKey>
                 {
                     new ForeignKey
                     {
@@ -69,20 +79,26 @@ namespace DataCloner.Tests
                         DatabaseTo = "",
                         SchemaTo = "",
                         TableTo = "country",
-                        Columns = new []{new ForeignKeyColumn {NameFrom = "countryId", NameTo = "id"} }
+                        Columns = new List<ForeignKeyColumn>
+                        {
+                            new ForeignKeyColumn {NameFrom = "countryId", NameTo = "id"}
+                        }
                     }
                 },
-                DerivativeTables = new[] { new DerivativeTable { ServerId = 0, Schema = "", Database = "", Table = "city" } }
+                DerivativeTables = new List<DerivativeTable>
+                {
+                    new DerivativeTable { ServerId = 0, Schema = "", Database = "", Table = "city" }
+                }
             };
 
             var country = new TableMetadata("country")
             {
-                ColumnsDefinition = new[]
+                ColumnsDefinition = new List<ColumnDefinition>
                 {
                     new ColumnDefinition {Name = "id", IsPrimary = true, DbType = DbType.Int32},
                     new ColumnDefinition {Name = "name", DbType = DbType.String, SqlType = new SqlType{ Precision = 20 }}
                 },
-                DerivativeTables = new[]
+                DerivativeTables = new List<DerivativeTable>
                 {
                     new DerivativeTable { ServerId = 0, Schema = "", Database = "", Table = "state" },
                     new DerivativeTable { ServerId = 0, Schema = "", Database = "", Table = "person" }
@@ -91,14 +107,14 @@ namespace DataCloner.Tests
 
             var person = new TableMetadata("person")
             {
-                ColumnsDefinition = new[]
+                ColumnsDefinition = new List<ColumnDefinition>
                 {
                     new ColumnDefinition {Name = "id", IsPrimary = true, DbType = DbType.Int32},
                     new ColumnDefinition {Name = "name", DbType = DbType.String,  SqlType = new SqlType{ Precision = 20 }},
                     new ColumnDefinition {Name = "fatherId", IsForeignKey = true, IsUniqueKey = true, DbType = DbType.Int32},
                     new ColumnDefinition {Name = "favoriteColorId", IsForeignKey = true, DbType = DbType.Int32}
                 },
-                ForeignKeys = new[]
+                ForeignKeys = new List<ForeignKey>
                 {
                     new ForeignKey
                     {
@@ -106,7 +122,10 @@ namespace DataCloner.Tests
                         DatabaseTo = "",
                         SchemaTo = "",
                         TableTo = "color",
-                        Columns = new []{new ForeignKeyColumn {NameFrom = "favoriteColorId", NameTo = "id"} }
+                        Columns = new List<ForeignKeyColumn>
+                        {
+                            new ForeignKeyColumn {NameFrom = "favoriteColorId", NameTo = "id"}
+                        }
                     },
                     new ForeignKey
                     {
@@ -114,14 +133,17 @@ namespace DataCloner.Tests
                         DatabaseTo = "",
                         SchemaTo = "",
                         TableTo = "person",
-                        Columns = new []{new ForeignKeyColumn {NameFrom = "fatherId", NameTo = "id"} }
+                        Columns = new List<ForeignKeyColumn>
+                        {
+                            new ForeignKeyColumn {NameFrom = "fatherId", NameTo = "id"}
+                        }
                     }
                 }
             };
 
             var color = new TableMetadata("color")
             {
-                ColumnsDefinition = new[]
+                ColumnsDefinition =
                 {
                     new ColumnDefinition {Name = "id", IsPrimary = true, DbType = DbType.Int32},
                     new ColumnDefinition {Name = "name", DbType = DbType.String,  SqlType = new SqlType{ Precision = 20 }}

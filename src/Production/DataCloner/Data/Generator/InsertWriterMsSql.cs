@@ -2,6 +2,7 @@
 using System.Text;
 using DataCloner.Internal;
 using DataCloner.Metadata;
+using System.Collections.Generic;
 
 namespace DataCloner.Data.Generator
 {
@@ -9,7 +10,7 @@ namespace DataCloner.Data.Generator
     {
         private readonly StringBuilder _sb = new StringBuilder();
 
-        public IInsertWriter AppendColumns(ITableIdentifier table, IColumnDefinition[] columns)
+        public IInsertWriter AppendColumns(ITableIdentifier table, List<ColumnDefinition> columns)
         {
             _sb.Append("INSERT INTO [")
                .Append(table.Database)

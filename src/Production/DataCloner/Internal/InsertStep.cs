@@ -11,7 +11,7 @@ namespace DataCloner.Internal
         public Int32 StepId { get; set; }
 		public Int32 Depth { get; set; }
 		public List<SqlVariable> Variables { get; set; }
-		public ITableMetadata TableSchema { get; set; }
+		public TableMetadata TableSchema { get; set; }
         public ITableIdentifier SourceTable { get; set; }
         public ITableIdentifier DestinationTable { get; set; }
         public object[] DataRow { get; set; }

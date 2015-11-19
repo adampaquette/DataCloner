@@ -1,6 +1,5 @@
 ﻿using DataCloner.Configuration;
 using DataCloner.Data;
-using DataCloner.Framework;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -139,7 +138,7 @@ namespace DataCloner.Metadata
                 //Si on change de constraint
                 if (currentTable != previousTable.Name || currentConstraint != previousConstraintName)
                 {
-                    previousConstraint.Columns = lstForeignKeyColumns.ToArray();
+                    previousConstraint.Columns = lstForeignKeyColumns;
                     lstForeignKeys.Add(previousConstraint);
 
                     lstForeignKeyColumns = new List<ForeignKeyColumn>();
@@ -156,7 +155,7 @@ namespace DataCloner.Metadata
                 //Si on change de table
                 if (currentTable != previousTable.Name)
                 {
-                    previousTable.ForeignKeys = lstForeignKeys.ToArray();
+                    previousTable.ForeignKeys = lstForeignKeys;
 
                     //Change de table
                     previousTable = this[serverId][database][currentSchema].First(t => t.Name == reader.GetString(1));
@@ -182,9 +181,9 @@ namespace DataCloner.Metadata
             //Ajoute la dernière table / schema
             if (lstForeignKeyColumns.Count > 0)
             {
-                previousConstraint.Columns = lstForeignKeyColumns.ToArray();
+                previousConstraint.Columns = lstForeignKeyColumns;
                 lstForeignKeys.Add(previousConstraint);
-                previousTable.ForeignKeys = lstForeignKeys.ToArray();
+                previousTable.ForeignKeys = lstForeignKeys;
             }
         }
 
@@ -212,7 +211,7 @@ namespace DataCloner.Metadata
                 //Si on change de constraint
                 if (currentTable != previousTable.Name || currentConstraint != previousConstraintName)
                 {
-                    previousConstraint.Columns = lstUniqueKeyColumns.ToArray();
+                    previousConstraint.Columns = lstUniqueKeyColumns;
                     lstUniqueKeys.Add(previousConstraint);
 
                     lstUniqueKeyColumns = new List<string>();
@@ -223,7 +222,7 @@ namespace DataCloner.Metadata
                 //Si on change de table
                 if (currentTable != previousTable.Name)
                 {
-                    previousTable.UniqueKeys = lstUniqueKeys.ToArray();
+                    previousTable.UniqueKeys = lstUniqueKeys;
 
                     //Change de table
                     previousTable = this[serverId][database][currentSchema].First(t => t.Name == reader.GetString(1));
@@ -245,9 +244,9 @@ namespace DataCloner.Metadata
             //Ajoute la dernière table / schema
             if (lstUniqueKeyColumns.Count > 0)
             {
-                previousConstraint.Columns = lstUniqueKeyColumns.ToArray();
+                previousConstraint.Columns = lstUniqueKeyColumns;
                 lstUniqueKeys.Add(previousConstraint);
-                previousTable.UniqueKeys = lstUniqueKeys.ToArray();
+                previousTable.UniqueKeys = lstUniqueKeys;
             }
         }
 
@@ -282,7 +281,7 @@ namespace DataCloner.Metadata
                 //Si on change de table
                 if (currentSchema != previousSchema || currentTable != previousTable.Name)
                 {
-                    previousTable.ColumnsDefinition = lstSchemaColumn.ToArray();
+                    previousTable.ColumnsDefinition = lstSchemaColumn;
                     schemaMetadata.Add(previousTable);
 
                     lstSchemaColumn = new List<ColumnDefinition>();
@@ -319,7 +318,7 @@ namespace DataCloner.Metadata
             //Ajoute la dernière table / schema
             if (lstSchemaColumn.Count > 0)
             {
-                previousTable.ColumnsDefinition = lstSchemaColumn.ToArray();
+                previousTable.ColumnsDefinition = lstSchemaColumn;
                 schemaMetadata.Add(previousTable);
                 this[serverId, database, currentSchema] = schemaMetadata;
             }
@@ -368,7 +367,7 @@ namespace DataCloner.Metadata
                                          .Append("\" (");
 
                             //Nom des colonnes
-                            var nbCols = table.ColumnsDefinition.Length;
+                            var nbCols = table.ColumnsDefinition.Count;
                             for (var j = 0; j < nbCols; j++)
                             {
                                 //Select
@@ -445,7 +444,7 @@ namespace DataCloner.Metadata
                                                 if (!table.DerivativeTables.Any(t => t.ServerId == fk.ServerIdTo && t.Schema == fk.SchemaTo &&
                                                     t.Database == fk.DatabaseTo && t.Table == fk.TableTo))
                                                 {
-                                                    table.DerivativeTables = table.DerivativeTables.Add(new DerivativeTable
+                                                    table.DerivativeTables.Add(new DerivativeTable
                                                     {
                                                         ServerId = server.Key,
                                                         Database = databaseDeriv.Key,
@@ -514,7 +513,7 @@ namespace DataCloner.Metadata
                                     fk.Columns.RemoveAt(i);
                                     i--;
 
-                                    if (fk.Columns.Length == 0)
+                                    if (fk.Columns.Count == 0)
                                     {
                                         table.ForeignKeys.RemoveAt(j);
                                         j--;
@@ -533,7 +532,7 @@ namespace DataCloner.Metadata
                             DatabaseTo = fkModifier.Database,
                             SchemaTo = fkModifier.Schema,
                             TableTo = fkModifier.Table,
-                            Columns = (from fk in fkModifier.Columns select new ForeignKeyColumn { NameFrom = fk.NameFrom, NameTo = fk.NameTo }).ToArray()
+                            Columns = (from fk in fkModifier.Columns select new ForeignKeyColumn { NameFrom = fk.NameFrom, NameTo = fk.NameTo }).ToList()
                         };
 
                         table.ForeignKeys.Add(newFk);
