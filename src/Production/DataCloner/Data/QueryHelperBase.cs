@@ -162,7 +162,7 @@ namespace DataCloner.Data
             Connection.Close();
         }
 
-        public object[][] Select(IRowIdentifier row)
+        public object[][] Select(RowIdentifier row)
         {
             var rows = new List<object[]>();
             var tableMetadata = _metadata.GetTable(row);

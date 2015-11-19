@@ -10,7 +10,7 @@ namespace DataCloner.Data.Generator
     {
         private readonly StringBuilder _sb = new StringBuilder();
 
-        public IInsertWriter AppendColumns(ITableIdentifier table, List<ColumnDefinition> columns)
+        public IInsertWriter AppendColumns(TableIdentifier table, List<ColumnDefinition> columns)
         {
             _sb.Append("INSERT INTO [")
                .Append(table.Database)

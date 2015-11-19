@@ -23,7 +23,7 @@ namespace DataCloner.Internal
             return null;
         }
 		
-        public object[] GetKey(IRowIdentifier sourceKey)
+        public object[] GetKey(RowIdentifier sourceKey)
         {
             var rawKey = new object[sourceKey.Columns.Count];
             for(var i=0; i<sourceKey.Columns.Count; i++)

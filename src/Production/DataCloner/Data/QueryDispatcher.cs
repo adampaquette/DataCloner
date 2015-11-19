@@ -9,7 +9,7 @@ namespace DataCloner.Data
     {
         private Dictionary<Int16, IQueryHelper> _queryHelpers;
 
-        public IQueryHelper this[IServerIdentifier server]
+        public IQueryHelper this[ServerIdentifier server]
         {
             get { return _queryHelpers[server.ServerId]; }
         }
@@ -19,7 +19,7 @@ namespace DataCloner.Data
             get { return _queryHelpers[server]; }
         }
 
-        public IQueryHelper GetQueryHelper(IServerIdentifier server)
+        public IQueryHelper GetQueryHelper(ServerIdentifier server)
         {
             return _queryHelpers[server.ServerId];
         }

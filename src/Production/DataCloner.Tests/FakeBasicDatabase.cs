@@ -181,7 +181,7 @@ namespace DataCloner.Tests
         {
             var queryDispatcher = Substitute.For<IQueryDispatcher>();
             queryDispatcher.GetQueryHelper(0).Returns(queryHelper);
-            queryDispatcher.GetQueryHelper(Arg.Is<IRowIdentifier>(r => r.ServerId == 0)).Returns(queryHelper);
+            queryDispatcher.GetQueryHelper(Arg.Is<RowIdentifier>(r => r.ServerId == 0)).Returns(queryHelper);
             return queryDispatcher;
         }
     }

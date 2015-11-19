@@ -75,11 +75,11 @@ namespace DataCloner
             _metadataInitialiser(_dispatcher, settings, ref MetadataCtn);
 		}
 
-		public List<IRowIdentifier> Clone(IRowIdentifier riSource, bool getDerivatives = true)
+		public List<RowIdentifier> Clone(RowIdentifier riSource, bool getDerivatives = true)
 		{
 			if (riSource == null) throw new ArgumentNullException("riSource");
 
-			var rowsGenerating = new Stack<IRowIdentifier>();
+			var rowsGenerating = new Stack<RowIdentifier>();
 			rowsGenerating.Push(riSource);
 
 			//_dispatcher[riSource].EnforceIntegrityCheck(EnforceIntegrity);
@@ -134,9 +134,9 @@ namespace DataCloner
             //var memoryEntriesOptimized = sqlVarsRefCount.Count((sv) => sv.Value < 2); 
         }
 
-		private List<IRowIdentifier> GetClonedRows(IRowIdentifier riSource)
+		private List<RowIdentifier> GetClonedRows(RowIdentifier riSource)
 		{
-			var clonedRows = new List<IRowIdentifier>();
+			var clonedRows = new List<RowIdentifier>();
 			var srcRows = _dispatcher.Select(riSource);
 		    if (srcRows.Length <= 0) return clonedRows;
 		    var table = metadata.GetTable(riSource);
@@ -192,8 +192,8 @@ namespace DataCloner
 		/// <param name="level">Current recursion level.</param>
 		/// <param name="rowsGenerating">Current stack to handle circular foreign keys.</param>
 		/// <returns>Always return the primary key of the source row, same if the value queried is a foreign key.</returns>
-		private IRowIdentifier BuildExecutionPlan(IRowIdentifier riSource, bool getDerivatives, bool shouldReturnFk, int level,
-												  Stack<IRowIdentifier> rowsGenerating)
+		private RowIdentifier BuildExecutionPlan(RowIdentifier riSource, bool getDerivatives, bool shouldReturnFk, int level,
+												 Stack<RowIdentifier> rowsGenerating)
 		{
 			var srcRows = _dispatcher.Select(riSource);
 			var nbRows = srcRows.Length;
@@ -376,7 +376,7 @@ namespace DataCloner
 			_executionPlanByServer[connId].UpdateSteps.Add(step);
 		}
 
-		private object[] GetDataRow(IRowIdentifier riNewFk)
+		private object[] GetDataRow(RowIdentifier riNewFk)
 		{
 			if (riNewFk == null)
 				throw new ArgumentNullException("riNewFk");
@@ -400,7 +400,7 @@ namespace DataCloner
 			throw new Exception();
 		}
 
-		private InsertStep CreateExecutionStep(ITableIdentifier tiSource, TableIdentifier tiDestination, TableMetadata table, object[] destinationRow, int level)
+		private InsertStep CreateExecutionStep(TableIdentifier tiSource, TableIdentifier tiDestination, TableMetadata table, object[] destinationRow, int level)
 		{
 			var step = new InsertStep
 			{
@@ -434,7 +434,7 @@ namespace DataCloner
 			return step;
 		}
 
-		private void LogStatusChanged(IRowIdentifier riSource, int level)
+		private void LogStatusChanged(RowIdentifier riSource, int level)
 		{
             var clientCopy = riSource.Clone();
             if (StatusChanged != null)
@@ -454,7 +454,7 @@ namespace DataCloner
 		}
 
 		private void GetDerivatives(TableMetadata sourceTable, object[] sourceRow, bool getDerivatives, int level, 
-                                    Stack<IRowIdentifier> rowsGenerating)
+                                    Stack<RowIdentifier> rowsGenerating)
 		{
 			LogDerivativeStep(level + 1);
 			var derivativeTable = getDerivatives ? sourceTable.DerivativeTables : sourceTable.DerivativeTables.Where(t => t.Access == DerivativeTableAccess.Forced);
@@ -488,36 +488,6 @@ namespace DataCloner
                     rowsGenerating.Pop();
                 }
 			}
-		}
-
-		private void CreateDatabasesFiles()
-		{
-			//var folderPath = Path.Combine(Path.GetDirectoryName(SavePath), TempFolderName);
-			//var nbFileToCreate = Cache.ServerMap.Select(r => r.Value.ServerId).Distinct().Count();
-			//int lastIdUsed = Cache.ConnectionStrings.Max(cs => cs.Id);
-
-			//if (!Directory.Exists(folderPath))
-			//    Directory.CreateDirectory(folderPath);
-
-			//for (var i = 0; i < nbFileToCreate; i++)
-			//{
-			//    var id = lastIdUsed + i + 1;
-			//    var fileName = id + ".sqlite";
-			//    var fullFilePath = Path.Combine(folderPath, fileName);
-
-			//    //Crer le fichier
-			//    SQLiteConnection.CreateFile(fullFilePath);
-
-			//    //Crer la string de connection
-			//    Cache.ConnectionStrings.Add(new Connection
-			//    {
-			//        Id = (short)id,
-			//        ConnectionString = String.Format("Data Source={0};Version=3;", fullFilePath),
-			//        ProviderName = "SQLite"
-			//    });
-
-			//    //_dispatcher.CreateDatabaseFromCache(null, null);
-			//}
 		}
 
 		private void BuildCircularReferencesPlan()

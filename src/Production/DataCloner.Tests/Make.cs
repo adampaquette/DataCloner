@@ -4,7 +4,7 @@ namespace DataCloner.Tests
 {
     internal static class Make
     {
-		internal static IRowIdentifier Row(string table, string colName, object colValue)
+		internal static RowIdentifier Row(string table, string colName, object colValue)
 		{
 			return new RowIdentifier
 			{

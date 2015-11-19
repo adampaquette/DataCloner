@@ -1,17 +1,12 @@
-﻿using DataCloner.Internal;
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Linq;
 
 namespace DataCloner
 {
     [DebuggerDisplay("{ServerId.ToString() + \".\" + Database + \".\" + Schema + \".\" + Table}...")]
-    public class RowIdentifier : IRowIdentifier
+    public class RowIdentifier : TableIdentifier, IEquatable<RowIdentifier>
     {
-        public Int16 ServerId { get; set; }
-        public string Database { get; set; }
-        public string Schema { get; set; }
-        public string Table { get; set; }
         public ColumnsWithValue Columns { get; set; }
 
         public RowIdentifier()
@@ -19,7 +14,7 @@ namespace DataCloner
             Columns = new ColumnsWithValue();
         }
 
-        public IRowIdentifier Clone()
+        public RowIdentifier Clone()
         {
             var clone = new RowIdentifier
             {
@@ -36,12 +31,13 @@ namespace DataCloner
             return clone;
         }
 
-        public bool Equals(IRowIdentifier obj)
+        public bool Equals(RowIdentifier obj)
         {
-            if (obj == null)
-                return false;
-
-            if (ServerId != obj.ServerId || Database != obj.Database || Schema != obj.Schema || Table != obj.Table)
+            if (obj == null || 
+                ServerId != obj.ServerId || 
+                Database != obj.Database || 
+                Schema != obj.Schema || 
+                Table != obj.Table)
                 return false;
 
             return Columns.All(col => obj.Columns.ContainsKey(col.Key) && obj.Columns[col.Key].Equals(col.Value));
@@ -49,7 +45,7 @@ namespace DataCloner
 
         public override bool Equals(object obj)
         {
-            var row = obj as IRowIdentifier;
+            var row = obj as RowIdentifier;
             if (row == null)
                 return false;
 
@@ -58,7 +54,7 @@ namespace DataCloner
 
         public override int GetHashCode()
         {
-            return (Database + Schema + Table).GetHashCode();
+            return (ServerId + Database + Schema + Table).GetHashCode();
         }
     }
 }

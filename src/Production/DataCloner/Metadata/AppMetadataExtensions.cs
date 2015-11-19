@@ -1,4 +1,6 @@
-﻿namespace DataCloner.Metadata
+﻿using DataCloner.Internal;
+
+namespace DataCloner.Metadata
 {
     internal static class AppMetadataExtensions
     {
@@ -12,7 +14,7 @@
             return schema.GetTable(dt.ServerId, dt.Database, dt.Schema, dt.Table);
         }
 
-        public static TableMetadata GetTable(this AppMetadata schema, ITableIdentifier dt)
+        public static TableMetadata GetTable(this AppMetadata schema, TableIdentifier dt)
         {
             return schema.GetTable(dt.ServerId, dt.Database, dt.Schema, dt.Table);
         }

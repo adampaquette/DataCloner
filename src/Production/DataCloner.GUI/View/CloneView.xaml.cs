@@ -389,7 +389,7 @@ namespace DataCloner.GUI.View
                 var paramsOut = new ClonerWorkerOutputArgs
                 {
                     StartDate = DateTime.Now,
-                    ClonedRow = new List<IRowIdentifier>()
+                    ClonedRow = new List<RowIdentifier>()
                 };
 
                 var source = new RowIdentifier();
@@ -488,7 +488,7 @@ namespace DataCloner.GUI.View
         public class ClonerWorkerOutputArgs
         {
             public DateTime StartDate { get; set; }
-            public List<IRowIdentifier> ClonedRow { get; set; }
+            public List<RowIdentifier> ClonedRow { get; set; }
         }
 
         private class ClonedRows

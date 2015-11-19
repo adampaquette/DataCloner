@@ -2,10 +2,10 @@
 using System.Diagnostics;
 using System.IO;
 
-namespace DataCloner.Metadata
+namespace DataCloner
 {
     [DebuggerDisplay("{ServerId.ToString() + \".\" + Database + \".\" + Schema}")]
-    public struct ServerIdentifier
+    public class ServerIdentifier : IEquatable<ServerIdentifier>
     {
         public Int16 ServerId { get; set; }
         public string Database { get; set; }
@@ -36,6 +36,27 @@ namespace DataCloner.Metadata
                 Database = stream.ReadString(),
                 Schema = stream.ReadString()
             };
+        }
+
+        public override bool Equals(object obj)
+        {
+            var sv = obj as ServerIdentifier;
+            if (sv != null)
+                return Equals(sv);
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return (ServerId + Database + Schema).GetHashCode();
+        }
+
+        public bool Equals(ServerIdentifier other)
+        {
+            return other != null &&
+                ServerId == other.ServerId &&
+                Database == other.Database &&
+                Schema == other.Schema;
         }
     }
 }

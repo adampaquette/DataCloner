@@ -39,7 +39,7 @@ namespace DataCloner.IntegrationTests
                 }
             };
 
-            var clonedData = new List<IRowIdentifier>();
+            var clonedData = new List<RowIdentifier>();
             cloner.QueryCommiting += (s, e) => e.Cancel = true;
             cloner.StatusChanged += (s, e) =>
             {
@@ -51,7 +51,7 @@ namespace DataCloner.IntegrationTests
             cloner.Clone(source, false);
 
             //Assert
-            var expectedData = new List<IRowIdentifier>
+            var expectedData = new List<RowIdentifier>
             {
                 new RowIdentifier
                 {
@@ -119,7 +119,7 @@ namespace DataCloner.IntegrationTests
                 }
             };
 
-            var clonedData = new List<IRowIdentifier>();
+            var clonedData = new List<RowIdentifier>();
             cloner.QueryCommiting += (s, e) => e.Cancel = true;
             cloner.StatusChanged += (s, e) =>
             {
@@ -131,7 +131,7 @@ namespace DataCloner.IntegrationTests
             cloner.Clone(source, true);
 
             //Assert
-            var expectedData = new List<IRowIdentifier>
+            var expectedData = new List<RowIdentifier>
             {
                 new RowIdentifier
                 {
@@ -199,7 +199,7 @@ namespace DataCloner.IntegrationTests
                 Columns = new ColumnsWithValue { { "artistid", 1 } }
             };
 
-            var clonedData = new List<IRowIdentifier>();
+            var clonedData = new List<RowIdentifier>();
             cloner.QueryCommiting += (s, e) => e.Cancel = true;
             cloner.StatusChanged += (s, e) =>
             {
@@ -211,7 +211,7 @@ namespace DataCloner.IntegrationTests
             cloner.Clone(source, false);
 
             //Assert
-            var expectedData = new List<IRowIdentifier>
+            var expectedData = new List<RowIdentifier>
             {
                 new RowIdentifier
                 {
@@ -290,7 +290,7 @@ namespace DataCloner.IntegrationTests
                 Columns = new ColumnsWithValue { { "artistid", 1 } }
             };
 
-            var clonedData = new List<IRowIdentifier>();
+            var clonedData = new List<RowIdentifier>();
             cloner.QueryCommiting += (s, e) => e.Cancel = true;
             cloner.StatusChanged += (s, e) =>
             {
@@ -302,7 +302,7 @@ namespace DataCloner.IntegrationTests
             cloner.Clone(source, false);
 
             //Assert
-            var expectedData = new List<IRowIdentifier>
+            var expectedData = new List<RowIdentifier>
             {
                 new RowIdentifier
                 {
@@ -373,7 +373,7 @@ namespace DataCloner.IntegrationTests
                 Columns = new ColumnsWithValue { { "artistid", 1 } }
             };
 
-            var clonedData = new List<IRowIdentifier>();
+            var clonedData = new List<RowIdentifier>();
             cloner.QueryCommiting += (s, e) => e.Cancel = true;
             cloner.StatusChanged += (s, e) =>
             {
@@ -385,7 +385,7 @@ namespace DataCloner.IntegrationTests
             cloner.Clone(source, true);
 
             //Assert
-            var expectedData = new List<IRowIdentifier>
+            var expectedData = new List<RowIdentifier>
             {
                 new RowIdentifier
                 {
@@ -426,7 +426,7 @@ namespace DataCloner.IntegrationTests
                 Columns = new ColumnsWithValue { { "albumid", 1 } }
             };
 
-            var clonedData = new List<IRowIdentifier>();
+            var clonedData = new List<RowIdentifier>();
             cloner.QueryCommiting += (s, e) => e.Cancel = true;
             cloner.StatusChanged += (s, e) =>
             {
@@ -438,7 +438,7 @@ namespace DataCloner.IntegrationTests
             cloner.Clone(source, false);
 
             //Assert
-            var expectedData = new List<IRowIdentifier>
+            var expectedData = new List<RowIdentifier>
             {
                 new RowIdentifier
                 {
@@ -474,7 +474,7 @@ namespace DataCloner.IntegrationTests
                 }
             };
 
-            var clonedData = new List<IRowIdentifier>();
+            var clonedData = new List<RowIdentifier>();
             cloner.QueryCommiting += (s, e) => e.Cancel = true;
             cloner.StatusChanged += (s, e) =>
             {
@@ -486,7 +486,7 @@ namespace DataCloner.IntegrationTests
             cloner.Clone(source, false);
 
             //Assert
-            var expectedData = new List<IRowIdentifier>
+            var expectedData = new List<RowIdentifier>
             {
                 new RowIdentifier
                 {
@@ -599,7 +599,7 @@ namespace DataCloner.IntegrationTests
                 Columns = new ColumnsWithValue { { "artistid", 1 } }
             };
 
-            var clonedData = new List<IRowIdentifier>();
+            var clonedData = new List<RowIdentifier>();
             cloner.QueryCommiting += (s, e) => e.Cancel = true;
             cloner.StatusChanged += (s, e) =>
             {
@@ -611,7 +611,7 @@ namespace DataCloner.IntegrationTests
             cloner.Clone(source, false);
 
             //Assert
-            var expectedData = new List<IRowIdentifier>
+            var expectedData = new List<RowIdentifier>
             {
                 new RowIdentifier
                 {

@@ -23,7 +23,7 @@ namespace DataCloner.Data
         void GetUniqueKeys(UniqueKeyReader reader, Int16 serverId, String database);
         object GetLastInsertedPk();
         void EnforceIntegrityCheck(bool active);
-        object[][] Select(IRowIdentifier row);
+        object[][] Select(RowIdentifier row);
         void Execute(ExecutionPlan plan);
     }
 }
