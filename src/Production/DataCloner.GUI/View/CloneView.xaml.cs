@@ -11,6 +11,7 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
 using System.Windows.Threading;
+using DataCloner.Framework;
 
 namespace DataCloner.GUI.View
 {
@@ -425,7 +426,7 @@ namespace DataCloner.GUI.View
         public void QueryCommiting_event(object sender, QueryCommitingEventArgs e)
         {
             scintilla.IsReadOnly = false;
-            scintilla.Text += e.Query;
+            scintilla.Text += e.Command.GetGeneratedQuery();
             scintilla.IsReadOnly = true;
         }
 

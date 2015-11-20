@@ -1,18 +1,19 @@
 ﻿using System;
+using System.Data;
 
 namespace DataCloner
 {
 	public delegate void QueryCommitingEventHandler(object sender, QueryCommitingEventArgs e);
 	public sealed class QueryCommitingEventArgs : EventArgs
 	{
-	    private string _query;
+	    private IDbCommand _command;
 
-		public string Query { get{return _query;} }
+		public IDbCommand Command { get{return _command;} }
 		public bool Cancel { get; set; }
 
-		public QueryCommitingEventArgs(string query)
+		public QueryCommitingEventArgs(IDbCommand command)
 		{
-			_query = query;
+			_command = command;
 		}
 	}
 }

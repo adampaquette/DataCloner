@@ -269,7 +269,7 @@ namespace DataCloner.Data
 
             if (QueryCommmiting != null)
             {
-                var args = new QueryCommitingEventArgs(cmd.GetGeneratedQuery());
+                var args = new QueryCommitingEventArgs(cmd);
                 QueryCommmiting(null, args);
                 if (args.Cancel) cancel = true;
             }

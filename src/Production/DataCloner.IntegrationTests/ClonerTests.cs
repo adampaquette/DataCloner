@@ -1,6 +1,7 @@
 ﻿using DataCloner.Configuration;
 using DataCloner.Data;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using Xunit;
 
@@ -632,6 +633,123 @@ namespace DataCloner.IntegrationTests
             };
 
             Assert.True(Enumerable.SequenceEqual(clonedData, expectedData));
+        }
+
+        [Theory, MemberData(DbEngine)]
+        public void Cloning_With_ForeignKeyRemove(SqlConnection conn)
+        {
+            //Arrange
+            var cloner = new Cloner();
+            var config = Utils.MakeDefaultSettings(conn);
+            var tablesConfig = config.GetDefaultSchema();
+            tablesConfig.AddRange(new List<TableModifier>
+            {
+                new TableModifier
+                {
+                    Name = "album",
+                    ForeignKeys = new ForeignKeys
+                    {
+                        ForeignKeyRemove = new ForeignKeyRemove
+                        {
+                            Columns = new List<ForeignKeyRemoveColumn>
+                            {
+                                new ForeignKeyRemoveColumn
+                                {
+                                     Name = "artistid"
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            cloner.Setup(config);
+
+            var source = new RowIdentifier
+            {
+                ServerId = conn.Id,
+                Database = TestDatabase,
+                Schema = TestSchema,
+                Table = "album",
+                Columns = new ColumnsWithValue { { "albumid", 1 } }
+            };
+
+            var clonedData = new List<RowIdentifier>();
+            cloner.QueryCommiting += (s, e) => e.Cancel = true;
+            cloner.StatusChanged += (s, e) =>
+            {
+                if (e.Status == Status.Cloning)
+                    clonedData.Add(e.SourceRow);
+            };
+
+            //Act
+            cloner.Clone(source, false);
+
+            //Assert
+            var expectedData = new List<RowIdentifier>
+            {
+                new RowIdentifier
+                {
+                     ServerId = conn.Id,
+                     Database = TestDatabase,
+                     Schema = TestSchema,
+                     Table = "album",
+                     Columns = new ColumnsWithValue { { "albumid", 1 } }
+                }
+            };
+
+            Assert.True(Enumerable.SequenceEqual(clonedData, expectedData));
+        }
+
+        [Theory, MemberData(DbEngine)]
+        public void Cloning_With_DataBuilder(SqlConnection conn)
+        {
+            //Arrange
+            var cloner = new Cloner();
+            var config = Utils.MakeDefaultSettings(conn);
+            var tablesConfig = config.GetDefaultSchema();
+            tablesConfig.AddRange(new List<TableModifier>
+            {
+                new TableModifier
+                {
+                    Name = "employee",
+                    DataBuilders = new List<DataBuilder>
+                    {
+                        new DataBuilder{ Name = "firstname",  BuilderName = "StringDataBuilder" },
+                        new DataBuilder{ Name = "lastname",  BuilderName = "StringDataBuilder" },
+                        new DataBuilder{ Name = "reportsto",  BuilderName = "AutoIncrementDataBuilder" }                        
+                    }
+                }
+            });
+            cloner.Setup(config);
+
+            var source = new RowIdentifier
+            {
+                ServerId = conn.Id,
+                Database = TestDatabase,
+                Schema = TestSchema,
+                Table = "employee",
+                Columns = new ColumnsWithValue { { "employeeid", 1 } }
+            };
+
+            IDbCommand command = null;
+            cloner.QueryCommiting += (s, e) =>
+            {
+                e.Cancel = true;
+                command = e.Command;
+            };
+
+            //Act
+            cloner.Clone(source, false);
+
+            //Assert
+            var paramFirstName = command?.Parameters["@firstname0"] as IDataParameter;
+            Assert.Matches("(.+){20}", paramFirstName.Value.ToString());
+
+            var paramLastName = command?.Parameters["@lastname0"] as IDataParameter;
+            Assert.Matches("(.+){20}", paramLastName.Value.ToString());
+
+            var paramReportsTo = command?.Parameters["@reportsto0"] as IDataParameter;
+            Assert.IsType<int>(paramReportsTo.Value);
         }
     }
 }

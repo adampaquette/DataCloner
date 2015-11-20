@@ -1,12 +1,11 @@
-﻿using System;
+﻿using DataCloner.Framework;
+using DataCloner.Metadata;
+using LZ4;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using DataCloner.Internal;
-using DataCloner.Metadata;
-using DataCloner.Framework;
-using LZ4;
 
 namespace DataCloner.Archive
 {
