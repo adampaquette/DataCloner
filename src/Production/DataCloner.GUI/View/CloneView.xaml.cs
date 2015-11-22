@@ -24,7 +24,7 @@ namespace DataCloner.GUI.View
         private const string FileExtension = ".dca";
         private const string Filter = "Datacloner archive (.dca)|*.dca";
 
-        private Procedure _cloner = new Procedure();
+        private Cloner _cloner;
         private BackgroundWorker _cloneWorker;
         private ProjectContainer _proj = ProjectContainer.Load("northWind.dcproj");
         private IEnumerable<Map> _maps;
@@ -42,7 +42,6 @@ namespace DataCloner.GUI.View
 
         public CloneView()
         {
-            InitCloner();
             InitClonerWorker();
             InitializeComponent();
         }
@@ -148,7 +147,10 @@ namespace DataCloner.GUI.View
                     BehaviourId = configId
                 };
 
-                _cloner.Setup(selectedSettings);
+                _cloner = new Cloner(selectedSettings);
+                _cloner.StatusChanged += ClonerWorkerStatusChanged_event;
+                _cloner.QueryCommiting += ClonerWorkerQueryCommiting_event;
+
                 Servers = _cloner.MetadataCtn.Metadatas.Keys.ToArray().ToList();
                 cbServer.ItemsSource = Servers;
 
@@ -325,13 +327,6 @@ namespace DataCloner.GUI.View
             }
         }
 
-        private void InitCloner()
-        {
-            _cloner = new Procedure();
-            _cloner.StatusChanged += ClonerWorkerStatusChanged_event;
-            _cloner.QueryCommiting += ClonerWorkerQueryCommiting_event;
-        }
-
         private void InitClonerWorker()
         {
             _cloneWorker = new BackgroundWorker();
@@ -406,7 +401,7 @@ namespace DataCloner.GUI.View
 
                 //Clone
                 for (int i = 0; i < paramsIn.NbCopies; i++)
-                    paramsOut.ClonedRow.AddRange(_cloner.Clone(source, true));
+                    paramsOut.ClonedRow.AddRange(_cloner.AppendStep(source, true).Execute().Clones);
 
                 arg.Result = paramsOut;
             };

@@ -139,7 +139,7 @@
     <Compile Include="Data\SqlConnection.cs" />
     <Compile Include="RowIdentifier.cs" />
     <Compile Include="TableIdentifier.cs" />
-    <Compile Include="Procedure.cs" />
+    <Compile Include="Cloner.cs" />
     <Compile Include="Framework\Extensions.cs" />
     <Compile Include="Data\IQueryHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -1,9 +1,8 @@
-﻿using DataCloner.Data;
+﻿using DataCloner.Internal;
+using DataCloner.Metadata;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DataCloner
 {
@@ -11,60 +10,43 @@ namespace DataCloner
     {
         public List<RowIdentifier> Clones { get; private set; }
 
-        internal Result(List<RowIdentifier> sources, IQueryDispatcher dispatcher)
+        internal Result(Dictionary<Int16, ExecutionPlan> exucutionPlanByServer)
         {
-            Clones = new List<RowIdentifier>();
-
-            foreach (var r in sources)
-                GetClonedRows(r, dispatcher);
+            Clones = ParseClonedRows(exucutionPlanByServer);
         }   
 
-        private List<RowIdentifier> GetClonedRows(RowIdentifier riSource, IQueryDispatcher dispatcher)
+        private List<RowIdentifier> ParseClonedRows(Dictionary<Int16, ExecutionPlan> exucutionPlanByServer)
         {
             var clonedRows = new List<RowIdentifier>();
-            var srcRows = dispatcher.Select(riSource);
-            if (srcRows.Length <= 0) return clonedRows;
-            var table = metadata.GetTable(riSource);
 
-            //By default the destination server is the source if no road is found.
-            var serverDst = new ServerIdentifier
+            foreach (var server in exucutionPlanByServer)
             {
-                ServerId = riSource.ServerId,
-                Database = riSource.Database,
-                Schema = riSource.Schema
-            };
-
-            if (MetadataCtn.ServerMap.ContainsKey(serverDst))
-                serverDst = MetadataCtn.ServerMap[serverDst];
-
-            foreach (var row in srcRows)
-            {
-                var srcKey = table.BuildRawPkFromDataRow(row);
-                var dstKey = _keyRelationships.GetKey(serverDst.ServerId, serverDst.Database,
-                                                      serverDst.Schema, riSource.Table, srcKey);
-                if (dstKey == null) continue;
-                var pkTemp = table.BuildPkFromRawKey(dstKey);
-
-                //Clone for new reference
-                var clonedPk = new ColumnsWithValue();
-                foreach (var col in pkTemp)
+                foreach (var row in server.Value.InsertSteps.Where(s=>s.Depth==0))
                 {
-                    var sqlVar = col.Value as SqlVariable;
-                    clonedPk.Add(col.Key, sqlVar != null ? sqlVar.Value : col.Value);
+                    var pkTemp = row.TableSchema.BuildPkFromDataRow(row.DataRow);
+
+                    //Clone for new reference
+                    var clonedPk = new ColumnsWithValue();
+                    foreach (var col in pkTemp)
+                    {
+                        var sqlVar = col.Value as SqlVariable;
+                        clonedPk.Add(col.Key, sqlVar != null ? sqlVar.Value : col.Value);
+                    }
+
+                    var riReturn = new RowIdentifier
+                    {
+                        ServerId = row.DestinationTable.ServerId,
+                        Database = row.DestinationTable.Database,
+                        Schema = row.DestinationTable.Schema,
+                        Table = row.DestinationTable.Table,
+                        Columns = clonedPk
+                    };
+
+                    //Construit la pk de retour
+                    clonedRows.Add(riReturn);
                 }
-
-                var riReturn = new RowIdentifier
-                {
-                    ServerId = serverDst.ServerId,
-                    Database = serverDst.Database,
-                    Schema = serverDst.Schema,
-                    Table = riSource.Table,
-                    Columns = clonedPk
-                };
-
-                //Construit la pk de retour
-                clonedRows.Add(riReturn);
             }
+         
             return clonedRows;
         }
     }
