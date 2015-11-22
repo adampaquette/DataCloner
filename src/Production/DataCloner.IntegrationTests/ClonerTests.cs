@@ -17,7 +17,7 @@ namespace DataCloner.IntegrationTests
         [Theory(Skip = "Generation of the cache files"), MemberData("DbEngine")]
         public void Should_NotFail_When_Settuping(SqlConnection conn)
         {
-            var cloner = new Cloner();
+            var cloner = new Procedure();
             cloner.Setup(Utils.MakeDefaultSettings(conn));
         }
 
@@ -25,7 +25,7 @@ namespace DataCloner.IntegrationTests
         public void CloningDependencies_With_DefaultConfig(SqlConnection conn)
         {
             //Arrange
-            var cloner = new Cloner();
+            var cloner = new Procedure();
             cloner.Setup(Utils.MakeDefaultSettings(conn));
 
             var source = new RowIdentifier
@@ -95,7 +95,7 @@ namespace DataCloner.IntegrationTests
         public void CloningDerivatives_With_GlobalAccessDenied(SqlConnection conn)
         {
             //Arrange
-            var cloner = new Cloner();
+            var cloner = new Procedure();
             var config = Utils.MakeDefaultSettings(conn);
             var tablesConfig = config.GetDefaultSchema();
             tablesConfig.Add(new TableModifier
@@ -167,7 +167,7 @@ namespace DataCloner.IntegrationTests
         public void CloningDerivatives_With_GlobalAccessForced(SqlConnection conn)
         {
             //Arrange
-            var cloner = new Cloner();
+            var cloner = new Procedure();
             var config = Utils.MakeDefaultSettings(conn);
             var tablesConfig = config.GetDefaultSchema();
             tablesConfig.AddRange(new List<TableModifier>
@@ -247,7 +247,7 @@ namespace DataCloner.IntegrationTests
         public void CloningDerivatives_With_DerivativeSubTableAccessForced(SqlConnection conn)
         {
             //Arrange
-            var cloner = new Cloner();
+            var cloner = new Procedure();
             var config = Utils.MakeDefaultSettings(conn);
             var tablesConfig = config.GetDefaultSchema();
             tablesConfig.AddRange(new List<TableModifier>
@@ -338,7 +338,7 @@ namespace DataCloner.IntegrationTests
         public void CloningDerivatives_With_DerivativeSubTableAccessDenied(SqlConnection conn)
         {
             //Arrange
-            var cloner = new Cloner();
+            var cloner = new Procedure();
             var config = Utils.MakeDefaultSettings(conn);
             var tablesConfig = config.GetDefaultSchema();
             tablesConfig.AddRange(new List<TableModifier>
@@ -405,7 +405,7 @@ namespace DataCloner.IntegrationTests
         public void Cloning_With_StaticTable(SqlConnection conn)
         {
             //Arrange
-            var cloner = new Cloner();
+            var cloner = new Procedure();
             var config = Utils.MakeDefaultSettings(conn);
             var tablesConfig = config.GetDefaultSchema();
             tablesConfig.AddRange(new List<TableModifier>
@@ -458,7 +458,7 @@ namespace DataCloner.IntegrationTests
         public void Cloning_Should_NotCloneDerivativeOfDependancy(SqlConnection conn)
         {
             //Arrange
-            var cloner = new Cloner();
+            var cloner = new Procedure();
             var config = Utils.MakeDefaultSettings(conn);
             cloner.Setup(config);
 
@@ -558,7 +558,7 @@ namespace DataCloner.IntegrationTests
         public void Cloning_With_ForeignKeyAdd(SqlConnection conn)
         {
             //Arrange
-            var cloner = new Cloner();
+            var cloner = new Procedure();
             var config = Utils.MakeDefaultSettings(conn);
             var tablesConfig = config.GetDefaultSchema();
             tablesConfig.AddRange(new List<TableModifier>
@@ -639,7 +639,7 @@ namespace DataCloner.IntegrationTests
         public void Cloning_With_ForeignKeyRemove(SqlConnection conn)
         {
             //Arrange
-            var cloner = new Cloner();
+            var cloner = new Procedure();
             var config = Utils.MakeDefaultSettings(conn);
             var tablesConfig = config.GetDefaultSchema();
             tablesConfig.AddRange(new List<TableModifier>
@@ -704,7 +704,7 @@ namespace DataCloner.IntegrationTests
         public void Cloning_With_DataBuilder(SqlConnection conn)
         {
             //Arrange
-            var cloner = new Cloner();
+            var cloner = new Procedure();
             var config = Utils.MakeDefaultSettings(conn);
             var tablesConfig = config.GetDefaultSchema();
             tablesConfig.AddRange(new List<TableModifier>

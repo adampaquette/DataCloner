@@ -24,7 +24,7 @@ namespace DataCloner.GUI.View
         private const string FileExtension = ".dca";
         private const string Filter = "Datacloner archive (.dca)|*.dca";
 
-        private Cloner _cloner = new Cloner();
+        private Procedure _cloner = new Procedure();
         private BackgroundWorker _cloneWorker;
         private ProjectContainer _proj = ProjectContainer.Load("northWind.dcproj");
         private IEnumerable<Map> _maps;
@@ -327,7 +327,7 @@ namespace DataCloner.GUI.View
 
         private void InitCloner()
         {
-            _cloner = new Cloner();
+            _cloner = new Procedure();
             _cloner.StatusChanged += ClonerWorkerStatusChanged_event;
             _cloner.QueryCommiting += ClonerWorkerQueryCommiting_event;
         }

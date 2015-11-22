@@ -10,7 +10,7 @@ using DataBuilder = DataCloner.PlugIn.DataBuilder;
 
 namespace DataCloner
 {
-    public class Cloner
+    public class Procedure
 	{
 		private readonly IQueryDispatcher _dispatcher;
 		private readonly MetadataContainer.Initialiser _metadataInitialiser;
@@ -18,6 +18,7 @@ namespace DataCloner
 		private readonly List<CircularKeyJob> _circularKeyJobs;
 		private readonly Dictionary<Int16, ExecutionPlan> _executionPlanByServer;
 
+        private List<RowIdentifier> _steps;
 	    private int _nextVariableId;
 		private int _nextStepId;
 
@@ -38,28 +39,34 @@ namespace DataCloner
         public event StatusChangedEventHandler StatusChanged;
 		public event QueryCommitingEventHandler QueryCommiting;
 
-		public Cloner()
-		{
-			_keyRelationships = new KeyRelationship();
-			_circularKeyJobs = new List<CircularKeyJob>();
-			_executionPlanByServer = new Dictionary<short, ExecutionPlan>();
-			_dispatcher = new QueryDispatcher();
-            _metadataInitialiser = MetadataContainer.VerifyIntegrityWithSettings;
+        internal Procedure()
+        {
+            _keyRelationships = new KeyRelationship();
+            _circularKeyJobs = new List<CircularKeyJob>();
+            _executionPlanByServer = new Dictionary<short, ExecutionPlan>();
+            _steps = new List<RowIdentifier>();
         }
 
-		internal Cloner(IQueryDispatcher dispatcher, MetadataContainer.Initialiser metadataInit)
+        public Procedure(Settings settings) 
+		{
+			_dispatcher = new QueryDispatcher();
+            _metadataInitialiser = MetadataContainer.VerifyIntegrityWithSettings;
+            _metadataInitialiser(_dispatcher, settings, ref MetadataCtn);
+        }
+
+		internal Procedure(Settings settings, IQueryDispatcher dispatcher, MetadataContainer.Initialiser metadataInit)
 		{
 			if (dispatcher == null) throw new ArgumentNullException("dispatcher");
 			if (metadataInit == null) throw new ArgumentNullException("cacheInit");
 
-			_keyRelationships = new KeyRelationship();
-			_circularKeyJobs = new List<CircularKeyJob>();
-			_executionPlanByServer = new Dictionary<short, ExecutionPlan>();
 			_dispatcher = dispatcher;
 			_metadataInitialiser = metadataInit;
-		}
+            _metadataInitialiser(_dispatcher, settings, ref MetadataCtn);
+        }
 
-		public void Clear()
+        #region Public methods
+
+        public void Clear()
 		{
             _nextStepId = 0;
             _nextVariableId = 0;
@@ -70,32 +77,44 @@ namespace DataCloner
 			DataBuilder.ClearBuildersCache();            
 		}
 
-        public void Setup(Settings settings)
-		{
-            _metadataInitialiser(_dispatcher, settings, ref MetadataCtn);
-		}
+        public Procedure AppendStep(RowIdentifier riSource, bool getDerivatives = true)
+        {
+            if (riSource == null) throw new ArgumentNullException("riSource");
 
-		public List<RowIdentifier> Clone(RowIdentifier riSource, bool getDerivatives = true)
-		{
-			if (riSource == null) throw new ArgumentNullException("riSource");
+            _steps.Add(riSource);
+            var rowsGenerating = new Stack<RowIdentifier>();
+            rowsGenerating.Push(riSource);
 
-			var rowsGenerating = new Stack<RowIdentifier>();
-			rowsGenerating.Push(riSource);
+            BuildExecutionPlan(riSource, getDerivatives, false, 0, rowsGenerating);
+            BuildCircularReferencesPlan();
 
-			//_dispatcher[riSource].EnforceIntegrityCheck(EnforceIntegrity);
+            return this;
+        }
 
-			BuildExecutionPlan(riSource, getDerivatives, false, 0, rowsGenerating);
-			BuildCircularReferencesPlan();
+        public Result Execute(Dictionary<Int16, ExecutionPlan> planByServer)
+        {
+            if (OptimiseExecutionPlan)
+                OptimizeExecutionPlans(_executionPlanByServer);
+            
+            //_dispatcher[riSource].EnforceIntegrityCheck(EnforceIntegrity);
 
-            if(OptimiseExecutionPlan)
-			    OptimizeExecutionPlans(_executionPlanByServer);
+            ResetExecutionPlan(planByServer);
+            Parallel.ForEach(planByServer, a =>
+            {
+                var qh = _dispatcher.GetQueryHelper(a.Key);
+                qh.QueryCommmiting += QueryCommiting;
+                qh.Execute(a.Value);
+                qh.QueryCommmiting -= QueryCommiting;
+            });
 
-			ExecutePlan(_executionPlanByServer);
+            return new Result(_steps, _dispatcher);
+        }
 
-			return GetClonedRows(riSource);
-		}
+        #endregion
 
-		private static void OptimizeExecutionPlans(Dictionary<short, ExecutionPlan> plans)
+        #region Private methods
+
+        private static void OptimizeExecutionPlans(Dictionary<short, ExecutionPlan> plans)
 		{
 			var data = new List<object>();
 
@@ -133,55 +152,6 @@ namespace DataCloner
 
             //var memoryEntriesOptimized = sqlVarsRefCount.Count((sv) => sv.Value < 2); 
         }
-
-		private List<RowIdentifier> GetClonedRows(RowIdentifier riSource)
-		{
-			var clonedRows = new List<RowIdentifier>();
-			var srcRows = _dispatcher.Select(riSource);
-		    if (srcRows.Length <= 0) return clonedRows;
-		    var table = metadata.GetTable(riSource);
-
-            //By default the destination server is the source if no road is found.
-            var serverDst = new ServerIdentifier
-            {
-                ServerId = riSource.ServerId,
-                Database = riSource.Database,
-                Schema = riSource.Schema
-            };
-
-            if (MetadataCtn.ServerMap.ContainsKey(serverDst))
-                serverDst = MetadataCtn.ServerMap[serverDst];
-
-            foreach (var row in srcRows)
-		    {
-		        var srcKey = table.BuildRawPkFromDataRow(row);
-		        var dstKey = _keyRelationships.GetKey(serverDst.ServerId, serverDst.Database,
-		                                              serverDst.Schema, riSource.Table, srcKey);
-		        if (dstKey == null) continue;
-		        var pkTemp = table.BuildPkFromRawKey(dstKey);
-
-		        //Clone for new reference
-		        var clonedPk = new ColumnsWithValue();
-		        foreach (var col in pkTemp)
-		        {
-		            var sqlVar = col.Value as SqlVariable;
-		            clonedPk.Add(col.Key, sqlVar != null ? sqlVar.Value : col.Value);
-		        }
-
-		        var riReturn = new RowIdentifier
-		        {
-		            ServerId = serverDst.ServerId,
-		            Database = serverDst.Database,
-		            Schema = serverDst.Schema,
-		            Table = riSource.Table,
-		            Columns = clonedPk
-		        };
-
-		        //Construit la pk de retour
-		        clonedRows.Add(riReturn);
-		    }
-		    return clonedRows;
-		}
 
 		/// <summary>
 		/// Build execution plan for the specific source row to be able to clone blazing fast.
@@ -559,18 +529,6 @@ namespace DataCloner
 			_circularKeyJobs.Clear();
 		}
 
-		private void ExecutePlan(Dictionary<Int16, ExecutionPlan> planByServer)
-		{
-			ResetExecutionPlan(planByServer);
-			Parallel.ForEach(planByServer, a =>
-			{
-				var qh = _dispatcher.GetQueryHelper(a.Key);
-				qh.QueryCommmiting += QueryCommiting;
-				qh.Execute(a.Value);
-				qh.QueryCommmiting -= QueryCommiting;
-			});
-		}
-
         /// <summary>
         /// We reset the variables for the API to regenerate them.
         /// </summary>
@@ -581,5 +539,7 @@ namespace DataCloner
 				foreach (var sqlVar in server.Value.Variables)
 					sqlVar.Value = null;
 		}
-	}
+
+        #endregion
+    }
 }

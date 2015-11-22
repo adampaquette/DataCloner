@@ -7,7 +7,7 @@
     <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{3459DC7A-21BA-435C-882B-D84A333AEFD0}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>DataCloner</RootNamespace>
     <AssemblyName>DataCloner</AssemblyName>
@@ -35,7 +35,7 @@
     <TargetFrameworkProfile />
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
-    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -58,7 +58,8 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>DataCloner.EntryPoint</StartupObject>
+    <StartupObject>
+    </StartupObject>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>
@@ -101,6 +102,7 @@
     <Compile Include="Data\SqlType.cs" />
     <Compile Include="Internal\ExecutionStep.cs" />
     <Compile Include="Metadata\AppMetadataExtensions.cs" />
+    <Compile Include="Result.cs" />
     <Compile Include="ServerIdentifier.cs" />
     <Compile Include="Internal\CircularKeyJob.cs" />
     <Compile Include="Configuration\BehaviorExtension.cs" />
@@ -131,14 +133,13 @@
     <Compile Include="PlugIn\IDataBuilder.cs" />
     <Compile Include="PlugIn\StringDataBuilder.cs" />
     <Compile Include="QueryCommitingEvent.cs" />
-    <Compile Include="rawTests.cs" />
     <Compile Include="Data\QueryHelperMsSql.cs" />
     <Compile Include="Data\QueryDispatcher.cs" />
     <Compile Include="Metadata\MetadataContainer.cs" />
     <Compile Include="Data\SqlConnection.cs" />
     <Compile Include="RowIdentifier.cs" />
     <Compile Include="TableIdentifier.cs" />
-    <Compile Include="Cloner.cs" />
+    <Compile Include="Procedure.cs" />
     <Compile Include="Framework\Extensions.cs" />
     <Compile Include="Data\IQueryHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -181,9 +182,12 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
+    <None Include="app.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="northWind.dcproj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
     </None>
     <None Include="packages.config">
       <SubType>Designer</SubType>
