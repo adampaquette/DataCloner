@@ -24,6 +24,6 @@ namespace DataCloner.Data
         object GetLastInsertedPk();
         void EnforceIntegrityCheck(bool active);
         object[][] Select(RowIdentifier row);
-        void Execute(ExecutionPlan plan);
+        void Execute(Internal.ExecutionPlan plan);
     }
 }

@@ -1,21 +1,20 @@
 ﻿using DataCloner.Internal;
-using DataCloner.Metadata;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace DataCloner
 {
-    public class Result
+    public class ResultSet
     {
-        public List<RowIdentifier> Clones { get; private set; }
+        public List<RowIdentifier> Results { get; private set; }
 
-        internal Result(Dictionary<Int16, ExecutionPlan> exucutionPlanByServer)
+        internal ResultSet(Dictionary<Int16, Internal.ExecutionPlan> exucutionPlanByServer)
         {
-            Clones = ParseClonedRows(exucutionPlanByServer);
+            Results = ParseClonedRows(exucutionPlanByServer);
         }   
 
-        private List<RowIdentifier> ParseClonedRows(Dictionary<Int16, ExecutionPlan> exucutionPlanByServer)
+        private List<RowIdentifier> ParseClonedRows(Dictionary<Int16, Internal.ExecutionPlan> exucutionPlanByServer)
         {
             var clonedRows = new List<RowIdentifier>();
 

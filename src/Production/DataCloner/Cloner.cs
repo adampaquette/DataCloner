@@ -1,4 +1,5 @@
-﻿using DataCloner.Data;
+﻿using DataCloner.Archive;
+using DataCloner.Data;
 using DataCloner.Framework;
 using DataCloner.Internal;
 using DataCloner.Metadata;
@@ -6,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using DataBuilder = DataCloner.PlugIn.DataBuilder;
 
 namespace DataCloner
 {
@@ -16,23 +16,15 @@ namespace DataCloner
         private readonly MetadataContainer.Initialiser _metadataInitialiser;
         private readonly KeyRelationship _keyRelationships;
         private readonly List<CircularKeyJob> _circularKeyJobs;
-        private readonly Dictionary<Int16, ExecutionPlan> _executionPlanByServer;
-
-        private List<RowIdentifier> _steps;
+        
+        private MetadataContainer _metadataCtn;
+        private List<RowIdentifier> _steps;        
         private int _nextVariableId;
         private int _nextStepId;
 
-        private AppMetadata metadata
-        {
-            get
-            {
-                if (MetadataCtn != null)
-                    return MetadataCtn.Metadatas;
-                return null;
-            }
-        }
-
-        public MetadataContainer MetadataCtn;
+        internal Dictionary<Int16, ExecutionPlan> ExecutionPlanByServer { get; private set; }
+       
+        public MetadataContainer MetadataCtn { get { return _metadataCtn; } }
         public bool EnforceIntegrity { get; set; }
         public bool OptimiseExecutionPlan { get; set; }
 
@@ -43,7 +35,7 @@ namespace DataCloner
         {
             _keyRelationships = new KeyRelationship();
             _circularKeyJobs = new List<CircularKeyJob>();
-            _executionPlanByServer = new Dictionary<short, ExecutionPlan>();
+            ExecutionPlanByServer = new Dictionary<short, ExecutionPlan>();
             _steps = new List<RowIdentifier>();
         }
 
@@ -51,33 +43,25 @@ namespace DataCloner
         {
             _dispatcher = new QueryDispatcher();
             _metadataInitialiser = MetadataContainer.VerifyIntegrityWithSettings;
-            _metadataInitialiser(_dispatcher, settings, ref MetadataCtn);
+            _metadataInitialiser(_dispatcher, settings, ref _metadataCtn);
         }
 
-        internal Cloner(Settings settings, IQueryDispatcher dispatcher, MetadataContainer.Initialiser metadataInit) : this()
+        internal Cloner(Settings settings, IQueryDispatcher dispatcher, 
+            MetadataContainer.Initialiser metadataInit,
+            MetadataContainer metadataCtn) : this()
         {
             if (dispatcher == null) throw new ArgumentNullException("dispatcher");
             if (metadataInit == null) throw new ArgumentNullException("cacheInit");
 
+            _metadataCtn = metadataCtn;
             _dispatcher = dispatcher;
             _metadataInitialiser = metadataInit;
-            _metadataInitialiser(_dispatcher, settings, ref MetadataCtn);
+            _metadataInitialiser(_dispatcher, settings, ref _metadataCtn);
         }
 
         #region Public methods
 
-        public void Clear()
-        {
-            _nextStepId = 0;
-            _nextVariableId = 0;
-
-            _keyRelationships.Clear();
-            _circularKeyJobs.Clear();
-            _executionPlanByServer.Clear();
-            DataBuilder.ClearBuildersCache();
-        }
-
-        public Cloner AppendStep(RowIdentifier riSource, bool getDerivatives = true)
+        public Cloner Append(RowIdentifier riSource, bool getDerivatives = true)
         {
             if (riSource == null) throw new ArgumentNullException("riSource");
 
@@ -91,15 +75,15 @@ namespace DataCloner
             return this;
         }
 
-        public Result Execute()
+        public ResultSet Execute()
         {
             if (OptimiseExecutionPlan)
-                OptimizeExecutionPlans(_executionPlanByServer);
+                OptimizeExecutionPlans(ExecutionPlanByServer);
 
             //_dispatcher[riSource].EnforceIntegrityCheck(EnforceIntegrity);
 
-            ResetExecutionPlan(_executionPlanByServer);
-            Parallel.ForEach(_executionPlanByServer, a =>
+            ResetExecutionPlan(ExecutionPlanByServer);
+            Parallel.ForEach(ExecutionPlanByServer, a =>
             {
                 var qh = _dispatcher.GetQueryHelper(a.Key);
                 qh.QueryCommmiting += QueryCommiting;
@@ -107,7 +91,7 @@ namespace DataCloner
                 qh.QueryCommmiting -= QueryCommiting;
             });
 
-            return new Result(_executionPlanByServer);
+            return new ResultSet(ExecutionPlanByServer);
         }
 
         #endregion
@@ -167,7 +151,7 @@ namespace DataCloner
         {
             var srcRows = _dispatcher.Select(riSource);
             var nbRows = srcRows.Length;
-            var table = metadata.GetTable(riSource);
+            var table = MetadataCtn.Metadatas.GetTable(riSource);
 
             //By default the destination server is the source if no road is found.
             var serverDst = new ServerIdentifier
@@ -234,7 +218,7 @@ namespace DataCloner
                     else
                     {
                         var fkDestinationExists = false;
-                        var fkTable = metadata.GetTable(fk);
+                        var fkTable = MetadataCtn.Metadatas.GetTable(fk);
                         var riFk = new RowIdentifier
                         {
                             ServerId = fk.ServerIdTo,
@@ -329,21 +313,21 @@ namespace DataCloner
         private void AddInsertStep(InsertStep step)
         {
             var connId = step.DestinationTable.ServerId;
-            if (!_executionPlanByServer.ContainsKey(connId))
-                _executionPlanByServer.Add(connId, new ExecutionPlan());
-            _executionPlanByServer[connId].InsertSteps.Add(step);
+            if (!ExecutionPlanByServer.ContainsKey(connId))
+                ExecutionPlanByServer.Add(connId, new ExecutionPlan());
+            ExecutionPlanByServer[connId].InsertSteps.Add(step);
 
             //Recopie dans le plan d'exécution pour la performance
             foreach (var sqlVar in step.Variables)
-                _executionPlanByServer[connId].Variables.Add(sqlVar);
+                ExecutionPlanByServer[connId].Variables.Add(sqlVar);
         }
 
         private void AddUpdateStep(UpdateStep step)
         {
             var connId = step.DestinationTable.ServerId;
-            if (!_executionPlanByServer.ContainsKey(connId))
-                _executionPlanByServer.Add(connId, new ExecutionPlan());
-            _executionPlanByServer[connId].UpdateSteps.Add(step);
+            if (!ExecutionPlanByServer.ContainsKey(connId))
+                ExecutionPlanByServer.Add(connId, new ExecutionPlan());
+            ExecutionPlanByServer[connId].UpdateSteps.Add(step);
         }
 
         private object[] GetDataRow(RowIdentifier riNewFk)
@@ -361,7 +345,7 @@ namespace DataCloner
 
             var varId = sqlVar.Id;
 
-            foreach (var plan in _executionPlanByServer)
+            foreach (var plan in ExecutionPlanByServer)
             {
                 var dr = plan.Value.InsertSteps.FirstOrDefault(r => r.Variables.Any(v => v.Id == varId));
                 if (dr != null)
@@ -431,7 +415,7 @@ namespace DataCloner
 
             foreach (var dt in derivativeTable)
             {
-                var tableDt = metadata.GetTable(dt);
+                var tableDt = MetadataCtn.Metadatas.GetTable(dt);
                 if (dt.Access == DerivativeTableAccess.Forced && dt.Cascade)
                     getDerivatives = true;
                 else if (dt.Access == DerivativeTableAccess.Denied)
@@ -464,8 +448,8 @@ namespace DataCloner
         {
             foreach (var job in _circularKeyJobs)
             {
-                var baseTable = metadata.GetTable(job.SourceBaseRowStartPoint);
-                var fkTable = metadata.GetTable(job.SourceFkRowStartPoint);
+                var baseTable = MetadataCtn.Metadatas.GetTable(job.SourceBaseRowStartPoint);
+                var fkTable = MetadataCtn.Metadatas.GetTable(job.SourceFkRowStartPoint);
                 var pkDestinationRow = _keyRelationships.GetKey(job.SourceBaseRowStartPoint);
                 var keyDestinationFkRow = _keyRelationships.GetKey(job.SourceFkRowStartPoint);
 

@@ -102,7 +102,7 @@
     <Compile Include="Data\SqlType.cs" />
     <Compile Include="Internal\ExecutionStep.cs" />
     <Compile Include="Metadata\AppMetadataExtensions.cs" />
-    <Compile Include="Result.cs" />
+    <Compile Include="ResultSet.cs" />
     <Compile Include="ServerIdentifier.cs" />
     <Compile Include="Internal\CircularKeyJob.cs" />
     <Compile Include="Configuration\BehaviorExtension.cs" />

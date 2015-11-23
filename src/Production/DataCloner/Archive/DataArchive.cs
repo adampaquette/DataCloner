@@ -1,4 +1,7 @@
-﻿using DataCloner.Framework;
+﻿using DataCloner.Configuration;
+using DataCloner.Data;
+using DataCloner.Framework;
+using DataCloner.Internal;
 using DataCloner.Metadata;
 using LZ4;
 using System;
@@ -9,148 +12,169 @@ using System.Linq;
 
 namespace DataCloner.Archive
 {
-    internal class DataArchive
+    public class DataArchive
     {
         private const int SizeOfInt = sizeof(int);
         private const int BufferSize = 32768;
 
-        public string Description { get; set; }
-        public List<RowIdentifier> OriginalQueries { get; set; }
-        public MetadataContainer Cache { get; set; }
-        public List<string> Databases { get; set; }
+        private MetadataContainer _metadata;
+        private Dictionary<Int16, ExecutionPlan> _executionPlanByServer;
+        private ProjectContainer _project;
 
-        public DataArchive()
+        public string Description { get; set; }
+
+        internal DataArchive(MetadataContainer metadataCtn, 
+            Dictionary<Int16, ExecutionPlan> executionPlanByServer, 
+            ProjectContainer project)
         {
-            OriginalQueries = new List<RowIdentifier>();
-            Databases = new List<string>();
+            _metadata = metadataCtn;
+            _executionPlanByServer = executionPlanByServer;
+            _project = project;
         }
 
         public void Save(string path)
         {
-            var tempFile = path + ".tmp";
-
-            //Création d'une archive non compressée
-            SaveToBin(tempFile);
-
-            //Compression
-            using (var istream = new FileStream(tempFile, FileMode.Open))
-            using (var ostream = new FileStream(path, FileMode.Create))
-            using (var lzStream = new LZ4Stream(ostream, CompressionMode.Compress))
-            {
-                istream.CopyTo(lzStream);
-            }
-
-            //Clean
-            if (File.Exists(tempFile))
-                File.Delete(tempFile);
+            using (var fstream = new FileStream(path, FileMode.CreateNew))
+                Save(fstream);
         }
 
-        public static DataArchive Load(string path, string decompressedPath)
+        public void Save(Stream ostream)
+        {
+            //Compression
+            using (var lzStream = new LZ4Stream(ostream, CompressionMode.Compress))
+            using (var bstream = new BinaryWriter(lzStream))
+            {
+                bstream.Write(Description);
+                bstream.Write(_project.SerializeXml());
+                bstream.Write(_executionPlanByServer.SerializeXml());
+                _metadata.Serialize(lzStream);
+            }
+        }
+
+        public static DataArchive Load(string path)
         {
             if (!File.Exists(path))
                 throw new FileNotFoundException(path);
 
-            var tempFile = path + ".tmp";
+            string description;
+            ProjectContainer project;
+            MetadataContainer metadataCtn;
+            Dictionary<Int16, ExecutionPlan> executionPlanByServer;
 
-            //Decompression
             using (var istream = new FileStream(path, FileMode.Open))
-            using (var ostream = new FileStream(tempFile, FileMode.Create))
-            using (var lzStream = new LZ4Stream(istream, CompressionMode.Decompress))
+            using (var lzstream = new LZ4Stream(istream, CompressionMode.Decompress))
+            using (var bstream = new BinaryReader(lzstream))
             {
-                lzStream.CopyTo(ostream);
+                description = bstream.ReadString();
+                project = bstream.ReadString().DeserializeXml<ProjectContainer>();
+                //executionPlanByServer = bstream.ReadString().DeserializeXml<>
+                metadataCtn = MetadataContainer.Deserialize(bstream);
+
             }
 
-            //Chargement de l'archive
-            var output = LoadFromBin(tempFile, decompressedPath);
-
-            //Clean
-            if (File.Exists(tempFile))
-                File.Delete(tempFile);
-
-            return output;
+            return new DataArchive(metadataCtn, null, project);
         }
 
         private void SaveToBin(string path)
         {
-            if (OriginalQueries == null)
-                throw new NullReferenceException("OriginalQueries");
-            if (Databases == null)
-                throw new NullReferenceException("Databases");
-            foreach (var file in Databases)
-                if (!File.Exists(file))
-                    throw new FileNotFoundException(file);
 
-            using (var ostream = File.Create(path))
-            using (var bstream = new BinaryWriter(ostream))
-            {
-                //Archive description
-                bstream.Write(Description);
 
-                //Queries
-                bstream.Write(OriginalQueries.Count());
-                foreach (var ri in OriginalQueries)
-                    bstream.Write(ri.SerializeXml());
+            //using (var ostream = File.Create(path))
+            //using (var bstream = new BinaryWriter(ostream))
+            //{
+            //    //Archive description
+            //    bstream.Write(Description);
 
-                //Cache 
-                Cache.Serialize(ostream);
+            //    //Queries
+            //    bstream.Write(OriginalQueries.Count());
+            //    foreach (var ri in OriginalQueries)
+            //        bstream.Write(ri.SerializeXml());
 
-                //Databases
-                bstream.Write(Databases.Count());
-                foreach (var filePath in Databases)
-                {
-                    var fileName = Path.GetFileName(filePath);
-                    var fi = new FileInfo(filePath);
+            //    //Cache 
+            //    Cache.Serialize(ostream);
 
-                    bstream.Write(fileName ?? "");
-                    bstream.Write(fi.Length);
-                    using (var istream = new FileStream(filePath, FileMode.Open))
-                    {
-                        istream.CopyTo(ostream);
-                    }
-                }
-            }
+            //    //Databases
+            //    bstream.Write(Databases.Count());
+            //    foreach (var filePath in Databases)
+            //    {
+            //        var fileName = Path.GetFileName(filePath);
+            //        var fi = new FileInfo(filePath);
+
+            //        bstream.Write(fileName ?? "");
+            //        bstream.Write(fi.Length);
+            //        using (var istream = new FileStream(filePath, FileMode.Open))
+            //        {
+            //            istream.CopyTo(ostream);
+            //        }
+            //    }
+            //}
         }
 
         private static DataArchive LoadFromBin(string path, string decompressedPath)
         {
-            var archiveOut = new DataArchive();
+            //var archiveOut = new DataArchive();
 
-            using (var istream = new FileStream(path, FileMode.Open))
-            using (var bstream = new BinaryReader(istream))
+            //using (var istream = new FileStream(path, FileMode.Open))
+            //using (var bstream = new BinaryReader(istream))
+            //{
+            //    //Archive description
+            //    archiveOut.Description = bstream.ReadString();
+
+            //    //Queries
+            //    var nbQueries = bstream.ReadInt32();
+            //    for (var i = 0; i < nbQueries; i++)
+            //        archiveOut.OriginalQueries.Add(bstream.ReadString().DeserializeXml<RowIdentifier>());
+
+            //    //Cache 
+            //    archiveOut.Cache = MetadataContainer.Deserialize(istream);
+
+            //    //Databases
+            //    var nbDatabases = bstream.ReadInt32();
+            //    for (var i = 0; i < nbDatabases; i++)
+            //    {
+            //        var fileName = bstream.ReadString();
+            //        var filePath = Path.Combine(decompressedPath, fileName);
+            //        var fileSize = bstream.ReadInt64();
+            //        if (fileSize > Int32.MaxValue)
+            //            throw new OverflowException(string.Format("File size for {0} is larger then 32 bit value.", fileName));
+            //        var fileSize32 = Convert.ToInt32(fileSize);
+
+            //        if (!Directory.Exists(decompressedPath))
+            //            Directory.CreateDirectory(decompressedPath);
+
+            //        using (var ostream = new FileStream(filePath, FileMode.Create))
+            //        {
+            //            istream.CopyTo(ostream, BufferSize, fileSize32);
+            //        }
+            //        archiveOut.Databases.Add(filePath);
+            //    }
+            //}
+            return null;//archiveOut;
+        }
+    }
+
+    public static class DataArchiveExtension
+    {
+        public static DataArchive ToDataArchive(this Cloner cloner)
+        {
+            var project = new ProjectContainer();
+
+            var destinationSrv = (from server in cloner.ExecutionPlanByServer
+                                  from insertStep in server.Value.InsertSteps
+                                  select insertStep.DestinationTable.ServerId).Distinct();
+
+            foreach (var srv in destinationSrv)
             {
-                //Archive description
-                archiveOut.Description = bstream.ReadString();
-
-                //Queries
-                var nbQueries = bstream.ReadInt32();
-                for (var i = 0; i < nbQueries; i++)
-                    archiveOut.OriginalQueries.Add(bstream.ReadString().DeserializeXml<RowIdentifier>());
-
-                //Cache 
-                archiveOut.Cache = MetadataContainer.Deserialize(istream);
-
-                //Databases
-                var nbDatabases = bstream.ReadInt32();
-                for (var i = 0; i < nbDatabases; i++)
+                var cs = cloner.MetadataCtn.ConnectionStrings.First(c => c.Id == srv);
+                project.ConnectionStrings.Add(new Connection
                 {
-                    var fileName = bstream.ReadString();
-                    var filePath = Path.Combine(decompressedPath, fileName);
-                    var fileSize = bstream.ReadInt64();
-                    if (fileSize > Int32.MaxValue)
-                        throw new OverflowException(string.Format("File size for {0} is larger then 32 bit value.", fileName));
-                    var fileSize32 = Convert.ToInt32(fileSize);
-
-                    if (!Directory.Exists(decompressedPath))
-                        Directory.CreateDirectory(decompressedPath);
-
-                    using (var ostream = new FileStream(filePath, FileMode.Create))
-                    {
-                        istream.CopyTo(ostream, BufferSize, fileSize32);
-                    }
-                    archiveOut.Databases.Add(filePath);
-                }
+                    Id = cs.Id,
+                    ConnectionString = cs.ConnectionString,
+                    ProviderName = cs.ProviderName
+                });
             }
-            return archiveOut;
+
+            return new DataArchive(cloner.MetadataCtn, cloner.ExecutionPlanByServer, project);
         }
     }
 }

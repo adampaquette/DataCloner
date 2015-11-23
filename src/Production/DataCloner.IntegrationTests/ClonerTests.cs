@@ -1,4 +1,5 @@
-﻿using DataCloner.Configuration;
+﻿using DataCloner.Archive;
+using DataCloner.Configuration;
 using DataCloner.Data;
 using System.Collections.Generic;
 using System.Data;
@@ -47,7 +48,7 @@ namespace DataCloner.IntegrationTests
             };
 
             //Act
-            cloner.AppendStep(source, false).Execute();
+            cloner.Append(source, false).Execute();
 
             //Assert
             var expectedData = new List<RowIdentifier>
@@ -87,6 +88,12 @@ namespace DataCloner.IntegrationTests
             };
 
             Assert.True(Enumerable.SequenceEqual(clonedData, expectedData));
+
+            var archive = cloner.ToDataArchive();
+            archive.Description = "testing";
+            archive.Save("archiveTest.dca");
+
+            var archive2 = DataArchive.Load("archiveTest.dca");
         }
 
         [Theory, MemberData(DbEngine)]
@@ -126,7 +133,7 @@ namespace DataCloner.IntegrationTests
             };
 
             //Act
-            cloner.AppendStep(source, true).Execute();
+            cloner.Append(source, true).Execute();
 
             //Assert
             var expectedData = new List<RowIdentifier>
@@ -205,7 +212,7 @@ namespace DataCloner.IntegrationTests
             };
 
             //Act
-            cloner.AppendStep(source, false).Execute();
+            cloner.Append(source, false).Execute();
 
             //Assert
             var expectedData = new List<RowIdentifier>
@@ -295,7 +302,7 @@ namespace DataCloner.IntegrationTests
             };
 
             //Act
-            cloner.AppendStep(source, false).Execute();
+            cloner.Append(source, false).Execute();
 
             //Assert
             var expectedData = new List<RowIdentifier>
@@ -377,7 +384,7 @@ namespace DataCloner.IntegrationTests
             };
 
             //Act
-            cloner.AppendStep(source, true).Execute();
+            cloner.Append(source, true).Execute();
 
             //Assert
             var expectedData = new List<RowIdentifier>
@@ -429,7 +436,7 @@ namespace DataCloner.IntegrationTests
             };
 
             //Act
-            cloner.AppendStep(source, false).Execute();
+            cloner.Append(source, false).Execute();
 
             //Assert
             var expectedData = new List<RowIdentifier>
@@ -476,7 +483,7 @@ namespace DataCloner.IntegrationTests
             };
 
             //Act
-            cloner.AppendStep(source, false).Execute();
+            cloner.Append(source, false).Execute();
 
             //Assert
             var expectedData = new List<RowIdentifier>
@@ -600,7 +607,7 @@ namespace DataCloner.IntegrationTests
             };
 
             //Act
-            cloner.AppendStep(source, false).Execute();
+            cloner.Append(source, false).Execute();
 
             //Assert
             var expectedData = new List<RowIdentifier>
@@ -672,7 +679,7 @@ namespace DataCloner.IntegrationTests
             };
 
             //Act
-            cloner.AppendStep(source, false).Execute();
+            cloner.Append(source, false).Execute();
 
             //Assert
             var expectedData = new List<RowIdentifier>
@@ -728,7 +735,7 @@ namespace DataCloner.IntegrationTests
             };
 
             //Act
-            cloner.AppendStep(source, false).Execute();
+            cloner.Append(source, false).Execute();
 
             //Assert
             var paramFirstName = command?.Parameters["@firstname0"] as IDataParameter;

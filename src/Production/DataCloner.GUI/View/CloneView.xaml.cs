@@ -304,7 +304,6 @@ namespace DataCloner.GUI.View
             {
                 rtbStatus.AppendText("Cloning started");
                 _cloner.OptimiseExecutionPlan = (bool)chkOptimisation.IsChecked;
-                _cloner.Clear();
 
                 scintilla.IsReadOnly = false;
                 scintilla.Text = string.Empty;
@@ -396,12 +395,9 @@ namespace DataCloner.GUI.View
                 source.Table = paramsIn.Table;
                 source.Columns = paramsIn.Columns;
 
-                if (paramsIn.ForceClone)
-                    _cloner.Clear();
-
                 //Clone
                 for (int i = 0; i < paramsIn.NbCopies; i++)
-                    paramsOut.ClonedRow.AddRange(_cloner.AppendStep(source, true).Execute().Clones);
+                    paramsOut.ClonedRow.AddRange(_cloner.Append(source, true).Execute().Results);
 
                 arg.Result = paramsOut;
             };
