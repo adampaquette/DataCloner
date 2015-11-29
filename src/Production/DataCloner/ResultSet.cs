@@ -22,7 +22,7 @@ namespace DataCloner
             {
                 foreach (var row in server.Value.InsertSteps.Where(s=>s.Depth==0))
                 {
-                    var pkTemp = row.TableSchema.BuildPkFromDataRow(row.DataRow);
+                    var pkTemp = row.TableSchema.BuildPkFromDataRow(row.Datarow);
 
                     //Clone for new reference
                     var clonedPk = new ColumnsWithValue();

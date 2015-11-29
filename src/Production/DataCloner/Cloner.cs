@@ -1,5 +1,4 @@
-﻿using DataCloner.Archive;
-using DataCloner.Data;
+﻿using DataCloner.Data;
 using DataCloner.Framework;
 using DataCloner.Internal;
 using DataCloner.Metadata;
@@ -22,7 +21,7 @@ namespace DataCloner
         private int _nextVariableId;
         private int _nextStepId;
 
-        internal Dictionary<Int16, ExecutionPlan> ExecutionPlanByServer { get; private set; }
+        internal ExecutionPlanByServer ExecutionPlanByServer { get; private set; }
        
         public MetadataContainer MetadataCtn { get { return _metadataCtn; } }
         public bool EnforceIntegrity { get; set; }
@@ -35,7 +34,7 @@ namespace DataCloner
         {
             _keyRelationships = new KeyRelationship();
             _circularKeyJobs = new List<CircularKeyJob>();
-            ExecutionPlanByServer = new Dictionary<short, ExecutionPlan>();
+            ExecutionPlanByServer = new ExecutionPlanByServer();
             _steps = new List<RowIdentifier>();
         }
 
@@ -104,7 +103,7 @@ namespace DataCloner
 
             foreach (var plan in plans)
             {
-                plan.Value.InsertSteps.ForEach(s => data.AddRange(s.DataRow));
+                plan.Value.InsertSteps.ForEach(s => data.AddRange(s.Datarow));
                 plan.Value.UpdateSteps.ForEach(s =>
                 {
                     data.AddRange(s.DestinationRow.Columns.Values);
@@ -291,7 +290,7 @@ namespace DataCloner
                 var step = CreateExecutionStep(riSource, tiDestination, table, destinationRow, level);
 
                 //Sauve la PK dans la cache
-                dstKey = table.BuildRawPkFromDataRow(step.DataRow);
+                dstKey = table.BuildRawPkFromDataRow(step.Datarow);
                 _keyRelationships.SetKey(riSource.ServerId, riSource.Database, riSource.Schema, riSource.Table, srcKey, dstKey);
 
                 //Ajouter les colonnes de contrainte unique dans _keyRelationships
@@ -349,7 +348,7 @@ namespace DataCloner
             {
                 var dr = plan.Value.InsertSteps.FirstOrDefault(r => r.Variables.Any(v => v.Id == varId));
                 if (dr != null)
-                    return dr.DataRow;
+                    return dr.Datarow;
             }
             throw new Exception();
         }
@@ -383,7 +382,7 @@ namespace DataCloner
                 }
             }
 
-            step.DataRow = destinationRow;
+            step.Datarow = destinationRow;
             AddInsertStep(step);
             return step;
         }

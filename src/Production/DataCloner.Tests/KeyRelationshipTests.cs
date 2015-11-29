@@ -2,6 +2,7 @@
 using DataCloner.Internal;
 using DataCloner.Metadata;
 using Xunit;
+using System.IO;
 
 namespace DataCloner.Tests
 {

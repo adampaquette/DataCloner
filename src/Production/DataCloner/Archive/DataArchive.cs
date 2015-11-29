@@ -1,14 +1,12 @@
 ﻿using DataCloner.Configuration;
-using DataCloner.Data;
 using DataCloner.Framework;
 using DataCloner.Internal;
 using DataCloner.Metadata;
 using LZ4;
-using System;
-using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace DataCloner.Archive
 {
@@ -18,13 +16,13 @@ namespace DataCloner.Archive
         private const int BufferSize = 32768;
 
         private MetadataContainer _metadata;
-        private Dictionary<Int16, ExecutionPlan> _executionPlanByServer;
+        private ExecutionPlanByServer _executionPlanByServer;
         private ProjectContainer _project;
 
         public string Description { get; set; }
 
-        internal DataArchive(MetadataContainer metadataCtn, 
-            Dictionary<Int16, ExecutionPlan> executionPlanByServer, 
+        internal DataArchive(MetadataContainer metadataCtn,
+            ExecutionPlanByServer executionPlanByServer, 
             ProjectContainer project)
         {
             _metadata = metadataCtn;
@@ -34,20 +32,31 @@ namespace DataCloner.Archive
 
         public void Save(string path)
         {
-            using (var fstream = new FileStream(path, FileMode.CreateNew))
+            using (var fstream = new FileStream(path, FileMode.Create))
                 Save(fstream);
         }
 
         public void Save(Stream ostream)
         {
+            var referenceValue = new DecompresibleList();
+
+            var epStream = new MemoryStream();
+            _executionPlanByServer.Serialize(epStream, referenceValue);
+
+            var ms = new MemoryStream();
+            var bf = new BinaryFormatter();
+            referenceValue.Trim();
+            bf.Serialize(ms, referenceValue);
+
             //Compression
             using (var lzStream = new LZ4Stream(ostream, CompressionMode.Compress))
             using (var bstream = new BinaryWriter(lzStream))
             {
-                bstream.Write(Description);
+                
+                bstream.Write(Description ?? "");
                 bstream.Write(_project.SerializeXml());
-                bstream.Write(_executionPlanByServer.SerializeXml());
                 _metadata.Serialize(lzStream);
+                epStream.CopyTo(lzStream);
             }
         }
 
@@ -56,10 +65,11 @@ namespace DataCloner.Archive
             if (!File.Exists(path))
                 throw new FileNotFoundException(path);
 
+            
             string description;
             ProjectContainer project;
             MetadataContainer metadataCtn;
-            Dictionary<Int16, ExecutionPlan> executionPlanByServer;
+            ExecutionPlanByServer executionPlanByServer;
 
             using (var istream = new FileStream(path, FileMode.Open))
             using (var lzstream = new LZ4Stream(istream, CompressionMode.Decompress))
@@ -67,9 +77,9 @@ namespace DataCloner.Archive
             {
                 description = bstream.ReadString();
                 project = bstream.ReadString().DeserializeXml<ProjectContainer>();
-                //executionPlanByServer = bstream.ReadString().DeserializeXml<>
-                metadataCtn = MetadataContainer.Deserialize(bstream);
 
+                
+                metadataCtn = MetadataContainer.Deserialize(bstream);
             }
 
             return new DataArchive(metadataCtn, null, project);

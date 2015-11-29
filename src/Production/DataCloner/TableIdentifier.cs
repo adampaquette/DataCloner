@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 
 namespace DataCloner
 {
@@ -29,6 +29,23 @@ namespace DataCloner
         public override int GetHashCode()
         {
             return (ServerId + Database + Schema + Table).GetHashCode();
+        }
+
+        public new void Serialize(BinaryWriter stream)
+        {
+            base.Serialize(stream);           
+            stream.Write(Table);
+        }
+
+        public new static TableIdentifier Deserialize(BinaryReader stream)
+        {
+            return new TableIdentifier
+            {
+                ServerId = stream.ReadInt16(),
+                Database = stream.ReadString(),
+                Schema = stream.ReadString(),
+                Table = stream.ReadString()
+            };
         }
     }
 }

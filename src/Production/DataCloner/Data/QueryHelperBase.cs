@@ -318,7 +318,7 @@ namespace DataCloner.Data
         internal void GemerateInsertStatment(InsertStep step, IDbCommand cmd, StringBuilder sql, IDbTransaction transaction, ref int nbParams)
         {
             var tableMetadata = _metadata.GetTable(step.DestinationTable);
-            if (tableMetadata.ColumnsDefinition.Count() != step.DataRow.Length)
+            if (tableMetadata.ColumnsDefinition.Count() != step.Datarow.Length)
                 throw new Exception("The step doesn't correspond to schema!");
 
             var insertWriter = SqlWriter.GetInsertWriter()
@@ -330,7 +330,7 @@ namespace DataCloner.Data
             for (var i = 0; i < tableMetadata.ColumnsDefinition.Count(); i++)
             {
                 var col = tableMetadata.ColumnsDefinition[i];
-                var sqlVar = step.DataRow[i] as SqlVariable;
+                var sqlVar = step.Datarow[i] as SqlVariable;
 
                 //Variable à générer
                 if (((col.IsPrimary && !col.IsAutoIncrement) || col.IsUniqueKey) && !col.IsForeignKey)
@@ -386,7 +386,7 @@ namespace DataCloner.Data
                             p.Value = DataBuilder.BuildDataColumn(this, transaction, step.DestinationTable.ServerId, step.DestinationTable.Database,
                                                                   step.DestinationTable.Schema, step.TableSchema, col);
                         else
-                            p.Value = step.DataRow[i];
+                            p.Value = step.Datarow[i];
                         p.DbType = col.DbType;
                         cmd.Parameters.Add(p);
 
