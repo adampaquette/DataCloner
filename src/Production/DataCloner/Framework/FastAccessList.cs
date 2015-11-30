@@ -3,15 +3,24 @@
 namespace DataCloner.Framework
 {
     /// <summary>
-    /// Fast list access by index for decompression purpose
+    /// Fast list access by index
     /// </summary>
-    public class DecompresibleList
+    public class FastAccessList<T>
     {
-        object[] _data = null;
+        T[] _data = null;
         int _length = 0;
 
-        public DecompresibleList()
-        {            
+        public FastAccessList()
+        {
+        }
+
+        public FastAccessList(T[] data)
+        {
+            if (data == null)
+                throw new ArgumentNullException("data");
+
+            _data = data;
+            _length = data.Length;
         }
 
         public int Length
@@ -19,26 +28,26 @@ namespace DataCloner.Framework
             get { return _length; }
         }
 
-        public object this[int index]
+        public T this[int index]
         {
             get { return _data[index]; }
         }
 
-        public int Add(object obj)
+        public int Add(T obj)
         {
             if (obj == null)
                 throw new ArgumentNullException("obj");
 
             if (_data == null)
-                _data = new object[128];
+                _data = new T[128];
 
             if (_length == _data.Length)
             {
-                var newData = new object[_data.Length * 2];
+                var newData = new T[_data.Length * 2];
                 Array.Copy(_data, newData, newData.Length);
                 _data = newData;
             }
-            
+
             var idx = _length;
             _length++;
 
@@ -46,23 +55,23 @@ namespace DataCloner.Framework
             return idx;
         }
 
-        public int TryAdd(object obj)
+        public int TryAdd(T obj)
         {
             if (obj == null)
                 throw new ArgumentNullException("obj");
             int id;
-            if ((id = FindObject(obj)) == -1)
+            if ((id = FindT(obj)) == -1)
                 id = Add(obj);
             return id;
         }
 
-        public int FindObject(object obj)
+        public int FindT(T obj)
         {
             if (obj != null && _data != null)
             {
                 for (int i = 0; i < _data.Length; i++)
                 {
-                    if ((object)obj == (object)_data[i])
+                    if (obj.Equals(_data[i]))
                         return i;
                 }
             }
@@ -73,12 +82,12 @@ namespace DataCloner.Framework
         {
             if (_data != null)
             {
-                for (int i = _data.Length-1; i > 0; i--)
+                for (int i = _data.Length - 1; i > 0; i--)
                 {
                     if (_data[i] != null)
                     {
                         var length = i + 1;
-                        var newData = new object[length];
+                        var newData = new T[length];
                         Array.Copy(_data, newData, length);
                         _data = newData;
                         return;

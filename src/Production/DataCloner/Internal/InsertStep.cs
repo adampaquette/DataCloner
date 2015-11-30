@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using DataCloner.Framework;
 using DataCloner.Metadata;
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using DataCloner.Archive;
-using DataCloner.Framework;
-using System.Runtime.Serialization.Formatters.Binary;
 
 namespace DataCloner.Internal
 {
@@ -23,14 +21,14 @@ namespace DataCloner.Internal
 			Variables = new List<SqlVariable>();
 		}
 
-        public void Serialize(BinaryWriter output, DecompresibleList referenceTracking)
+        public void Serialize(BinaryWriter output, FastAccessList<object> referenceTracking)
         {
-            var bf = new BinaryFormatter();
+            var bf = SerializationHelper.DefaultFormatter;
 
             output.Write(StepId);
             output.Write(Depth);
-            SourceTable.Serialize(output.BaseStream);
-            DestinationTable.Serialize(output.BaseStream);
+            SourceTable.Serialize(output);
+            DestinationTable.Serialize(output);
 
             //Variable
             output.Write(Variables.Count);
@@ -63,9 +61,9 @@ namespace DataCloner.Internal
             }
         }
 
-        public static InsertStep Deserialize(BinaryReader input, DecompresibleList referenceTracking)
+        public static InsertStep Deserialize(BinaryReader input, FastAccessList<object> referenceTracking)
         {
-            var bf = new BinaryFormatter();
+            var bf = SerializationHelper.DefaultFormatter;
             var step = new InsertStep();
 
             step.StepId = input.ReadInt32();
@@ -90,17 +88,16 @@ namespace DataCloner.Internal
             step.Datarow = new object[nbRows];
             for (var i = 0; i < nbRows; i++)
             {
-                var data = step.Datarow[i];
                 var tag = input.ReadInt32();
                 var type = SerializationHelper.TagToType[tag];
 
                 if (type == typeof(SqlVariable))
                 {
                     var id = input.ReadInt32();
-                    data = referenceTracking[id];
+                    step.Datarow[i] = referenceTracking[id];
                 }
                 else
-                    data = bf.Deserialize(input.BaseStream);
+                    step.Datarow[i] = bf.Deserialize(input.BaseStream);
             }
 
             return step;

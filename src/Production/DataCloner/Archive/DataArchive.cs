@@ -6,7 +6,7 @@ using LZ4;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Runtime.Serialization.Formatters.Binary;
+using System.Text;
 
 namespace DataCloner.Archive
 {
@@ -19,10 +19,11 @@ namespace DataCloner.Archive
         private ExecutionPlanByServer _executionPlanByServer;
         private ProjectContainer _project;
 
+        public int FormatVersion { get { return 1; } }
         public string Description { get; set; }
 
         internal DataArchive(MetadataContainer metadataCtn,
-            ExecutionPlanByServer executionPlanByServer, 
+            ExecutionPlanByServer executionPlanByServer,
             ProjectContainer project)
         {
             _metadata = metadataCtn;
@@ -38,25 +39,21 @@ namespace DataCloner.Archive
 
         public void Save(Stream ostream)
         {
-            var referenceValue = new DecompresibleList();
+            var referenceTracking = new FastAccessList<object>();
+            var refStream = new MemoryStream();
 
-            var epStream = new MemoryStream();
-            _executionPlanByServer.Serialize(epStream, referenceValue);
-
-            var ms = new MemoryStream();
-            var bf = new BinaryFormatter();
-            referenceValue.Trim();
-            bf.Serialize(ms, referenceValue);
+            _executionPlanByServer.Serialize(refStream, referenceTracking);
+            _metadata.Serialize(refStream, referenceTracking);
 
             //Compression
             using (var lzStream = new LZ4Stream(ostream, CompressionMode.Compress))
-            using (var bstream = new BinaryWriter(lzStream))
+            using (var bstream = new BinaryWriter(lzStream, Encoding.UTF8, true))
             {
-                
+                bstream.Write(FormatVersion);
                 bstream.Write(Description ?? "");
+                SerializeReferenceTracking(bstream, referenceTracking);
                 bstream.Write(_project.SerializeXml());
-                _metadata.Serialize(lzStream);
-                epStream.CopyTo(lzStream);
+                refStream.WriteTo(lzStream);
             }
         }
 
@@ -65,103 +62,73 @@ namespace DataCloner.Archive
             if (!File.Exists(path))
                 throw new FileNotFoundException(path);
 
-            
+            int formatVersion;
             string description;
             ProjectContainer project;
             MetadataContainer metadataCtn;
             ExecutionPlanByServer executionPlanByServer;
+            FastAccessList<object> referenceTracking;
 
             using (var istream = new FileStream(path, FileMode.Open))
             using (var lzstream = new LZ4Stream(istream, CompressionMode.Decompress))
-            using (var bstream = new BinaryReader(lzstream))
+            using (var bstream = new BinaryReader(lzstream, Encoding.UTF8, true))
             {
+                formatVersion = bstream.ReadInt32();
                 description = bstream.ReadString();
+                referenceTracking = DeserializeReferenceTracking(bstream);
                 project = bstream.ReadString().DeserializeXml<ProjectContainer>();
-
-                
-                metadataCtn = MetadataContainer.Deserialize(bstream);
+                executionPlanByServer = ExecutionPlanByServer.Deserialize(bstream, referenceTracking);
+                metadataCtn = MetadataContainer.Deserialize(bstream, referenceTracking);
             }
 
-            return new DataArchive(metadataCtn, null, project);
+            return new DataArchive(metadataCtn, executionPlanByServer, project)
+            {
+                Description = description
+            };
         }
-
-        private void SaveToBin(string path)
+        private void SerializeReferenceTracking(BinaryWriter output, FastAccessList<object> referenceTracking)
         {
+            var bf = SerializationHelper.DefaultFormatter;
 
+            output.Write(referenceTracking.Length);
+            for (int i = 0; i < referenceTracking.Length; i++)
+            {
+                var data = referenceTracking[i];
+                var type = data.GetType();
+                var tag = SerializationHelper.TypeToTag[type];
+                output.Write(tag);
 
-            //using (var ostream = File.Create(path))
-            //using (var bstream = new BinaryWriter(ostream))
-            //{
-            //    //Archive description
-            //    bstream.Write(Description);
-
-            //    //Queries
-            //    bstream.Write(OriginalQueries.Count());
-            //    foreach (var ri in OriginalQueries)
-            //        bstream.Write(ri.SerializeXml());
-
-            //    //Cache 
-            //    Cache.Serialize(ostream);
-
-            //    //Databases
-            //    bstream.Write(Databases.Count());
-            //    foreach (var filePath in Databases)
-            //    {
-            //        var fileName = Path.GetFileName(filePath);
-            //        var fi = new FileInfo(filePath);
-
-            //        bstream.Write(fileName ?? "");
-            //        bstream.Write(fi.Length);
-            //        using (var istream = new FileStream(filePath, FileMode.Open))
-            //        {
-            //            istream.CopyTo(ostream);
-            //        }
-            //    }
-            //}
+                if (type == typeof(SqlVariable))
+                    ((SqlVariable)data).Serialize(output);
+                else if (type == typeof(TableMetadata))
+                    ((TableMetadata)data).Serialize(output);
+                else
+                    bf.Serialize(output.BaseStream, data);
+            }
         }
 
-        private static DataArchive LoadFromBin(string path, string decompressedPath)
+        private static FastAccessList<object> DeserializeReferenceTracking(BinaryReader input)
         {
-            //var archiveOut = new DataArchive();
+            var bf = SerializationHelper.DefaultFormatter;
+            var referenceTracking = new FastAccessList<object>();
 
-            //using (var istream = new FileStream(path, FileMode.Open))
-            //using (var bstream = new BinaryReader(istream))
-            //{
-            //    //Archive description
-            //    archiveOut.Description = bstream.ReadString();
+            var nbRef = input.ReadInt32();
+            for (var i = 0; i < nbRef; i++)
+            {
+                var tag = input.ReadInt32();
+                var type = SerializationHelper.TagToType[tag];
 
-            //    //Queries
-            //    var nbQueries = bstream.ReadInt32();
-            //    for (var i = 0; i < nbQueries; i++)
-            //        archiveOut.OriginalQueries.Add(bstream.ReadString().DeserializeXml<RowIdentifier>());
+                if (type == typeof(SqlVariable))
+                    referenceTracking.Add(SqlVariable.Deserialize(input));
+                else if (type == typeof(TableMetadata))
+                    referenceTracking.Add(TableMetadata.Deserialize(input));
+                else
+                    referenceTracking.Add(bf.Deserialize(input.BaseStream));
+            }
 
-            //    //Cache 
-            //    archiveOut.Cache = MetadataContainer.Deserialize(istream);
-
-            //    //Databases
-            //    var nbDatabases = bstream.ReadInt32();
-            //    for (var i = 0; i < nbDatabases; i++)
-            //    {
-            //        var fileName = bstream.ReadString();
-            //        var filePath = Path.Combine(decompressedPath, fileName);
-            //        var fileSize = bstream.ReadInt64();
-            //        if (fileSize > Int32.MaxValue)
-            //            throw new OverflowException(string.Format("File size for {0} is larger then 32 bit value.", fileName));
-            //        var fileSize32 = Convert.ToInt32(fileSize);
-
-            //        if (!Directory.Exists(decompressedPath))
-            //            Directory.CreateDirectory(decompressedPath);
-
-            //        using (var ostream = new FileStream(filePath, FileMode.Create))
-            //        {
-            //            istream.CopyTo(ostream, BufferSize, fileSize32);
-            //        }
-            //        archiveOut.Databases.Add(filePath);
-            //    }
-            //}
-            return null;//archiveOut;
+            return referenceTracking;
         }
-    }
+    } 
 
     public static class DataArchiveExtension
     {
@@ -185,6 +152,15 @@ namespace DataCloner.Archive
             }
 
             return new DataArchive(cloner.MetadataCtn, cloner.ExecutionPlanByServer, project);
+        }
+
+        public static Cloner ToCloner(this DataArchive dataArchive)
+        {
+            //TODO: Créer une nouvelle classe permettant de charger un ExecutionPlanByServer et de l'exécuter avec une map.
+            //Cloner va s'appeler ExecutionPlanBuilder.
+            //Une nouvelle classe s'appelera Cloner et prendra en charge l'enregistrement dans la BD à partir d'un ExecutionPlanByServer.
+            //La classe DataArchive permettra de retourner les maps par défaut pour les envoyer au Cloner.
+            return null;
         }
     }
 }

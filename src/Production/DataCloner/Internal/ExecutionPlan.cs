@@ -1,40 +1,38 @@
 ﻿using DataCloner.Framework;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
+using System.Text;
 
 namespace DataCloner.Internal
 {
-    public class ExecutionPlan 
-	{
-		public List<InsertStep> InsertSteps { get; set; }
-		public List<UpdateStep> UpdateSteps { get; set; }
-		public List<SqlVariable> Variables { get; set; }
+    public class ExecutionPlan
+    {
+        public List<InsertStep> InsertSteps { get; set; }
+        public List<UpdateStep> UpdateSteps { get; set; }
+        public List<SqlVariable> Variables { get; set; }
 
-		public ExecutionPlan()
-		{
-			InsertSteps = new List<InsertStep>();
-			UpdateSteps = new List<UpdateStep>();
-			Variables = new List<SqlVariable>();
-		}
-
-		public void Clear()
-		{
-			InsertSteps.Clear();
-			UpdateSteps.Clear();
-			Variables.Clear();
-		}
-
-        public void Serialize(Stream output, DecompresibleList referenceTracking)
+        public ExecutionPlan()
         {
-            using (var bw = new BinaryWriter(output))
+            InsertSteps = new List<InsertStep>();
+            UpdateSteps = new List<UpdateStep>();
+            Variables = new List<SqlVariable>();
+        }
+
+        public void Clear()
+        {
+            InsertSteps.Clear();
+            UpdateSteps.Clear();
+            Variables.Clear();
+        }
+
+        public void Serialize(Stream output, FastAccessList<object> referenceTracking)
+        {
+            using (var bw = new BinaryWriter(output, Encoding.UTF8, true))
                 Serialize(bw, referenceTracking);
         }
 
-        public void Serialize(BinaryWriter output, DecompresibleList referenceTracking)
+        public void Serialize(BinaryWriter output, FastAccessList<object> referenceTracking)
         {
-            var bf = new BinaryFormatter();
-
             output.Write(Variables.Count);
             foreach (var v in Variables)
             {
@@ -51,10 +49,32 @@ namespace DataCloner.Internal
                 step.Serialize(output);
         }
 
-        public static ExecutionPlan Deserialize(Stream stream)
+        public static ExecutionPlan Deserialize(BinaryReader input, FastAccessList<object> referenceTracking)
         {
+            var ep = new ExecutionPlan();
 
-            return null;
+            var nbVars = input.ReadInt32();
+            for (int i = 0; i < nbVars; i++)
+            {
+                var id = input.ReadInt32();
+                ep.Variables.Add((SqlVariable)referenceTracking[id]);
+            }
+
+            var nbInsertSteps = input.ReadInt32();
+            for (var i = 0; i < nbInsertSteps; i++)
+            {
+                var step = InsertStep.Deserialize(input, referenceTracking);
+                ep.InsertSteps.Add(step);
+            }
+
+            var nbUpdateSteps = input.ReadInt32();
+            for (var i = 0; i < nbUpdateSteps; i++)
+            {
+                var step = UpdateStep.Deserialize(input);
+                ep.UpdateSteps.Add(step);
+            }
+
+            return ep;
         }
     }
 }

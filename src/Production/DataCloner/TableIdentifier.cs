@@ -31,20 +31,20 @@ namespace DataCloner
             return (ServerId + Database + Schema + Table).GetHashCode();
         }
 
-        public new void Serialize(BinaryWriter stream)
+        public new void Serialize(BinaryWriter output)
         {
-            base.Serialize(stream);           
-            stream.Write(Table);
+            base.Serialize(output);           
+            output.Write(Table);
         }
 
-        public new static TableIdentifier Deserialize(BinaryReader stream)
+        public new static TableIdentifier Deserialize(BinaryReader input)
         {
             return new TableIdentifier
             {
-                ServerId = stream.ReadInt16(),
-                Database = stream.ReadString(),
-                Schema = stream.ReadString(),
-                Table = stream.ReadString()
+                ServerId = input.ReadInt16(),
+                Database = input.ReadString(),
+                Schema = input.ReadString(),
+                Table = input.ReadString()
             };
         }
     }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 
 namespace DataCloner.Data
 {
@@ -19,12 +20,12 @@ namespace DataCloner.Data
 
         public void Serialize(Stream stream)
         {
-            Serialize(new BinaryWriter(stream));
+            Serialize(new BinaryWriter(stream, Encoding.UTF8, true));
         } 
 
         public static SqlConnection Deserialize(Stream stream)
         {
-            return Deserialize(new BinaryReader(stream));
+            return Deserialize(new BinaryReader(stream, Encoding.UTF8, true));
         }
 
         public void Serialize(BinaryWriter stream)

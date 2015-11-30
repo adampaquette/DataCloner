@@ -1,5 +1,6 @@
 ﻿using DataCloner.Configuration;
 using DataCloner.Data;
+using DataCloner.Framework;
 using Murmur;
 using System;
 using System.Collections.Generic;
@@ -53,7 +54,7 @@ namespace DataCloner.Metadata
             //Hash the selected map, connnectionStrings and the cloner 
             //configuration to see if it match the lasted builded container
             var configData = new MemoryStream();
-            var bf = new BinaryFormatter();
+            var bf = SerializationHelper.DefaultFormatter;
             bf.Serialize(configData, project.ConnectionStrings);
 
             if (settings.MapId.HasValue)
@@ -124,7 +125,7 @@ namespace DataCloner.Metadata
 
             //Hash the connnectionStrings to see if it match the last build
             var configData = new MemoryStream();
-            var bf = new BinaryFormatter();
+            var bf = SerializationHelper.DefaultFormatter;
             bf.Serialize(configData, proj.ConnectionStrings);
             configData.Position = 0;
 
@@ -143,38 +144,38 @@ namespace DataCloner.Metadata
                 container = BuildMetadata(dispatcher, containerFileName, proj.ConnectionStrings, configHash);
         }
 
-        public void Serialize(Stream stream)
+        public void Serialize(Stream output, FastAccessList<object> referenceTracking = null)
         {
-            Serialize(new BinaryWriter(stream));
+            Serialize(new BinaryWriter(output, Encoding.UTF8, true), referenceTracking);
+        }        
+
+        public static MetadataContainer Deserialize(Stream input, FastAccessList<object> referenceTracking = null)
+        {
+            return Deserialize(new BinaryReader(input, Encoding.UTF8, true));
         }
 
-        public static MetadataContainer Deserialize(Stream stream)
+        public void Serialize(BinaryWriter output, FastAccessList<object> referenceTracking = null)
         {
-            return Deserialize(new BinaryReader(stream));
-        }
-
-        public void Serialize(BinaryWriter stream)
-        {
-            stream.Write(ConfigFileHash);
+            output.Write(ConfigFileHash);
 
             if (ServerMap != null)
             {
-                stream.Write(ServerMap.Count);
+                output.Write(ServerMap.Count);
                 foreach (var sm in ServerMap)
                 {
-                    sm.Key.Serialize(stream);
-                    sm.Value.Serialize(stream);
+                    sm.Key.Serialize(output);
+                    sm.Value.Serialize(output);
                 }
             }
             else
-                stream.Write(0);
+                output.Write(0);
 
-            stream.Write(ConnectionStrings.Count);
+            output.Write(ConnectionStrings.Count);
             foreach (var cs in ConnectionStrings)
-                cs.Serialize(stream);
-            Metadatas.Serialize(stream);
+                cs.Serialize(output);
+            Metadatas.Serialize(output, referenceTracking);
 
-            stream.Flush();
+            output.Flush();
         }
 
         public void Save(string path)
@@ -184,11 +185,11 @@ namespace DataCloner.Metadata
             fs.Close();
         }
 
-        public static MetadataContainer Deserialize(BinaryReader stream)
+        public static MetadataContainer Deserialize(BinaryReader input, FastAccessList<object> referenceTracking = null)
         {
-            var config = new MetadataContainer { ConfigFileHash = stream.ReadString() };
+            var config = new MetadataContainer { ConfigFileHash = input.ReadString() };
 
-            DeserializeBody(stream, config);
+            DeserializeBody(input, config, referenceTracking);
 
             return config;
         }
@@ -293,20 +294,21 @@ namespace DataCloner.Metadata
             }
         }
 
-        private static MetadataContainer DeserializeBody(BinaryReader stream, MetadataContainer config)
+        private static MetadataContainer DeserializeBody(BinaryReader input, MetadataContainer config, 
+            FastAccessList<object> referenceTracking = null)
         {
-            var nbServerMap = stream.ReadInt32();
+            var nbServerMap = input.ReadInt32();
             for (var i = 0; i < nbServerMap; i++)
             {
-                var src = ServerIdentifier.Deserialize(stream);
-                var dst = ServerIdentifier.Deserialize(stream);
+                var src = ServerIdentifier.Deserialize(input);
+                var dst = ServerIdentifier.Deserialize(input);
                 config.ServerMap.Add(src, dst);
             }
-            var nbConnection = stream.ReadInt32();
+            var nbConnection = input.ReadInt32();
             for (var i = 0; i < nbConnection; i++)
-                config.ConnectionStrings.Add(SqlConnection.Deserialize(stream));
+                config.ConnectionStrings.Add(SqlConnection.Deserialize(input));
 
-            config.Metadatas = AppMetadata.Deserialize(stream);
+            config.Metadatas = AppMetadata.Deserialize(input, referenceTracking);
 
             return config;
         }
@@ -318,7 +320,7 @@ namespace DataCloner.Metadata
             if (File.Exists(containerFile))
             {
                 using (var fs = new FileStream(containerFile, FileMode.Open))
-                using (var br = new BinaryReader(fs))
+                using (var br = new BinaryReader(fs, Encoding.UTF8, true))
                 {
                     var fileHash = br.ReadString();
 

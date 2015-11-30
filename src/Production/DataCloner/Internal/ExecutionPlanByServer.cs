@@ -1,5 +1,4 @@
-﻿using DataCloner.Archive;
-using DataCloner.Framework;
+﻿using DataCloner.Framework;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,13 +7,13 @@ namespace DataCloner.Internal
 {
     public class ExecutionPlanByServer : Dictionary<Int16, ExecutionPlan>
     {
-        public void Serialize(Stream output, DecompresibleList referenceTracking)
+        public void Serialize(Stream output, FastAccessList<object> referenceTracking)
         {
-            using (var br = new BinaryWriter(output))
+            using (var br = new BinaryWriter(output, System.Text.Encoding.UTF8, true))
                 Serialize(br, referenceTracking);
         }
 
-        public void Serialize(BinaryWriter output, DecompresibleList referenceTracking)
+        public void Serialize(BinaryWriter output, FastAccessList<object> referenceTracking)
         {
             output.Write(Count);
             foreach (var srv in this)
@@ -25,10 +24,19 @@ namespace DataCloner.Internal
         }
 
 
-        public static ExecutionPlan Deserialize(Stream stream)
+        public static ExecutionPlanByServer Deserialize(BinaryReader input, FastAccessList<object> referenceTracking)
         {
+            var epBySrv = new ExecutionPlanByServer();
 
-            return null;
+            var nbSrv = input.ReadInt32();
+            for (int i = 0; i < nbSrv; i++)
+            {
+                var key = input.ReadInt16();
+                var value = ExecutionPlan.Deserialize(input, referenceTracking);
+                epBySrv.Add(key, value);
+            }
+
+            return epBySrv;
         }
     }
 }

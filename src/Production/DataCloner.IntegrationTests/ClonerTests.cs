@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization.Formatters.Binary;
 using Xunit;
 
 namespace DataCloner.IntegrationTests
@@ -456,8 +457,22 @@ namespace DataCloner.IntegrationTests
             Assert.True(Enumerable.SequenceEqual(clonedData, expectedData));
 
             var da = cloner.ToDataArchive();
+            da.Save("testingArchive.dca");
+            var loaded = DataArchive.Load("testingArchive.dca");
+
+
+
+            var bf = new BinaryFormatter();
+            var a = "asads";
+            var aa = "-----";
+
             var ms = new MemoryStream();
-            da.Save(ms);
+            bf.Serialize(ms, a);
+            bf.Serialize(ms, aa);
+            ms.Position = 0;
+            var b = bf.Deserialize(ms);
+
+            var equal = a == b;
         }
 
         [Theory, MemberData(DbEngine)]

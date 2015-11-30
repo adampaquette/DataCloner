@@ -6,6 +6,7 @@ using System.Data;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace DataCloner.Metadata
 {
@@ -190,115 +191,115 @@ namespace DataCloner.Metadata
             return Name.GetHashCode();
         }
 
-        public void Serialize(Stream stream)
+        public void Serialize(Stream output)
         {
-            Serialize(new BinaryWriter(stream));
+            Serialize(new BinaryWriter(output, Encoding.UTF8, true));
         }
 
-        public static TableMetadata Deserialize(Stream stream)
+        public static TableMetadata Deserialize(Stream input)
         {
-            return Deserialize(new BinaryReader(stream));
+            return Deserialize(new BinaryReader(input, Encoding.UTF8, true));
         }
 
-        public void Serialize(BinaryWriter stream)
+        public void Serialize(BinaryWriter output)
         {
             var nbRows = DerivativeTables.Count;
-            stream.Write(Name ?? "");
-            stream.Write(IsStatic);
-            stream.Write(SelectCommand ?? "");
-            stream.Write(InsertCommand ?? "");
+            output.Write(Name ?? "");
+            output.Write(IsStatic);
+            output.Write(SelectCommand ?? "");
+            output.Write(InsertCommand ?? "");
 
-            stream.Write(nbRows);
+            output.Write(nbRows);
             for (var i = 0; i < nbRows; i++)
             {
-                stream.Write(DerivativeTables[i].ServerId);
-                stream.Write(DerivativeTables[i].Database);
-                stream.Write(DerivativeTables[i].Schema);
-                stream.Write(DerivativeTables[i].Table);
-                stream.Write((int)DerivativeTables[i].Access);
-                stream.Write(DerivativeTables[i].Cascade);
+                output.Write(DerivativeTables[i].ServerId);
+                output.Write(DerivativeTables[i].Database);
+                output.Write(DerivativeTables[i].Schema);
+                output.Write(DerivativeTables[i].Table);
+                output.Write((int)DerivativeTables[i].Access);
+                output.Write(DerivativeTables[i].Cascade);
             }
 
             nbRows = ForeignKeys.Count;
-            stream.Write(nbRows);
+            output.Write(nbRows);
             for (var i = 0; i < nbRows; i++)
             {
-                stream.Write(ForeignKeys[i].ServerIdTo);
-                stream.Write(ForeignKeys[i].DatabaseTo);
-                stream.Write(ForeignKeys[i].SchemaTo);
-                stream.Write(ForeignKeys[i].TableTo);
+                output.Write(ForeignKeys[i].ServerIdTo);
+                output.Write(ForeignKeys[i].DatabaseTo);
+                output.Write(ForeignKeys[i].SchemaTo);
+                output.Write(ForeignKeys[i].TableTo);
 
                 var nbCol = ForeignKeys[i].Columns.Count;
-                stream.Write(nbCol);
+                output.Write(nbCol);
                 for (var j = 0; j < nbCol; j++)
                 {
-                    stream.Write(ForeignKeys[i].Columns[j].NameFrom);
-                    stream.Write(ForeignKeys[i].Columns[j].NameTo);
+                    output.Write(ForeignKeys[i].Columns[j].NameFrom);
+                    output.Write(ForeignKeys[i].Columns[j].NameTo);
                 }
             }
 
             nbRows = ColumnsDefinition.Count;
-            stream.Write(nbRows);
+            output.Write(nbRows);
             for (var i = 0; i < nbRows; i++)
             {
-                stream.Write(ColumnsDefinition[i].Name);
-                stream.Write((Int32)ColumnsDefinition[i].DbType);
-                stream.Write(ColumnsDefinition[i].IsPrimary);
-                stream.Write(ColumnsDefinition[i].IsForeignKey);
-                stream.Write(ColumnsDefinition[i].IsAutoIncrement);
-                stream.Write(ColumnsDefinition[i].BuilderName ?? "");
-                ColumnsDefinition[i].SqlType.Serialize(stream);
+                output.Write(ColumnsDefinition[i].Name);
+                output.Write((Int32)ColumnsDefinition[i].DbType);
+                output.Write(ColumnsDefinition[i].IsPrimary);
+                output.Write(ColumnsDefinition[i].IsForeignKey);
+                output.Write(ColumnsDefinition[i].IsAutoIncrement);
+                output.Write(ColumnsDefinition[i].BuilderName ?? "");
+                ColumnsDefinition[i].SqlType.Serialize(output);
             }
         }
 
-        public static TableMetadata Deserialize(BinaryReader stream)
+        public static TableMetadata Deserialize(BinaryReader input)
         {
             
             var dtList = new List<DerivativeTable>();
             var fkList = new List<ForeignKey>();
             var schemaColList = new List<ColumnDefinition>();
 
-            var t = new TableMetadata(stream.ReadString())
+            var t = new TableMetadata(input.ReadString())
             {
-                IsStatic = stream.ReadBoolean(),
-                SelectCommand = stream.ReadString(),
-                InsertCommand = stream.ReadString()
+                IsStatic = input.ReadBoolean(),
+                SelectCommand = input.ReadString(),
+                InsertCommand = input.ReadString()
             };
 
-            var nbRows = stream.ReadInt32();
+            var nbRows = input.ReadInt32();
             for (var i = 0; i < nbRows; i++)
             {
                 dtList.Add(new DerivativeTable
                 {
-                    ServerId = stream.ReadInt16(),
-                    Database = stream.ReadString(),
-                    Schema = stream.ReadString(),
-                    Table = stream.ReadString(),
-                    Access = (DerivativeTableAccess)stream.ReadInt32(),
-                    Cascade = stream.ReadBoolean()
+                    ServerId = input.ReadInt16(),
+                    Database = input.ReadString(),
+                    Schema = input.ReadString(),
+                    Table = input.ReadString(),
+                    Access = (DerivativeTableAccess)input.ReadInt32(),
+                    Cascade = input.ReadBoolean()
                 });
             }
 
-            nbRows = stream.ReadInt32();
+            nbRows = input.ReadInt32();
             for (var i = 0; i < nbRows; i++)
             {
                 var fkColList = new List<ForeignKeyColumn>();
 
                 var fk = new ForeignKey
                 {
-                    ServerIdTo = stream.ReadInt16(),
-                    DatabaseTo = stream.ReadString(),
-                    SchemaTo = stream.ReadString(),
-                    TableTo = stream.ReadString()
+                    ServerIdTo = input.ReadInt16(),
+                    DatabaseTo = input.ReadString(),
+                    SchemaTo = input.ReadString(),
+                    TableTo = input.ReadString()
                 };
 
-                var nbRows2 = stream.ReadInt32();
+                var nbRows2 = input.ReadInt32();
                 for (var j = 0; j < nbRows2; j++)
                 {
                     fkColList.Add(new ForeignKeyColumn
                     {
-                        NameFrom = stream.ReadString(),
-                        NameTo = stream.ReadString()
+                        NameFrom = input.ReadString(),
+                        NameTo = input.ReadString()
                     });
                 }
 
@@ -306,18 +307,18 @@ namespace DataCloner.Metadata
                 fkList.Add(fk);
             }
 
-            nbRows = stream.ReadInt32();
+            nbRows = input.ReadInt32();
             for (var i = 0; i < nbRows; i++)
             {
                 schemaColList.Add(new ColumnDefinition
                 {
-                    Name = stream.ReadString(),
-                    DbType = (DbType)stream.ReadInt32(),                    
-                    IsPrimary = stream.ReadBoolean(),
-                    IsForeignKey = stream.ReadBoolean(),
-                    IsAutoIncrement = stream.ReadBoolean(),
-                    BuilderName = stream.ReadString(),
-                    SqlType = SqlType.Deserialize(stream)
+                    Name = input.ReadString(),
+                    DbType = (DbType)input.ReadInt32(),                    
+                    IsPrimary = input.ReadBoolean(),
+                    IsForeignKey = input.ReadBoolean(),
+                    IsAutoIncrement = input.ReadBoolean(),
+                    BuilderName = input.ReadString(),
+                    SqlType = SqlType.Deserialize(input)
             });
             }
 

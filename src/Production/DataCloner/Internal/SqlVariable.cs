@@ -1,5 +1,7 @@
-﻿using System;
+﻿using DataCloner.Framework;
+using System;
 using System.Diagnostics;
+using System.IO;
 
 namespace DataCloner.Internal
 {
@@ -39,6 +41,24 @@ namespace DataCloner.Internal
         public override int GetHashCode()
         {
             return Id.GetHashCode();
+        }
+
+        public void Serialize(BinaryWriter output)
+        {
+            var bf = SerializationHelper.DefaultFormatter;
+            output.Write(Id);
+            output.Write(QueryValue);
+            bf.Serialize(output.BaseStream, Value);
+        }
+
+        public static SqlVariable Deserialize(BinaryReader input)
+        {
+            var bf = SerializationHelper.DefaultFormatter;
+            return new SqlVariable(input.ReadInt32())
+            {
+                QueryValue = input.ReadBoolean(),
+                Value = bf.Deserialize(input.BaseStream)
+            };
         }
     }
 }

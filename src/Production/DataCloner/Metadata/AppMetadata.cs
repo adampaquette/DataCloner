@@ -1,5 +1,6 @@
 ﻿using DataCloner.Configuration;
 using DataCloner.Data;
+using DataCloner.Framework;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -354,7 +355,7 @@ namespace DataCloner.Metadata
                 {
                     foreach (var schema in database.Value)
                     {
-                        foreach(var table in schema.Value)
+                        foreach (var table in schema.Value)
                         {
                             var sbInsert = new StringBuilder("INSERT INTO ");
                             var sbSelect = new StringBuilder("SELECT ");
@@ -609,40 +610,48 @@ namespace DataCloner.Metadata
             }
         }
 
-        public void Serialize(Stream stream)
+        public void Serialize(Stream stream, FastAccessList<object> referenceTracking = null)
         {
-            Serialize(new BinaryWriter(stream));
+            Serialize(new BinaryWriter(stream, Encoding.UTF8, true), referenceTracking);
         }
 
-        public static AppMetadata Deserialize(Stream stream)
+        public static AppMetadata Deserialize(Stream stream, FastAccessList<object> referenceTracking = null)
         {
-            return Deserialize(new BinaryReader(stream));
+            return Deserialize(new BinaryReader(stream, Encoding.UTF8, true), referenceTracking);
         }
 
-        public void Serialize(BinaryWriter stream)
+        public void Serialize(BinaryWriter output, FastAccessList<object> referenceTracking = null)
         {
-            stream.Write(Count);
+            output.Write(Count);
             foreach (var server in this)
             {
-                stream.Write(server.Key);
-                stream.Write(server.Value.Count);
+                output.Write(server.Key);
+                output.Write(server.Value.Count);
                 foreach (var database in server.Value)
                 {
-                    stream.Write(database.Key);
-                    stream.Write(database.Value.Count);
+                    output.Write(database.Key);
+                    output.Write(database.Value.Count);
                     foreach (var schema in database.Value)
                     {
                         var nbRows = schema.Value.Count;
-                        stream.Write(schema.Key);
-                        stream.Write(nbRows);
+                        output.Write(schema.Key);
+                        output.Write(nbRows);
                         foreach (var table in schema.Value)
-                            table.Serialize(stream);
+                        {
+                            if (referenceTracking == null)
+                                table.Serialize(output);
+                            else
+                            {
+                                var id = referenceTracking.TryAdd(table);
+                                output.Write(id);
+                            }
+                        }
                     }
                 }
             }
         }
 
-        public static AppMetadata Deserialize(BinaryReader stream)
+        public static AppMetadata Deserialize(BinaryReader stream, FastAccessList<object> referenceTracking = null)
         {
             var cTables = new AppMetadata();
 
@@ -666,7 +675,18 @@ namespace DataCloner.Metadata
 
                         var nbTablesFrom = stream.ReadInt32();
                         for (var l = 0; l < nbTablesFrom; l++)
-                            schemaMetadata.Add(TableMetadata.Deserialize(stream));
+                        {
+                            TableMetadata table = null;
+
+                            if (referenceTracking == null)
+                                table = TableMetadata.Deserialize(stream);
+                            else
+                            {
+                                var id = stream.ReadInt32();
+                                table = (TableMetadata)referenceTracking[id];
+                            }
+                            schemaMetadata.Add(table);
+                        }
 
                         cTables[serverId][database].Add(schema, schemaMetadata);
                     }

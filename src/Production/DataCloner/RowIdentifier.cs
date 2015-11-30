@@ -1,5 +1,7 @@
-﻿using System;
+﻿using DataCloner.Framework;
+using System;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 
 namespace DataCloner
@@ -55,6 +57,25 @@ namespace DataCloner
         public override int GetHashCode()
         {
             return (ServerId + Database + Schema + Table).GetHashCode();
+        }
+
+        public new void Serialize(BinaryWriter output)
+        {
+            var bf = SerializationHelper.DefaultFormatter;
+            base.Serialize(output);
+            Columns.Serialize(output);            
+        }
+
+        public new static RowIdentifier Deserialize(BinaryReader input)
+        {
+            return new RowIdentifier
+            {
+                ServerId = input.ReadInt16(),
+                Database = input.ReadString(),
+                Schema = input.ReadString(),
+                Table = input.ReadString(),
+                Columns = ColumnsWithValue.Deserialize(input)
+            };
         }
     }
 }

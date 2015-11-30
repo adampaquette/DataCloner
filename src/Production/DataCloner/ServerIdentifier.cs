@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Text;
 
 namespace DataCloner
 {
@@ -11,30 +12,20 @@ namespace DataCloner
         public string Database { get; set; }
         public string Schema { get; set; }
 
-        public void Serialize(Stream stream)
+        public void Serialize(BinaryWriter output)
         {
-            Serialize(new BinaryWriter(stream));
+            output.Write(ServerId);
+            output.Write(Database);
+            output.Write(Schema);
         }
 
-        public static ServerIdentifier Deserialize(Stream stream)
-        {
-            return Deserialize(new BinaryReader(stream));
-        }
-
-        public void Serialize(BinaryWriter stream)
-        {
-            stream.Write(ServerId);
-            stream.Write(Database);
-            stream.Write(Schema);
-        }
-
-        public static ServerIdentifier Deserialize(BinaryReader stream)
+        public static ServerIdentifier Deserialize(BinaryReader input)
         {
             return new ServerIdentifier
             {
-                ServerId = stream.ReadInt16(),
-                Database = stream.ReadString(),
-                Schema = stream.ReadString()
+                ServerId = input.ReadInt16(),
+                Database = input.ReadString(),
+                Schema = input.ReadString()
             };
         }
 
