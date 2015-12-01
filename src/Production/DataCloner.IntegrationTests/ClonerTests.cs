@@ -21,14 +21,14 @@ namespace DataCloner.IntegrationTests
         [Theory(Skip = "Generation of the cache files"), MemberData("DbEngine")]
         public void Should_NotFail_When_Settuping(SqlConnection conn)
         {
-            var cloner = new Cloner(Utils.MakeDefaultSettings(conn));
+            var cloner = new ExecutionPlanBuilder(Utils.MakeDefaultSettings(conn));
         }
 
         [Theory, MemberData(DbEngine)]
         public void CloningDependencies_With_DefaultConfig(SqlConnection conn)
         {
             //Arrange
-            var cloner = new Cloner(Utils.MakeDefaultSettings(conn));
+            var cloner = new ExecutionPlanBuilder(Utils.MakeDefaultSettings(conn));
 
             var source = new RowIdentifier
             {
@@ -96,7 +96,7 @@ namespace DataCloner.IntegrationTests
             archive.Description = "testing";
             archive.Save("archiveTest.dca");
 
-            var archive2 = DataArchive.Load("archiveTest.dca");
+            var archive2 = Query.Load("archiveTest.dca");
         }
 
         [Theory, MemberData(DbEngine)]
@@ -113,7 +113,7 @@ namespace DataCloner.IntegrationTests
                     GlobalAccess = DerivativeTableAccess.Denied
                 }
             });
-            var cloner = new Cloner(config);
+            var cloner = new ExecutionPlanBuilder(config);
 
             var source = new RowIdentifier
             {
@@ -195,7 +195,7 @@ namespace DataCloner.IntegrationTests
                     }
                 }
             });
-            var cloner = new Cloner(config);
+            var cloner = new ExecutionPlanBuilder(config);
 
             var source = new RowIdentifier
             {
@@ -285,7 +285,7 @@ namespace DataCloner.IntegrationTests
                     }
                 }
             });
-            var cloner = new Cloner(config);
+            var cloner = new ExecutionPlanBuilder(config);
 
             var source = new RowIdentifier
             {
@@ -367,7 +367,7 @@ namespace DataCloner.IntegrationTests
                     }
                 }
             });
-            var cloner = new Cloner(config);
+            var cloner = new ExecutionPlanBuilder(config);
 
             var source = new RowIdentifier
             {
@@ -419,7 +419,7 @@ namespace DataCloner.IntegrationTests
                     IsStatic = true
                 }
             });
-            var cloner = new Cloner(config);
+            var cloner = new ExecutionPlanBuilder(config);
 
             var source = new RowIdentifier
             {
@@ -458,7 +458,7 @@ namespace DataCloner.IntegrationTests
 
             var da = cloner.ToDataArchive();
             da.Save("testingArchive.dca");
-            var loaded = DataArchive.Load("testingArchive.dca");
+            var loaded = Query.Load("testingArchive.dca");
 
 
 
@@ -480,7 +480,7 @@ namespace DataCloner.IntegrationTests
         {
             //Arrange
             var config = Utils.MakeDefaultSettings(conn);
-            var cloner = new Cloner(config);
+            var cloner = new ExecutionPlanBuilder(config);
 
             var source = new RowIdentifier
             {
@@ -608,7 +608,7 @@ namespace DataCloner.IntegrationTests
                     }
                 }
             });
-            var cloner = new Cloner(config);
+            var cloner = new ExecutionPlanBuilder(config);
 
             var source = new RowIdentifier
             {
@@ -680,7 +680,7 @@ namespace DataCloner.IntegrationTests
                     }
                 }
             });
-            var cloner = new Cloner(config);
+            var cloner = new ExecutionPlanBuilder(config);
 
             var source = new RowIdentifier
             {
@@ -737,7 +737,7 @@ namespace DataCloner.IntegrationTests
                     }
                 }
             });
-            var cloner = new Cloner(config);
+            var cloner = new ExecutionPlanBuilder(config);
 
             var source = new RowIdentifier
             {

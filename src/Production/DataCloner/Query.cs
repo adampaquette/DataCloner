@@ -5,12 +5,11 @@ using DataCloner.Metadata;
 using LZ4;
 using System.IO;
 using System.IO.Compression;
-using System.Linq;
 using System.Text;
 
-namespace DataCloner.Archive
+namespace DataCloner
 {
-    public class DataArchive
+    public class Query
     {
         private const int SizeOfInt = sizeof(int);
         private const int BufferSize = 32768;
@@ -22,7 +21,7 @@ namespace DataCloner.Archive
         public int FormatVersion { get { return 1; } }
         public string Description { get; set; }
 
-        internal DataArchive(MetadataContainer metadataCtn,
+        internal Query(MetadataContainer metadataCtn,
             ExecutionPlanByServer executionPlanByServer,
             ProjectContainer project)
         {
@@ -57,7 +56,7 @@ namespace DataCloner.Archive
             }
         }
 
-        public static DataArchive Load(string path)
+        public static Query Load(string path)
         {
             if (!File.Exists(path))
                 throw new FileNotFoundException(path);
@@ -81,11 +80,12 @@ namespace DataCloner.Archive
                 metadataCtn = MetadataContainer.Deserialize(bstream, referenceTracking);
             }
 
-            return new DataArchive(metadataCtn, executionPlanByServer, project)
+            return new Query(metadataCtn, executionPlanByServer, project)
             {
                 Description = description
             };
         }
+
         private void SerializeReferenceTracking(BinaryWriter output, FastAccessList<object> referenceTracking)
         {
             var bf = SerializationHelper.DefaultFormatter;
@@ -132,29 +132,7 @@ namespace DataCloner.Archive
 
     public static class DataArchiveExtension
     {
-        public static DataArchive ToDataArchive(this Cloner cloner)
-        {
-            var project = new ProjectContainer();
-
-            var destinationSrv = (from server in cloner.ExecutionPlanByServer
-                                  from insertStep in server.Value.InsertSteps
-                                  select insertStep.DestinationTable.ServerId).Distinct();
-
-            foreach (var srv in destinationSrv)
-            {
-                var cs = cloner.MetadataCtn.ConnectionStrings.First(c => c.Id == srv);
-                project.ConnectionStrings.Add(new Connection
-                {
-                    Id = cs.Id,
-                    ConnectionString = cs.ConnectionString,
-                    ProviderName = cs.ProviderName
-                });
-            }
-
-            return new DataArchive(cloner.MetadataCtn, cloner.ExecutionPlanByServer, project);
-        }
-
-        public static Cloner ToCloner(this DataArchive dataArchive)
+        public static ExecutionPlanBuilder ToCloner(this Query dataArchive)
         {
             //TODO: Créer une nouvelle classe permettant de charger un ExecutionPlanByServer et de l'exécuter avec une map.
             //Cloner va s'appeler ExecutionPlanBuilder.

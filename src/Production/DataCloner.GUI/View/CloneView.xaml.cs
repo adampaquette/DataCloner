@@ -24,7 +24,7 @@ namespace DataCloner.GUI.View
         private const string FileExtension = ".dca";
         private const string Filter = "Datacloner archive (.dca)|*.dca";
 
-        private Cloner _cloner;
+        private ExecutionPlanBuilder _cloner;
         private BackgroundWorker _cloneWorker;
         private ProjectContainer _proj = ProjectContainer.Load("northWind.dcproj");
         private IEnumerable<Map> _maps;
@@ -147,11 +147,11 @@ namespace DataCloner.GUI.View
                     BehaviourId = configId
                 };
 
-                _cloner = new Cloner(selectedSettings);
+                _cloner = new ExecutionPlanBuilder(selectedSettings);
                 _cloner.StatusChanged += ClonerWorkerStatusChanged_event;
                 _cloner.QueryCommiting += ClonerWorkerQueryCommiting_event;
 
-                Servers = _cloner.MetadataCtn.Metadatas.Keys.ToArray().ToList();
+                Servers = _cloner.MetadataContainer.Metadatas.Keys.ToArray().ToList();
                 cbServer.ItemsSource = Servers;
 
                 //Tente de charger la préférence utilisateur
@@ -180,7 +180,7 @@ namespace DataCloner.GUI.View
                 Properties.Settings.Default.ServerSource = _selectedServer;
                 Properties.Settings.Default.Save();
 
-                var databases = _cloner.MetadataCtn.Metadatas[_selectedServer].Keys.ToArray().ToList();
+                var databases = _cloner.MetadataContainer.Metadatas[_selectedServer].Keys.ToArray().ToList();
                 cbDatabase.ItemsSource = databases;
 
                 //Tente de charger la préférence utilisateur
@@ -207,7 +207,7 @@ namespace DataCloner.GUI.View
                 Properties.Settings.Default.DatabaseSource = _selectedDatabase;
                 Properties.Settings.Default.Save();
 
-                var schemas = _cloner.MetadataCtn.Metadatas[_selectedServer][_selectedDatabase].Keys.ToArray().ToList();
+                var schemas = _cloner.MetadataContainer.Metadatas[_selectedServer][_selectedDatabase].Keys.ToArray().ToList();
                 cbSchema.ItemsSource = schemas;
 
                 //Tente de charger la préférence utilisateur
@@ -234,7 +234,7 @@ namespace DataCloner.GUI.View
                 Properties.Settings.Default.SchemaSource = _selectedSchema;
                 Properties.Settings.Default.Save();
 
-                var tables = _cloner.MetadataCtn.Metadatas[_selectedServer][_selectedDatabase][_selectedSchema].Select(t => t.Name).ToList();
+                var tables = _cloner.MetadataContainer.Metadatas[_selectedServer][_selectedDatabase][_selectedSchema].Select(t => t.Name).ToList();
                 cbTable.ItemsSource = tables;
 
                 //Tente de charger la préférence utilisateur
@@ -262,7 +262,7 @@ namespace DataCloner.GUI.View
                 Properties.Settings.Default.Save();
 
                 var table =
-                    _cloner.MetadataCtn.Metadatas[_selectedServer][_selectedDatabase][_selectedSchema].FirstOrDefault(
+                    _cloner.MetadataContainer.Metadatas[_selectedServer][_selectedDatabase][_selectedSchema].FirstOrDefault(
                         t => t.Name == _selectedTable);
                 if (table == null)
                     return;

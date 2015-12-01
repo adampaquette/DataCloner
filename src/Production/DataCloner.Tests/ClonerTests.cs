@@ -11,7 +11,7 @@ namespace DataCloner.Tests
 		public class BasicClonerTests
 		{
 			private readonly MetadataContainer _cache;
-			private readonly Cloner _cloner;
+			private readonly ExecutionPlanBuilder _cloner;
 			private readonly IQueryHelper _queryHelper;
 			private readonly IQueryDispatcher _queryDispatcher;
 
@@ -21,7 +21,7 @@ namespace DataCloner.Tests
 				_queryHelper = FakeBasicDatabase.CreateData();
 				_queryDispatcher = FakeBasicDatabase.CreateServer(_queryHelper);
 
-                _cloner = new Cloner(null, _queryDispatcher, 
+                _cloner = new ExecutionPlanBuilder(null, _queryDispatcher, 
                     (IQueryDispatcher d, Settings s, ref MetadataContainer m) => m = _cache, null);
 			}
 

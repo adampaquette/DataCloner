@@ -87,7 +87,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Archive\DataArchive.cs" />
+    <Compile Include="Query.cs" />
+    <Compile Include="Cloner.cs" />
     <Compile Include="Framework\FastAccessList.cs" />
     <Compile Include="Configuration\ConfigurationException.cs" />
     <Compile Include="Configuration\VariableParser.cs" />
@@ -142,7 +143,7 @@
     <Compile Include="Data\SqlConnection.cs" />
     <Compile Include="RowIdentifier.cs" />
     <Compile Include="TableIdentifier.cs" />
-    <Compile Include="Cloner.cs" />
+    <Compile Include="ExecutionPlanBuilder.cs" />
     <Compile Include="Framework\Extensions.cs" />
     <Compile Include="Data\IQueryHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -196,7 +197,9 @@
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="TODO.txt" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
