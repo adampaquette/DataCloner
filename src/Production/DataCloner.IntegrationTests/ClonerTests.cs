@@ -1,5 +1,4 @@
-﻿using DataCloner.Archive;
-using DataCloner.Configuration;
+﻿using DataCloner.Configuration;
 using DataCloner.Data;
 using DataCloner.Internal;
 using System.Collections.Generic;
@@ -21,15 +20,14 @@ namespace DataCloner.IntegrationTests
         [Theory(Skip = "Generation of the cache files"), MemberData("DbEngine")]
         public void Should_NotFail_When_Settuping(SqlConnection conn)
         {
-            var cloner = new ExecutionPlanBuilder(Utils.MakeDefaultSettings(conn));
+            var epb = new ExecutionPlanBuilder(Utils.MakeDefaultSettings(conn));
         }
 
         [Theory, MemberData(DbEngine)]
         public void CloningDependencies_With_DefaultConfig(SqlConnection conn)
         {
             //Arrange
-            var cloner = new ExecutionPlanBuilder(Utils.MakeDefaultSettings(conn));
-
+            var executionPlanBuilder = new ExecutionPlanBuilder(Utils.MakeDefaultSettings(conn));
             var source = new RowIdentifier
             {
                 ServerId = conn.Id,
@@ -43,15 +41,16 @@ namespace DataCloner.IntegrationTests
             };
 
             var clonedData = new List<RowIdentifier>();
-            cloner.QueryCommiting += (s, e) => e.Cancel = true;
-            cloner.StatusChanged += (s, e) =>
+            executionPlanBuilder.StatusChanged += (s, e) =>
             {
                 if (e.Status == Status.Cloning)
                     clonedData.Add(e.SourceRow);
             };
 
             //Act
-            cloner.Append(source, false).Execute();
+            var query = executionPlanBuilder.Append(source, false).Compile();
+            query.Execute();
+            query.Commiting += (s, e) => e.Cancel = true;
 
             //Assert
             var expectedData = new List<RowIdentifier>
@@ -92,7 +91,7 @@ namespace DataCloner.IntegrationTests
 
             Assert.True(Enumerable.SequenceEqual(clonedData, expectedData));
 
-            var archive = cloner.ToDataArchive();
+            var archive = executionPlanBuilder.Compile();
             archive.Description = "testing";
             archive.Save("archiveTest.dca");
 
@@ -113,8 +112,8 @@ namespace DataCloner.IntegrationTests
                     GlobalAccess = DerivativeTableAccess.Denied
                 }
             });
-            var cloner = new ExecutionPlanBuilder(config);
 
+            var executionPlanBuilder = new ExecutionPlanBuilder(config);
             var source = new RowIdentifier
             {
                 ServerId = conn.Id,
@@ -128,15 +127,16 @@ namespace DataCloner.IntegrationTests
             };
 
             var clonedData = new List<RowIdentifier>();
-            cloner.QueryCommiting += (s, e) => e.Cancel = true;
-            cloner.StatusChanged += (s, e) =>
+            executionPlanBuilder.StatusChanged += (s, e) =>
             {
                 if (e.Status == Status.Cloning)
                     clonedData.Add(e.SourceRow);
             };
 
             //Act
-            cloner.Append(source, true).Execute();
+            var query = executionPlanBuilder.Append(source, true).Compile();
+            query.Execute();
+            query.Commiting += (s, e) => e.Cancel = true;
 
             //Assert
             var expectedData = new List<RowIdentifier>
@@ -195,7 +195,7 @@ namespace DataCloner.IntegrationTests
                     }
                 }
             });
-            var cloner = new ExecutionPlanBuilder(config);
+            var executionPlanBuilder = new ExecutionPlanBuilder(config);
 
             var source = new RowIdentifier
             {
@@ -207,15 +207,16 @@ namespace DataCloner.IntegrationTests
             };
 
             var clonedData = new List<RowIdentifier>();
-            cloner.QueryCommiting += (s, e) => e.Cancel = true;
-            cloner.StatusChanged += (s, e) =>
+            executionPlanBuilder.StatusChanged += (s, e) =>
             {
                 if (e.Status == Status.Cloning)
                     clonedData.Add(e.SourceRow);
             };
 
             //Act
-            cloner.Append(source, false).Execute();
+            var query = executionPlanBuilder.Append(source, false).Compile();
+            query.Execute();
+            query.Commiting += (s, e) => e.Cancel = true;
 
             //Assert
             var expectedData = new List<RowIdentifier>
@@ -285,7 +286,7 @@ namespace DataCloner.IntegrationTests
                     }
                 }
             });
-            var cloner = new ExecutionPlanBuilder(config);
+            var executionPlanBuilder = new ExecutionPlanBuilder(config);
 
             var source = new RowIdentifier
             {
@@ -297,15 +298,16 @@ namespace DataCloner.IntegrationTests
             };
 
             var clonedData = new List<RowIdentifier>();
-            cloner.QueryCommiting += (s, e) => e.Cancel = true;
-            cloner.StatusChanged += (s, e) =>
+            executionPlanBuilder.StatusChanged += (s, e) =>
             {
                 if (e.Status == Status.Cloning)
                     clonedData.Add(e.SourceRow);
             };
 
             //Act
-            cloner.Append(source, false).Execute();
+            var query = executionPlanBuilder.Append(source, false).Compile();
+            query.Execute();
+            query.Commiting += (s, e) => e.Cancel = true;
 
             //Assert
             var expectedData = new List<RowIdentifier>
@@ -367,8 +369,8 @@ namespace DataCloner.IntegrationTests
                     }
                 }
             });
-            var cloner = new ExecutionPlanBuilder(config);
 
+            var executionPlanBuilder = new ExecutionPlanBuilder(config);
             var source = new RowIdentifier
             {
                 ServerId = conn.Id,
@@ -379,15 +381,16 @@ namespace DataCloner.IntegrationTests
             };
 
             var clonedData = new List<RowIdentifier>();
-            cloner.QueryCommiting += (s, e) => e.Cancel = true;
-            cloner.StatusChanged += (s, e) =>
+            executionPlanBuilder.StatusChanged += (s, e) =>
             {
                 if (e.Status == Status.Cloning)
                     clonedData.Add(e.SourceRow);
             };
 
             //Act
-            cloner.Append(source, true).Execute();
+            var query = executionPlanBuilder.Append(source, true).Compile();
+            query.Execute();
+            query.Commiting += (s, e) => e.Cancel = true;
 
             //Assert
             var expectedData = new List<RowIdentifier>
@@ -419,7 +422,7 @@ namespace DataCloner.IntegrationTests
                     IsStatic = true
                 }
             });
-            var cloner = new ExecutionPlanBuilder(config);
+            var executionPlanBuilder = new ExecutionPlanBuilder(config);
 
             var source = new RowIdentifier
             {
@@ -431,15 +434,16 @@ namespace DataCloner.IntegrationTests
             };
 
             var clonedData = new List<RowIdentifier>();
-            cloner.QueryCommiting += (s, e) => e.Cancel = true;
-            cloner.StatusChanged += (s, e) =>
+            executionPlanBuilder.StatusChanged += (s, e) =>
             {
                 if (e.Status == Status.Cloning)
                     clonedData.Add(e.SourceRow);
             };
 
             //Act
-            cloner.Append(source, false).Execute();
+            var query = executionPlanBuilder.Append(source, false).Compile();
+            query.Commiting += (s, e) => e.Cancel = true;
+            query.Execute();
 
             //Assert
             var expectedData = new List<RowIdentifier>
@@ -456,7 +460,7 @@ namespace DataCloner.IntegrationTests
 
             Assert.True(Enumerable.SequenceEqual(clonedData, expectedData));
 
-            var da = cloner.ToDataArchive();
+            var da = executionPlanBuilder.Compile();
             da.Save("testingArchive.dca");
             var loaded = Query.Load("testingArchive.dca");
 
@@ -480,7 +484,7 @@ namespace DataCloner.IntegrationTests
         {
             //Arrange
             var config = Utils.MakeDefaultSettings(conn);
-            var cloner = new ExecutionPlanBuilder(config);
+            var executionPlanBuilder = new ExecutionPlanBuilder(config);
 
             var source = new RowIdentifier
             {
@@ -496,15 +500,16 @@ namespace DataCloner.IntegrationTests
             };
 
             var clonedData = new List<RowIdentifier>();
-            cloner.QueryCommiting += (s, e) => e.Cancel = true;
-            cloner.StatusChanged += (s, e) =>
+            executionPlanBuilder.StatusChanged += (s, e) =>
             {
                 if (e.Status == Status.Cloning)
                     clonedData.Add(e.SourceRow);
             };
 
             //Act
-            cloner.Append(source, false).Execute();
+            var query = executionPlanBuilder.Append(source, false).Compile();
+            query.Execute();
+            query.Commiting += (s, e) => e.Cancel = true;
 
             //Assert
             var expectedData = new List<RowIdentifier>
@@ -608,8 +613,8 @@ namespace DataCloner.IntegrationTests
                     }
                 }
             });
-            var cloner = new ExecutionPlanBuilder(config);
 
+            var executionPlanBuilder = new ExecutionPlanBuilder(config);
             var source = new RowIdentifier
             {
                 ServerId = conn.Id,
@@ -620,15 +625,16 @@ namespace DataCloner.IntegrationTests
             };
 
             var clonedData = new List<RowIdentifier>();
-            cloner.QueryCommiting += (s, e) => e.Cancel = true;
-            cloner.StatusChanged += (s, e) =>
+            executionPlanBuilder.StatusChanged += (s, e) =>
             {
                 if (e.Status == Status.Cloning)
                     clonedData.Add(e.SourceRow);
             };
 
             //Act
-            cloner.Append(source, false).Execute();
+            var query = executionPlanBuilder.Append(source, false).Compile();
+            query.Commiting += (s, e) => e.Cancel = true;
+            query.Execute();
 
             //Assert
             var expectedData = new List<RowIdentifier>
@@ -680,7 +686,7 @@ namespace DataCloner.IntegrationTests
                     }
                 }
             });
-            var cloner = new ExecutionPlanBuilder(config);
+            var executionPlanBuilder = new ExecutionPlanBuilder(config);
 
             var source = new RowIdentifier
             {
@@ -692,15 +698,17 @@ namespace DataCloner.IntegrationTests
             };
 
             var clonedData = new List<RowIdentifier>();
-            cloner.QueryCommiting += (s, e) => e.Cancel = true;
-            cloner.StatusChanged += (s, e) =>
+
+            executionPlanBuilder.StatusChanged += (s, e) =>
             {
                 if (e.Status == Status.Cloning)
                     clonedData.Add(e.SourceRow);
             };
 
             //Act
-            cloner.Append(source, false).Execute();
+            var query = executionPlanBuilder.Append(source, false).Compile();
+            query.Commiting += (s, e) => e.Cancel = true;
+            query.Execute();
 
             //Assert
             var expectedData = new List<RowIdentifier>
@@ -733,11 +741,11 @@ namespace DataCloner.IntegrationTests
                     {
                         new DataBuilder{ Name = "firstname",  BuilderName = "StringDataBuilder" },
                         new DataBuilder{ Name = "lastname",  BuilderName = "StringDataBuilder" },
-                        new DataBuilder{ Name = "reportsto",  BuilderName = "AutoIncrementDataBuilder" }                        
+                        new DataBuilder{ Name = "reportsto",  BuilderName = "AutoIncrementDataBuilder" }
                     }
                 }
             });
-            var cloner = new ExecutionPlanBuilder(config);
+            var executionPlanBuilder = new ExecutionPlanBuilder(config);
 
             var source = new RowIdentifier
             {
@@ -748,15 +756,18 @@ namespace DataCloner.IntegrationTests
                 Columns = new ColumnsWithValue { { "employeeid", 1 } }
             };
 
+
+
+            //Act
+            var query = executionPlanBuilder.Append(source, false).Compile();
+
             IDbCommand command = null;
-            cloner.QueryCommiting += (s, e) =>
+            query.Commiting += (s, e) =>
             {
                 e.Cancel = true;
                 command = e.Command;
             };
-
-            //Act
-            cloner.Append(source, false).Execute();
+            query.Execute();
 
             //Assert
             var paramFirstName = command?.Parameters["@firstname0"] as IDataParameter;

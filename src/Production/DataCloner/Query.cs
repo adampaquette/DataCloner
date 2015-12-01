@@ -1,33 +1,70 @@
-﻿using DataCloner.Configuration;
+﻿using DataCloner.Data;
 using DataCloner.Framework;
 using DataCloner.Internal;
 using DataCloner.Metadata;
 using LZ4;
+using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.IO.Compression;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace DataCloner
 {
     public class Query
     {
-        private const int SizeOfInt = sizeof(int);
-        private const int BufferSize = 32768;
+        public const int CURRENT_FORMAT_VERSION = 1;
 
-        private MetadataContainer _metadata;
+        private IQueryDispatcher _dispatcher;
+        private AppMetadata _metadata;
         private ExecutionPlanByServer _executionPlanByServer;
-        private ProjectContainer _project;
+        private ImmutableHashSet<SqlConnection> _connections;
 
-        public int FormatVersion { get { return 1; } }
+        public int FormatVersion { get; }
         public string Description { get; set; }
+        public ImmutableHashSet<SqlConnection> Connections { get { return _connections; } }
+        public bool EnforceIntegrity { get; set; }
 
-        internal Query(MetadataContainer metadataCtn,
+        public event QueryCommitingEventHandler Commiting;
+
+        internal Query(AppMetadata metadata,
             ExecutionPlanByServer executionPlanByServer,
-            ProjectContainer project)
+            IEnumerable<SqlConnection> connections, 
+            int formatVersion)
         {
-            _metadata = metadataCtn;
+            _metadata = metadata;
             _executionPlanByServer = executionPlanByServer;
-            _project = project;
+            _connections = connections.ToImmutableHashSet();
+            _dispatcher = new QueryDispatcher();
+            _dispatcher.InitProviders(metadata, connections);
+            FormatVersion = formatVersion;
+        }
+
+        public void ChangeDestination()
+        {
+            /*TODO : 
+            modifier connections
+            adapter execution plan
+            adapter schéma
+            */
+        }
+
+        public ResultSet Execute()
+        {
+            //_dispatcher[riSource].EnforceIntegrityCheck(EnforceIntegrity);
+
+            ResetExecutionPlan(_executionPlanByServer);
+            Parallel.ForEach(_executionPlanByServer, a =>
+            {
+                var qh = _dispatcher.GetQueryHelper(a.Key);
+                qh.QueryCommmiting += Commiting;
+                qh.Execute(a.Value);
+                qh.QueryCommmiting -= Commiting;
+            });
+
+            return new ResultSet(_executionPlanByServer);
         }
 
         public void Save(string path)
@@ -51,7 +88,7 @@ namespace DataCloner
                 bstream.Write(FormatVersion);
                 bstream.Write(Description ?? "");
                 SerializeReferenceTracking(bstream, referenceTracking);
-                bstream.Write(_project.SerializeXml());
+                SerializeConnections(bstream, _connections);
                 refStream.WriteTo(lzStream);
             }
         }
@@ -63,8 +100,8 @@ namespace DataCloner
 
             int formatVersion;
             string description;
-            ProjectContainer project;
-            MetadataContainer metadataCtn;
+            ImmutableHashSet<SqlConnection> connections;
+            AppMetadata metadata;
             ExecutionPlanByServer executionPlanByServer;
             FastAccessList<object> referenceTracking;
 
@@ -75,18 +112,18 @@ namespace DataCloner
                 formatVersion = bstream.ReadInt32();
                 description = bstream.ReadString();
                 referenceTracking = DeserializeReferenceTracking(bstream);
-                project = bstream.ReadString().DeserializeXml<ProjectContainer>();
+                connections = DeserializeConnections(bstream);
                 executionPlanByServer = ExecutionPlanByServer.Deserialize(bstream, referenceTracking);
-                metadataCtn = MetadataContainer.Deserialize(bstream, referenceTracking);
+                metadata = AppMetadata.Deserialize(bstream, referenceTracking);
             }
 
-            return new Query(metadataCtn, executionPlanByServer, project)
+            return new Query(metadata, executionPlanByServer, connections, formatVersion)
             {
                 Description = description
             };
         }
 
-        private void SerializeReferenceTracking(BinaryWriter output, FastAccessList<object> referenceTracking)
+        private static void SerializeReferenceTracking(BinaryWriter output, FastAccessList<object> referenceTracking)
         {
             var bf = SerializationHelper.DefaultFormatter;
 
@@ -127,6 +164,33 @@ namespace DataCloner
             }
 
             return referenceTracking;
+        }
+
+        private static void SerializeConnections(BinaryWriter output, ImmutableHashSet<SqlConnection> conns)
+        {
+            output.Write(conns.Count);
+            foreach (var con in conns)
+                con.Serialize(output);
+        }
+
+        private static ImmutableHashSet<SqlConnection> DeserializeConnections(BinaryReader input)
+        {
+            var lstConns = new List<SqlConnection>();
+            var nbCons = input.ReadInt32();
+            for (int i = 0; i < nbCons; i++)
+                lstConns.Add(SqlConnection.Deserialize(input));
+            return lstConns.ToImmutableHashSet();
+        }
+
+        /// <summary>
+        /// We reset the variables for the API to regenerate them.
+        /// </summary>
+        /// <param name="planByServer"></param>
+        private void ResetExecutionPlan(Dictionary<Int16, ExecutionPlan> planByServer)
+        {
+            foreach (var server in planByServer)
+                foreach (var sqlVar in server.Value.Variables)
+                    sqlVar.Value = null;
         }
     } 
 

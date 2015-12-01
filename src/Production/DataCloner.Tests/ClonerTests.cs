@@ -11,7 +11,7 @@ namespace DataCloner.Tests
 		public class BasicClonerTests
 		{
 			private readonly MetadataContainer _cache;
-			private readonly ExecutionPlanBuilder _cloner;
+			private readonly ExecutionPlanBuilder _executionPlanBuilder;
 			private readonly IQueryHelper _queryHelper;
 			private readonly IQueryDispatcher _queryDispatcher;
 
@@ -21,7 +21,7 @@ namespace DataCloner.Tests
 				_queryHelper = FakeBasicDatabase.CreateData();
 				_queryDispatcher = FakeBasicDatabase.CreateServer(_queryHelper);
 
-                _cloner = new ExecutionPlanBuilder(null, _queryDispatcher, 
+                _executionPlanBuilder = new ExecutionPlanBuilder(null, _queryDispatcher, 
                     (IQueryDispatcher d, Settings s, ref MetadataContainer m) => m = _cache, null);
 			}
 
@@ -73,7 +73,7 @@ namespace DataCloner.Tests
 			public void Cloner_Clone_Param_ReturnNoRow(int id)
 			{
 				var row = Make.Row("color",  "id", id);
-				var clones = _cloner.Append(row, true).Execute();
+				var clones = _executionPlanBuilder.Append(row, true).Compile().Execute();
 
 				Assert.Equal(0, clones.Results.Count);
 			}
@@ -81,14 +81,14 @@ namespace DataCloner.Tests
 			[Fact]
 			public void Cloner_Clone_Param_ShouldThrow()
 			{
-				Assert.Throws(typeof(ArgumentNullException), () => _cloner.Append(null, true));
+				Assert.Throws(typeof(ArgumentNullException), () => _executionPlanBuilder.Append(null, true));
 			}
 
 			[Fact]
 			public void Cloner_Clone_OneRowOneTable()
 			{
 				var row = Make.Row("color", "id", 1 );
-				var clones = _cloner.Append(row, true).Execute();
+				var clones = _executionPlanBuilder.Append(row, true).Compile().Execute();
 
 				Assert.Equal(1, clones.Results.Count);
 				Assert.Equal("color", clones.Results[0].Table);
@@ -99,7 +99,7 @@ namespace DataCloner.Tests
 			public void Cloner_Clone_RecursiveDontCrash()
 			{
 				var row = Make.Row("person", "id", 1);
-				var clones = _cloner.Append(row, true).Execute();
+				var clones = _executionPlanBuilder.Append(row, true).Compile().Execute();
 
 				Assert.Equal(1, clones.Results.Count);
 				Assert.Equal("person", clones.Results[0].Table);

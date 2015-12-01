@@ -1,6 +1,4 @@
-﻿using DataCloner.Internal;
-
-namespace DataCloner.Data
+﻿namespace DataCloner.Data
 {
     internal static class QueryDispatcherExtensions
     {

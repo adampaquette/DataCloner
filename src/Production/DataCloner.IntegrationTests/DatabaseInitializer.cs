@@ -20,9 +20,8 @@ namespace DataCloner.IntegrationTests
 
         private static SqlConnection CreateSqlServer()
         {
-            var conn = new SqlConnection
+            var conn = new SqlConnection(1)
             {
-                Id = 1,
                 ProviderName = "System.Data.SqlClient",
                 ConnectionString = @"Data Source=(localdb)\MSSQLLocalDB;Integrated Security=True;"
             };

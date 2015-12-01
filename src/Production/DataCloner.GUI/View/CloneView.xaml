@@ -7,12 +7,17 @@
              xmlns:sn="http://scintillanet.codeplex.com"
              xmlns:m="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
              mc:Ignorable="d" 
-             Loaded="Window_Loaded" d:DesignWidth="382" d:DesignHeight="495">
-    <Grid Height="Auto" VerticalAlignment="Stretch" Margin="0">
-        <TabControl Margin="0,0,0,49" Height="Auto" VerticalAlignment="Stretch">
+             Loaded="Window_Loaded" d:DesignWidth="382" d:DesignHeight="550">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <TabControl Height="Auto">
             <TabItem Header="Paramètres">
-                <Grid Height="408" VerticalAlignment="Top">
-                    <GroupBox x:Name="groupBox1" Header="Environnements" Margin="10,10,0,0" Height="264" VerticalAlignment="Top" HorizontalAlignment="Left" Width="187">
+                <Grid>
+                    <GroupBox x:Name="groupBox1" Header="Environnements" Margin="10,10,0,0" Height="219" VerticalAlignment="Top" HorizontalAlignment="Left" Width="187">
                         <Grid>
                             <TextBlock HorizontalAlignment="Left" Text="Type d'extraction : " VerticalAlignment="Top" Margin="10,15,0,0" RenderTransformOrigin="0.57,0.625"/>
                             <ComboBox x:Name="cbDatabaseConfig" 
@@ -58,13 +63,15 @@
 													VerticalAlignment="Top" 
 													SelectionChanged="cbColonne_SelectionChanged"/>
                             <Label Content="Valeur : " Margin="10,279,0,0" Height="29" VerticalAlignment="Top" HorizontalAlignment="Left" Width="99" RenderTransformOrigin="-0.485,4.172"/>
-                            <TextBox x:Name="txtValeur" Margin="10,306,0,0" Height="26" VerticalAlignment="Top" Width="137"/>
+                            <TextBox x:Name="txtValeur" Margin="10,308,10,0" Height="26" VerticalAlignment="Top" Width="137"/>
                         </Grid>
                     </GroupBox>
-                    <GroupBox Header="Paramètres" Margin="10,281,0,0" Height="113" VerticalAlignment="Top" HorizontalAlignment="Left" Width="187">
+                    <GroupBox Header="Paramètres" Margin="10,243,0,0" Height="151" VerticalAlignment="Top" HorizontalAlignment="Left" Width="187">
                         <Grid>
-                            <CheckBox x:Name="chkSimulation" Content="Simulation" Margin="10,10,0,0" HorizontalAlignment="Left" Width="100" Height="27" VerticalAlignment="Top" Checked="chkSimulation_Checked"/>
-                            <CheckBox x:Name="chkOptimisation" Content="Optimisation" Margin="10,34,0,0" HorizontalAlignment="Left" Width="100" Height="27" VerticalAlignment="Top" Checked="chkOptimisation_Checked"/>
+                            <CheckBox x:Name="chkSimulation" Content="Simulation" Margin="10,0,0,85" HorizontalAlignment="Left" Width="100" Height="27" Checked="chkSimulation_Checked"/>
+                            <CheckBox x:Name="chkOptimisation" Content="Optimisation" Margin="10,29,0,55" HorizontalAlignment="Left" Width="100"  Checked="chkOptimisation_Checked"/>
+                            <TextBlock Text="Copies" Margin="10,61,122,32" RenderTransformOrigin="1.047,0.593"/>
+                            <TextBox x:Name="nbCopies" Text="1" Margin="58,57,74,29" />
                         </Grid>
                     </GroupBox>
                 </Grid>
@@ -74,6 +81,7 @@
                     <TextBlock Text="Statut : " Margin="10,10,10,369" />
                     <RichTextBox  x:Name="rtbStatus" AcceptsReturn="True" IsReadOnly="True" VerticalScrollBarVisibility="Auto"
                                   Margin="10,35,10,0"
+                                  Height="Auto"
                                   BorderThickness="1"
                                   BorderBrush="{StaticResource AccentColorBrush}"/>
                 </Grid>
@@ -96,7 +104,30 @@
                 </Grid>
             </TabItem>
         </TabControl>
-        <Button x:Name="BtnExec" Content="Exécuter" Margin="10,0,10,10" 
-				Click="btnExec_Click" Height="33" VerticalAlignment="Bottom" />
+        <Grid Grid.Row="1" Height="Auto">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="1*" />
+            </Grid.ColumnDefinitions>
+
+            <Button x:Name="BtnAppend" Content="Append" Margin="10" 
+				Click="btnAppend_Click" Height="33" VerticalAlignment="Bottom" />
+            <Button x:Name="BtnReset" Content="Reset" Margin="10" 
+				Click="BtnReset_Click" Height="33" VerticalAlignment="Bottom" Grid.Column="2" />
+            <Button x:Name="BtnExec" Content="Exécuter" Margin="10" 
+            	Click="BtnExec_Click" Height="33" VerticalAlignment="Bottom" Grid.Column="1" />
+        </Grid>
+        <Grid Grid.Row="2" Height="Auto">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="1*" />
+            </Grid.ColumnDefinitions>
+
+            <Button x:Name="BtnLoad" Content="Load" Margin="10" 
+				Click="BtnLoad_Click" Height="33" VerticalAlignment="Bottom" />
+            <Button x:Name="BtnSave" Content="Save" Margin="10" 
+				Click="BtnSave_Click" Height="33" VerticalAlignment="Bottom" Grid.Column="2" />
+        </Grid>
     </Grid>
 </UserControl>

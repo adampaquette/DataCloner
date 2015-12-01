@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -97,7 +96,7 @@ namespace DataCloner.Metadata
                 //If container on disk is good, we use it
                 container = TryLoadContainer(containerFileName, configHash);
                 if (container != null)
-                    dispatcher.InitProviders(container);
+                    dispatcher.InitProviders(container.Metadatas, container.ConnectionStrings);
                 return;
             }
 
@@ -138,7 +137,7 @@ namespace DataCloner.Metadata
             //If container on disk is good, we use it
             container = TryLoadContainer(containerFileName, configHash);
             if (container != null)
-                dispatcher.InitProviders(container);
+                dispatcher.InitProviders(container.Metadatas, container.ConnectionStrings);
             //We rebuild the container
             else
                 container = BuildMetadata(dispatcher, containerFileName, proj.ConnectionStrings, configHash);
@@ -231,7 +230,14 @@ namespace DataCloner.Metadata
 
             //Copy connection strings
             foreach (var cs in proj.ConnectionStrings)
-                container.ConnectionStrings.Add(new SqlConnection(cs.Id, cs.ProviderName, cs.ConnectionString));
+            {
+                container.ConnectionStrings.Add(
+                    new SqlConnection(cs.Id)
+                    {
+                        ProviderName = cs.ProviderName,
+                        ConnectionString = cs.ConnectionString
+                    });
+            }
 
             if (container.ConnectionStrings.Count() == 0)
                 throw new Exception("No connectionStrings!");
@@ -267,7 +273,14 @@ namespace DataCloner.Metadata
 
             //Copy connection strings
             foreach (var cs in connections)
-                container.ConnectionStrings.Add(new SqlConnection(cs.Id, cs.ProviderName, cs.ConnectionString));
+            {
+                container.ConnectionStrings.Add(
+                    new SqlConnection(cs.Id)
+                    {
+                        ProviderName = cs.ProviderName,
+                        ConnectionString = cs.ConnectionString
+                    });
+            }
 
             FetchMetadata(dispatcher, ref container);
             container.Metadatas.FinalizeSchema();
@@ -279,7 +292,7 @@ namespace DataCloner.Metadata
 
         private static void FetchMetadata(IQueryDispatcher dispatcher, ref MetadataContainer container)
         {
-            dispatcher.InitProviders(container);
+            dispatcher.InitProviders(container.Metadatas, container.ConnectionStrings);
 
             foreach (var cs in container.ConnectionStrings)
             {

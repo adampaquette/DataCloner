@@ -3,6 +3,7 @@ using DataCloner.Internal;
 using DataCloner.Metadata;
 using Xunit;
 using System.IO;
+using System.Collections.Immutable;
 
 namespace DataCloner.Tests
 {

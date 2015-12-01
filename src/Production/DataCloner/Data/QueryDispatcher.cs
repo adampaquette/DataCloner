@@ -1,5 +1,4 @@
-﻿using DataCloner.Internal;
-using DataCloner.Metadata;
+﻿using DataCloner.Metadata;
 using System;
 using System.Collections.Generic;
 
@@ -29,12 +28,12 @@ namespace DataCloner.Data
             return _queryHelpers[server];
         }
 
-        public void InitProviders(MetadataContainer container)
+        public void InitProviders(AppMetadata appMetadata, IEnumerable<SqlConnection> connections)
         {
             _queryHelpers = new Dictionary<short, IQueryHelper>();
 
-            foreach (var conn in container.ConnectionStrings)
-                _queryHelpers.Add(conn.Id, QueryHelperFactory.GetQueryHelper(container.Metadatas, conn.ProviderName, conn.ConnectionString));
+            foreach (var conn in connections)
+                _queryHelpers.Add(conn.Id, QueryHelperFactory.GetQueryHelper(appMetadata, conn.ProviderName, conn.ConnectionString));
         }
     }
 }

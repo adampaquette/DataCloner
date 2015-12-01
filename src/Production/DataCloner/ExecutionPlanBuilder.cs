@@ -1,12 +1,11 @@
-﻿using DataCloner.Configuration;
-using DataCloner.Data;
+﻿using DataCloner.Data;
 using DataCloner.Framework;
 using DataCloner.Internal;
 using DataCloner.Metadata;
+using DataCloner.PlugIn;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace DataCloner
 {
@@ -14,28 +13,24 @@ namespace DataCloner
     {
         private readonly IQueryDispatcher _dispatcher;
         private readonly MetadataContainer.Initialiser _metadataInitialiser;
+        private readonly ExecutionPlanByServer _executionPlanByServer;
         private readonly KeyRelationship _keyRelationships;
         private readonly List<CircularKeyJob> _circularKeyJobs;
         private readonly Settings _settings;
         private readonly MetadataContainer _metadataCtn;
-        private readonly List<RowIdentifier> _steps;        
+        private readonly List<RowIdentifier> _steps;
         private int _nextVariableId;
         private int _nextStepId;
 
-        internal ExecutionPlanByServer ExecutionPlanByServer { get; private set; }
-       
         public MetadataContainer MetadataContainer { get { return _metadataCtn; } }
-        public bool EnforceIntegrity { get; set; }
-        public bool OptimiseExecutionPlan { get; set; }
 
         public event StatusChangedEventHandler StatusChanged;
-        public event QueryCommitingEventHandler QueryCommiting;
 
         internal ExecutionPlanBuilder()
         {
             _keyRelationships = new KeyRelationship();
             _circularKeyJobs = new List<CircularKeyJob>();
-            ExecutionPlanByServer = new ExecutionPlanByServer();
+            _executionPlanByServer = new ExecutionPlanByServer();
             _steps = new List<RowIdentifier>();
         }
 
@@ -47,7 +42,7 @@ namespace DataCloner
             _metadataInitialiser(_dispatcher, settings, ref _metadataCtn);
         }
 
-        internal ExecutionPlanBuilder(Settings settings, IQueryDispatcher dispatcher, 
+        internal ExecutionPlanBuilder(Settings settings, IQueryDispatcher dispatcher,
             MetadataContainer.Initialiser metadataInit,
             MetadataContainer metadataCtn) : this()
         {
@@ -77,45 +72,40 @@ namespace DataCloner
             return this;
         }
 
+        public void Clear()
+        {
+            _executionPlanByServer.Clear();
+            _keyRelationships.Clear();
+            _circularKeyJobs.Clear();
+            _steps.Clear();
+            _nextVariableId = 0;
+            _nextStepId = 0;
+            DataBuilder.ClearBuildersCache();
+        }
+
+        /// <summary>
+        /// Compile the execution plan with default values.
+        /// </summary>
+        /// <returns>An executable query.</returns>
         public Query Compile()
         {
-            var project = new ProjectContainer();
+            OptimizeExecutionPlans(_executionPlanByServer);
 
-            var destinationSrv = (from server in ExecutionPlanByServer
+            //Purify
+            var conns = new List<SqlConnection>();
+            var metadata = new AppMetadata();
+
+            var destinationSrv = (from server in _executionPlanByServer
                                   from insertStep in server.Value.InsertSteps
                                   select insertStep.DestinationTable.ServerId).Distinct();
 
             foreach (var srv in destinationSrv)
             {
-                var cs = MetadataContainer.ConnectionStrings.First(c => c.Id == srv);
-                project.ConnectionStrings.Add(new Connection
-                {
-                    Id = cs.Id,
-                    ConnectionString = cs.ConnectionString,
-                    ProviderName = cs.ProviderName
-                });
+                conns.Add(MetadataContainer.ConnectionStrings.First(c => c.Id == srv));
+                metadata.Add(srv, MetadataContainer.Metadatas.First(s => s.Key == srv).Value);
             }
 
-            return new Query(MetadataContainer, ExecutionPlanByServer, project);
-        }
-
-        public ResultSet Execute()
-        {
-            if (OptimiseExecutionPlan)
-                OptimizeExecutionPlans(ExecutionPlanByServer);
-
-            //_dispatcher[riSource].EnforceIntegrityCheck(EnforceIntegrity);
-
-            ResetExecutionPlan(ExecutionPlanByServer);
-            Parallel.ForEach(ExecutionPlanByServer, a =>
-            {
-                var qh = _dispatcher.GetQueryHelper(a.Key);
-                qh.QueryCommmiting += QueryCommiting;
-                qh.Execute(a.Value);
-                qh.QueryCommmiting -= QueryCommiting;
-            });
-
-            return new ResultSet(ExecutionPlanByServer);
+            return new Query(metadata, _executionPlanByServer, conns, Query.CURRENT_FORMAT_VERSION);
         }
 
         #endregion
@@ -337,21 +327,21 @@ namespace DataCloner
         private void AddInsertStep(InsertStep step)
         {
             var connId = step.DestinationTable.ServerId;
-            if (!ExecutionPlanByServer.ContainsKey(connId))
-                ExecutionPlanByServer.Add(connId, new ExecutionPlan());
-            ExecutionPlanByServer[connId].InsertSteps.Add(step);
+            if (!_executionPlanByServer.ContainsKey(connId))
+                _executionPlanByServer.Add(connId, new ExecutionPlan());
+            _executionPlanByServer[connId].InsertSteps.Add(step);
 
             //Recopie dans le plan d'exécution pour la performance
             foreach (var sqlVar in step.Variables)
-                ExecutionPlanByServer[connId].Variables.Add(sqlVar);
+                _executionPlanByServer[connId].Variables.Add(sqlVar);
         }
 
         private void AddUpdateStep(UpdateStep step)
         {
             var connId = step.DestinationTable.ServerId;
-            if (!ExecutionPlanByServer.ContainsKey(connId))
-                ExecutionPlanByServer.Add(connId, new ExecutionPlan());
-            ExecutionPlanByServer[connId].UpdateSteps.Add(step);
+            if (!_executionPlanByServer.ContainsKey(connId))
+                _executionPlanByServer.Add(connId, new ExecutionPlan());
+            _executionPlanByServer[connId].UpdateSteps.Add(step);
         }
 
         private object[] GetDataRow(RowIdentifier riNewFk)
@@ -369,7 +359,7 @@ namespace DataCloner
 
             var varId = sqlVar.Id;
 
-            foreach (var plan in ExecutionPlanByServer)
+            foreach (var plan in _executionPlanByServer)
             {
                 var dr = plan.Value.InsertSteps.FirstOrDefault(r => r.Variables.Any(v => v.Id == varId));
                 if (dr != null)
@@ -536,18 +526,6 @@ namespace DataCloner
             }
             _circularKeyJobs.Clear();
         }
-
-        /// <summary>
-        /// We reset the variables for the API to regenerate them.
-        /// </summary>
-        /// <param name="planByServer"></param>
-		private void ResetExecutionPlan(Dictionary<Int16, ExecutionPlan> planByServer)
-        {
-            foreach (var server in planByServer)
-                foreach (var sqlVar in server.Value.Variables)
-                    sqlVar.Value = null;
-        }
-
         #endregion
     }
 }

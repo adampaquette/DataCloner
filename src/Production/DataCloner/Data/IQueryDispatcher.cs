@@ -1,6 +1,6 @@
-﻿using DataCloner.Internal;
-using DataCloner.Metadata;
+﻿using DataCloner.Metadata;
 using System;
+using System.Collections.Generic;
 
 namespace DataCloner.Data
 {
@@ -11,6 +11,6 @@ namespace DataCloner.Data
         IQueryHelper GetQueryHelper(ServerIdentifier server);
         IQueryHelper GetQueryHelper(Int16 server);
 
-        void InitProviders(MetadataContainer container);
+        void InitProviders(AppMetadata appMetadata, IEnumerable<SqlConnection> connections);
     }
 }

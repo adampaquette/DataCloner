@@ -44,7 +44,7 @@ namespace DataCloner.Framework
             if (_length == _data.Length)
             {
                 var newData = new T[_data.Length * 2];
-                Array.Copy(_data, newData, newData.Length);
+                Array.Copy(_data, newData, _data.Length);
                 _data = newData;
             }
 

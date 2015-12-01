@@ -12,6 +12,7 @@ using System.Windows.Documents;
 using System.Windows.Media;
 using System.Windows.Threading;
 using DataCloner.Framework;
+using Microsoft.Win32;
 
 namespace DataCloner.GUI.View
 {
@@ -24,11 +25,12 @@ namespace DataCloner.GUI.View
         private const string FileExtension = ".dca";
         private const string Filter = "Datacloner archive (.dca)|*.dca";
 
-        private ExecutionPlanBuilder _cloner;
+        private ExecutionPlanBuilder _executionPlanBuilder;
         private BackgroundWorker _cloneWorker;
         private ProjectContainer _proj = ProjectContainer.Load("northWind.dcproj");
         private IEnumerable<Map> _maps;
         private Map _fromMaps;
+        private Query _lastQuery;
 
         private Int16 _selectedServer;
         private string _selectedDatabase;
@@ -147,11 +149,10 @@ namespace DataCloner.GUI.View
                     BehaviourId = configId
                 };
 
-                _cloner = new ExecutionPlanBuilder(selectedSettings);
-                _cloner.StatusChanged += ClonerWorkerStatusChanged_event;
-                _cloner.QueryCommiting += ClonerWorkerQueryCommiting_event;
+                _executionPlanBuilder = new ExecutionPlanBuilder(selectedSettings);
+                _executionPlanBuilder.StatusChanged += ClonerWorkerStatusChanged_event;
 
-                Servers = _cloner.MetadataContainer.Metadatas.Keys.ToArray().ToList();
+                Servers = _executionPlanBuilder.MetadataContainer.Metadatas.Keys.ToArray().ToList();
                 cbServer.ItemsSource = Servers;
 
                 //Tente de charger la préférence utilisateur
@@ -180,7 +181,7 @@ namespace DataCloner.GUI.View
                 Properties.Settings.Default.ServerSource = _selectedServer;
                 Properties.Settings.Default.Save();
 
-                var databases = _cloner.MetadataContainer.Metadatas[_selectedServer].Keys.ToArray().ToList();
+                var databases = _executionPlanBuilder.MetadataContainer.Metadatas[_selectedServer].Keys.ToArray().ToList();
                 cbDatabase.ItemsSource = databases;
 
                 //Tente de charger la préférence utilisateur
@@ -207,7 +208,7 @@ namespace DataCloner.GUI.View
                 Properties.Settings.Default.DatabaseSource = _selectedDatabase;
                 Properties.Settings.Default.Save();
 
-                var schemas = _cloner.MetadataContainer.Metadatas[_selectedServer][_selectedDatabase].Keys.ToArray().ToList();
+                var schemas = _executionPlanBuilder.MetadataContainer.Metadatas[_selectedServer][_selectedDatabase].Keys.ToArray().ToList();
                 cbSchema.ItemsSource = schemas;
 
                 //Tente de charger la préférence utilisateur
@@ -234,7 +235,7 @@ namespace DataCloner.GUI.View
                 Properties.Settings.Default.SchemaSource = _selectedSchema;
                 Properties.Settings.Default.Save();
 
-                var tables = _cloner.MetadataContainer.Metadatas[_selectedServer][_selectedDatabase][_selectedSchema].Select(t => t.Name).ToList();
+                var tables = _executionPlanBuilder.MetadataContainer.Metadatas[_selectedServer][_selectedDatabase][_selectedSchema].Select(t => t.Name).ToList();
                 cbTable.ItemsSource = tables;
 
                 //Tente de charger la préférence utilisateur
@@ -262,7 +263,7 @@ namespace DataCloner.GUI.View
                 Properties.Settings.Default.Save();
 
                 var table =
-                    _cloner.MetadataContainer.Metadatas[_selectedServer][_selectedDatabase][_selectedSchema].FirstOrDefault(
+                    _executionPlanBuilder.MetadataContainer.Metadatas[_selectedServer][_selectedDatabase][_selectedSchema].FirstOrDefault(
                         t => t.Name == _selectedTable);
                 if (table == null)
                     return;
@@ -297,13 +298,12 @@ namespace DataCloner.GUI.View
                 _selectedColumn = null;
         }
 
-        private void btnExec_Click(object sender, RoutedEventArgs e)
+        private void btnAppend_Click(object sender, RoutedEventArgs e)
         {
-            if (_selectedColumn != null &&
-                txtValeur.Text != null)
+            if (!String.IsNullOrWhiteSpace(_selectedColumn) &&
+                !String.IsNullOrWhiteSpace(txtValeur.Text))
             {
                 rtbStatus.AppendText("Cloning started");
-                _cloner.OptimiseExecutionPlan = (bool)chkOptimisation.IsChecked;
 
                 scintilla.IsReadOnly = false;
                 scintilla.Text = string.Empty;
@@ -316,9 +316,10 @@ namespace DataCloner.GUI.View
                     Schema = _selectedSchema,
                     Table = _selectedTable,
                     Columns = new ColumnsWithValue { { _selectedColumn, txtValeur.Text } },
-                    NbCopies = 1
+                    AppendMode = true,
+                    NbCopies = int.Parse(nbCopies.Text)
                 });
-                BtnExec.IsEnabled = false;
+                BtnAppend.IsEnabled = BtnExec.IsEnabled = BtnReset.IsEnabled = false;
             }
             else
             {
@@ -366,7 +367,7 @@ namespace DataCloner.GUI.View
                 rtbStatus.AppendText(sbLog.ToString());
                 rtbStatus.ScrollToEnd();
 
-                BtnExec.IsEnabled = true;
+                BtnAppend.IsEnabled = BtnExec.IsEnabled = BtnReset.IsEnabled = true;
             };
             _cloneWorker.ProgressChanged += (s, e) =>
             {
@@ -395,9 +396,23 @@ namespace DataCloner.GUI.View
                 source.Table = paramsIn.Table;
                 source.Columns = paramsIn.Columns;
 
-                //Clone
-                for (int i = 0; i < paramsIn.NbCopies; i++)
-                    paramsOut.ClonedRow.AddRange(_cloner.Append(source, true).Execute().Results);
+                if (paramsIn.AppendMode)
+                {
+                    _executionPlanBuilder.Append(source, true);
+                    _lastQuery = null;
+                }
+                else
+                {
+                    if (_lastQuery == null)
+                    {
+                        _lastQuery = _executionPlanBuilder.Compile();
+                        _lastQuery.Commiting += ClonerWorkerQueryCommiting_event;
+                    }
+
+                    //Clone
+                    for (int i = 0; i < paramsIn.NbCopies; i++)
+                        paramsOut.ClonedRow.AddRange(_lastQuery.Execute().Results);
+                }
 
                 arg.Result = paramsOut;
             };
@@ -473,7 +488,7 @@ namespace DataCloner.GUI.View
             public String Schema { get; set; }
             public String Table { get; set; }
             public ColumnsWithValue Columns { get; set; }
-            public bool ForceClone { get; set; }
+            public bool AppendMode { get; set; }
             public double NbCopies { get; set; }
         }
 
@@ -499,6 +514,84 @@ namespace DataCloner.GUI.View
         {
             Properties.Settings.Default.DoOptimisation = (bool)chkOptimisation.IsChecked;
             Properties.Settings.Default.Save();
+        }
+
+        private void BtnExec_Click(object sender, RoutedEventArgs e)
+        {
+            if (!String.IsNullOrWhiteSpace(_selectedColumn) &&
+                !String.IsNullOrWhiteSpace(txtValeur.Text))
+            {
+                rtbStatus.AppendText("Cloning started");
+
+                scintilla.IsReadOnly = false;
+                scintilla.Text = string.Empty;
+                scintilla.IsReadOnly = true;
+
+                _cloneWorker.RunWorkerAsync(new ClonerWorkerInputArgs
+                {
+                    Server = _selectedServer,
+                    Database = _selectedDatabase,
+                    Schema = _selectedSchema,
+                    Table = _selectedTable,
+                    Columns = new ColumnsWithValue { { _selectedColumn, txtValeur.Text } },
+                    NbCopies = int.Parse(nbCopies.Text)
+                });
+                BtnAppend.IsEnabled = false;
+            }
+            else
+            {
+                MessageBox.Show("Vous devez sélectionner la source des données à copier.", "Attention", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void BtnReset_Click(object sender, RoutedEventArgs e)
+        {
+            scintilla.IsReadOnly = false;
+            scintilla.Text = "";
+            scintilla.IsReadOnly = true;
+
+            _executionPlanBuilder.Clear();
+            _lastQuery = null;
+            var p = new Paragraph();
+            p.Inlines.Add("ExecutionPlan and Query have been reset!");
+            rtbStatus.Document.Blocks.Add(p);
+            rtbStatus.ScrollToEnd();
+        }
+
+        private void BtnSave_Click(object sender, RoutedEventArgs e)
+        {
+            if (_lastQuery != null)
+            {
+                var sfd = new SaveFileDialog();
+                sfd.Filter = "DataCloner Query (*.dcq)|*.dcq";
+                sfd.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                if (sfd.ShowDialog() == true)
+                {
+                    _lastQuery.Save(sfd.FileName);
+                    var p = new Paragraph();
+                    p.Inlines.Add("DataCloner Query file saved to " + sfd.FileName);
+                    rtbStatus.Document.Blocks.Add(p);
+                    rtbStatus.ScrollToEnd();
+                }
+            }
+            else
+                MessageBox.Show("Nothing to save", "Save", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+
+        private void BtnLoad_Click(object sender, RoutedEventArgs e)
+        {
+            var ofd = new OpenFileDialog();
+            ofd.Filter = "DataCloner Query (*.dcq)|*.dcq";
+            ofd.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            if (ofd.ShowDialog() == true)
+            {
+                _lastQuery = Query.Load(ofd.FileName);
+                _lastQuery.Commiting += ClonerWorkerQueryCommiting_event;
+                var p = new Paragraph();
+                p.Inlines.Add("DataCloner Query file loaded from " + ofd.FileName);
+                rtbStatus.Document.Blocks.Add(p);
+                rtbStatus.ScrollToEnd();
+            }
         }
     }
 }
