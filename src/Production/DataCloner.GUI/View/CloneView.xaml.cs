@@ -300,8 +300,9 @@ namespace DataCloner.GUI.View
 
         private void btnAppend_Click(object sender, RoutedEventArgs e)
         {
-            if (!String.IsNullOrWhiteSpace(_selectedColumn) &&
-                !String.IsNullOrWhiteSpace(txtValeur.Text))
+            if ((!String.IsNullOrWhiteSpace(_selectedColumn) &&
+                !String.IsNullOrWhiteSpace(txtValeur.Text)) ||
+                _lastQuery != null)
             {
                 rtbStatus.AppendText("Cloning started");
 
@@ -518,8 +519,9 @@ namespace DataCloner.GUI.View
 
         private void BtnExec_Click(object sender, RoutedEventArgs e)
         {
-            if (!String.IsNullOrWhiteSpace(_selectedColumn) &&
-                !String.IsNullOrWhiteSpace(txtValeur.Text))
+            if ((!String.IsNullOrWhiteSpace(_selectedColumn) &&
+                !String.IsNullOrWhiteSpace(txtValeur.Text)) ||
+                _lastQuery != null)
             {
                 rtbStatus.AppendText("Cloning started");
 
@@ -591,6 +593,10 @@ namespace DataCloner.GUI.View
                 p.Inlines.Add("DataCloner Query file loaded from " + ofd.FileName);
                 rtbStatus.Document.Blocks.Add(p);
                 rtbStatus.ScrollToEnd();
+
+                scintilla.IsReadOnly = false;
+                scintilla.Text = "";
+                scintilla.IsReadOnly = true;
             }
         }
     }

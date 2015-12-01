@@ -54,7 +54,7 @@ namespace DataCloner
         public ResultSet Execute()
         {
             //_dispatcher[riSource].EnforceIntegrityCheck(EnforceIntegrity);
-
+            PlugIn.DataBuilder.ClearBuildersCache();
             ResetExecutionPlan(_executionPlanByServer);
             Parallel.ForEach(_executionPlanByServer, a =>
             {
@@ -193,16 +193,4 @@ namespace DataCloner
                     sqlVar.Value = null;
         }
     } 
-
-    public static class DataArchiveExtension
-    {
-        public static ExecutionPlanBuilder ToCloner(this Query dataArchive)
-        {
-            //TODO: Créer une nouvelle classe permettant de charger un ExecutionPlanByServer et de l'exécuter avec une map.
-            //Cloner va s'appeler ExecutionPlanBuilder.
-            //Une nouvelle classe s'appelera Cloner et prendra en charge l'enregistrement dans la BD à partir d'un ExecutionPlanByServer.
-            //La classe DataArchive permettra de retourner les maps par défaut pour les envoyer au Cloner.
-            return null;
-        }
-    }
 }

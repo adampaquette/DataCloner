@@ -1,11 +1,8 @@
 ﻿using DataCloner.Configuration;
 using DataCloner.Data;
-using DataCloner.Internal;
 using System.Collections.Generic;
 using System.Data;
-using System.IO;
 using System.Linq;
-using System.Runtime.Serialization.Formatters.Binary;
 using Xunit;
 
 namespace DataCloner.IntegrationTests
@@ -90,12 +87,6 @@ namespace DataCloner.IntegrationTests
             };
 
             Assert.True(Enumerable.SequenceEqual(clonedData, expectedData));
-
-            var archive = executionPlanBuilder.Compile();
-            archive.Description = "testing";
-            archive.Save("archiveTest.dca");
-
-            var archive2 = Query.Load("archiveTest.dca");
         }
 
         [Theory, MemberData(DbEngine)]
@@ -286,8 +277,8 @@ namespace DataCloner.IntegrationTests
                     }
                 }
             });
-            var executionPlanBuilder = new ExecutionPlanBuilder(config);
 
+            var executionPlanBuilder = new ExecutionPlanBuilder(config);
             var source = new RowIdentifier
             {
                 ServerId = conn.Id,
@@ -458,25 +449,7 @@ namespace DataCloner.IntegrationTests
                 }
             };
 
-            Assert.True(Enumerable.SequenceEqual(clonedData, expectedData));
-
-            var da = executionPlanBuilder.Compile();
-            da.Save("testingArchive.dca");
-            var loaded = Query.Load("testingArchive.dca");
-
-
-
-            var bf = new BinaryFormatter();
-            var a = "asads";
-            var aa = "-----";
-
-            var ms = new MemoryStream();
-            bf.Serialize(ms, a);
-            bf.Serialize(ms, aa);
-            ms.Position = 0;
-            var b = bf.Deserialize(ms);
-
-            var equal = a == b;
+            Assert.True(Enumerable.SequenceEqual(clonedData, expectedData));          
         }
 
         [Theory, MemberData(DbEngine)]
@@ -686,8 +659,8 @@ namespace DataCloner.IntegrationTests
                     }
                 }
             });
-            var executionPlanBuilder = new ExecutionPlanBuilder(config);
 
+            var executionPlanBuilder = new ExecutionPlanBuilder(config);
             var source = new RowIdentifier
             {
                 ServerId = conn.Id,
@@ -698,7 +671,6 @@ namespace DataCloner.IntegrationTests
             };
 
             var clonedData = new List<RowIdentifier>();
-
             executionPlanBuilder.StatusChanged += (s, e) =>
             {
                 if (e.Status == Status.Cloning)
@@ -755,8 +727,6 @@ namespace DataCloner.IntegrationTests
                 Table = "employee",
                 Columns = new ColumnsWithValue { { "employeeid", 1 } }
             };
-
-
 
             //Act
             var query = executionPlanBuilder.Append(source, false).Compile();
