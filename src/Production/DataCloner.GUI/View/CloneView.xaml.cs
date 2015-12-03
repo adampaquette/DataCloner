@@ -538,7 +538,9 @@ namespace DataCloner.GUI.View
                     Columns = new ColumnsWithValue { { _selectedColumn, txtValeur.Text } },
                     NbCopies = int.Parse(nbCopies.Text)
                 });
-                BtnAppend.IsEnabled = false;
+
+                rtbStatus.ScrollToEnd();
+                BtnAppend.IsEnabled = BtnExec.IsEnabled = BtnReset.IsEnabled = false;
             }
             else
             {
@@ -589,14 +591,15 @@ namespace DataCloner.GUI.View
             {
                 _lastQuery = Query.Load(ofd.FileName);
                 _lastQuery.Commiting += ClonerWorkerQueryCommiting_event;
-                var p = new Paragraph();
-                p.Inlines.Add("DataCloner Query file loaded from " + ofd.FileName);
-                rtbStatus.Document.Blocks.Add(p);
-                rtbStatus.ScrollToEnd();
 
                 scintilla.IsReadOnly = false;
                 scintilla.Text = "";
                 scintilla.IsReadOnly = true;
+
+                var p = new Paragraph();
+                p.Inlines.Add("DataCloner Query file loaded from " + ofd.FileName);
+                rtbStatus.Document.Blocks.Add(p);
+                rtbStatus.ScrollToEnd();
             }
         }
     }

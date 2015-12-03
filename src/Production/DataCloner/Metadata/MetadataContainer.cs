@@ -96,8 +96,10 @@ namespace DataCloner.Metadata
                 //If container on disk is good, we use it
                 container = TryLoadContainer(containerFileName, configHash);
                 if (container != null)
+                {
                     dispatcher.InitProviders(container.Metadatas, container.ConnectionStrings);
-                return;
+                    return;
+                }
             }
 
             //We rebuild the container

@@ -41,6 +41,7 @@ namespace DataCloner.Framework
                     _tagToType.Add(typeof(SqlVariable));
                     _tagToType.Add(typeof(TableMetadata));
                     _tagToType.Add(typeof(DBNull));
+                    _tagToType.Add(typeof(Byte[]));
                 }
                 return _tagToType;
             }
@@ -74,6 +75,7 @@ namespace DataCloner.Framework
                     _typeToTag.Add(typeof(SqlVariable), 19);
                     _typeToTag.Add(typeof(TableMetadata), 20);
                     _typeToTag.Add(typeof(DBNull), 21);
+                    _typeToTag.Add(typeof(Byte[]), 22);
                 }
                 return _typeToTag;
             }
