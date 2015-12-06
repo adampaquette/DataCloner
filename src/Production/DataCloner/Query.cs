@@ -21,8 +21,13 @@ namespace DataCloner
         private AppMetadata _metadata;
         private ExecutionPlanByServer _executionPlanByServer;
         private ImmutableHashSet<SqlConnection> _connections;
+        private int _formatVersion;
 
-        public int FormatVersion { get; }
+        public int FormatVersion
+        {
+            get { return _formatVersion; }
+            set { _formatVersion = value; }
+        }
         public string Description { get; set; }
         public ImmutableHashSet<SqlConnection> Connections { get { return _connections; } }
         public bool EnforceIntegrity { get; set; }
