@@ -1,1 +1,0 @@
-powershell -Command "&{ $runner = (dir -r -filter mspec-x86-clr4.exe | select -first 1).FullName; $asm = resolve-path 'MurmurHash.Specs\bin\Release\MurmurHash.Specs.dll'; &$runner $asm; }"
