@@ -47,15 +47,15 @@ namespace DataCloner.Configuration
                 compiledConfig.Add(srvToMerge.Id, srvToMerge);
 
             //Template
-            if (srvToMerge.UseTemplateId > 0)
+            if (srvToMerge.BasedOn > 0)
             {
-                var srvTemplate = behaviour.Modifiers.ServerModifiers.FirstOrDefault(s => s.TemplateId == srvToMerge.UseTemplateId);
+                var srvTemplate = behaviour.Modifiers.ServerModifiers.FirstOrDefault(s => s.TemplateId == srvToMerge.BasedOn);
                 if (srvTemplate == null)
-                    srvTemplate = templates.ServerModifiers.First(s => s.TemplateId == srvToMerge.UseTemplateId);
+                    srvTemplate = templates.ServerModifiers.First(s => s.TemplateId == srvToMerge.BasedOn);
 
                 MergeServer(behaviour, templates, variables, compiledConfig, srvTemplate);
                 srvToMerge.TemplateId = 0;
-                srvToMerge.UseTemplateId = 0;
+                srvToMerge.BasedOn = 0;
             }
 
             //Merge
@@ -81,7 +81,7 @@ namespace DataCloner.Configuration
                 compiledServer.Databases.Add(dbToMerge);
 
             //Template
-            if (dbToMerge.UseTemplateId > 0)
+            if (dbToMerge.BasedOn > 0)
             {
                 var allDb = new List<DatabaseModifier>();
 
@@ -89,7 +89,7 @@ namespace DataCloner.Configuration
                 allDb.AddRange(behaviour.Modifiers.DatabaseModifiers);
                 behaviour.Modifiers.ServerModifiers.ForEach(s => allDb.AddRange(s.Databases));
 
-                var db = allDb.FirstOrDefault(d => d.TemplateId == dbToMerge.UseTemplateId);
+                var db = allDb.FirstOrDefault(d => d.TemplateId == dbToMerge.BasedOn);
                 if (db == null)
                 {
                     //Pass 2 : Search inside the templates
@@ -97,11 +97,11 @@ namespace DataCloner.Configuration
                     allDb.AddRange(templates.DatabaseModifiers);
                     templates.ServerModifiers.ForEach(s => allDb.AddRange(s.Databases));
                 }
-                db = allDb.First(d => d.TemplateId == dbToMerge.UseTemplateId);
+                db = allDb.First(d => d.TemplateId == dbToMerge.BasedOn);
 
                 MergeDatabase(behaviour, templates, variables, compiledServer, db);
                 dbToMerge.TemplateId = 0;
-                dbToMerge.UseTemplateId = 0;
+                dbToMerge.BasedOn = 0;
             }
 
             //Merge
@@ -127,7 +127,7 @@ namespace DataCloner.Configuration
                 compiledDatabase.Schemas.Add(schemaToMerge);
 
             //Template
-            if (schemaToMerge.UseTemplateId > 0)
+            if (schemaToMerge.BasedOn > 0)
             {
                 var allSchema = new List<SchemaModifier>();
 
@@ -135,7 +135,7 @@ namespace DataCloner.Configuration
                 allSchema.AddRange(behaviour.Modifiers.SchemaModifiers);
                 behaviour.Modifiers.ServerModifiers.ForEach(s => s.Databases.ForEach(d => allSchema.AddRange(d.Schemas)));
 
-                var sch = allSchema.First(d => d.TemplateId == schemaToMerge.UseTemplateId);
+                var sch = allSchema.First(d => d.TemplateId == schemaToMerge.BasedOn);
                 if (sch == null)
                 {
                     //Pass 2 : Search inside the templates
@@ -143,11 +143,11 @@ namespace DataCloner.Configuration
                     allSchema.AddRange(templates.SchemaModifiers);
                     templates.ServerModifiers.ForEach(s => s.Databases.ForEach(d => allSchema.AddRange(d.Schemas)));
                 }
-                sch = allSchema.First(d => d.TemplateId == schemaToMerge.UseTemplateId);
+                sch = allSchema.First(d => d.TemplateId == schemaToMerge.BasedOn);
 
                 MergeSchema(behaviour, templates, variables, compiledDatabase, sch);
                 schemaToMerge.TemplateId = 0;
-                schemaToMerge.UseTemplateId = 0;
+                schemaToMerge.BasedOn = 0;
             }
 
             //Merge

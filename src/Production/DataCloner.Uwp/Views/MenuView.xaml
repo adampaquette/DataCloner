@@ -1,0 +1,21 @@
+﻿<Page
+    x:Class="DataCloner.Uwp.Views.MenuView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:DataCloner.Uwp.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+    <Grid Background="{ThemeResource MenuBackgroundBrush}">
+        <StackPanel>
+            <TextBlock Text="General"/>
+            <TextBlock Text="Tableau de board"/>
+            <TextBlock Text="Cloner"/>
+            <TextBlock Text="Configuration"/>
+            <TextBlock Text="Serveur SQL"/>
+            <TextBlock Text="Environnements"/>
+            <TextBlock Text="Modèles"/>
+            <TextBlock Text="Comportements"/>
+        </StackPanel>
+    </Grid>
+</Page>

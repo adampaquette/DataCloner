@@ -5,9 +5,9 @@
         <Add Id="2" Name="Chinook" ProviderName="System.Data.SqlClient" ConnectionString="Data Source=(localdb)\MSSQLLocalDB;Integrated Security=True;Initial Catalog=Chinook;"/>
     </ConnectionStrings>
     <Templates>
-        <Server Id="{$SERVER_SOURCE_NORTHWIND{1}}" Description="CloneCustomer" TemplateId="1" UseTemplateId="0">
-            <Database Name="{$DATABASE_SOURCE_NORTHWIND{1}{northwind_uni}}" TemplateId="1" UseTemplateId="0">
-                <Schema Name="dbo" TemplateId="1" UseTemplateId="0">
+        <Server Id="{$SERVER_SOURCE_NORTHWIND{1}}" Description="CloneCustomer" TemplateId="1" BasedOn="0">
+            <Database Name="{$DATABASE_SOURCE_NORTHWIND{1}{northwind_uni}}" TemplateId="1" BasedOn="0">
+                <Schema Name="dbo" TemplateId="1" BasedOn="0">
                     <Table Name="categories" IsStatic="true" />
                     <Table Name="customers" IsStatic="false">
                         <DataBuilders>
@@ -41,7 +41,7 @@
         </Behaviour>
         <Behaviour Id="2" Name="Customer" Description="Duplication d'un client">
             <Modifiers>
-                <Server Id="{$SERVER_SOURCE_NORTHWIND}" TemplateId="0" UseTemplateId="1" />
+                <Server Id="{$SERVER_SOURCE_NORTHWIND}" TemplateId="0" BasedOn="1" />
             </Modifiers>
         </Behaviour>
     </Behaviours>

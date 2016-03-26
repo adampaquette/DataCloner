@@ -1,0 +1,18 @@
+﻿<prism:SessionStateAwarePage 
+    x:Class="DataCloner.Uwp.Views.HomePage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:DataCloner.Uwp.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:prism="using:Prism.Windows.Mvvm"
+    mc:Ignorable="d"
+    prism:ViewModelLocator.AutoWireViewModel="True">
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <ContentControl Content=""></ContentControl>
+        
+        <Ellipse Width="auto" Height="auto" Fill="Coral"/>
+        <TextBlock Text="{Binding Title}" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="50"/>
+    </Grid>
+</prism:SessionStateAwarePage>

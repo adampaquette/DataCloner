@@ -32,7 +32,7 @@ namespace DataCloner.Configuration
         [XmlAttribute]
         public Int16 TemplateId { get; set; }
         [XmlAttribute]
-        public Int16 UseTemplateId { get; set; }
+        public Int16 BasedOn { get; set; }
         [XmlElement("Database")]
         public List<DatabaseModifier> Databases { get; set; }
 
@@ -52,7 +52,7 @@ namespace DataCloner.Configuration
         [XmlAttribute]
         public Int16 TemplateId { get; set; }
         [XmlAttribute]
-        public Int16 UseTemplateId { get; set; }
+        public Int16 BasedOn { get; set; }
         [XmlElement("Schema")]
         public List<SchemaModifier> Schemas { get; set; }
 
@@ -72,7 +72,7 @@ namespace DataCloner.Configuration
         [XmlAttribute]
         public Int16 TemplateId { get; set; }
         [XmlAttribute]
-        public Int16 UseTemplateId { get; set; }
+        public Int16 BasedOn { get; set; }
         [XmlElement("Table")]
         public List<TableModifier> Tables { get; set; }
 

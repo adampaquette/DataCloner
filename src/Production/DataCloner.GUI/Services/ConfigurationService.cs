@@ -78,7 +78,7 @@ namespace DataCloner.GUI.Services
 
             //Apply changes
             userConfigServer.TemplateId = mergedServer.TemplateId;
-            userConfigServer.UseTemplateId = mergedServer.UseTemplateId;
+            userConfigServer.BasedOn = mergedServer.UseTemplateId;
             userConfigServer.Description = mergedServer.Description;
 
             if (mergedServer.TemplateId != 0 ||
@@ -123,7 +123,7 @@ namespace DataCloner.GUI.Services
 
             //Apply changes
             userConfigDatabase.TemplateId = mergedDatabase.TemplateId;
-            userConfigDatabase.UseTemplateId = mergedDatabase.UseTemplateId;
+            userConfigDatabase.BasedOn = mergedDatabase.UseTemplateId;
             userConfigDatabase.Description = mergedDatabase.Description;
 
             if (mergedDatabase.TemplateId != 0 ||
@@ -167,7 +167,7 @@ namespace DataCloner.GUI.Services
 
             //Apply changes
             userConfigSchema.TemplateId = mergedSchema.TemplateId;
-            userConfigSchema.UseTemplateId = mergedSchema.UseTemplateId;
+            userConfigSchema.BasedOn = mergedSchema.UseTemplateId;
             userConfigSchema.Description = mergedSchema.Description;
 
             if (mergedSchema.TemplateId != 0 ||
@@ -497,7 +497,7 @@ namespace DataCloner.GUI.Services
                 {
                     _id = server.Id,
                     _templateId = server.TemplateId,
-                    _useTemplateId = server.UseTemplateId,
+                    _useTemplateId = server.BasedOn,
                     _description = server.Description,
                     _databases = LoadDatabaseTemplates(server.Databases, defaultSrvMetadata, appMetadata)
                 });
@@ -527,7 +527,7 @@ namespace DataCloner.GUI.Services
                 {
                     _name = database.Name,
                     _templateId = database.TemplateId,
-                    _useTemplateId = database.UseTemplateId,
+                    _useTemplateId = database.BasedOn,
                     _description = database.Description,
                     _schemas = LoadSchemaTemplates(database.Schemas, defaultDbMetadata, appMetadata)
                 });
@@ -557,7 +557,7 @@ namespace DataCloner.GUI.Services
                 {
                     _name = schema.Name,
                     _templateId = schema.TemplateId,
-                    _useTemplateId = schema.UseTemplateId,
+                    _useTemplateId = schema.BasedOn,
                     _description = schema.Description,
                     _tables = LoadTableTemplates(schema.Tables, defaultSchemaMetadata)
                 });
