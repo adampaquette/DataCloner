@@ -1,8 +1,8 @@
-﻿using DataCloner.Data.Generator;
+﻿using DataCloner.Core.Data.Generator;
 using System;
 using System.Data;
 
-namespace DataCloner.Data
+namespace DataCloner.Core.Data
 {
     public delegate void ColumnReader(IDataReader reader, Int16 serverId, string database, ISqlTypeConverter typeConverter);
     public delegate void ForeignKeyReader(IDataReader reader, Int16 serverId, string database);

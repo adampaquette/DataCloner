@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DataCloner.Internal
+namespace DataCloner.Core.Internal
 {
     public abstract class ExecutionStep
     {

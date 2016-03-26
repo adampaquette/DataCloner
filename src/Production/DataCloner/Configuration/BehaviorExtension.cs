@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace DataCloner.Configuration
+namespace DataCloner.Core.Configuration
 {
     [Serializable]
     public static class BehaviourExtension

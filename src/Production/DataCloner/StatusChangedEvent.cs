@@ -1,7 +1,7 @@
 ﻿using System;
-using DataCloner.Internal;
+using DataCloner.Core.Internal;
 
-namespace DataCloner
+namespace DataCloner.Core
 {
     public delegate void StatusChangedEventHandler(object sender, StatusChangedEventArgs e);
     public sealed class StatusChangedEventArgs : EventArgs

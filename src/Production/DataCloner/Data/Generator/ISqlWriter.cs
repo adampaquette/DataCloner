@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DataCloner.Data.Generator
+namespace DataCloner.Core.Data.Generator
 {
     public interface ISqlWriter
     {

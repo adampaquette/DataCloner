@@ -1,13 +1,13 @@
-﻿using DataCloner.Data;
-using DataCloner.Framework;
-using DataCloner.Internal;
-using DataCloner.Metadata;
-using DataCloner.PlugIn;
+﻿using DataCloner.Core.Data;
+using DataCloner.Core.Framework;
+using DataCloner.Core.Internal;
+using DataCloner.Core.Metadata;
+using DataCloner.Core.PlugIn;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace DataCloner
+namespace DataCloner.Core
 {
     public class ExecutionPlanBuilder
     {

@@ -1,5 +1,5 @@
-﻿using DataCloner.Configuration;
-using DataCloner.Internal;
+﻿using DataCloner.Core.Configuration;
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -11,8 +11,11 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
 using System.Windows.Threading;
-using DataCloner.Framework;
+using DataCloner.Core.Framework;
+
 using Microsoft.Win32;
+using DataCloner.Core;
+using DataCloner.Core.Internal;
 
 namespace DataCloner.GUI.View
 {

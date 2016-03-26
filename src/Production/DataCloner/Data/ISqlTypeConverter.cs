@@ -1,6 +1,6 @@
 ﻿using System.Data;
 
-namespace DataCloner.Data
+namespace DataCloner.Core.Data
 {
     public interface ISqlTypeConverter
     {

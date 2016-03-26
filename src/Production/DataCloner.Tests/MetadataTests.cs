@@ -1,12 +1,12 @@
 ﻿using System.Data;
 using System.IO;
 using System.Linq;
-using DataCloner.Metadata;
-using DataCloner.Framework;
+using DataCloner.Core.Metadata;
+using DataCloner.Core.Framework;
 using Xunit;
 using System.Collections.Generic;
 
-namespace DataCloner.Tests
+namespace DataCloner.Core.Tests
 {
     public class MetadataTests
     {

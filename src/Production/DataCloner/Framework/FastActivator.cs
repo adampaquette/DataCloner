@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection.Emit;
 
-namespace DataCloner.Framework
+namespace DataCloner.Core.Framework
 {
     // For use with no-parameter constructors. Also contains constants and utility methods
     public static class FastActivator

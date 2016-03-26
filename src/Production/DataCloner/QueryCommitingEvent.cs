@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Data;
 
-namespace DataCloner
+namespace DataCloner.Core
 {
 	public delegate void QueryCommitingEventHandler(object sender, QueryCommitingEventArgs e);
 	public sealed class QueryCommitingEventArgs : EventArgs

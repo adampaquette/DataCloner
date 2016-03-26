@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DataCloner.Configuration
+namespace DataCloner.Core.Configuration
 {
     public class ConfigurationException : Exception
     {

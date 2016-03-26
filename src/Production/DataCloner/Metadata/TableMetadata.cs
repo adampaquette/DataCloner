@@ -1,5 +1,5 @@
-﻿using DataCloner.Data;
-using DataCloner.Framework;
+﻿using DataCloner.Core.Data;
+using DataCloner.Core.Framework;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -8,7 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace DataCloner.Metadata
+namespace DataCloner.Core.Metadata
 {
     [DebuggerDisplay("{Name}")]
     public sealed class TableMetadata

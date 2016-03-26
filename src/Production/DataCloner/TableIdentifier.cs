@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 
-namespace DataCloner
+namespace DataCloner.Core
 {
     [DebuggerDisplay("{ServerId.ToString() + \".\" + Database + \".\" + Schema + \".\" + Table}")]
     public class TableIdentifier : ServerIdentifier, IEquatable<TableIdentifier>

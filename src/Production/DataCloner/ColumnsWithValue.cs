@@ -1,8 +1,8 @@
-﻿using DataCloner.Framework;
+﻿using DataCloner.Core.Framework;
 using System.Collections.Generic;
 using System.IO;
 
-namespace DataCloner
+namespace DataCloner.Core
 {
     public class ColumnsWithValue : Dictionary<string, object>
     {

@@ -1,8 +1,8 @@
-﻿using DataCloner.Configuration;
-using DataCloner.Data;
+﻿using DataCloner.Core.Configuration;
+using DataCloner.Core.Data;
 using System.Collections.Generic;
 
-namespace DataCloner.IntegrationTests
+namespace DataCloner.Core.IntegrationTests
 {
     public static class Utils
     {

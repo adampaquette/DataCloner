@@ -1,10 +1,10 @@
-﻿using DataCloner.Data;
+﻿using DataCloner.Core.Data;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.IO;
 using System.Text.RegularExpressions;
 
-namespace DataCloner.IntegrationTests
+namespace DataCloner.Core.IntegrationTests
 {
     public static class DatabaseInitializer
     {

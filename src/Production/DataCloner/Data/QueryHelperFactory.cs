@@ -1,8 +1,8 @@
-﻿using DataCloner.Metadata;
+﻿using DataCloner.Core.Metadata;
 using System;
 using System.Data.Common;
 
-namespace DataCloner.Data
+namespace DataCloner.Core.Data
 {
     internal static class QueryHelperFactory 
     {

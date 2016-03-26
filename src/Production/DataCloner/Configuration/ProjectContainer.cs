@@ -4,7 +4,7 @@ using System.IO;
 using System.Xml;
 using System.Xml.Serialization;
 
-namespace DataCloner.Configuration
+namespace DataCloner.Core.Configuration
 {
     [Serializable]
     [XmlRoot("Project")]

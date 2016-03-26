@@ -2,7 +2,7 @@
 using System.IO;
 using System.Text;
 
-namespace DataCloner.Data
+namespace DataCloner.Core.Data
 {
     public class SqlConnection : IEquatable<SqlConnection>
     {

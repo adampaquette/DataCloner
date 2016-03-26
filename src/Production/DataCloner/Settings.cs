@@ -1,6 +1,6 @@
-﻿using DataCloner.Configuration;
+﻿using DataCloner.Core.Configuration;
 
-namespace DataCloner
+namespace DataCloner.Core
 {
     public class Settings
     {

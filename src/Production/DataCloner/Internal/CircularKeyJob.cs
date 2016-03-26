@@ -1,6 +1,6 @@
-﻿using DataCloner.Metadata;
+﻿using DataCloner.Core.Metadata;
 
-namespace DataCloner.Internal
+namespace DataCloner.Core.Internal
 {
     internal class CircularKeyJob
     {

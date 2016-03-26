@@ -1,8 +1,8 @@
 ﻿using System;
-using DataCloner.Framework;
+using DataCloner.Core.Framework;
 using Xunit;
 
-namespace DataCloner.Tests
+namespace DataCloner.Core.Tests
 {
     public class FastActivatorTests
     {

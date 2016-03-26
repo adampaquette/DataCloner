@@ -8,8 +8,8 @@
     <ProjectGuid>{3459DC7A-21BA-435C-882B-D84A333AEFD0}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>DataCloner</RootNamespace>
-    <AssemblyName>DataCloner</AssemblyName>
+    <RootNamespace>DataCloner.Core</RootNamespace>
+    <AssemblyName>DataCloner.Core</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <FileUpgradeFlags>
     </FileUpgradeFlags>

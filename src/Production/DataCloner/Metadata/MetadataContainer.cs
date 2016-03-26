@@ -1,6 +1,6 @@
-﻿using DataCloner.Configuration;
-using DataCloner.Data;
-using DataCloner.Framework;
+﻿using DataCloner.Core.Configuration;
+using DataCloner.Core.Data;
+using DataCloner.Core.Framework;
 using Murmur;
 using System;
 using System.Collections.Generic;
@@ -9,7 +9,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace DataCloner.Metadata
+namespace DataCloner.Core.Metadata
 {
     public sealed class MetadataContainer
     {

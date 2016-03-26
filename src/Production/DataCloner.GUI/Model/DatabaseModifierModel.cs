@@ -1,5 +1,7 @@
-﻿using DataCloner.Metadata;
-using DataCloner.Configuration;
+﻿using DataCloner.Core.Metadata;
+
+using DataCloner.Core.Configuration;
+
 using DataCloner.GUI.Framework;
 using System;
 using System.Collections.Generic;

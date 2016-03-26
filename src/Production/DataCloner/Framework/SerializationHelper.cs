@@ -1,10 +1,10 @@
-﻿using DataCloner.Internal;
-using DataCloner.Metadata;
+﻿using DataCloner.Core.Internal;
+using DataCloner.Core.Metadata;
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization.Formatters.Binary;
 
-namespace DataCloner.Framework
+namespace DataCloner.Core.Framework
 {
     public static class SerializationHelper
     {

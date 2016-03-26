@@ -1,8 +1,8 @@
-﻿using DataCloner.Framework;
+﻿using DataCloner.Core.Framework;
 using System;
 using System.Data;
 
-namespace DataCloner.Data
+namespace DataCloner.Core.Data
 {
     internal abstract class SqlTypeConverterBase : ISqlTypeConverter
     {

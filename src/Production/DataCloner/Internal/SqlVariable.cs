@@ -1,9 +1,9 @@
-﻿using DataCloner.Framework;
+﻿using DataCloner.Core.Framework;
 using System;
 using System.Diagnostics;
 using System.IO;
 
-namespace DataCloner.Internal
+namespace DataCloner.Core.Internal
 {
     [DebuggerDisplay("SqlVar: Key={Id}, Value={Value}")]
     public class SqlVariable : IEquatable<SqlVariable>

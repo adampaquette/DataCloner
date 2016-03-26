@@ -1,4 +1,4 @@
-﻿namespace DataCloner.Data.Generator
+﻿namespace DataCloner.Core.Data.Generator
 {
     public abstract class AbstractSqlWriter : ISqlWriter
     {

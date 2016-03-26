@@ -2,7 +2,7 @@
 using System.Text;
 using System;
 
-namespace DataCloner.Framework
+namespace DataCloner.Core.Framework
 {
     public class KeyGenerator
     {

@@ -1,8 +1,8 @@
-﻿using DataCloner.Data.Generator;
-using DataCloner.Framework;
-using DataCloner.Internal;
-using DataCloner.Metadata;
-using DataCloner.PlugIn;
+﻿using DataCloner.Core.Data.Generator;
+using DataCloner.Core.Framework;
+using DataCloner.Core.Internal;
+using DataCloner.Core.Metadata;
+using DataCloner.Core.PlugIn;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -10,7 +10,7 @@ using System.Data.Common;
 using System.Linq;
 using System.Text;
 
-namespace DataCloner.Data
+namespace DataCloner.Core.Data
 {
     internal abstract class QueryHelperBase : IQueryHelper
     {

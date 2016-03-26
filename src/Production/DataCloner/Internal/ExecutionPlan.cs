@@ -1,9 +1,9 @@
-﻿using DataCloner.Framework;
+﻿using DataCloner.Core.Framework;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace DataCloner.Internal
+namespace DataCloner.Core.Internal
 {
     public class ExecutionPlan
     {

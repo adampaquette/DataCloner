@@ -1,4 +1,5 @@
-﻿using DataCloner.GUI.Framework;
+﻿using DataCloner.Core;
+using DataCloner.GUI.Framework;
 using DataCloner.GUI.Model;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

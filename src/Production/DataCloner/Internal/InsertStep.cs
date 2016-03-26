@@ -1,11 +1,11 @@
-﻿using DataCloner.Framework;
-using DataCloner.Metadata;
+﻿using DataCloner.Core.Framework;
+using DataCloner.Core.Metadata;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 
-namespace DataCloner.Internal
+namespace DataCloner.Core.Internal
 {
     [DebuggerDisplay("{SourceTable.ServerId.ToString() + \".\" + SourceTable.Database + \".\" + SourceTable.Schema + \".\" + SourceTable.Table}...")]
 	public class InsertStep : ExecutionStep

@@ -1,9 +1,9 @@
-﻿using DataCloner.Framework;
+﻿using DataCloner.Core.Framework;
 using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace DataCloner.Internal
+namespace DataCloner.Core.Internal
 {
     public class ExecutionPlanByServer : Dictionary<Int16, ExecutionPlan>
     {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DataCloner.Framework
+namespace DataCloner.Core.Framework
 {
     /// <summary>
     /// Fast list access by index

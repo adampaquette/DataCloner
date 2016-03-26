@@ -1,4 +1,4 @@
-﻿namespace DataCloner.Data.Generator
+﻿namespace DataCloner.Core.Data.Generator
 {
     internal class SqlWriterMsSql : AbstractSqlWriter
     {

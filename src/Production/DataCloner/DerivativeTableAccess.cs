@@ -1,4 +1,4 @@
-﻿namespace DataCloner
+﻿namespace DataCloner.Core
 {
     public enum DerivativeTableAccess
     {

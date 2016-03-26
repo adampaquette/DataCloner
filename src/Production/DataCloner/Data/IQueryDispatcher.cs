@@ -1,8 +1,8 @@
-﻿using DataCloner.Metadata;
+﻿using DataCloner.Core.Metadata;
 using System;
 using System.Collections.Generic;
 
-namespace DataCloner.Data
+namespace DataCloner.Core.Data
 {
     public interface IQueryDispatcher
     {

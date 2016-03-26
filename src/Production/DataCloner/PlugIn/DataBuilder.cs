@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using DataCloner.Data;
-using DataCloner.Metadata;
-using DataCloner.Framework;
+using DataCloner.Core.Data;
+using DataCloner.Core.Metadata;
+using DataCloner.Core.Framework;
 
-namespace DataCloner.PlugIn
+namespace DataCloner.Core.PlugIn
 {
     internal static class DataBuilder
     {

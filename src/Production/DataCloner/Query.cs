@@ -1,7 +1,7 @@
-﻿using DataCloner.Data;
-using DataCloner.Framework;
-using DataCloner.Internal;
-using DataCloner.Metadata;
+﻿using DataCloner.Core.Data;
+using DataCloner.Core.Framework;
+using DataCloner.Core.Internal;
+using DataCloner.Core.Metadata;
 using LZ4;
 using System;
 using System.Collections.Generic;
@@ -11,7 +11,7 @@ using System.IO.Compression;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DataCloner
+namespace DataCloner.Core
 {
     public class Query
     {

@@ -1,9 +1,9 @@
-﻿using DataCloner.Internal;
+﻿using DataCloner.Core.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace DataCloner
+namespace DataCloner.Core
 {
     public class ResultSet
     {

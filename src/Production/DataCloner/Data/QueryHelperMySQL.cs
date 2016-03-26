@@ -1,7 +1,7 @@
-﻿using DataCloner.Data.Generator;
-using DataCloner.Metadata;
+﻿using DataCloner.Core.Data.Generator;
+using DataCloner.Core.Metadata;
 
-namespace DataCloner.Data
+namespace DataCloner.Core.Data
 {
     internal sealed class QueryHelperMySql : QueryHelperBase
     {

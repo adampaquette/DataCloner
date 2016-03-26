@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Data;
-using DataCloner.Metadata;
-using DataCloner.Framework;
+using DataCloner.Core.Metadata;
+using DataCloner.Core.Framework;
 
-namespace DataCloner.PlugIn
+namespace DataCloner.Core.PlugIn
 {
     internal class StringDataBuilder : IDataBuilder
     {

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Data;
-using DataCloner.Metadata;
+using DataCloner.Core.Metadata;
 
-namespace DataCloner.PlugIn
+namespace DataCloner.Core.PlugIn
 {
     public interface IDataBuilder
     {

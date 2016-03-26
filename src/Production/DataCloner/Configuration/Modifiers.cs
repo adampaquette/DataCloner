@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Xml.Serialization;
 
-namespace DataCloner.Configuration
+namespace DataCloner.Core.Configuration
 {
     [Serializable]
     public class Modifiers

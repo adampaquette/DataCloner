@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 
-namespace DataCloner
+namespace DataCloner.Core
 {
     [DebuggerDisplay("{ServerId.ToString() + \".\" + Database + \".\" + Schema}")]
     public class ServerIdentifier : IEquatable<ServerIdentifier>

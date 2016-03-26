@@ -1,9 +1,12 @@
 using System.Linq;
-using DataCloner.Metadata;
-using DataCloner.Configuration;
+using DataCloner.Core.Metadata;
+
+using DataCloner.Core.Configuration;
+
 using DataCloner.GUI.Properties;
 using GalaSoft.MvvmLight;
-using DataCloner.Data;
+using DataCloner.Core.Data;
+
 using DataCloner.GUI.Services;
 using DataCloner.GUI.ViewModel.SolutionExplorer;
 using DataCloner.GUI.UserControls;

@@ -1,10 +1,10 @@
-﻿using DataCloner.Framework;
+﻿using DataCloner.Core.Framework;
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
-namespace DataCloner
+namespace DataCloner.Core
 {
     [DebuggerDisplay("{ServerId.ToString() + \".\" + Database + \".\" + Schema + \".\" + Table}...")]
     public class RowIdentifier : TableIdentifier, IEquatable<RowIdentifier>

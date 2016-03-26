@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Xml.Serialization;
 
-namespace DataCloner.Framework
+namespace DataCloner.Core.Framework
 {
     public static class Extensions
     {

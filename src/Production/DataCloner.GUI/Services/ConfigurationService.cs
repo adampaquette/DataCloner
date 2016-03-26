@@ -1,11 +1,14 @@
-﻿using DataCloner.Configuration;
+﻿using DataCloner.Core.Configuration;
+
 using DataCloner.GUI.Model;
 using DataCloner.GUI.ViewModel;
-using DataCloner.Metadata;
+using DataCloner.Core.Metadata;
+
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using DataCloner.Core;
 
 namespace DataCloner.GUI.Services
 {
@@ -346,7 +349,7 @@ namespace DataCloner.GUI.Services
                                                                              f.NameTo == mergedFkCol.NameTo);
                         if (!isDefaultFkColFound)
                         {
-                            fkAdd.Columns.Add(new DataCloner.Configuration.ForeignKeyColumn
+                            fkAdd.Columns.Add(new Core.Configuration.ForeignKeyColumn
                             {
                                 NameFrom = mergedFkCol.NameFrom,
                                 NameTo = mergedFkCol.NameTo

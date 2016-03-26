@@ -3,19 +3,24 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataCloner", "DataCloner\DataCloner.csproj", "{3459DC7A-21BA-435C-882B-D84A333AEFD0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataCloner.Core", "DataCloner\DataCloner.Core.csproj", "{3459DC7A-21BA-435C-882B-D84A333AEFD0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataCloner.Tests", "DataCloner.Tests\DataCloner.Tests.csproj", "{01CFC02A-0A55-498B-870C-4B582CA23535}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataCloner.Core.Tests", "DataCloner.Tests\DataCloner.Core.Tests.csproj", "{01CFC02A-0A55-498B-870C-4B582CA23535}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataCloner.GUI", "DataCloner.GUI\DataCloner.GUI.csproj", "{76F2E773-EB67-4CD3-9D8C-669CF8101A36}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{91CC970B-F9A0-4F84-B207-B92F777DCE1A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataCloner.IntegrationTests", "DataCloner.IntegrationTests\DataCloner.IntegrationTests.csproj", "{8FF9BDE6-49AE-4A72-9FA3-7965CE77706C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataCloner.Core.IntegrationTests", "DataCloner.IntegrationTests\DataCloner.Core.IntegrationTests.csproj", "{8FF9BDE6-49AE-4A72-9FA3-7965CE77706C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataCloner.Uwp", "DataCloner.Uwp\DataCloner.Uwp.csproj", "{213602B1-D3A0-4975-A965-5DB282CCFA40}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "DataCloner.Infrastructure", "DataCloner.Infrastructure\DataCloner.Infrastructure.shproj", "{899BDAA1-FC69-45A9-B131-E0B199CC73A8}"
+EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		DataCloner.Infrastructure\DataCloner.Infrastructure.projitems*{899bdaa1-fc69-45a9-b131-e0b199cc73a8}*SharedItemsImports = 13
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Debug|ARM = Debug|ARM

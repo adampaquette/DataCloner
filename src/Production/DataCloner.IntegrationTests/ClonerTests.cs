@@ -1,11 +1,11 @@
-﻿using DataCloner.Configuration;
-using DataCloner.Data;
+﻿using DataCloner.Core.Configuration;
+using DataCloner.Core.Data;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using Xunit;
 
-namespace DataCloner.IntegrationTests
+namespace DataCloner.Core.IntegrationTests
 {
     public class ClonerTests
     {

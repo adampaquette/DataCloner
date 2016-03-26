@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 
-namespace DataCloner.Framework
+namespace DataCloner.Core.Framework
 {
     public class StructuralEqualityComparer<T> : IEqualityComparer<T>
     {

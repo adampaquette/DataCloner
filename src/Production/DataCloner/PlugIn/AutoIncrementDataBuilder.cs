@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using DataCloner.Metadata;
+using DataCloner.Core.Metadata;
 
-namespace DataCloner.PlugIn
+namespace DataCloner.Core.PlugIn
 {
     internal class AutoIncrementDataBuilder : IDataBuilder
     {

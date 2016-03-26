@@ -1,10 +1,10 @@
 ﻿using System.Linq;
 using System.Text;
-using DataCloner.Internal;
-using DataCloner.Metadata;
+using DataCloner.Core.Internal;
+using DataCloner.Core.Metadata;
 using System.Collections.Generic;
 
-namespace DataCloner.Data.Generator
+namespace DataCloner.Core.Data.Generator
 {
     internal class InsertWriterMsSql : IInsertWriter
     {

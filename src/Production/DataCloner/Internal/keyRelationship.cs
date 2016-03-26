@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using DataCloner.Framework;
+using DataCloner.Core.Framework;
 
-namespace DataCloner.Internal
+namespace DataCloner.Core.Internal
 {
     /// <summary>
     /// Server / database / schema / table / primarykey source value = primarykey destination value
