@@ -9,5 +9,13 @@
     <Import_RootNamespace>DataCloner.Infrastructure</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Converters\AgnosticConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Converters\NotNullToVisibleConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Modularity\IPlugin.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Modularity\IPluginManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Modularity\MenuEntry.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Modularity\PluginManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Modularity\TestPlugin.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)RegionNames.cs" />
   </ItemGroup>
 </Project>

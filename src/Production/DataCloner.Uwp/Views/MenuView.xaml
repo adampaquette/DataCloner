@@ -5,17 +5,22 @@
     xmlns:local="using:DataCloner.Uwp.Views"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:prism="using:Prism.Windows.Mvvm"
+    prism:ViewModelLocator.AutoWireViewModel="True"
     mc:Ignorable="d">
     <Grid Background="{ThemeResource MenuBackgroundBrush}">
-        <StackPanel>
-            <TextBlock Text="General"/>
-            <TextBlock Text="Tableau de board"/>
-            <TextBlock Text="Cloner"/>
-            <TextBlock Text="Configuration"/>
-            <TextBlock Text="Serveur SQL"/>
-            <TextBlock Text="Environnements"/>
-            <TextBlock Text="Modèles"/>
-            <TextBlock Text="Comportements"/>
-        </StackPanel>
+        <ScrollViewer 
+            HorizontalScrollBarVisibility="Auto" 
+            VerticalScrollBarVisibility="Auto">
+            <ItemsControl ItemsSource="{Binding MenuEntries}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Button Command="{Binding Command}" Width="300" Height="35">
+                            <TextBlock Text="{Binding EntryName}"/>
+                        </Button>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
     </Grid>
 </Page>

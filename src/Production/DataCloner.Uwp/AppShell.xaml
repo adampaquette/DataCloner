@@ -16,7 +16,8 @@
         <Grid>
             <views:TopBarView/>
         </Grid>
-        <SplitView x:Name="rootSplitView" DisplayMode="Inline" IsPaneOpen="True" Grid.Row="1">
+        <SplitView x:Name="rootSplitView" DisplayMode="Inline" IsPaneOpen="True" Grid.Row="1"
+                   OpenPaneLength="300">
             <SplitView.Pane>
                 <views:MenuView/>
             </SplitView.Pane>
