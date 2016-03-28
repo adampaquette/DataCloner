@@ -9,6 +9,7 @@
     <Import_RootNamespace>DataCloner.Infrastructure</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Behaviors\OpenMenuFlyoutAction.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Converters\AgnosticConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Converters\NotNullToVisibleConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Modularity\IPlugin.cs" />

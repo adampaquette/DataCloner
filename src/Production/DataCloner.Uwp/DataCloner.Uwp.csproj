@@ -95,8 +95,8 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="AppShell.xaml.cs">
-      <DependentUpon>AppShell.xaml</DependentUpon>
+    <Compile Include="Shell.xaml.cs">
+      <DependentUpon>Shell.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModels\HomePageViewModel.cs" />
@@ -141,7 +141,7 @@
     <Folder Include="Services\" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="AppShell.xaml">
+    <Page Include="Shell.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

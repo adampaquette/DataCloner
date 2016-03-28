@@ -3,9 +3,9 @@ using Windows.UI.Xaml.Controls;
 
 namespace DataCloner.Uwp
 {
-    public sealed partial class AppShell : Page
+    public sealed partial class Shell : Page
     {
-        public AppShell()
+        public Shell()
         {
             this.InitializeComponent();
         }

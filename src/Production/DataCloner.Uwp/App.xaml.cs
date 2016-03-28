@@ -20,7 +20,7 @@ namespace DataCloner.Uwp
 
         protected override UIElement CreateShell(Frame rootFrame)
         {
-            var shell = Container.Resolve<AppShell>();
+            var shell = Container.Resolve<Shell>();
             shell.SetContentFrame(rootFrame);
             return shell;
         }
