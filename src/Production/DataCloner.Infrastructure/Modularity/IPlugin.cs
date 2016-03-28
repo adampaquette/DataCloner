@@ -12,6 +12,6 @@ namespace DataCloner.Infrastructure.Modularity
         /// </summary>
         void Initialize();
 
-        List<MenuEntry> MenuEntries { get; }
+        List<MenuItem> MenuItems { get; }
     }
 }

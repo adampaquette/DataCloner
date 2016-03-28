@@ -2,9 +2,9 @@
 
 namespace DataCloner.Uwp.Views
 {
-    public sealed partial class MenuView : Page
+    public sealed partial class MenuPanelView : Page
     {
-        public MenuView()
+        public MenuPanelView()
         {
             this.InitializeComponent();
         }

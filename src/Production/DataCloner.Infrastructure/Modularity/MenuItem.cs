@@ -1,16 +1,20 @@
 ﻿using Prism.Commands;
+using Windows.UI.Xaml.Controls;
 
 namespace DataCloner.Infrastructure.Modularity
 {
-    public class MenuEntry
+    public class MenuItem
     {
         public string EntryName { get; }
         public DelegateCommand Command { get; }
 
-        public MenuEntry(string entryName, DelegateCommand command)
+        public MenuFlyout ContextMenu { get; }
+
+        public MenuItem(string entryName, DelegateCommand command, MenuFlyout contextMenu)
         {
             EntryName = entryName;
             Command = command;
+            ContextMenu = contextMenu;
         }
     }
 }

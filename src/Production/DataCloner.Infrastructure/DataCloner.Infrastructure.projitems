@@ -14,7 +14,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Converters\NotNullToVisibleConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Modularity\IPlugin.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Modularity\IPluginManager.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Modularity\MenuEntry.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Modularity\MenuItem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Modularity\PluginManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Modularity\TestPlugin.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RegionNames.cs" />

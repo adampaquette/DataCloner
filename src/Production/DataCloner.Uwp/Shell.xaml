@@ -19,7 +19,7 @@
         <SplitView x:Name="rootSplitView" DisplayMode="Inline" IsPaneOpen="True" Grid.Row="1"
                    OpenPaneLength="400">
             <SplitView.Pane>
-                <views:MenuView/>
+                <views:MenuPanelView/>
             </SplitView.Pane>
         </SplitView>
     </Grid>
