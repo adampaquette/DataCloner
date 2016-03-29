@@ -12,6 +12,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Behaviors\OpenMenuFlyoutAction.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Converters\AgnosticConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Converters\NotNullToVisibleConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)designViewModels\MenuPanelDesignViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Modularity\IPlugin.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Modularity\IPluginManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Modularity\MenuItem.cs" />

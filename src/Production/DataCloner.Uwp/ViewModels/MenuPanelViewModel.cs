@@ -21,9 +21,6 @@ namespace DataCloner.Uwp.ViewModels
             _navigationService = navigationService;
             _menuItems = new List<MenuItem>();
 
-            //Receive all loaded plugins
-
-
             var test = new TestPlugin(_navigationService);
             test.Initialize();
             _menuItems.AddRange(test.MenuItems);

@@ -9,12 +9,14 @@
     xmlns:i="using:Microsoft.Xaml.Interactivity"
     xmlns:core="using:Microsoft.Xaml.Interactions.Core"
     xmlns:b="using:DataCloner.Infrastructure.Behaviors"
+    xmlns:dvm="using:DataCloner.Infrastructure.designViewModels"
     prism:ViewModelLocator.AutoWireViewModel="True"
-    mc:Ignorable="d">
+    mc:Ignorable="d"
+    d:DataContext="{d:DesignInstance dvm:MenuPanelDesignViewModel,
+                                     IsDesignTimeCreatable=True}">
     <Grid Background="{ThemeResource MenuBackgroundBrush}">
         <Grid.Resources>
             <Style x:Name="MenuFlyoutPresenterItemTemplate" TargetType="MenuFlyoutPresenter">
-                <Setter Property="Width" Value="500" />
                 <Setter Property="Background" Value="Gray"/>
             </Style>
             <Style x:Name="MenuFlyoutItemStyle" TargetType="MenuFlyoutItem">
@@ -118,14 +120,6 @@
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <Button Command="{Binding Command}" Height="35" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
-                            <FlyoutBase.AttachedFlyout>
-                                <MenuFlyout>
-                                    <MenuFlyoutItem x:Name="EditButton"
-                                                            Text="Edit=========="/>
-                                    <MenuFlyoutItem x:Name="DeleteButton"
-                                                            Text="Delete========"/>
-                                </MenuFlyout>
-                            </FlyoutBase.AttachedFlyout>
                             <i:Interaction.Behaviors>
                                 <core:EventTriggerBehavior EventName="RightTapped">
                                     <b:OpenMenuFlyoutAction MenuFlyoutPresenterStyle="{StaticResource MenuFlyoutPresenterItemTemplate}" 
