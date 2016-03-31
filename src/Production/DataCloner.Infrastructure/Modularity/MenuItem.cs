@@ -1,20 +1,30 @@
-﻿using Prism.Commands;
+﻿using DataCloner.Infrastructure.UserControls;
+using Prism.Commands;
 using Windows.UI.Xaml.Controls;
 
 namespace DataCloner.Infrastructure.Modularity
 {
-    public class MenuItem
+    public class MenuItem : TreeViewLazyItemViewModel
     {
-        public string EntryName { get; }
+        private ContextMenuManager _contextMenuManager;
+        private string _contextMenuPath;
+
+        public string Id { get; }
+        public string ContainerPath { get; }
+        public string Name { get; }
         public DelegateCommand Command { get; }
+        public MenuFlyout ContextMenu => _contextMenuManager.GetContextMenu(_contextMenuPath);
 
-        public MenuFlyout ContextMenu { get; }
-
-        public MenuItem(string entryName, DelegateCommand command, MenuFlyout contextMenu)
+        public MenuItem(string id, string containerPath, string name, DelegateCommand command,
+            string contextMenuPath, TreeViewLazyItemViewModel parent, ContextMenuManager contextMenuManager)
+            : base(parent, false)
         {
-            EntryName = entryName;
+            Id = id;
+            ContainerPath = containerPath;
+            Name = name;
             Command = command;
-            ContextMenu = contextMenu;
+            _contextMenuPath = contextMenuPath;
+            _contextMenuManager = contextMenuManager;
         }
     }
 }

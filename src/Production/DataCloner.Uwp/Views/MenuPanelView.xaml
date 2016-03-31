@@ -46,6 +46,13 @@
                                         </Storyboard>
                                     </VisualState>
                                     <VisualState x:Name="PointerOver">
+                                        <VisualState.Setters>
+                                            <Setter Target="ContentPresenter.(ContentPresenter.Background).(SolidColorBrush.Color)">
+                                                <Setter.Value>
+                                                    <Color>#FF43707A</Color>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </VisualState.Setters>
                                         <Storyboard>
                                             <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="BorderBrush" Storyboard.TargetName="ContentPresenter">
                                                 <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlHighlightBaseMediumLowBrush}"/>
@@ -206,7 +213,7 @@
                                     </b:OpenMenuFlyoutAction>
                                 </core:EventTriggerBehavior>
                             </i:Interaction.Behaviors>
-                            <TextBlock Text="{Binding EntryName}"/>
+                            <TextBlock Text="{Binding Name}"/>
                         </Button>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>

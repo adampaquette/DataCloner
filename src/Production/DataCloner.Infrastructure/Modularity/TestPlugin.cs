@@ -2,7 +2,6 @@
 using Prism.Windows.Navigation;
 using System.Collections.Generic;
 using System.Diagnostics;
-using Windows.UI.Xaml.Controls;
 
 namespace DataCloner.Infrastructure.Modularity
 {
@@ -19,27 +18,39 @@ namespace DataCloner.Infrastructure.Modularity
 
         public void Initialize()
         {
-            var contextMenu = new MenuFlyout();
-            contextMenu.Items.Add(new MenuFlyoutItem { Text = "Add", Command = new DelegateCommand(() => _navigationService.Navigate("Home", null)) });
-            contextMenu.Items.Add(new MenuFlyoutItem { Text = "Delete", Command = new DelegateCommand(() => _navigationService.Navigate("TestPlugin", null)) });
+            const string CONTEXT_MENU_PATH_1 = "MENU_PATH_1";
+            const string CONTEXT_MENU_PATH_2 = "MENU_PATH_2";
 
-            var contextMenu2 = new MenuFlyout();
-            contextMenu2.Items.Add(new MenuFlyoutItem { Text = "Add" });
-            contextMenu2.Items.Add(new MenuFlyoutItem { Text = "Delete" });
-            contextMenu2.Items.Add(new MenuFlyoutSeparator());
-            contextMenu2.Items.Add(new MenuFlyoutItem { Text = "Create a new Serveur" });
-            contextMenu2.Items.Add(new MenuFlyoutItem { Text = "Create a new Template" });
+            const string MENU_PATH_1 = "MENU_PATH_1";
+            const string MENU_PATH_2 = "MENU_PATH_2";
+            const string MENU_PATH_3 = "MENU_PATH_3";
+            const string MENU_PATH_4 = "MENU_PATH_4";
+            const string MENU_PATH_5 = "MENU_PATH_4";
+            const string MENU_PATH_6 = "MENU_PATH_4";
+            const string MENU_PATH_7 = "MENU_PATH_4";
+            const string MENU_PATH_8 = "MENU_PATH_4";
+
+            var contextMenuManager = new ContextMenuManager();
+            contextMenuManager.Append(new List<ContextMenuItem>
+            {
+                new ContextMenuItem(CONTEXT_MENU_PATH_1) { Text = "Add", Command = new DelegateCommand(() => _navigationService.Navigate("Home", null)) },
+                new ContextMenuItem(CONTEXT_MENU_PATH_1) { Text = "Delete", Command = new DelegateCommand(() => _navigationService.Navigate("TestPlugin", null)) },
+                new ContextMenuItem(CONTEXT_MENU_PATH_2) { Text = "Create"},
+                new ContextMenuItem(CONTEXT_MENU_PATH_2) { Text = "Delete"},
+                new ContextMenuItem(CONTEXT_MENU_PATH_2) { Text = "Create as new server"},
+                new ContextMenuItem(CONTEXT_MENU_PATH_2) { Text = "Create as new Template"}
+             });
 
             MenuItems = new List<MenuItem>
             {
-                new MenuItem("General", new DelegateCommand(() => _navigationService.Navigate("TestPlugin",null)), contextMenu),
-                new MenuItem("Tableau de board", new DelegateCommand(() => _navigationService.Navigate("Home",null)),contextMenu),
-                new MenuItem("Cloner", new DelegateCommand(() => Debug.WriteLine("plugin 2")),contextMenu),
-                new MenuItem("Configuration", new DelegateCommand(() => Debug.WriteLine("plugin 3")),contextMenu),
-                new MenuItem("Serveur SQL", new DelegateCommand(() => Debug.WriteLine("plugin 4")),contextMenu2),
-                new MenuItem("Environnements", new DelegateCommand(() => Debug.WriteLine("plugin 5")),contextMenu2),
-                new MenuItem("Modèles", new DelegateCommand(() => Debug.WriteLine("plugin 6")),contextMenu2),
-                new MenuItem("Comportements", new DelegateCommand(() => Debug.WriteLine("plugin 7")),contextMenu2)
+                new MenuItem(MENU_PATH_1, null,"General", new DelegateCommand(() => _navigationService.Navigate("TestPlugin",null)), CONTEXT_MENU_PATH_1, null, contextMenuManager),
+                new MenuItem(MENU_PATH_2, null,"Tableau de board", new DelegateCommand(() => _navigationService.Navigate("Home",null)),CONTEXT_MENU_PATH_1, null, contextMenuManager),
+                new MenuItem(MENU_PATH_3, null,"Cloner", new DelegateCommand(() => Debug.WriteLine("plugin 2")),CONTEXT_MENU_PATH_1, null, contextMenuManager),
+                new MenuItem(MENU_PATH_4, null,"Configuration", new DelegateCommand(() => Debug.WriteLine("plugin 3")),CONTEXT_MENU_PATH_1, null, contextMenuManager),
+                new MenuItem(MENU_PATH_5, null,"Serveur SQL", new DelegateCommand(() => Debug.WriteLine("plugin 4")),CONTEXT_MENU_PATH_2, null, contextMenuManager),
+                new MenuItem(MENU_PATH_6, null,"Environnements", new DelegateCommand(() => Debug.WriteLine("plugin 5")),CONTEXT_MENU_PATH_2, null, contextMenuManager),
+                new MenuItem(MENU_PATH_7, null,"Modèles", new DelegateCommand(() => Debug.WriteLine("plugin 6")),CONTEXT_MENU_PATH_2, null, contextMenuManager),
+                new MenuItem(MENU_PATH_8, null,"Comportements", new DelegateCommand(() => Debug.WriteLine("plugin 7")),CONTEXT_MENU_PATH_2, null, contextMenuManager)
             };
         }
     }

@@ -139,6 +139,7 @@
   <ItemGroup>
     <Folder Include="Commun\" />
     <Folder Include="Services\" />
+    <Folder Include="ViewModels\Menu\" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="Shell.xaml">
