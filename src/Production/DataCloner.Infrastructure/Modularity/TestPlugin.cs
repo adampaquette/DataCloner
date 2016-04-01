@@ -43,14 +43,31 @@ namespace DataCloner.Infrastructure.Modularity
 
             MenuItems = new List<MenuItem>
             {
-                new MenuItem(MENU_PATH_1, null,"General", new DelegateCommand(() => _navigationService.Navigate("TestPlugin",null)), CONTEXT_MENU_PATH_1, null, contextMenuManager),
-                new MenuItem(MENU_PATH_2, null,"Tableau de board", new DelegateCommand(() => _navigationService.Navigate("Home",null)),CONTEXT_MENU_PATH_1, null, contextMenuManager),
-                new MenuItem(MENU_PATH_3, null,"Cloner", new DelegateCommand(() => Debug.WriteLine("plugin 2")),CONTEXT_MENU_PATH_1, null, contextMenuManager),
-                new MenuItem(MENU_PATH_4, null,"Configuration", new DelegateCommand(() => Debug.WriteLine("plugin 3")),CONTEXT_MENU_PATH_1, null, contextMenuManager),
-                new MenuItem(MENU_PATH_5, null,"Serveur SQL", new DelegateCommand(() => Debug.WriteLine("plugin 4")),CONTEXT_MENU_PATH_2, null, contextMenuManager),
-                new MenuItem(MENU_PATH_6, null,"Environnements", new DelegateCommand(() => Debug.WriteLine("plugin 5")),CONTEXT_MENU_PATH_2, null, contextMenuManager),
-                new MenuItem(MENU_PATH_7, null,"Modèles", new DelegateCommand(() => Debug.WriteLine("plugin 6")),CONTEXT_MENU_PATH_2, null, contextMenuManager),
-                new MenuItem(MENU_PATH_8, null,"Comportements", new DelegateCommand(() => Debug.WriteLine("plugin 7")),CONTEXT_MENU_PATH_2, null, contextMenuManager)
+                new MenuItem(MENU_PATH_1, null, 
+                    new DelegateCommand(() => _navigationService.Navigate("TestPlugin",null)), 
+                    CONTEXT_MENU_PATH_1, null, contextMenuManager) { Text = "General" },
+                new MenuItem(MENU_PATH_2, MENU_PATH_1,
+                    new DelegateCommand(() => _navigationService.Navigate("Home",null)),
+                    CONTEXT_MENU_PATH_1, null, contextMenuManager) {Text = "Tableau de board"},
+                new MenuItem(MENU_PATH_3, MENU_PATH_1,
+                    new DelegateCommand(() => Debug.WriteLine("plugin 2")),
+                    CONTEXT_MENU_PATH_1, null, contextMenuManager) {Text = "Cloner"},
+
+                new MenuItem(MENU_PATH_4, null,
+                    new DelegateCommand(() => _navigationService.Navigate("TreeViewLazy",null)),
+                    CONTEXT_MENU_PATH_1, null, contextMenuManager) {Text = "Configuration"},
+                new MenuItem(MENU_PATH_5, MENU_PATH_4,
+                    new DelegateCommand(() => Debug.WriteLine("plugin 4")),
+                    CONTEXT_MENU_PATH_2, null, contextMenuManager) {Text = "Serveur SQL"},
+                new MenuItem(MENU_PATH_6, MENU_PATH_4,
+                    new DelegateCommand(() => Debug.WriteLine("plugin 5")),
+                    CONTEXT_MENU_PATH_2, null, contextMenuManager) {Text = "Environnements"},
+                new MenuItem(MENU_PATH_7, MENU_PATH_4,
+                    new DelegateCommand(() => Debug.WriteLine("plugin 6")),
+                    CONTEXT_MENU_PATH_2, null, contextMenuManager) {Text = "Modèles"},
+                new MenuItem(MENU_PATH_8, MENU_PATH_4,
+                    new DelegateCommand(() => Debug.WriteLine("plugin 7")),
+                    CONTEXT_MENU_PATH_2, null, contextMenuManager) {Text = "Comportements"}
             };
         }
     }

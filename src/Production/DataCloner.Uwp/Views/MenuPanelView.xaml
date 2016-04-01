@@ -213,7 +213,7 @@
                                     </b:OpenMenuFlyoutAction>
                                 </core:EventTriggerBehavior>
                             </i:Interaction.Behaviors>
-                            <TextBlock Text="{Binding Name}"/>
+                            <TextBlock Text="{Binding Text}"/>
                         </Button>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>

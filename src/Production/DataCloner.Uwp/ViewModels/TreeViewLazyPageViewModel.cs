@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace DataCloner.Uwp.ViewModels
 {
-    public class MenuPanelViewModel : ViewModelBase
+    public class TreeViewLazyPageViewModel : ViewModelBase
     {
         private INavigationService _navigationService;
         private ObservableCollection<MenuItem> _menuItems;
@@ -19,7 +19,7 @@ namespace DataCloner.Uwp.ViewModels
             set { SetProperty(ref _menuItems, value); }
         }
 
-        public MenuPanelViewModel(INavigationService navigationService)
+        public TreeViewLazyPageViewModel(INavigationService navigationService)
         {
             _navigationService = navigationService;
 

@@ -1,34 +1,41 @@
 ﻿using DataCloner.Infrastructure.Modularity;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace DataCloner.Infrastructure.designViewModels
 {
     public class MenuPanelDesignViewModel
     {
-        public List<MenuItem> MenuItems { get; }
+        public ObservableCollection<MenuItem> MenuItems { get; }
 
         public MenuPanelDesignViewModel()
         {
-            MenuItems = new List<MenuItem>();
-
             var test = new TestPlugin(null);
             test.Initialize();
-            
-            foreach (var item in test.MenuItems)
+
+            MenuItems = BuildTreeView(test.MenuItems);
+        }
+
+        private ObservableCollection<MenuItem> BuildTreeView(List<MenuItem> items)
+        {
+            var menu = new ObservableCollection<MenuItem>();
+
+            foreach (var item in items)
             {
                 //Root element
                 if (String.IsNullOrWhiteSpace(item.Id))
                 {
-                    MenuItems.Add(item);
+                    menu.Add(item);
                 }
                 else
                 {
                     //Search for the parent
-                    MenuItems.First(i => i.Id == item.ContainerPath).Children.Add(item);
+                    menu.First(i => i.Id == item.ContainerPath).Children.Add(item);
                 } 
             }
+            return menu;
         }
     }
 }

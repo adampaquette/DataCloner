@@ -1,13 +1,13 @@
 ﻿using Windows.UI.Xaml.Controls;
 
-namespace DataCloner.Infrastructure.UserControls
+namespace DataCloner.Uwp.Views
 {
     /// <summary>
     /// Logique d'interaction pour TreeViewLazyLoadBase.xaml
     /// </summary>
-    public partial class TreeViewLazy : UserControl
+    public partial class TreeViewLazyPage : Page
     {
-        public TreeViewLazy()
+        public TreeViewLazyPage()
         {
             InitializeComponent();
         }
