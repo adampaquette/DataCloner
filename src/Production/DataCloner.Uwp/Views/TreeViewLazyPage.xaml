@@ -6,10 +6,31 @@
       xmlns:xc="using:WinRTXamlToolkit.Controls"
       xmlns:prism="using:Prism.Windows.Mvvm"
       xmlns:data="using:WinRTXamlToolkit.Controls.Data"
+      xmlns:module="using:DataCloner.Infrastructure.Modularity"
       prism:ViewModelLocator.AutoWireViewModel="True"
       mc:Ignorable="d">
+    <Page.Resources>
+        <ResourceDictionary>
+            <DataTemplate x:Key="TreeViewItemTemplate">
+                <data:DataTemplateExtensions.Hierarchy>
+                    <data:HierarchicalDataTemplate
+                            ItemsSource="{Binding Children}" />
+                </data:DataTemplateExtensions.Hierarchy>
+                <StackPanel
+                        Orientation="Horizontal">
+                    <TextBlock
+                            Text="{Binding Text}" />
+                    <Rectangle
+                            VerticalAlignment="Center"
+                            Margin="5"
+                            Width="10"
+                            Height="10"
+                            Fill="DarkOrange" />
+                </StackPanel>
+            </DataTemplate>
+        </ResourceDictionary>
+    </Page.Resources>
     <Grid>
-
         <!--
         <TreeView ItemsSource="{Binding DataContext, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}">
             <TreeView.ItemContainerStyle>
@@ -31,25 +52,6 @@
         
         <Grid.Resources>
             <ResourceDictionary>
-                <DataTemplate
-                    x:Key="TreeViewItemTemplate">
-                    <data:DataTemplateExtensions.Hierarchy>
-                        <data:HierarchicalDataTemplate
-                            ItemsSource="{Binding Children}" />
-                    </data:DataTemplateExtensions.Hierarchy>
-                    <StackPanel
-                        Orientation="Horizontal">
-                        <TextBlock
-                            Text="{Binding Text}" />
-                        <Rectangle
-                            VerticalAlignment="Center"
-                            Margin="5"
-                            Width="10"
-                            Height="10"
-                            Fill="DarkOrange" />
-                    </StackPanel>
-                </DataTemplate>
-
                 <!--MouseTreeViewItemStyle-->
                 <Style
                     x:Key="MouseTreeViewItemStyle"
@@ -566,6 +568,8 @@
         <xc:TreeView Style="{StaticResource MouseTreeViewStyle}"
                      ItemTemplate="{StaticResource TreeViewItemTemplate}"
                      ItemsSource="{Binding MenuItems}">
+            <ResourceDictionary>
+            </ResourceDictionary>
         </xc:TreeView>
     </Grid>
 </Page>

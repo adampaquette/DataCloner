@@ -1,0 +1,90 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <ResourceDictionary.ThemeDictionaries>
+        <ResourceDictionary x:Key="Default">
+            <!-- Default theme resources -->
+
+            <!--
+            ******************************************************************
+            COMMON CONTROL PROPERTIES
+            ******************************************************************
+            -->
+            <FontFamily x:Key="SymbolThemeFontFamily">Segoe MDL2 Assets</FontFamily>
+            <x:Double x:Key="TopBarHeight">80</x:Double>
+
+            <!--
+            ******************************************************************
+            COMMON CONTROL COLORS
+            ******************************************************************
+            -->
+
+            
+            <!--
+            ******************************************************************
+            TOP BAR
+            ******************************************************************
+            -->
+            <SolidColorBrush x:Key="TopBarBackgroundBrush" Color="#0095CE00"/>
+            <Color x:Key="TopBarBackgroundColor">#0095CE00</Color> 
+        </ResourceDictionary>
+        <ResourceDictionary x:Key="Light">
+            <!-- Default theme resources -->
+
+            <!--
+            ******************************************************************
+            COMMON CONTROL PROPERTIES
+            ******************************************************************
+            -->
+            <FontFamily x:Key="SymbolThemeFontFamily">Segoe MDL2 Assets</FontFamily>
+            <x:Double x:Key="TopBarHeight">80</x:Double>
+
+            <!--
+            ******************************************************************
+            COMMON CONTROL COLORS
+            ******************************************************************
+            -->
+
+
+            <!--
+            ******************************************************************
+            TOP BAR
+            ******************************************************************
+            -->
+            <SolidColorBrush x:Key="TopBarBackgroundBrush" Color="#0095CE"/>
+
+            <!--
+            ******************************************************************
+            MENU 
+            ******************************************************************
+            -->
+            <SolidColorBrush x:Key="MenuBackgroundBrush" Color="#243135"/>
+
+
+            
+        </ResourceDictionary>
+    </ResourceDictionary.ThemeDictionaries>
+    
+
+    <!--
+    ******************************************************************
+    SECTION TOPBAR
+    ******************************************************************
+    -->
+    <Style x:Key="TopBarGrid" TargetType="Grid">
+        <Setter Property="Height" Value="{ThemeResource TopBarHeight}"/>
+        <Setter Property="Background" Value="{ThemeResource TopBarBackgroundBrush}"/>
+    </Style>
+
+
+    <!--
+    ******************************************************************
+    COMMUN CONTROLS
+    ******************************************************************
+    -->
+    <Style x:Key="BaseLabelStyle" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="20"/>
+        <Setter Property="Foreground" Value="Blue"/>
+    </Style>
+</ResourceDictionary>
