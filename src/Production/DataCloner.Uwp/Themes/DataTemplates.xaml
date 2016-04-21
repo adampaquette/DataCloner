@@ -1,6 +1,66 @@
-﻿<ResourceDictionary
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:DataCloner.Uwp.Themes">
-    
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:b="using:DataCloner.Infrastructure.Behaviors"
+                    xmlns:core="using:Microsoft.Xaml.Interactions.Core"
+                    xmlns:data="using:WinRTXamlToolkit.Controls.Data"
+                    xmlns:i="using:Microsoft.Xaml.Interactivity"
+                    xmlns:local="using:DataCloner.Uwp.Themes">
+    <DataTemplate x:Key="TreeViewItemDataTemplateLevel3">
+        <data:DataTemplateExtensions.Hierarchy>
+            <data:HierarchicalDataTemplate ItemsSource="{Binding Children}" />
+        </data:DataTemplateExtensions.Hierarchy>
+        <Grid>
+            <i:Interaction.Behaviors>
+                <core:EventTriggerBehavior EventName="Tapped">
+                    <core:InvokeCommandAction Command="{Binding Command}" />
+                </core:EventTriggerBehavior>
+                <core:EventTriggerBehavior EventName="RightTapped">
+                    <b:OpenMenuFlyoutAction ContextMenu="{Binding ContextMenu}"
+                                            MenuFlyoutItemStyle="{StaticResource MenuFlyoutItemStyle}"
+                                            MenuFlyoutPresenterStyle="{StaticResource MenuFlyoutPresenterItemTemplate}" />
+                </core:EventTriggerBehavior>
+            </i:Interaction.Behaviors>
+            <TextBlock Text="{Binding Text}" />
+        </Grid>
+    </DataTemplate>
+    <DataTemplate x:Key="TreeViewItemDataTemplateLevel2">
+        <data:DataTemplateExtensions.Hierarchy>
+            <data:HierarchicalDataTemplate ItemContainerStyle="{StaticResource TreeViewItemContainerStyleLevel3}"
+                                           ItemTemplate="{StaticResource TreeViewItemDataTemplateLevel3}"
+                                           ItemsSource="{Binding Children}" />
+        </data:DataTemplateExtensions.Hierarchy>
+        <Grid>
+            <i:Interaction.Behaviors>
+                <core:EventTriggerBehavior EventName="Tapped">
+                    <core:InvokeCommandAction Command="{Binding Command}" />
+                </core:EventTriggerBehavior>
+                <core:EventTriggerBehavior EventName="RightTapped">
+                    <b:OpenMenuFlyoutAction ContextMenu="{Binding ContextMenu}"
+                                            MenuFlyoutItemStyle="{StaticResource MenuFlyoutItemStyle}"
+                                            MenuFlyoutPresenterStyle="{StaticResource MenuFlyoutPresenterItemTemplate}" />
+                </core:EventTriggerBehavior>
+            </i:Interaction.Behaviors>
+            <TextBlock Text="{Binding Text}" />
+        </Grid>
+    </DataTemplate>
+    <DataTemplate x:Key="TreeViewItemDataTemplateLevel1">
+        <data:DataTemplateExtensions.Hierarchy>
+            <data:HierarchicalDataTemplate ItemContainerStyle="{StaticResource TreeViewItemContainerStyleLevel2}"
+                                           ItemTemplate="{StaticResource TreeViewItemDataTemplateLevel2}"
+                                           ItemsSource="{Binding Children}" />
+        </data:DataTemplateExtensions.Hierarchy>
+        <Grid>
+            <i:Interaction.Behaviors>
+                <core:EventTriggerBehavior EventName="Tapped">
+                    <core:InvokeCommandAction Command="{Binding Command}" />
+                </core:EventTriggerBehavior>
+                <core:EventTriggerBehavior EventName="RightTapped">
+                    <b:OpenMenuFlyoutAction ContextMenu="{Binding ContextMenu}"
+                                            MenuFlyoutItemStyle="{StaticResource MenuFlyoutItemStyle}"
+                                            MenuFlyoutPresenterStyle="{StaticResource MenuFlyoutPresenterItemTemplate}" />
+                </core:EventTriggerBehavior>
+            </i:Interaction.Behaviors>
+            <TextBlock Text="{Binding Text}" />
+        </Grid>
+    </DataTemplate>
 </ResourceDictionary>

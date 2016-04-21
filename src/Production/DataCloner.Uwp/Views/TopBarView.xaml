@@ -1,17 +1,17 @@
-﻿<Page
-    x:Class="DataCloner.Uwp.Views.TopBarView"
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:DataCloner.Uwp.Views"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d">
+﻿<Page x:Class="DataCloner.Uwp.Views.TopBarView"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:local="using:DataCloner.Uwp.Views"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      mc:Ignorable="d">
     <Grid Style="{StaticResource TopBarGrid}">
-        <StackPanel Orientation="Horizontal">
-            <TextBlock Text="Fichier"/>
-            <TextBlock Text="Outils"/>
-            <TextBlock Text="Aide"/>
-            <TextBlock Text="À propos"/>
+        <StackPanel Orientation="Horizontal" Padding="18 0">
+            <Image Source="../Assets/logo2.png" Stretch="None"/>
+            <TextBlock Text="Fichier" />
+            <TextBlock Text="Outils" />
+            <TextBlock Text="Aide" />
+            <TextBlock Text="À propos" />
         </StackPanel>
     </Grid>
 </Page>

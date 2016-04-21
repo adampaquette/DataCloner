@@ -34,7 +34,7 @@ namespace DataCloner.Infrastructure.Modularity
             contextMenuManager.Append(new List<ContextMenuItem>
             {
                 new ContextMenuItem(CONTEXT_MENU_PATH_1) { Text = "Add", Command = new DelegateCommand(() => _navigationService.Navigate("Home", null)) },
-                new ContextMenuItem(CONTEXT_MENU_PATH_1) { Text = "Delete", Command = new DelegateCommand(() => _navigationService.Navigate("TestPlugin", null)) },
+                new ContextMenuItem(CONTEXT_MENU_PATH_1) { Text = "Delete"},
                 new ContextMenuItem(CONTEXT_MENU_PATH_2) { Text = "Create"},
                 new ContextMenuItem(CONTEXT_MENU_PATH_2) { Text = "Delete"},
                 new ContextMenuItem(CONTEXT_MENU_PATH_2) { Text = "Create as new server"},
@@ -54,7 +54,7 @@ namespace DataCloner.Infrastructure.Modularity
                     CONTEXT_MENU_PATH_1, null, contextMenuManager) {Text = "Cloner"},
 
                 new MenuItem(MENU_PATH_4, null,
-                    new DelegateCommand(() => _navigationService.Navigate("TreeViewLazy",null)),
+                    new DelegateCommand(() => Debug.WriteLine("plugin 3")),
                     CONTEXT_MENU_PATH_1, null, contextMenuManager) {Text = "Configuration"},
                 new MenuItem(MENU_PATH_5, MENU_PATH_4,
                     new DelegateCommand(() => Debug.WriteLine("plugin 4")),

@@ -16,7 +16,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Modularity\ContextMenuItem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Modularity\ContextMenuManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Modularity\MainLevelMenuItem.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Modularity\SectionMenuItem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Modularity\IPlugin.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Modularity\IPluginManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Modularity\MenuItem.cs" />
