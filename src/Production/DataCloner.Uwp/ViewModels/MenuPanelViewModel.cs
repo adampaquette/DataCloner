@@ -1,4 +1,6 @@
 ﻿using DataCloner.Infrastructure.Modularity;
+using DataCloner.Uwp.Plugins;
+using DataCloner.Uwp.Services;
 using Prism.Windows.Mvvm;
 using Prism.Windows.Navigation;
 using System;
@@ -23,30 +25,17 @@ namespace DataCloner.Uwp.ViewModels
         {
             _navigationService = navigationService;
 
+            var menuBuilder = new TreeMenuBuilder();
+
+            var generalMenu = new GeneralMenuPlugin(_navigationService);
+            generalMenu.Initialize();
+            menuBuilder.Append(generalMenu.MenuItems);
+
             var test = new TestPlugin(_navigationService);
             test.Initialize();
+            menuBuilder.Append(test.MenuItems);
 
-            _menuItems = BuildTreeView(test.MenuItems);
-        }
-
-        private ObservableCollection<MenuItem> BuildTreeView(List<MenuItem> items)
-        {
-            var menu = new ObservableCollection<MenuItem>();
-
-            foreach (var item in items)
-            {
-                //Root element
-                if (String.IsNullOrWhiteSpace(item.ContainerPath))
-                {
-                    menu.Add(item);
-                }
-                else
-                {
-                    //Search for the parent
-                    menu.First(i => i.Id == item.ContainerPath).Children.Add(item);
-                }
-            }
-            return menu;
+            _menuItems = menuBuilder.ToObservableCollection();
         }
     }
 }

@@ -25,14 +25,14 @@ namespace DataCloner.Infrastructure.designViewModels
             foreach (var item in items)
             {
                 //Root element
-                if (String.IsNullOrWhiteSpace(item.Id))
+                if (String.IsNullOrWhiteSpace(item.PathId))
                 {
                     menu.Add(item);
                 }
                 else
                 {
                     //Search for the parent
-                    menu.First(i => i.Id == item.ContainerPath).Children.Add(item);
+                    menu.First(i => i.PathId == item.ContainerPath).Children.Add(item);
                 } 
             }
             return menu;

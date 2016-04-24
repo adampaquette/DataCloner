@@ -15,12 +15,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)designViewModels\MenuPanelDesignViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Modularity\ContextMenuItem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Modularity\ContextMenuManager.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Modularity\MainLevelMenuItem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Modularity\IPlugin.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Modularity\IPluginManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Modularity\MenuItem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Modularity\PluginManager.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Modularity\TestPlugin.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RegionNames.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UserControls\TreeViewLazyItemViewModel.cs" />
   </ItemGroup>

@@ -117,7 +117,7 @@
                                                          To="1" />
                                     </Storyboard>
                                 </VisualState>
-                                <VisualState x:Name="SelectedInactive"/>
+                                <VisualState x:Name="SelectedInactive" />
                             </VisualStateGroup>
                             <VisualStateGroup x:Name="HasItemsStates">
                                 <VisualState x:Name="HasItems" />
