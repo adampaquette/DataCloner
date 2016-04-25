@@ -8,21 +8,21 @@ namespace DataCloner.Uwp.Services
 {
     public class TreeMenuBuilder
     {
-        private HashSet<MenuItem> _allItems;
-        private ObservableCollection<MenuItem> _itemsTree;
+        private HashSet<NavigationMenuItem> _allItems;
+        private ObservableCollection<NavigationMenuItem> _itemsTree;
 
         public TreeMenuBuilder()
         {
-            _allItems = new HashSet<MenuItem>();
-            _itemsTree = new ObservableCollection<MenuItem>();
+            _allItems = new HashSet<NavigationMenuItem>();
+            _itemsTree = new ObservableCollection<NavigationMenuItem>();
         }
 
-        public void Append(List<MenuItem> items)
+        public void Append(List<NavigationMenuItem> items)
         {
             foreach (var item in items)
             {
                 if (_allItems.Contains(item))
-                    throw new Exception("Menu element is already declared! MenuItem.PathId must be unique!");
+                    throw new Exception($"Menu element '{item.PathId}' is already declared! MenuItem.PathId must be unique!");
                 _allItems.Add(item);
 
                 //Is a root element
@@ -38,7 +38,7 @@ namespace DataCloner.Uwp.Services
             }
         }
 
-        public ObservableCollection<MenuItem> ToObservableCollection()
+        public ObservableCollection<NavigationMenuItem> ToObservableCollection()
         {
             return _itemsTree;
         }

@@ -1,4 +1,4 @@
-﻿<Page x:Class="DataCloner.Uwp.Views.MenuPanelView"
+﻿<Page x:Class="DataCloner.Uwp.Views.NavigationMenuView"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:b="using:DataCloner.Infrastructure.Behaviors"

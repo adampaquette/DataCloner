@@ -9,7 +9,8 @@ namespace DataCloner.Infrastructure.Modularity
     {
         private INavigationService _navigationService;
 
-        public List<MenuItem> MenuItems { get; private set; }
+        public List<NavigationMenuItem> NavigationMenuItems { get; private set; }
+        public List<NavigationMenuItem> FileMenuItems { get; private set; }
 
         public TestPlugin(INavigationService navigationService)
         {
@@ -36,11 +37,11 @@ namespace DataCloner.Infrastructure.Modularity
                 new ContextMenuItem(CONTEXT_MENU_PATH_2) { Text = "Create as new Template"}
              });
 
-            MenuItems = new List<MenuItem>
+            NavigationMenuItems = new List<NavigationMenuItem>
             {
-                new MenuItem(MENU_PATH_1, null, CONTEXT_MENU_PATH_1, null, contextMenuManager, new DelegateCommand(() => _navigationService.Navigate("TestPlugin",null))) { Text = "Configuration" },
-                new MenuItem(MENU_PATH_2, MENU_PATH_1, CONTEXT_MENU_PATH_1, null, contextMenuManager, new DelegateCommand(() => _navigationService.Navigate("Home",null))) {Text = "Serveur SQL"},
-                new MenuItem(MENU_PATH_3, MENU_PATH_1, CONTEXT_MENU_PATH_1, null, contextMenuManager, new DelegateCommand(() => Debug.WriteLine("plugin 2"))) {Text = "Environnements"}
+                new NavigationMenuItem(MENU_PATH_1, null, CONTEXT_MENU_PATH_1, null, contextMenuManager, new DelegateCommand(() => _navigationService.Navigate("TestPlugin",null))) { Text = "Configuration" },
+                new NavigationMenuItem(MENU_PATH_2, MENU_PATH_1, CONTEXT_MENU_PATH_1, null, contextMenuManager, new DelegateCommand(() => _navigationService.Navigate("Home",null))) {Text = "Serveur SQL"},
+                new NavigationMenuItem(MENU_PATH_3, MENU_PATH_1, CONTEXT_MENU_PATH_1, null, contextMenuManager, new DelegateCommand(() => Debug.WriteLine("plugin 2"))) {Text = "Environnements"}
             };
         }
     }

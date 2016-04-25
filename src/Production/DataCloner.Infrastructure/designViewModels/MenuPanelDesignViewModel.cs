@@ -8,19 +8,19 @@ namespace DataCloner.Infrastructure.designViewModels
 {
     public class MenuPanelDesignViewModel
     {
-        public ObservableCollection<MenuItem> MenuItems { get; }
+        public ObservableCollection<NavigationMenuItem> MenuItems { get; }
 
         public MenuPanelDesignViewModel()
         {
             var test = new TestPlugin(null);
             test.Initialize();
 
-            MenuItems = BuildTreeView(test.MenuItems);
+            MenuItems = BuildTreeView(test.NavigationMenuItems);
         }
 
-        private ObservableCollection<MenuItem> BuildTreeView(List<MenuItem> items)
+        private ObservableCollection<NavigationMenuItem> BuildTreeView(List<NavigationMenuItem> items)
         {
-            var menu = new ObservableCollection<MenuItem>();
+            var menu = new ObservableCollection<NavigationMenuItem>();
 
             foreach (var item in items)
             {

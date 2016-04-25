@@ -18,6 +18,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Modularity\IPlugin.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Modularity\IPluginManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Modularity\MenuItem.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Modularity\NavigationMenuItem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Modularity\PluginManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RegionNames.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UserControls\TreeViewLazyItemViewModel.cs" />

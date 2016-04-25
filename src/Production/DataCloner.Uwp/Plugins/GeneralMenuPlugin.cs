@@ -1,12 +1,7 @@
 ﻿using DataCloner.Infrastructure.Modularity;
 using Prism.Commands;
 using Prism.Windows.Navigation;
-using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DataCloner.Uwp.Plugins
 {
@@ -14,11 +9,16 @@ namespace DataCloner.Uwp.Plugins
     {
         private INavigationService _navigationService;
 
-        public List<MenuItem> MenuItems { get; private set; }
+        public List<NavigationMenuItem> NavigationMenuItems { get; private set; }
+        public List<NavigationMenuItem> FileMenuItems { get; private set; }
+
+        #region Menu path declaration
 
         public string GeneralSectionMenuPath => "GENERAL_SECTION";
         public string DashboardMenuPath => GeneralSectionMenuPath + "_DASHBOARD";
         public string ClonerMenuPath => GeneralSectionMenuPath + "_CLONER";
+
+        #endregion
 
         public GeneralMenuPlugin(INavigationService navigationService)
         {
@@ -27,15 +27,12 @@ namespace DataCloner.Uwp.Plugins
 
         public void Initialize()
         {
-            MenuItems = new List<MenuItem>
+            NavigationMenuItems = new List<NavigationMenuItem>
             {
-                new MenuItem(GeneralSectionMenuPath, null, null, null, null, null) { Text = "Général" },
-                new MenuItem(DashboardMenuPath, GeneralSectionMenuPath, null, null, null, new DelegateCommand(() =>  _navigationService.Navigate("Dashboard", null))) { Text = "Tableau de board" },
-                new MenuItem(ClonerMenuPath, GeneralSectionMenuPath, null, null, null, new DelegateCommand(() => Debug.WriteLine("CLONER"))) { Text = "Cloner" }
-            };
-
-            //new MenuItem(DashboardMenuPath, GeneralSectionMenuPath, null, null, null, new DelegateCommand(() => _navigationService.Navigate("Dashboard", null))) { Text = "Tableau de board" },
-            //    new MenuItem(ClonerMenuPath, GeneralSectionMenuPath, null, null, null, new DelegateCommand(() => _navigationService.Navigate("Cloner", null))) { Text = "Cloner" }
+                new NavigationMenuItem(GeneralSectionMenuPath, null, null, null, null, null) { Text = "Général" },
+                new NavigationMenuItem(DashboardMenuPath, GeneralSectionMenuPath, null, null, null, new DelegateCommand(() =>  _navigationService.Navigate("Dashboard", null))) { Text = "Tableau de board" },
+                new NavigationMenuItem(ClonerMenuPath, GeneralSectionMenuPath, null, null, null, new DelegateCommand(() => _navigationService.Navigate("Cloner", null))) { Text = "Cloner" }
+            };           
         }
     }
 }

@@ -1,21 +1,19 @@
 ﻿using DataCloner.Infrastructure.UserControls;
 using Prism.Commands;
 using System;
-using Windows.UI.Xaml.Controls;
 
 namespace DataCloner.Infrastructure.Modularity
 {
-    public class MenuItem : TreeViewLazyItemViewModel, IEquatable<MenuItem>
+    public class MenuItem : TreeViewLazyItemViewModel, IEquatable<NavigationMenuItem>
     {
-        private ContextMenuManager _contextMenuManager;
-        private string _contextMenuPath;
+        protected ContextMenuManager _contextMenuManager;
+        protected string _contextMenuPath;
 
         public string PathId { get; }
         public string ContainerPath { get; }
         public DelegateCommand Command { get; }
-        public MenuFlyout ContextMenu => _contextMenuManager?.GetContextMenu(_contextMenuPath);
 
-        public MenuItem(string pathId, string containerPath, string contextMenuPath, TreeViewLazyItemViewModel parent, 
+        public MenuItem(string pathId, string containerPath, string contextMenuPath, TreeViewLazyItemViewModel parent,
             ContextMenuManager contextMenuManager, DelegateCommand command)
             : base(parent, false)
         {
@@ -28,11 +26,11 @@ namespace DataCloner.Infrastructure.Modularity
 
         public override bool Equals(object obj)
         {
-            var other = obj as MenuItem;
+            var other = obj as NavigationMenuItem;
             return Equals(other);
         }
 
-        public bool Equals(MenuItem other)
+        public bool Equals(NavigationMenuItem other)
         {
             if (other != null)
                 return PathId == other.PathId;

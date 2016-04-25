@@ -25,7 +25,7 @@ namespace DataCloner.Infrastructure.Behaviors
         public object Execute(object sender, object parameter)
         {
             if (ContextMenu == null)
-                throw new NullReferenceException(nameof(ContextMenu));
+                return null;
 
             Point offset;
             var rightClickEvent = parameter as RightTappedRoutedEventArgs;

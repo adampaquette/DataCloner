@@ -2,7 +2,7 @@
 
 namespace DataCloner.Uwp.Views
 {
-    public sealed partial class ClonerPage : UserControl
+    public sealed partial class ClonerPage : Page
     {
         public ClonerPage()
         {

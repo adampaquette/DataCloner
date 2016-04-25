@@ -5,8 +5,6 @@
       xmlns:local="using:DataCloner.Uwp"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:views="using:DataCloner.Uwp.Views"
-      MinWidth="1024"
-      MinHeight="700"
       mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
@@ -15,7 +13,7 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Grid>
-            <views:TopBarView />
+            <views:FileMenuView />
         </Grid>
         <SplitView x:Name="rootSplitView"
                    Grid.Row="1"
@@ -23,7 +21,7 @@
                    IsPaneOpen="True"
                    OpenPaneLength="300">
             <SplitView.Pane>
-                <views:MenuPanelView />
+                <views:NavigationMenuView />
             </SplitView.Pane>
         </SplitView>
     </Grid>
