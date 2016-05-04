@@ -15,7 +15,10 @@
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
-        <Image Source="../Assets/logo2.png" Stretch="None" />
+        <Image Margin="20 0 40 0"
+               Source="../Assets/logo2.png"
+               Stretch="None" />
+
         <ItemsControl Grid.Column="1" ItemsSource="{Binding MenuItems}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>

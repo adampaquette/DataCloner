@@ -9,7 +9,7 @@
         <data:DataTemplateExtensions.Hierarchy>
             <data:HierarchicalDataTemplate ItemsSource="{Binding Children}" />
         </data:DataTemplateExtensions.Hierarchy>
-        <Grid>
+        <Border Height="37">
             <i:Interaction.Behaviors>
                 <core:EventTriggerBehavior EventName="Tapped">
                     <core:InvokeCommandAction Command="{Binding Command}" />
@@ -20,8 +20,8 @@
                                             MenuFlyoutPresenterStyle="{StaticResource MenuFlyoutPresenterItemTemplate}" />
                 </core:EventTriggerBehavior>
             </i:Interaction.Behaviors>
-            <TextBlock Text="{Binding Text}" />
-        </Grid>
+            <TextBlock VerticalAlignment="Center" Text="{Binding Text}" />
+        </Border>
     </DataTemplate>
     <DataTemplate x:Key="TreeViewItemDataTemplateLevel2">
         <data:DataTemplateExtensions.Hierarchy>
@@ -29,7 +29,9 @@
                                            ItemTemplate="{StaticResource TreeViewItemDataTemplateLevel3}"
                                            ItemsSource="{Binding Children}" />
         </data:DataTemplateExtensions.Hierarchy>
-        <Grid>
+        <Border Height="37"
+                IsHitTestVisible="True"
+                IsTapEnabled="True">
             <i:Interaction.Behaviors>
                 <core:EventTriggerBehavior EventName="Tapped">
                     <core:InvokeCommandAction Command="{Binding Command}" />
@@ -40,8 +42,13 @@
                                             MenuFlyoutPresenterStyle="{StaticResource MenuFlyoutPresenterItemTemplate}" />
                 </core:EventTriggerBehavior>
             </i:Interaction.Behaviors>
-            <TextBlock Text="{Binding Text}" />
-        </Grid>
+            <Border Height="37"
+                    IsHitTestVisible="True"
+                    IsTapEnabled="True">
+
+                <TextBlock VerticalAlignment="Center" Text="{Binding Text}" />
+            </Border>
+        </Border>
     </DataTemplate>
     <DataTemplate x:Key="TreeViewItemDataTemplateLevel1">
         <data:DataTemplateExtensions.Hierarchy>
@@ -49,7 +56,7 @@
                                            ItemTemplate="{StaticResource TreeViewItemDataTemplateLevel2}"
                                            ItemsSource="{Binding Children}" />
         </data:DataTemplateExtensions.Hierarchy>
-        <Grid>
+        <Border Height="37">
             <i:Interaction.Behaviors>
                 <core:EventTriggerBehavior EventName="Tapped">
                     <core:InvokeCommandAction Command="{Binding Command}" />
@@ -60,7 +67,7 @@
                                             MenuFlyoutPresenterStyle="{StaticResource MenuFlyoutPresenterItemTemplate}" />
                 </core:EventTriggerBehavior>
             </i:Interaction.Behaviors>
-            <TextBlock Text="{Binding Text}" />
-        </Grid>
+            <TextBlock VerticalAlignment="Center" Text="{Binding Text}" />
+        </Border>
     </DataTemplate>
 </ResourceDictionary>

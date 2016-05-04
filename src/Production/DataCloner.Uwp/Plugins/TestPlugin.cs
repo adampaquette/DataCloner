@@ -29,7 +29,7 @@ namespace DataCloner.Infrastructure.Modularity
             var contextMenuManager = new ContextMenuManager();
             contextMenuManager.Append(new List<ContextMenuItem>
             {
-                new ContextMenuItem(CONTEXT_MENU_PATH_1) { Text = "Add", Command = new DelegateCommand(() => _navigationService.Navigate("Home", null)) },
+                new ContextMenuItem(CONTEXT_MENU_PATH_1) { Text = "Add", Command = new DelegateCommand(() => _navigationService.Navigate("Dashboard", null)) },
                 new ContextMenuItem(CONTEXT_MENU_PATH_1) { Text = "Delete"},
                 new ContextMenuItem(CONTEXT_MENU_PATH_2) { Text = "Create"},
                 new ContextMenuItem(CONTEXT_MENU_PATH_2) { Text = "Delete"},
@@ -40,7 +40,7 @@ namespace DataCloner.Infrastructure.Modularity
             NavigationMenuItems = new List<NavigationMenuItem>
             {
                 new NavigationMenuItem(MENU_PATH_1, null, CONTEXT_MENU_PATH_1, null, contextMenuManager, new DelegateCommand(() => _navigationService.Navigate("TestPlugin",null))) { Text = "Configuration" },
-                new NavigationMenuItem(MENU_PATH_2, MENU_PATH_1, CONTEXT_MENU_PATH_1, null, contextMenuManager, new DelegateCommand(() => _navigationService.Navigate("Home",null))) {Text = "Serveur SQL"},
+                new NavigationMenuItem(MENU_PATH_2, MENU_PATH_1, CONTEXT_MENU_PATH_1, null, contextMenuManager, new DelegateCommand(() => _navigationService.Navigate("Dashboard",null))) {Text = "Serveur SQL"},
                 new NavigationMenuItem(MENU_PATH_3, MENU_PATH_1, CONTEXT_MENU_PATH_1, null, contextMenuManager, new DelegateCommand(() => Debug.WriteLine("plugin 2"))) {Text = "Environnements"}
             };
         }

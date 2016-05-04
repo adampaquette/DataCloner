@@ -19,7 +19,7 @@
                    Grid.Row="1"
                    DisplayMode="Inline"
                    IsPaneOpen="True"
-                   OpenPaneLength="300">
+                   OpenPaneLength="260">
             <SplitView.Pane>
                 <views:NavigationMenuView />
             </SplitView.Pane>

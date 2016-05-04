@@ -1,11 +1,8 @@
 ﻿using Microsoft.Xaml.Interactivity;
-using System.Collections.Generic;
 using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Input;
-using System;
 
 namespace DataCloner.Infrastructure.Behaviors
 {
@@ -32,8 +29,9 @@ namespace DataCloner.Infrastructure.Behaviors
             if (rightClickEvent != null)
                 offset = rightClickEvent.GetPosition(null);
 
-            //var flyout = FlyoutBase.GetAttachedFlyout(senderElement) as MenuFlyout;
-            //flyout.ShowAt(null, offset);
+            var leftClickEvent = parameter as TappedRoutedEventArgs;
+            if (leftClickEvent != null)
+                offset = leftClickEvent.GetPosition(null);
 
             if (MenuFlyoutPresenterStyle != null)
                 ContextMenu.MenuFlyoutPresenterStyle = MenuFlyoutPresenterStyle;
