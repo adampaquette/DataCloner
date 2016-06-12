@@ -29,9 +29,9 @@ namespace DataCloner.Uwp.Plugins
         {
             NavigationMenuItems = new List<NavigationMenuItem>
             {
-                new NavigationMenuItem(GeneralSectionMenuPath, null, null, null, null, null) { Text = "Général" },
-                new NavigationMenuItem(DashboardMenuPath, GeneralSectionMenuPath, null, null, null, new DelegateCommand(() =>  _navigationService.Navigate("Dashboard", null))) { Text = "Tableau de board" },
-                new NavigationMenuItem(ClonerMenuPath, GeneralSectionMenuPath, null, null, null, new DelegateCommand(() => _navigationService.Navigate("Cloner", null))) { Text = "Cloner" }
+                new NavigationMenuItem(GeneralSectionMenuPath) { Text = "Général" },
+                new NavigationMenuItem(DashboardMenuPath, GeneralSectionMenuPath, command: new DelegateCommand(() =>  _navigationService.Navigate("Dashboard", null))) { Text = "Tableau de board" },
+                new NavigationMenuItem(ClonerMenuPath, GeneralSectionMenuPath, command: new DelegateCommand(() => _navigationService.Navigate("Cloner", null))) { Text = "Cloner" }
             };           
         }
     }

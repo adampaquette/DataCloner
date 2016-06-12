@@ -39,9 +39,9 @@ namespace DataCloner.Infrastructure.Modularity
 
             NavigationMenuItems = new List<NavigationMenuItem>
             {
-                new NavigationMenuItem(MENU_PATH_1, null, CONTEXT_MENU_PATH_1, null, contextMenuManager, new DelegateCommand(() => _navigationService.Navigate("TestPlugin",null))) { Text = "Configuration" },
-                new NavigationMenuItem(MENU_PATH_2, MENU_PATH_1, CONTEXT_MENU_PATH_1, null, contextMenuManager, new DelegateCommand(() => _navigationService.Navigate("Dashboard",null))) {Text = "Serveur SQL"},
-                new NavigationMenuItem(MENU_PATH_3, MENU_PATH_1, CONTEXT_MENU_PATH_1, null, contextMenuManager, new DelegateCommand(() => Debug.WriteLine("plugin 2"))) {Text = "Environnements"}
+                new NavigationMenuItem(MENU_PATH_1, null, CONTEXT_MENU_PATH_1, new DelegateCommand(() => _navigationService.Navigate("TestPlugin",null))) { Text = "Configuration" },
+                new NavigationMenuItem(MENU_PATH_2, MENU_PATH_1, CONTEXT_MENU_PATH_1, new DelegateCommand(() => _navigationService.Navigate("Dashboard",null))) {Text = "Serveur SQL"},
+                new NavigationMenuItem(MENU_PATH_3, MENU_PATH_1, CONTEXT_MENU_PATH_1, new DelegateCommand(() => Debug.WriteLine("plugin 2"))) {Text = "Environnements"}
             };
         }
     }

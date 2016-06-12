@@ -288,6 +288,18 @@
           "lib/uap10.0/Microsoft.Xaml.Interactivity.dll": {}
         }
       },
+      "Mntone.SvgForXaml/0.9.0": {
+        "type": "package",
+        "dependencies": {
+          "Win2D.uwp": "1.10.0"
+        },
+        "compile": {
+          "lib/uap10.0/Mntone.SvgForXaml.dll": {}
+        },
+        "runtime": {
+          "lib/uap10.0/Mntone.SvgForXaml.dll": {}
+        }
+      },
       "Prism.Core/6.1.0": {
         "type": "package",
         "compile": {
@@ -1976,6 +1988,29 @@
           "lib/win8/Microsoft.Practices.Unity.dll": {}
         }
       },
+      "Win2D.uwp/1.10.0": {
+        "type": "package",
+        "compile": {
+          "lib/uap10.0/Microsoft.Graphics.Canvas.winmd": {}
+        },
+        "runtime": {
+          "lib/uap10.0/Microsoft.Graphics.Canvas.winmd": {}
+        },
+        "runtimeTargets": {
+          "runtimes/win10-arm/native/Microsoft.Graphics.Canvas.dll": {
+            "assetType": "native",
+            "rid": "win10-arm"
+          },
+          "runtimes/win10-x64/native/Microsoft.Graphics.Canvas.dll": {
+            "assetType": "native",
+            "rid": "win10-x64"
+          },
+          "runtimes/win10-x86/native/Microsoft.Graphics.Canvas.dll": {
+            "assetType": "native",
+            "rid": "win10-x86"
+          }
+        }
+      },
       "winrtxamltoolkit/2.0.0": {
         "type": "package",
         "compile": {
@@ -2263,6 +2298,18 @@
         "runtime": {
           "lib/uap10.0/Microsoft.Xaml.Interactions.dll": {},
           "lib/uap10.0/Microsoft.Xaml.Interactivity.dll": {}
+        }
+      },
+      "Mntone.SvgForXaml/0.9.0": {
+        "type": "package",
+        "dependencies": {
+          "Win2D.uwp": "1.10.0"
+        },
+        "compile": {
+          "lib/uap10.0/Mntone.SvgForXaml.dll": {}
+        },
+        "runtime": {
+          "lib/uap10.0/Mntone.SvgForXaml.dll": {}
         }
       },
       "Prism.Core/6.1.0": {
@@ -3817,6 +3864,18 @@
           "lib/win8/Microsoft.Practices.Unity.dll": {}
         }
       },
+      "Win2D.uwp/1.10.0": {
+        "type": "package",
+        "compile": {
+          "lib/uap10.0/Microsoft.Graphics.Canvas.winmd": {}
+        },
+        "runtime": {
+          "lib/uap10.0/Microsoft.Graphics.Canvas.winmd": {}
+        },
+        "native": {
+          "runtimes/win10-arm/native/Microsoft.Graphics.Canvas.dll": {}
+        }
+      },
       "winrtxamltoolkit/2.0.0": {
         "type": "package",
         "compile": {
@@ -4090,6 +4149,18 @@
         "runtime": {
           "lib/uap10.0/Microsoft.Xaml.Interactions.dll": {},
           "lib/uap10.0/Microsoft.Xaml.Interactivity.dll": {}
+        }
+      },
+      "Mntone.SvgForXaml/0.9.0": {
+        "type": "package",
+        "dependencies": {
+          "Win2D.uwp": "1.10.0"
+        },
+        "compile": {
+          "lib/uap10.0/Mntone.SvgForXaml.dll": {}
+        },
+        "runtime": {
+          "lib/uap10.0/Mntone.SvgForXaml.dll": {}
         }
       },
       "Prism.Core/6.1.0": {
@@ -5619,6 +5690,18 @@
         "runtime": {
           "lib/win8/Microsoft.Practices.Unity.RegistrationByConvention.dll": {},
           "lib/win8/Microsoft.Practices.Unity.dll": {}
+        }
+      },
+      "Win2D.uwp/1.10.0": {
+        "type": "package",
+        "compile": {
+          "lib/uap10.0/Microsoft.Graphics.Canvas.winmd": {}
+        },
+        "runtime": {
+          "lib/uap10.0/Microsoft.Graphics.Canvas.winmd": {}
+        },
+        "native": {
+          "runtimes/win10-arm/native/Microsoft.Graphics.Canvas.dll": {}
         }
       },
       "winrtxamltoolkit/2.0.0": {
@@ -5917,6 +6000,18 @@
           "lib/uap10.0/Microsoft.Xaml.Interactivity.dll": {}
         }
       },
+      "Mntone.SvgForXaml/0.9.0": {
+        "type": "package",
+        "dependencies": {
+          "Win2D.uwp": "1.10.0"
+        },
+        "compile": {
+          "lib/uap10.0/Mntone.SvgForXaml.dll": {}
+        },
+        "runtime": {
+          "lib/uap10.0/Mntone.SvgForXaml.dll": {}
+        }
+      },
       "Prism.Core/6.1.0": {
         "type": "package",
         "compile": {
@@ -7469,6 +7564,18 @@
           "lib/win8/Microsoft.Practices.Unity.dll": {}
         }
       },
+      "Win2D.uwp/1.10.0": {
+        "type": "package",
+        "compile": {
+          "lib/uap10.0/Microsoft.Graphics.Canvas.winmd": {}
+        },
+        "runtime": {
+          "lib/uap10.0/Microsoft.Graphics.Canvas.winmd": {}
+        },
+        "native": {
+          "runtimes/win10-x64/native/Microsoft.Graphics.Canvas.dll": {}
+        }
+      },
       "winrtxamltoolkit/2.0.0": {
         "type": "package",
         "compile": {
@@ -7742,6 +7849,18 @@
         "runtime": {
           "lib/uap10.0/Microsoft.Xaml.Interactions.dll": {},
           "lib/uap10.0/Microsoft.Xaml.Interactivity.dll": {}
+        }
+      },
+      "Mntone.SvgForXaml/0.9.0": {
+        "type": "package",
+        "dependencies": {
+          "Win2D.uwp": "1.10.0"
+        },
+        "compile": {
+          "lib/uap10.0/Mntone.SvgForXaml.dll": {}
+        },
+        "runtime": {
+          "lib/uap10.0/Mntone.SvgForXaml.dll": {}
         }
       },
       "Prism.Core/6.1.0": {
@@ -9271,6 +9390,18 @@
         "runtime": {
           "lib/win8/Microsoft.Practices.Unity.RegistrationByConvention.dll": {},
           "lib/win8/Microsoft.Practices.Unity.dll": {}
+        }
+      },
+      "Win2D.uwp/1.10.0": {
+        "type": "package",
+        "compile": {
+          "lib/uap10.0/Microsoft.Graphics.Canvas.winmd": {}
+        },
+        "runtime": {
+          "lib/uap10.0/Microsoft.Graphics.Canvas.winmd": {}
+        },
+        "native": {
+          "runtimes/win10-x64/native/Microsoft.Graphics.Canvas.dll": {}
         }
       },
       "winrtxamltoolkit/2.0.0": {
@@ -9569,6 +9700,18 @@
           "lib/uap10.0/Microsoft.Xaml.Interactivity.dll": {}
         }
       },
+      "Mntone.SvgForXaml/0.9.0": {
+        "type": "package",
+        "dependencies": {
+          "Win2D.uwp": "1.10.0"
+        },
+        "compile": {
+          "lib/uap10.0/Mntone.SvgForXaml.dll": {}
+        },
+        "runtime": {
+          "lib/uap10.0/Mntone.SvgForXaml.dll": {}
+        }
+      },
       "Prism.Core/6.1.0": {
         "type": "package",
         "compile": {
@@ -11121,6 +11264,18 @@
           "lib/win8/Microsoft.Practices.Unity.dll": {}
         }
       },
+      "Win2D.uwp/1.10.0": {
+        "type": "package",
+        "compile": {
+          "lib/uap10.0/Microsoft.Graphics.Canvas.winmd": {}
+        },
+        "runtime": {
+          "lib/uap10.0/Microsoft.Graphics.Canvas.winmd": {}
+        },
+        "native": {
+          "runtimes/win10-x86/native/Microsoft.Graphics.Canvas.dll": {}
+        }
+      },
       "winrtxamltoolkit/2.0.0": {
         "type": "package",
         "compile": {
@@ -11394,6 +11549,18 @@
         "runtime": {
           "lib/uap10.0/Microsoft.Xaml.Interactions.dll": {},
           "lib/uap10.0/Microsoft.Xaml.Interactivity.dll": {}
+        }
+      },
+      "Mntone.SvgForXaml/0.9.0": {
+        "type": "package",
+        "dependencies": {
+          "Win2D.uwp": "1.10.0"
+        },
+        "compile": {
+          "lib/uap10.0/Mntone.SvgForXaml.dll": {}
+        },
+        "runtime": {
+          "lib/uap10.0/Mntone.SvgForXaml.dll": {}
         }
       },
       "Prism.Core/6.1.0": {
@@ -12923,6 +13090,18 @@
         "runtime": {
           "lib/win8/Microsoft.Practices.Unity.RegistrationByConvention.dll": {},
           "lib/win8/Microsoft.Practices.Unity.dll": {}
+        }
+      },
+      "Win2D.uwp/1.10.0": {
+        "type": "package",
+        "compile": {
+          "lib/uap10.0/Microsoft.Graphics.Canvas.winmd": {}
+        },
+        "runtime": {
+          "lib/uap10.0/Microsoft.Graphics.Canvas.winmd": {}
+        },
+        "native": {
+          "runtimes/win10-x86/native/Microsoft.Graphics.Canvas.dll": {}
         }
       },
       "winrtxamltoolkit/2.0.0": {
@@ -13621,6 +13800,47 @@
         "lib/uap10.0/Microsoft.Xaml.Interactivity.pri",
         "lib/uap10.0/Microsoft.Xaml.Interactivity.xml",
         "package/services/metadata/core-properties/aa8a385ed5b94b29a44c3a4ace39232c.psmdcp"
+      ]
+    },
+    "Mntone.SvgForXaml/0.9.0": {
+      "sha512": "dFmUOnEvMAqciO9tigvqR2DbNouc8HEge2og4mF4FjejpI1MHDy8fFzAecRThd0jTXwg9VpoZjM6EFKXJgU3Ig==",
+      "type": "package",
+      "files": [
+        "Mntone.SvgForXaml.0.9.0.nupkg.sha512",
+        "Mntone.SvgForXaml.nuspec",
+        "build/uap10.0/Mntone.SvgForXaml.targets",
+        "build/win81/Mntone.SvgForXaml.targets",
+        "build/wpa81/Mntone.SvgForXaml.targets",
+        "lib/uap10.0/Mntone.SvgForXaml.dll",
+        "lib/uap10.0/Mntone.SvgForXaml.pri",
+        "lib/uap10.0/Mntone.SvgForXaml/Mntone.SvgForXaml.xr.xml",
+        "lib/uap10.0/Mntone.SvgForXaml/Themes/Generic.xbf",
+        "lib/uap10.0/Mntone.SvgForXaml/UI/Xaml/SvgImage.xbf",
+        "lib/win81/ARM/Mntone.SvgForXaml.dll",
+        "lib/win81/ARM/Mntone.SvgForXaml.pri",
+        "lib/win81/ARM/Mntone.SvgForXaml/Mntone.SvgForXaml.xr.xml",
+        "lib/win81/ARM/Mntone.SvgForXaml/Themes/Generic.xbf",
+        "lib/win81/ARM/Mntone.SvgForXaml/UI/Xaml/SvgImage.xbf",
+        "lib/win81/x64/Mntone.SvgForXaml.dll",
+        "lib/win81/x64/Mntone.SvgForXaml.pri",
+        "lib/win81/x64/Mntone.SvgForXaml/Mntone.SvgForXaml.xr.xml",
+        "lib/win81/x64/Mntone.SvgForXaml/Themes/Generic.xbf",
+        "lib/win81/x64/Mntone.SvgForXaml/UI/Xaml/SvgImage.xbf",
+        "lib/win81/x86/Mntone.SvgForXaml.dll",
+        "lib/win81/x86/Mntone.SvgForXaml.pri",
+        "lib/win81/x86/Mntone.SvgForXaml/Mntone.SvgForXaml.xr.xml",
+        "lib/win81/x86/Mntone.SvgForXaml/Themes/Generic.xbf",
+        "lib/win81/x86/Mntone.SvgForXaml/UI/Xaml/SvgImage.xbf",
+        "lib/wpa81/ARM/Mntone.SvgForXaml.dll",
+        "lib/wpa81/ARM/Mntone.SvgForXaml.pri",
+        "lib/wpa81/ARM/Mntone.SvgForXaml/Mntone.SvgForXaml.xr.xml",
+        "lib/wpa81/ARM/Mntone.SvgForXaml/Themes/Generic.xbf",
+        "lib/wpa81/ARM/Mntone.SvgForXaml/UI/Xaml/SvgImage.xbf",
+        "lib/wpa81/x86/Mntone.SvgForXaml.dll",
+        "lib/wpa81/x86/Mntone.SvgForXaml.pri",
+        "lib/wpa81/x86/Mntone.SvgForXaml/Mntone.SvgForXaml.xr.xml",
+        "lib/wpa81/x86/Mntone.SvgForXaml/Themes/Generic.xbf",
+        "lib/wpa81/x86/Mntone.SvgForXaml/UI/Xaml/SvgImage.xbf"
       ]
     },
     "Prism.Core/6.1.0": {
@@ -16403,6 +16623,24 @@
         "package/services/metadata/core-properties/924820f073a54dfda4a033e3efb68c3c.psmdcp"
       ]
     },
+    "Win2D.uwp/1.10.0": {
+      "sha512": "2kbSCF7h5WY4MtfXFAk2hO+B4uYHnrXwfQcdoSFyjYJS9iiaSVED6lTjtx6wvJS0gEuESuT82wwGoT2V3ubPyA==",
+      "type": "package",
+      "files": [
+        "Win2D.uwp.1.10.0.nupkg.sha512",
+        "Win2D.uwp.nuspec",
+        "Win2d.githash.txt",
+        "build/native/Win2D.uwp.targets",
+        "include/Microsoft.Graphics.Canvas.h",
+        "include/Microsoft.Graphics.Canvas.native.h",
+        "lib/uap10.0/Microsoft.Graphics.Canvas.winmd",
+        "lib/uap10.0/Microsoft.Graphics.Canvas.xml",
+        "lib/uap10.0/en/Microsoft.Graphics.Canvas.xml",
+        "runtimes/win10-arm/native/Microsoft.Graphics.Canvas.dll",
+        "runtimes/win10-x64/native/Microsoft.Graphics.Canvas.dll",
+        "runtimes/win10-x86/native/Microsoft.Graphics.Canvas.dll"
+      ]
+    },
     "winrtxamltoolkit/2.0.0": {
       "sha512": "uShkcpJQYgNxvBuOgIphVJlO1T/c/Be5ynlrfDLr17z0n/HtTzJzEjTYRErQ5E1alRZHSCYNu66nvcbd7i3fjA==",
       "type": "Package",
@@ -16882,6 +17120,7 @@
     "": [
       "Microsoft.NETCore.UniversalWindowsPlatform >= 5.0.0",
       "Microsoft.Xaml.Behaviors.Uwp.Managed >= 1.1.0",
+      "Mntone.SvgForXaml >= 0.9.0",
       "Prism.Unity >= 6.1.1",
       "winrtxamltoolkit >= 2.0.0"
     ],

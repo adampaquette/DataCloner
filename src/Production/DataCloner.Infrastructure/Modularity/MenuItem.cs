@@ -1,6 +1,8 @@
 ﻿using DataCloner.Infrastructure.UserControls;
+using Mntone.SvgForXaml;
 using Prism.Commands;
 using System;
+using Windows.UI.Xaml.Media;
 
 namespace DataCloner.Infrastructure.Modularity
 {
@@ -12,6 +14,7 @@ namespace DataCloner.Infrastructure.Modularity
         public string PathId { get; }
         public string ContainerPath { get; }
         public DelegateCommand Command { get; }
+        public ImageSource IconSrc { get; set; }
 
         public MenuItem(string pathId, string containerPath, string contextMenuPath, TreeViewLazyItemViewModel parent,
             ContextMenuManager contextMenuManager, DelegateCommand command)

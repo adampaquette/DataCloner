@@ -9,8 +9,13 @@ using Prism.Windows.Navigation;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Activation;
+using Windows.Foundation.Metadata;
+using Windows.UI;
+using Windows.UI.Core;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media;
 
 namespace DataCloner.Uwp
 {
@@ -45,6 +50,19 @@ namespace DataCloner.Uwp
             Container.RegisterInstance<INavigationService>(NavigationService);
             Container.RegisterInstance<IEventAggregator>(EventAggregator);
 
+            //PC customization
+            if (ApiInformation.IsTypePresent("Windows.UI.ViewManagement.ApplicationView"))
+            {
+                var titleBar = ApplicationView.GetForCurrentView().TitleBar;
+                if (titleBar != null)
+                {
+                    titleBar.ButtonBackgroundColor = Color.FromArgb(0xFF, 0x24, 0x31, 0x35);
+                    titleBar.ButtonForegroundColor = Colors.White;
+                    titleBar.BackgroundColor = Color.FromArgb(0xFF, 0x24, 0x31, 0x35);
+                    titleBar.ForegroundColor = Colors.White;
+                }
+            }
+
             InitializePlugins();
 
             return base.OnInitializeAsync(args);
@@ -56,7 +74,7 @@ namespace DataCloner.Uwp
             {
                 new GeneralMenuPlugin(NavigationService),
                 new TestPlugin(NavigationService),
-                new FileMenuPlugin(NavigationService)
+                new TopBarPlugins(NavigationService)
             };
 
             var pm = new PluginManager<IPlugin>();
@@ -77,7 +95,7 @@ namespace DataCloner.Uwp
             }
 
             var navigationMenuViewModel = new NavigationMenuViewModel(NavigationService, navigationMenuBuilder.ToObservableCollection());
-            var fileMenuViewModel = new FileMenuViewModel(NavigationService, fileMenuBuilder.ToObservableCollection());
+            var fileMenuViewModel = new TopBarPluginsViewModel(NavigationService, fileMenuBuilder.ToObservableCollection());
 
             Container.RegisterInstance(navigationMenuViewModel);
             Container.RegisterInstance(fileMenuViewModel);

@@ -5,7 +5,7 @@ using System.Collections.ObjectModel;
 
 namespace DataCloner.Uwp.ViewModels
 {
-    public class FileMenuViewModel : ViewModelBase
+    public class TopBarPluginsViewModel : ViewModelBase
     {
         private INavigationService _navigationService;
         private ObservableCollection<NavigationMenuItem> _menuItems;
@@ -16,7 +16,7 @@ namespace DataCloner.Uwp.ViewModels
             set { SetProperty(ref _menuItems, value); }
         }
 
-        public FileMenuViewModel(INavigationService navigationService, ObservableCollection<NavigationMenuItem> menuItems)
+        public TopBarPluginsViewModel(INavigationService navigationService, ObservableCollection<NavigationMenuItem> menuItems)
         {
             _navigationService = navigationService;
             _menuItems = menuItems;
