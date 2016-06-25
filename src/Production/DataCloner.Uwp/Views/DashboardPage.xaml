@@ -8,14 +8,25 @@
       d:DesignWidth="400"
       mc:Ignorable="d">
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
         <ContentControl Content="" />
 
-        <Ellipse Width="auto"
+        <StackPanel>
+            <TextBox Width="200" Height="30" />
+        </StackPanel>
+
+        <Ellipse Grid.Row="1"
+                 Width="auto"
                  Height="auto"
                  Fill="Coral" />
-        <TextBlock HorizontalAlignment="Center"
+        <TextBlock Grid.Row="1"
+                   HorizontalAlignment="Center"
                    VerticalAlignment="Center"
                    FontSize="50"
                    Text="DASHBOARD" />
+
     </Grid>
 </Page>

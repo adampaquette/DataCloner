@@ -4,33 +4,9 @@
 
     <ResourceDictionary.ThemeDictionaries>
         <ResourceDictionary x:Key="Default">
-            <!--  Default theme resources  -->
-
-            <!--
-                ******************************************************************
-                COMMON CONTROL PROPERTIES
-                ******************************************************************
-            -->
-            <FontFamily x:Key="SymbolThemeFontFamily">Segoe MDL2 Assets</FontFamily>
-            <x:Double x:Key="TopBarHeight">40</x:Double>
-
-            <!--
-                ******************************************************************
-                COMMON CONTROL COLORS
-                ******************************************************************
-            -->
+            <Color x:Key="SystemAccentColor">#0095CE</Color>
 
 
-            <!--
-                ******************************************************************
-                TOP BAR
-                ******************************************************************
-            -->
-            <SolidColorBrush x:Key="TopBarBackgroundBrush" Color="#0095CE00" />
-            <Color x:Key="TopBarBackgroundColor">#0095CE00</Color>
-        </ResourceDictionary>
-        <ResourceDictionary x:Key="Light">
-            <!--  Default theme resources  -->
 
             <!--
                 ******************************************************************

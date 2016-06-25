@@ -83,22 +83,22 @@ namespace DataCloner.Uwp
                 pluginList.AddRange(plugins);
 
             var navigationMenuBuilder = new TreeMenuBuilder();
-            var fileMenuBuilder = new TreeMenuBuilder();
+            var topBarMenuBuilder = new TreeMenuBuilder();
 
             foreach (var plugin in pluginList)
             {
                 plugin.Initialize();
                 if (plugin.NavigationMenuItems != null)
                     navigationMenuBuilder.Append(plugin.NavigationMenuItems);
-                if (plugin.FileMenuItems != null)
-                    fileMenuBuilder.Append(plugin.FileMenuItems);
+                if (plugin.TopBarMenuItems != null)
+                    topBarMenuBuilder.Append(plugin.TopBarMenuItems);
             }
 
             var navigationMenuViewModel = new NavigationMenuViewModel(NavigationService, navigationMenuBuilder.ToObservableCollection());
-            var fileMenuViewModel = new TopBarPluginsViewModel(NavigationService, fileMenuBuilder.ToObservableCollection());
+            var topBarMenuViewModel = new TopBarMenuViewModel(NavigationService, topBarMenuBuilder.ToObservableCollection());
 
             Container.RegisterInstance(navigationMenuViewModel);
-            Container.RegisterInstance(fileMenuViewModel);
+            Container.RegisterInstance(topBarMenuViewModel);
         }
     }
 }

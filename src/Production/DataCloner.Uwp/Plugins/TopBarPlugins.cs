@@ -15,7 +15,7 @@ namespace DataCloner.Uwp.Plugins
         private INavigationService _navigationService;
 
         public List<NavigationMenuItem> NavigationMenuItems { get; private set; }
-        public List<NavigationMenuItem> FileMenuItems { get; private set; }
+        public List<NavigationMenuItem> TopBarMenuItems { get; private set; }
 
         #region Menu path declaration
 
@@ -42,7 +42,7 @@ namespace DataCloner.Uwp.Plugins
 
         public void Initialize()
         {
-            FileMenuItems = new List<NavigationMenuItem>
+            TopBarMenuItems = new List<NavigationMenuItem>
             {
                 new NavigationMenuItem(FileMenuPath)
                 {

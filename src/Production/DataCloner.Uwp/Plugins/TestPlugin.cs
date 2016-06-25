@@ -10,7 +10,7 @@ namespace DataCloner.Infrastructure.Modularity
         private INavigationService _navigationService;
 
         public List<NavigationMenuItem> NavigationMenuItems { get; private set; }
-        public List<NavigationMenuItem> FileMenuItems { get; private set; }
+        public List<NavigationMenuItem> TopBarMenuItems { get; private set; }
 
         public TestPlugin(INavigationService navigationService)
         {

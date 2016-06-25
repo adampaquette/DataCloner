@@ -10,7 +10,7 @@ namespace DataCloner.Uwp.Plugins
         private INavigationService _navigationService;
 
         public List<NavigationMenuItem> NavigationMenuItems { get; private set; }
-        public List<NavigationMenuItem> FileMenuItems { get; private set; }
+        public List<NavigationMenuItem> TopBarMenuItems { get; private set; }
 
         #region Menu path declaration
 

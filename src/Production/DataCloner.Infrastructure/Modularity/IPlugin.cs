@@ -14,6 +14,6 @@ namespace DataCloner.Infrastructure.Modularity
 
         List<NavigationMenuItem> NavigationMenuItems { get; }
 
-        List<NavigationMenuItem> FileMenuItems { get; }
+        List<NavigationMenuItem> TopBarMenuItems { get; }
     }
 }
