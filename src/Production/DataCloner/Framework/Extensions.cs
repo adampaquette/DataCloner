@@ -12,7 +12,7 @@ namespace DataCloner.Core.Framework
         public static T[] RemoveAt<T>(this T[] source, int index)
         {
             if (source == null)
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
 
             if (index < 0 || index >= source.Length)
                 throw new ArgumentOutOfRangeException("index", index, "index is outside the bounds of source array");
@@ -29,10 +29,10 @@ namespace DataCloner.Core.Framework
         public static T[] Remove<T>(this T[] source, T obj)
         {
             if (source == null)
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
 
             if (obj == null)
-                throw new ArgumentNullException("obj");
+                throw new ArgumentNullException(nameof(obj));
 
             var idx = Array.IndexOf(source, obj);
             if (idx != -1)
@@ -43,10 +43,10 @@ namespace DataCloner.Core.Framework
         public static T[] Add<T>(this T[] source, T obj)
         {
             if (source == null)
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
 
             if (obj == null)
-                throw new ArgumentNullException("obj");
+                throw new ArgumentNullException(nameof(obj));
 
             var arrCopy = source;
             var size = arrCopy.Length;

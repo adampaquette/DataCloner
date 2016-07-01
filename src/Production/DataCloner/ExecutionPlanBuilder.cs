@@ -46,8 +46,8 @@ namespace DataCloner.Core
             MetadataContainer.Initialiser metadataInit,
             MetadataContainer metadataCtn) : this()
         {
-            if (dispatcher == null) throw new ArgumentNullException("dispatcher");
-            if (metadataInit == null) throw new ArgumentNullException("cacheInit");
+            if (dispatcher == null) throw new ArgumentNullException(nameof(dispatcher));
+            if (metadataInit == null) throw new ArgumentNullException(nameof(metadataInit));
 
             _settings = settings;
             _metadataCtn = metadataCtn;
@@ -60,7 +60,7 @@ namespace DataCloner.Core
 
         public ExecutionPlanBuilder Append(RowIdentifier riSource, bool getDerivatives = true)
         {
-            if (riSource == null) throw new ArgumentNullException("riSource");
+            if (riSource == null) throw new ArgumentNullException(nameof(riSource));
 
             _steps.Add(riSource);
             var rowsGenerating = new Stack<RowIdentifier>();
@@ -347,7 +347,7 @@ namespace DataCloner.Core
         private object[] GetDataRow(RowIdentifier riNewFk)
         {
             if (riNewFk == null)
-                throw new ArgumentNullException("riNewFk");
+                throw new ArgumentNullException(nameof(riNewFk));
             if (!riNewFk.Columns.Any())
                 throw new Exception("Failed to return a foreign key value.");
 

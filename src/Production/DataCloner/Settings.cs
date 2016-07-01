@@ -7,6 +7,9 @@ namespace DataCloner.Core
         public ProjectContainer Project { get; set; }
         public int? MapId { get; set; }
         public int? BehaviourId { get; set; }
+        /// <summary>
+        /// We don't load cache from disk nor save it.
+        /// </summary>
         public bool UseInMemoryCacheOnly { get; set; }
     }
 }

@@ -29,7 +29,7 @@ namespace DataCloner.Core
             set { _formatVersion = value; }
         }
         public string Description { get; set; }
-        public ImmutableHashSet<SqlConnection> Connections { get { return _connections; } }
+        public ImmutableHashSet<SqlConnection> Connections => _connections; 
         public bool EnforceIntegrity { get; set; }
 
         public event QueryCommitingEventHandler Commiting;

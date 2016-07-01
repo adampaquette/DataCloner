@@ -7,26 +7,10 @@ namespace DataCloner.Core.Data
     public class QueryDispatcher : IQueryDispatcher
     {
         private Dictionary<Int16, IQueryHelper> _queryHelpers;
-
-        public IQueryHelper this[ServerIdentifier server]
-        {
-            get { return _queryHelpers[server.ServerId]; }
-        }
-
-        public IQueryHelper this[Int16 server]
-        {
-            get { return _queryHelpers[server]; }
-        }
-
-        public IQueryHelper GetQueryHelper(ServerIdentifier server)
-        {
-            return _queryHelpers[server.ServerId];
-        }
-
-        public IQueryHelper GetQueryHelper(Int16 server)
-        {
-            return _queryHelpers[server];
-        }
+        public IQueryHelper this[ServerIdentifier server] => _queryHelpers[server.ServerId];
+        public IQueryHelper this[Int16 server] =>_queryHelpers[server]; 
+        public IQueryHelper GetQueryHelper(ServerIdentifier server) => _queryHelpers[server.ServerId];
+        public IQueryHelper GetQueryHelper(Int16 server) => _queryHelpers[server];
 
         public void InitProviders(AppMetadata appMetadata, IEnumerable<SqlConnection> connections)
         {

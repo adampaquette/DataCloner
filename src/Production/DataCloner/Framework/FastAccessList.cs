@@ -17,7 +17,7 @@ namespace DataCloner.Core.Framework
         public FastAccessList(T[] data)
         {
             if (data == null)
-                throw new ArgumentNullException("data");
+                throw new ArgumentNullException(nameof(data));
 
             _data = data;
             _length = data.Length;
@@ -36,7 +36,7 @@ namespace DataCloner.Core.Framework
         public int Add(T obj)
         {
             if (obj == null)
-                throw new ArgumentNullException("obj");
+                throw new ArgumentNullException(nameof(obj));
 
             if (_data == null)
                 _data = new T[128];
@@ -58,7 +58,7 @@ namespace DataCloner.Core.Framework
         public int TryAdd(T obj)
         {
             if (obj == null)
-                throw new ArgumentNullException("obj");
+                throw new ArgumentNullException(nameof(obj));
             int id;
             if ((id = FindT(obj)) == -1)
                 id = Add(obj);

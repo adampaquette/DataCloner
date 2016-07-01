@@ -7,14 +7,14 @@ namespace DataCloner.Core
 {
     public class ResultSet
     {
-        public List<RowIdentifier> Results { get; private set; }
+        public List<RowIdentifier> Results { get; }
 
-        internal ResultSet(Dictionary<Int16, Internal.ExecutionPlan> exucutionPlanByServer)
+        internal ResultSet(Dictionary<Int16, ExecutionPlan> exucutionPlanByServer)
         {
             Results = ParseClonedRows(exucutionPlanByServer);
         }   
 
-        private List<RowIdentifier> ParseClonedRows(Dictionary<Int16, Internal.ExecutionPlan> exucutionPlanByServer)
+        private List<RowIdentifier> ParseClonedRows(Dictionary<Int16, ExecutionPlan> exucutionPlanByServer)
         {
             var clonedRows = new List<RowIdentifier>();
 

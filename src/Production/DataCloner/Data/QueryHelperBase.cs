@@ -49,7 +49,7 @@ namespace DataCloner.Core.Data
         protected abstract string SqlEnforceIntegrityCheck { get; }
         
         public event QueryCommitingEventHandler QueryCommmiting;
-        public IDbConnection Connection { get{return _connection;} }
+        public IDbConnection Connection { get; }
         public abstract DbEngine Engine { get; }
         public abstract ISqlTypeConverter TypeConverter { get; }
         public abstract ISqlWriter SqlWriter { get;}
@@ -58,8 +58,8 @@ namespace DataCloner.Core.Data
         {
             var factory = DbProviderFactories.GetFactory(providerName);
             _metadata = metadata;
-            _connection = factory.CreateConnection();
-            _connection.ConnectionString = connectionString;
+            Connection = factory.CreateConnection();
+            Connection.ConnectionString = connectionString;
         }
 
         public string[] GetDatabasesName()

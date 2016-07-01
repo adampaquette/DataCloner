@@ -37,10 +37,10 @@ namespace DataCloner.Core.Metadata
         /// <param name="container">Container</param>
         public static void VerifyIntegrityWithSettings(IQueryDispatcher dispatcher, Settings settings, ref MetadataContainer container)
         {
-            if (dispatcher == null) throw new ArgumentNullException("dispatcher");
-            if (settings == null) throw new ArgumentNullException("settings");
-            if (settings.Project == null) throw new ArgumentNullException("settings.Project");
-            if (String.IsNullOrWhiteSpace(settings.Project.Name)) throw new ArgumentException("settings.Project.Name");
+            if (dispatcher == null) throw new ArgumentNullException(nameof(dispatcher));
+            if (settings == null) throw new ArgumentNullException(nameof(settings));
+            if (settings.Project == null) throw new ArgumentNullException(nameof(settings.Project));
+            if (String.IsNullOrWhiteSpace(settings.Project.Name)) throw new ArgumentException(nameof(settings.Project.Name));
             if (settings.Project.ConnectionStrings != null &&
                 !settings.Project.ConnectionStrings.Any())
                 throw new NullReferenceException("settings.Project.ConnectionStrings");
@@ -118,8 +118,8 @@ namespace DataCloner.Core.Metadata
         /// <param name="container">Metadata container</param>
         public static void VerifyIntegrityOfSqlMetadata(IQueryDispatcher dispatcher, ProjectContainer proj, ref MetadataContainer container)
         {
-            if (dispatcher == null) throw new ArgumentNullException("dispatcher");
-            if (proj == null) throw new ArgumentNullException("app");
+            if (dispatcher == null) throw new ArgumentNullException(nameof(dispatcher));
+            if (proj == null) throw new ArgumentNullException(nameof(proj));
             if (proj.ConnectionStrings != null && !proj.ConnectionStrings.Any()) throw new NullReferenceException("ConnectionStrings");
 
             var containerFileName = proj.Name + ".schema";
