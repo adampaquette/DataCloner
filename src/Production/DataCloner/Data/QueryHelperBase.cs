@@ -87,7 +87,7 @@ namespace DataCloner.Core.Data
                 cmd.CommandText = SqlGetColumns;
 
                 var p = cmd.CreateParameter();
-                p.ParameterName = "@DATABASE";
+                p.ParameterName = SqlWriter.NamedParamPrefix + "DATABASE";
                 p.Value = database;
                 cmd.Parameters.Add(p);
 
@@ -105,7 +105,7 @@ namespace DataCloner.Core.Data
                 cmd.CommandText = SqlGetForeignKeys;
 
                 var p = cmd.CreateParameter();
-                p.ParameterName = "@DATABASE";
+                p.ParameterName = SqlWriter.NamedParamPrefix + "DATABASE";
                 p.Value = database;
                 cmd.Parameters.Add(p);
 
@@ -123,7 +123,7 @@ namespace DataCloner.Core.Data
                 cmd.CommandText = SqlGetUniqueKeys;
 
                 var p = cmd.CreateParameter();
-                p.ParameterName = "@DATABASE";
+                p.ParameterName = SqlWriter.NamedParamPrefix + "DATABASE";
                 p.Value = database;
                 cmd.Parameters.Add(p);
 
@@ -150,7 +150,7 @@ namespace DataCloner.Core.Data
             var cmd = Connection.CreateCommand();
 
             var p = cmd.CreateParameter();
-            p.ParameterName = "@ACTIVE";
+            p.ParameterName = SqlWriter.NamedParamPrefix + "ACTIVE";
             p.Value = active;
             p.DbType = DbType.Boolean;
             cmd.Parameters.Add(p);
@@ -177,13 +177,14 @@ namespace DataCloner.Core.Data
 
                 for (var i = 0; i < nbParams; i++)
                 {
-                    var paramName = row.Columns.ElementAt(i).Key;
-                    query.Append(paramName).Append(" = @").Append(paramName);
+                    var paramName = SqlWriter.NamedParamPrefix + row.Columns.ElementAt(i).Key;
 
                     var p = cmd.CreateParameter();
-                    p.ParameterName = "@" + paramName;
+                    p.ParameterName = paramName;
                     p.Value = row.Columns.ElementAt(i).Value;
                     cmd.Parameters.Add(p);
+
+                    query.Append(paramName).Append(" = ").Append(paramName);
 
                     if (i < nbParams - 1)
                         query.Append(" AND ");
@@ -346,12 +347,12 @@ namespace DataCloner.Core.Data
                 {
                     if (sqlVar == null) throw new NullReferenceException();
 
-                    var sqlVarName = "@" + sqlVar.Id;
+                    var sqlVarName = SqlWriter.NamedParamPrefix + sqlVar.Id;
 
                     if (step.Depth == 0 || sqlVar.QueryValue)
                     {
                         //sbPostInsert.Append("DECLARE ").Append(sqlVarName).Append(" varchar(max);\r\n");
-                        sbPostInsert.Append("SET ").Append(sqlVarName).Append(" = SCOPE_IDENTITY();\r\n");
+                        sbPostInsert.Append(SqlWriter.AssignVarWithIdentity(sqlVar.Id.ToString()));
 
                         //if (step.Depth == 0)
                         //sbPostInsert.Append("SELECT ").Append(sqlVar.Id).Append(" K, ").Append(sqlVarName).Append(" V;\r\n");
@@ -378,7 +379,7 @@ namespace DataCloner.Core.Data
                     //C'est une valeur brute
                     else
                     {
-                        var sqlVarName = "@" + tableMetadata.ColumnsDefinition[i].Name.FormatSqlParam() + step.StepId;
+                        var sqlVarName = SqlWriter.NamedParamPrefix + tableMetadata.ColumnsDefinition[i].Name.FormatSqlParam() + step.StepId;
                         var p = cmd.CreateParameter();
                         p.ParameterName = sqlVarName;
 
@@ -401,58 +402,49 @@ namespace DataCloner.Core.Data
                .Append(sbPostInsert);
         }
 
+        /// <summary>
+        /// Update previously nulled foreign keys with a circular reference problem to the newly created one.
+        /// We persist the problem to assure the data integrity.
+        /// </summary>
+        /// <param name="step">Step</param>
+        /// <param name="cmd">Command</param>
+        /// <param name="sql">Sql query</param>
         public void GemerateUpdateStatment(UpdateStep step, IDbCommand cmd, StringBuilder sql)
         {
             if (!step.DestinationRow.Columns.Any())
                 throw new ArgumentNullException("You must specify at least one column in the step identifier.");
 
-            sql.Append("UPDATE ")
-               .Append(step.DestinationRow.Database)
-               .Append(".")
-               .Append(step.DestinationRow.Table)
-               .Append(" SET ");
+            var updateWriter = SqlWriter.GetUpdateWriter(step);
 
             foreach (var col in step.ForeignKey)
             {
-                var paramName = col.Key.FormatSqlParam();
-
-                sql.Append('"').Append(col.Key).Append('"')
-                   .Append(" = @")
-                   .Append(paramName)
-                   .Append(step.StepId)
-                   .Append(",");
+                var paramName = SqlWriter.NamedParamPrefix + col.Key.FormatSqlParam() + step.StepId;
+                var sqlVar = col.Value as SqlVariable;
 
                 var p = cmd.CreateParameter();
-                p.ParameterName = "@" + paramName + step.StepId;
-
-                var sqlVar = col.Value as SqlVariable;
-                p.Value = sqlVar.Value ?? "@" + sqlVar.Id;
+                p.ParameterName =  paramName;
+                p.Value = sqlVar.Value ?? SqlWriter.NamedParamPrefix + sqlVar.Id;
 
                 cmd.Parameters.Add(p);
+
+                updateWriter.AppendToSet(col.Key, paramName);
             }
-            sql.Remove(sql.Length - 1, 1);
-            sql.Append(" WHERE ");
 
             foreach (var kv in step.DestinationRow.Columns)
             {
-                var paramName = kv.Key.FormatSqlParam();
-
-                sql.Append('"').Append(kv.Key).Append('"')
-                   .Append(" = @")
-                   .Append(paramName)
-                   .Append(step.StepId)
-                   .Append(" AND ");
-
-                var p = cmd.CreateParameter();
-                p.ParameterName = "@" + paramName + step.StepId;
-
+                var paramName = SqlWriter.NamedParamPrefix + kv.Key.FormatSqlParam() + step.StepId;
                 var sqlVar = kv.Value as SqlVariable;
-                p.Value = sqlVar.Value ?? "@" + sqlVar.Id;
+
+                var p = cmd.CreateParameter(); 
+                p.ParameterName =  paramName;
+                p.Value = sqlVar.Value ?? SqlWriter.NamedParamPrefix + sqlVar.Id;
 
                 cmd.Parameters.Add(p);
+
+                updateWriter.AppendToWhere(kv.Key, paramName);
             }
-            sql.Remove(sql.Length - 5, 5);
-            sql.Append(";\r\n");
+
+            sql.Append(updateWriter.ToStringBuilder());
         }
 
         public void Dispose()
