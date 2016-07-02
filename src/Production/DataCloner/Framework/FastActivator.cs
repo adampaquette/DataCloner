@@ -57,7 +57,7 @@ namespace DataCloner.Core.Framework
         public static Func<T1, object> GetConstructor(Type objType, Type[] argTypes)
         {
             if (argTypes.Length != 1)
-                throw new ArgumentException(string.Format("Arguments found {0} : Expected : 1", argTypes.Length));
+                throw new ArgumentException($"Arguments found {argTypes.Length} : Expected : 1");
             Func<T1, object> constructor;
             if (!ConstructorCache.TryGetValue(objType, out constructor))
             {
@@ -81,7 +81,7 @@ namespace DataCloner.Core.Framework
         public static Func<T1, T2, object> GetConstructor(Type objType, Type[] argTypes)
         {
             if (argTypes.Length != 2)
-                throw new ArgumentException(string.Format("Arguments found {0} : Expected : 2", argTypes.Length));
+                throw new ArgumentException($"Arguments found {argTypes.Length} : Expected : 2");
             Func<T1, T2, object> constructor;
             if (!ConstructorCache.TryGetValue(objType, out constructor))
             {
@@ -108,7 +108,7 @@ namespace DataCloner.Core.Framework
         public static Func<T1, T2, T3, object> GetConstructor(Type objType, Type[] argTypes)
         {
             if (argTypes.Length != 3)
-                throw new ArgumentException(string.Format("Arguments found {0} : Expected : 3", argTypes.Length));
+                throw new ArgumentException($"Arguments found {argTypes.Length} : Expected : 3");
             Func<T1, T2, T3, object> constructor;
             if (!ConstructorCache.TryGetValue(objType, out constructor))
             {

@@ -173,8 +173,7 @@ namespace DataCloner.Core.Metadata
                 }
             }
             if(!colPkDst.Any())
-                throw new Exception(
-                    string.Format("A problem append with the metadata. The derivative table '{0}' dosen't have a foreign key to the table '{1}'.", derivativeTable.Name, Name));
+                throw new Exception($"A problem append with the metadata. The derivative table '{derivativeTable.Name}' dosen't have a foreign key to the table '{Name}'.");
             return colPkDst;
         }
 

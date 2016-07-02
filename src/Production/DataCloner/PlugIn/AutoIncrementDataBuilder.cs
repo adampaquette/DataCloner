@@ -75,7 +75,7 @@ namespace DataCloner.Core.PlugIn
         {
             var cmd = conn.CreateCommand();
             cmd.Transaction = transaction;
-            cmd.CommandText = string.Format("SELECT MAX({0})+1 FROM {1}.{2}", column.Name, database, table.Name);
+            cmd.CommandText = $"SELECT MAX({column.Name})+1 FROM {database}.{table.Name}";
             var result = cmd.ExecuteScalar();
             return result;
         }
@@ -85,9 +85,9 @@ namespace DataCloner.Core.PlugIn
             object result = null;
             var cmd = conn.CreateCommand();
             cmd.Transaction = transaction;
-            cmd.CommandText = string.Format("SELECT MAX({0})+1 FROM {1}.{2}.{3}", column.Name, database, schema, table.Name);
+            cmd.CommandText = $"SELECT MAX({column.Name})+1 FROM {database}.{schema}.{table.Name}";
             //using (var tran = conn.BeginTransaction())
-                result = cmd.ExecuteScalar();
+            result = cmd.ExecuteScalar();
             return result;
         }
 

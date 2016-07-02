@@ -60,7 +60,7 @@ namespace DataCloner.Core.Metadata
             {
                 map = settings.Project.Maps.FirstOrDefault(m => m.Id == settings.MapId);
                 if (map == null)
-                    throw new Exception(string.Format("Map id '{0}' not found in configuration file for application '{1}'!", settings.MapId, project.Name));
+                    throw new Exception($"Map id '{settings.MapId}' not found in configuration file for application '{project.Name}'!");
                 containerFileName += map.From + "-" + map.To;
                 bf.Serialize(configData, map);
 
@@ -69,7 +69,7 @@ namespace DataCloner.Core.Metadata
                     clonerBehaviour = project.Behaviours.FirstOrDefault(c => c.Id == settings.BehaviourId);
                     if (clonerBehaviour == null)
                         throw new KeyNotFoundException(
-                            string.Format("There is no behaviour '{0}' in the configuration for the appName name '{1}'.", settings.BehaviourId, project.Name));
+                            $"There is no behaviour '{settings.BehaviourId}' in the configuration for the appName name '{project.Name}'.");
 
                     bf.Serialize(configData, clonerBehaviour);
                     bf.Serialize(configData, project.Templates);
@@ -221,7 +221,7 @@ namespace DataCloner.Core.Metadata
             //    {
             //        var configVar = map.Variables.FirstOrDefault(v => v.Name == serversSource[i]);
             //        if (configVar == null)
-            //            throw new Exception(string.Format("The variable '{0}' is not found in the map with id='{1}'.", serversSource[i], map.Id));
+            //            throw new Exception($"The variable '{0}' is not found in the map with id='{1}'.", serversSource[i], map.Id));
             //        serversSource[i] = configVar.Value.ToString();
             //    }
             //}

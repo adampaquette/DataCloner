@@ -77,9 +77,8 @@ namespace DataCloner.Core.PlugIn
                         builder = CachedBuilders["StringDataBuilder"];
                         break;
                     default:
-                        throw new NotSupportedException(string.Format(
-                            "The generation of the key failed. Please specify a databuilder in the configuration for {0}.{1}.{2}", 
-                            database, table, col.Name));
+                        throw new NotSupportedException($"The generation of the key failed. Please specify a databuilder " +
+                            "in the configuration for {database}.{table}.{col.Name}");
                 }
             }
 
@@ -87,8 +86,7 @@ namespace DataCloner.Core.PlugIn
             if (mustGenerate)
             {
                 if (builder == null)
-                    throw new NullReferenceException(
-                        string.Format("Builder '{0}' for column '{1}' is not found. Watch configuration file.", col.BuilderName, col.Name));
+                    throw new NullReferenceException($"Builder '{col.BuilderName}' for column '{col.Name}' is not found. Watch configuration file.");
                 return builder.BuildData(queryHelper.Connection, transaction, queryHelper.Engine, serverId, database, schema, table, col);
             }
             return null;
@@ -97,9 +95,8 @@ namespace DataCloner.Core.PlugIn
         public static void BuildDataFromTable(IQueryHelper queryHelper, IDbTransaction transaction, Int16 serverId, string database, string schema, TableMetadata table, object[] dataRow)
         {
             if (table.ColumnsDefinition.Count != dataRow.Length)
-                throw new ArgumentException(
-                    string.Format("The number of columns defined in the cached table {0} '{1}' is different from the current row '{2}'.",
-                    table.Name, table.ColumnsDefinition.Count, dataRow.Length));
+                throw new ArgumentException($"The number of columns defined in the cached table {table.Name} '{table.ColumnsDefinition.Count}' " + 
+                    "is different from the current row '{dataRow.Length}'.");
 
             for (var i = 0; i < table.ColumnsDefinition.Count; i++)
             {
