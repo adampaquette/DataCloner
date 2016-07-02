@@ -177,14 +177,15 @@ namespace DataCloner.Core.Data
 
                 for (var i = 0; i < nbParams; i++)
                 {
-                    var paramName = SqlWriter.NamedParamPrefix + row.Columns.ElementAt(i).Key;
+                    var colName = row.Columns.ElementAt(i).Key;
+                    var paramName = SqlWriter.NamedParamPrefix + colName;
 
                     var p = cmd.CreateParameter();
                     p.ParameterName = paramName;
                     p.Value = row.Columns.ElementAt(i).Value;
                     cmd.Parameters.Add(p);
 
-                    query.Append(paramName).Append(" = ").Append(paramName);
+                    query.Append(colName).Append(" = ").Append(paramName);
 
                     if (i < nbParams - 1)
                         query.Append(" AND ");
