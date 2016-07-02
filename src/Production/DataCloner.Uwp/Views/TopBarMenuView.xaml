@@ -38,19 +38,22 @@
                       ItemsSource="{Binding MenuItems}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <Button Command="{Binding Command}" Style="{StaticResource TopBarButton}">
-                        <StackPanel Orientation="Horizontal">
-                            <Image Height="16"
-                                   Margin="0 0 10 0"
-                                   Source="{Binding IconSrc}"
-                                   Stretch="Uniform" />
-                            <TextBlock Margin="0 0 32 0"
-                                       FontSize="18"
-                                       FontWeight="SemiLight"
-                                       Foreground="White"
-                                       Text="{Binding Text}" />
-                        </StackPanel>
-                    </Button>
+                    <StackPanel Orientation="Horizontal">
+                        <i:Interaction.Behaviors>
+                            <core:EventTriggerBehavior EventName="Tapped">
+                                <core:InvokeCommandAction Command="{Binding Command}" />
+                            </core:EventTriggerBehavior>
+                        </i:Interaction.Behaviors>
+                        <Image Height="16"
+                               Margin="0 0 10 0"
+                               Source="{Binding IconSrc}"
+                               Stretch="Uniform" />
+                        <TextBlock Margin="0 0 32 0"
+                                   FontSize="18"
+                                   FontWeight="SemiLight"
+                                   Foreground="White"
+                                   Text="{Binding Text}" />
+                    </StackPanel>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
             <ItemsControl.ItemsPanel>

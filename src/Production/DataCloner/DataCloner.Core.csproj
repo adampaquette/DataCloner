@@ -91,9 +91,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Data\Generator\InsertWriter.cs" />
-    <Compile Include="Data\Generator\IUpdateWriter.cs" />
-    <Compile Include="Data\Generator\UpdateWriter.cs" />
     <Compile Include="Query.cs" />
     <Compile Include="Framework\FastAccessList.cs" />
     <Compile Include="Configuration\ConfigurationException.cs" />
@@ -132,7 +129,9 @@
     <Compile Include="Framework\FastActivator.cs" />
     <Compile Include="Framework\Helpers.cs" />
     <Compile Include="Framework\KeyGenerator.cs" />
+    <Compile Include="Data\Generator\AbstractSqlWriter.cs" />
     <Compile Include="Data\Generator\IInsertWriter.cs" />
+    <Compile Include="Data\Generator\InsertWriterMsSql.cs" />
     <Compile Include="Data\Generator\ISqlWriter.cs" />
     <Compile Include="Data\Generator\SqlWriterMsSql.cs" />
     <Compile Include="Data\Generator\SqlWriterMySql.cs" />

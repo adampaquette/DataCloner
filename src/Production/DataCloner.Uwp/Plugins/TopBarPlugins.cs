@@ -44,7 +44,7 @@ namespace DataCloner.Uwp.Plugins
         {
             TopBarMenuItems = new List<NavigationMenuItem>
             {
-                new NavigationMenuItem(FileMenuPath, command: new DelegateCommand(() =>  Debug.WriteLine("file menu")))
+                new NavigationMenuItem(FileMenuPath)
                 {
                     Text = "Fichier",
                     IconSrc = new BitmapImage(new Uri("ms-appx:///Assets/MenuIcons/interface.png"))

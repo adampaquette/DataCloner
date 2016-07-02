@@ -1,6 +1,7 @@
-﻿using DataCloner.Core.Metadata;
+﻿using System.Text;
+using DataCloner.Core.Internal;
+using DataCloner.Core.Metadata;
 using System.Collections.Generic;
-using System.Text;
 
 namespace DataCloner.Core.Data.Generator
 {

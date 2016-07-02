@@ -1,26 +1,12 @@
-﻿using DataCloner.Core.Internal;
-using System;
+﻿using System;
 
 namespace DataCloner.Core.Data.Generator
 {
-    internal class SqlWriterMySql : ISqlWriter
+    internal class SqlWriterMySql : AbstractSqlWriter
     {
-        public string IdentifierDelemiterStart => "`";
-        public string IdentifierDelemiterEnd => "`";
-        public string StringDelemiter => "'";
-        public string NamedParamPrefix => "@";
-
-        public IInsertWriter GetInsertWriter() =>
-            new InsertWriter(IdentifierDelemiterStart, IdentifierDelemiterEnd,
-                             StringDelemiter, NamedParamPrefix);
-
-        public IUpdateWriter GetUpdateWriter(UpdateStep step) =>
-            new UpdateWriter(step, IdentifierDelemiterStart, IdentifierDelemiterEnd,
-                             StringDelemiter, NamedParamPrefix);
-
-        public string AssignVarWithIdentity(string sqlVarName)
+        public override IInsertWriter GetInsertWriter()
         {
             throw new NotImplementedException();
-        }           
+        }
     }
 }
