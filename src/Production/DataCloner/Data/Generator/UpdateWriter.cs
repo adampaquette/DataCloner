@@ -39,21 +39,18 @@ namespace DataCloner.Core.Data.Generator
 
         public IUpdateWriter AppendToWhere(string colName, string paramName)
         {
-            _sbWhere.Append(IdentifierDelemiterStart).Append(colName).Append(IdentifierDelemiterEnd)
-                .Append(" = ")
-                .Append(paramName)
-                .Append(" AND ");
+            if (_sbWhere.Length == 0)
+                _sbWhere.Append(" WHERE ");
+            else
+                _sbWhere.Append(" AND ");
+
+            _sbWhere.Append(IdentifierDelemiterStart).Append(colName).Append(IdentifierDelemiterEnd).Append(" = ").Append(paramName);
             return this;
         }
 
         public IUpdateWriter Complete()
         {
-            _sbSet.Remove(_sbSet.Length - 1, 1);
-            _sbSet.Append(" WHERE ");
-
-            _sbWhere.Remove(_sbWhere.Length - 5, 5);
             _sbWhere.Append(";\r\n");
-
             return this;
         }
 
@@ -61,7 +58,10 @@ namespace DataCloner.Core.Data.Generator
         {
             var sb = new StringBuilder();
             sb.Append(_sbSet);
-            sb.Append(_sbWhere);
+
+            if (_sbWhere.Length != 0)
+                sb.Append(_sbWhere);
+
             return sb;
         }
     }

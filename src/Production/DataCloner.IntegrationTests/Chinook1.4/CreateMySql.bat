@@ -28,7 +28,7 @@ if (%ERRORLEVEL%)==(3) goto END
 :RUNSQL
 echo.
 echo Running %SQLFILE%...
-mysql -h localhost -u root --password=p4ssw0rd <%SQLFILE%
+"C:\Program Files\MySQL\MySQL Server 5.7\bin\mysql.exe" -h localhost -u root --password=toor <%SQLFILE%
 
 :END
 echo.

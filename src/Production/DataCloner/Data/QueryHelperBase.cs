@@ -165,16 +165,14 @@ namespace DataCloner.Core.Data
         public object[][] Select(RowIdentifier row)
         {
             var rows = new List<object[]>();
-            var tableMetadata = _metadata.GetTable(row);
-            var query = new StringBuilder(tableMetadata.SelectCommand);
+            var tableMetadata = _metadata.GetTable(row);           
             var nbParams = row.Columns.Count;
+            var selectWriter = SqlWriter.GetSelectWriter()
+                                        .AppendColumns(row, tableMetadata.ColumnsDefinition);
 
             using (var cmd = Connection.CreateCommand())
             {
                 //Build query / params
-                if (nbParams > 0)
-                    query.Append(" WHERE ");
-
                 for (var i = 0; i < nbParams; i++)
                 {
                     var colName = row.Columns.ElementAt(i).Key;
@@ -185,12 +183,9 @@ namespace DataCloner.Core.Data
                     p.Value = row.Columns.ElementAt(i).Value;
                     cmd.Parameters.Add(p);
 
-                    query.Append(colName).Append(" = ").Append(paramName);
-
-                    if (i < nbParams - 1)
-                        query.Append(" AND ");
+                    selectWriter.AppendToWhere(colName, paramName);
                 }
-                cmd.CommandText = query.ToString();
+                cmd.CommandText = selectWriter.ToStringBuilder().ToString();
 
                 //Exec query
                 Connection.Open();

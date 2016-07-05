@@ -9,19 +9,18 @@ namespace DataCloner.Core.IntegrationTests
 {
     public class ClonerTests
     {
-        private const string DbEngine = "DbEngineToTest";
         private const string TestDatabase = "chinook";
-        private const string TestSchema = "dbo";
+
         public static IEnumerable<object[]> DbEngineToTest => DatabaseInitializer.Connections;
 
-        [Theory(Skip = "Generation of the cache files"), MemberData("DbEngine")]
-        public void Should_NotFail_When_Settuping(SqlConnection conn)
+        [Theory(Skip = "Generation of the cache files"), MemberData(nameof(DbEngineToTest))]
+        public void Should_NotFail_When_Settuping(Connection conn)
         {
             var epb = new ExecutionPlanBuilder(Utils.MakeDefaultSettings(conn));
         }
 
-        [Theory, MemberData(DbEngine)]
-        public void CloningDependencies_With_DefaultConfig(SqlConnection conn)
+        [Theory, MemberData(nameof(DbEngineToTest))]
+        public void CloningDependencies_With_DefaultConfig(Connection conn)
         {
             //Arrange
             var executionPlanBuilder = new ExecutionPlanBuilder(Utils.MakeDefaultSettings(conn));
@@ -29,7 +28,7 @@ namespace DataCloner.Core.IntegrationTests
             {
                 ServerId = conn.Id,
                 Database = TestDatabase,
-                Schema = TestSchema,
+                Schema = Utils.TestSchema(conn),
                 Table = "customer",
                 Columns = new ColumnsWithValue
                 {
@@ -56,7 +55,7 @@ namespace DataCloner.Core.IntegrationTests
                 {
                      ServerId = conn.Id,
                      Database = TestDatabase,
-                     Schema = TestSchema,
+                     Schema = Utils.TestSchema(conn),
                      Table = "customer",
                      Columns = new ColumnsWithValue { { "customerid", 1 } }
                 },
@@ -64,7 +63,7 @@ namespace DataCloner.Core.IntegrationTests
                 {
                      ServerId = conn.Id,
                      Database = TestDatabase,
-                     Schema = TestSchema,
+                     Schema = Utils.TestSchema(conn),
                      Table = "employee",
                      Columns = new ColumnsWithValue { { "employeeid", 3 } }
                 },
@@ -72,7 +71,7 @@ namespace DataCloner.Core.IntegrationTests
                 {
                      ServerId = conn.Id,
                      Database = TestDatabase,
-                     Schema = TestSchema,
+                     Schema = Utils.TestSchema(conn),
                      Table = "employee",
                      Columns = new ColumnsWithValue { { "employeeid", 2 } }
                 },
@@ -80,7 +79,7 @@ namespace DataCloner.Core.IntegrationTests
                 {
                      ServerId = conn.Id,
                      Database = TestDatabase,
-                     Schema = TestSchema,
+                     Schema = Utils.TestSchema(conn),
                      Table = "employee",
                      Columns = new ColumnsWithValue{ { "employeeid", 1 } }
                 }
@@ -89,8 +88,8 @@ namespace DataCloner.Core.IntegrationTests
             Assert.True(Enumerable.SequenceEqual(clonedData, expectedData));
         }
 
-        [Theory, MemberData(DbEngine)]
-        public void CloningDerivatives_With_GlobalAccessDenied(SqlConnection conn)
+        [Theory, MemberData(nameof(DbEngineToTest))]
+        public void CloningDerivatives_With_GlobalAccessDenied(Connection conn)
         {
             //Arrange
             var config = Utils.MakeDefaultSettings(conn);
@@ -109,7 +108,7 @@ namespace DataCloner.Core.IntegrationTests
             {
                 ServerId = conn.Id,
                 Database = TestDatabase,
-                Schema = TestSchema,
+                Schema = Utils.TestSchema(conn),
                 Table = "artist",
                 Columns = new ColumnsWithValue
                 {
@@ -136,7 +135,7 @@ namespace DataCloner.Core.IntegrationTests
                 {
                      ServerId = conn.Id,
                      Database = TestDatabase,
-                     Schema = TestSchema,
+                     Schema = Utils.TestSchema(conn),
                      Table = "artist",
                      Columns = new ColumnsWithValue { { "artistid", 1 } }
                 },
@@ -144,7 +143,7 @@ namespace DataCloner.Core.IntegrationTests
                 {
                      ServerId = conn.Id,
                      Database = TestDatabase,
-                     Schema = TestSchema,
+                     Schema = Utils.TestSchema(conn),
                      Table = "album",
                      Columns = new ColumnsWithValue { { "albumid", 1 } }
                 },
@@ -152,7 +151,7 @@ namespace DataCloner.Core.IntegrationTests
                 {
                      ServerId = conn.Id,
                      Database = TestDatabase,
-                     Schema = TestSchema,
+                     Schema = Utils.TestSchema(conn),
                      Table = "album",
                      Columns = new ColumnsWithValue { { "albumid", 4 } }
                 }
@@ -161,8 +160,8 @@ namespace DataCloner.Core.IntegrationTests
             Assert.True(Enumerable.SequenceEqual(clonedData, expectedData));
         }
 
-        [Theory, MemberData(DbEngine)]
-        public void CloningDerivatives_With_GlobalAccessForced(SqlConnection conn)
+        [Theory, MemberData(nameof(DbEngineToTest))]
+        public void CloningDerivatives_With_GlobalAccessForced(Connection conn)
         {
             //Arrange
             var config = Utils.MakeDefaultSettings(conn);
@@ -192,7 +191,7 @@ namespace DataCloner.Core.IntegrationTests
             {
                 ServerId = conn.Id,
                 Database = TestDatabase,
-                Schema = TestSchema,
+                Schema = Utils.TestSchema(conn),
                 Table = "artist",
                 Columns = new ColumnsWithValue { { "artistid", 1 } }
             };
@@ -216,7 +215,7 @@ namespace DataCloner.Core.IntegrationTests
                 {
                      ServerId = conn.Id,
                      Database = TestDatabase,
-                     Schema = TestSchema,
+                     Schema = Utils.TestSchema(conn),
                      Table = "artist",
                      Columns = new ColumnsWithValue { { "artistid", 1 } }
                 },
@@ -224,7 +223,7 @@ namespace DataCloner.Core.IntegrationTests
                 {
                      ServerId = conn.Id,
                      Database = TestDatabase,
-                     Schema = TestSchema,
+                     Schema = Utils.TestSchema(conn),
                      Table = "album",
                      Columns = new ColumnsWithValue { { "albumid", 1 } }
                 },
@@ -232,7 +231,7 @@ namespace DataCloner.Core.IntegrationTests
                 {
                      ServerId = conn.Id,
                      Database = TestDatabase,
-                     Schema = TestSchema,
+                     Schema = Utils.TestSchema(conn),
                      Table = "album",
                      Columns = new ColumnsWithValue { { "albumid", 4 } }
                 }
@@ -241,8 +240,8 @@ namespace DataCloner.Core.IntegrationTests
             Assert.True(Enumerable.SequenceEqual(clonedData, expectedData));
         }
 
-        [Theory, MemberData(DbEngine)]
-        public void CloningDerivatives_With_DerivativeSubTableAccessForced(SqlConnection conn)
+        [Theory, MemberData(nameof(DbEngineToTest))]
+        public void CloningDerivatives_With_DerivativeSubTableAccessForced(Connection conn)
         {
             //Arrange
             var config = Utils.MakeDefaultSettings(conn);
@@ -269,7 +268,7 @@ namespace DataCloner.Core.IntegrationTests
                             {
                                 ServerId = conn.Id.ToString(),
                                 Database = TestDatabase,
-                                Schema = TestSchema,
+                                Schema = Utils.TestSchema(conn),
                                 Table = "album",
                                 Access = DerivativeTableAccess.Forced
                             }
@@ -283,7 +282,7 @@ namespace DataCloner.Core.IntegrationTests
             {
                 ServerId = conn.Id,
                 Database = TestDatabase,
-                Schema = TestSchema,
+                Schema = Utils.TestSchema(conn),
                 Table = "artist",
                 Columns = new ColumnsWithValue { { "artistid", 1 } }
             };
@@ -307,7 +306,7 @@ namespace DataCloner.Core.IntegrationTests
                 {
                      ServerId = conn.Id,
                      Database = TestDatabase,
-                     Schema = TestSchema,
+                     Schema = Utils.TestSchema(conn),
                      Table = "artist",
                      Columns = new ColumnsWithValue { { "artistid", 1 } }
                 },
@@ -315,7 +314,7 @@ namespace DataCloner.Core.IntegrationTests
                 {
                      ServerId = conn.Id,
                      Database = TestDatabase,
-                     Schema = TestSchema,
+                     Schema = Utils.TestSchema(conn),
                      Table = "album",
                      Columns = new ColumnsWithValue { { "albumid", 1 } }
                 },
@@ -323,7 +322,7 @@ namespace DataCloner.Core.IntegrationTests
                 {
                      ServerId = conn.Id,
                      Database = TestDatabase,
-                     Schema = TestSchema,
+                     Schema = Utils.TestSchema(conn),
                      Table = "album",
                      Columns = new ColumnsWithValue { { "albumid", 4 } }
                 }
@@ -332,8 +331,8 @@ namespace DataCloner.Core.IntegrationTests
             Assert.True(Enumerable.SequenceEqual(clonedData, expectedData));
         }
 
-        [Theory, MemberData(DbEngine)]
-        public void CloningDerivatives_With_DerivativeSubTableAccessDenied(SqlConnection conn)
+        [Theory, MemberData(nameof(DbEngineToTest))]
+        public void CloningDerivatives_With_DerivativeSubTableAccessDenied(Connection conn)
         {
             //Arrange
             var config = Utils.MakeDefaultSettings(conn);
@@ -352,7 +351,7 @@ namespace DataCloner.Core.IntegrationTests
                             {
                                 ServerId = conn.Id.ToString(),
                                 Database = TestDatabase,
-                                Schema = TestSchema,
+                                Schema = Utils.TestSchema(conn),
                                 Table = "album",
                                 Access = DerivativeTableAccess.Denied
                             }
@@ -366,7 +365,7 @@ namespace DataCloner.Core.IntegrationTests
             {
                 ServerId = conn.Id,
                 Database = TestDatabase,
-                Schema = TestSchema,
+                Schema = Utils.TestSchema(conn),
                 Table = "artist",
                 Columns = new ColumnsWithValue { { "artistid", 1 } }
             };
@@ -390,7 +389,7 @@ namespace DataCloner.Core.IntegrationTests
                 {
                      ServerId = conn.Id,
                      Database = TestDatabase,
-                     Schema = TestSchema,
+                     Schema = Utils.TestSchema(conn),
                      Table = "artist",
                      Columns = new ColumnsWithValue { { "artistid", 1 } }
                 }
@@ -399,8 +398,8 @@ namespace DataCloner.Core.IntegrationTests
             Assert.True(Enumerable.SequenceEqual(clonedData, expectedData));
         }
 
-        [Theory, MemberData(DbEngine)]
-        public void Cloning_With_StaticTable(SqlConnection conn)
+        [Theory, MemberData(nameof(DbEngineToTest))]
+        public void Cloning_With_StaticTable(Connection conn)
         {
             //Arrange
             var config = Utils.MakeDefaultSettings(conn);
@@ -419,7 +418,7 @@ namespace DataCloner.Core.IntegrationTests
             {
                 ServerId = conn.Id,
                 Database = TestDatabase,
-                Schema = TestSchema,
+                Schema = Utils.TestSchema(conn),
                 Table = "album",
                 Columns = new ColumnsWithValue { { "albumid", 1 } }
             };
@@ -443,7 +442,7 @@ namespace DataCloner.Core.IntegrationTests
                 {
                      ServerId = conn.Id,
                      Database = TestDatabase,
-                     Schema = TestSchema,
+                     Schema = Utils.TestSchema(conn),
                      Table = "album",
                      Columns = new ColumnsWithValue { { "albumid", 1 } }
                 }
@@ -452,8 +451,8 @@ namespace DataCloner.Core.IntegrationTests
             Assert.True(Enumerable.SequenceEqual(clonedData, expectedData));          
         }
 
-        [Theory, MemberData(DbEngine)]
-        public void Cloning_Should_NotCloneDerivativeOfDependancy(SqlConnection conn)
+        [Theory, MemberData(nameof(DbEngineToTest))]
+        public void Cloning_Should_NotCloneDerivativeOfDependancy(Connection conn)
         {
             //Arrange
             var config = Utils.MakeDefaultSettings(conn);
@@ -463,7 +462,7 @@ namespace DataCloner.Core.IntegrationTests
             {
                 ServerId = conn.Id,
                 Database = TestDatabase,
-                Schema = TestSchema,
+                Schema = Utils.TestSchema(conn),
                 Table = "playlisttrack",
                 Columns = new ColumnsWithValue
                 {
@@ -491,7 +490,7 @@ namespace DataCloner.Core.IntegrationTests
                 {
                     ServerId = conn.Id,
                     Database = TestDatabase,
-                    Schema = TestSchema,
+                    Schema = Utils.TestSchema(conn),
                     Table = "playlisttrack",
                     Columns = new ColumnsWithValue
                     {
@@ -503,7 +502,7 @@ namespace DataCloner.Core.IntegrationTests
                 {
                     ServerId = conn.Id,
                     Database = TestDatabase,
-                    Schema = TestSchema,
+                    Schema = Utils.TestSchema(conn),
                     Table = "playlist",
                     Columns = new ColumnsWithValue { { "playlistid", 1} }
                 },
@@ -511,7 +510,7 @@ namespace DataCloner.Core.IntegrationTests
                 {
                     ServerId = conn.Id,
                     Database = TestDatabase,
-                    Schema = TestSchema,
+                    Schema = Utils.TestSchema(conn),
                     Table = "track",
                     Columns = new ColumnsWithValue { { "trackid", 1} }
                 },
@@ -519,7 +518,7 @@ namespace DataCloner.Core.IntegrationTests
                 {
                     ServerId = conn.Id,
                     Database = TestDatabase,
-                    Schema = TestSchema,
+                    Schema = Utils.TestSchema(conn),
                     Table = "album",
                     Columns = new ColumnsWithValue { { "albumid", 1} }
                 },
@@ -527,7 +526,7 @@ namespace DataCloner.Core.IntegrationTests
                 {
                     ServerId = conn.Id,
                     Database = TestDatabase,
-                    Schema = TestSchema,
+                    Schema = Utils.TestSchema(conn),
                     Table = "artist",
                     Columns = new ColumnsWithValue { { "artistid", 1} }
                 },
@@ -535,7 +534,7 @@ namespace DataCloner.Core.IntegrationTests
                 {
                     ServerId = conn.Id,
                     Database = TestDatabase,
-                    Schema = TestSchema,
+                    Schema = Utils.TestSchema(conn),
                     Table = "genre",
                     Columns = new ColumnsWithValue { { "genreid", 1} }
                 },
@@ -543,7 +542,7 @@ namespace DataCloner.Core.IntegrationTests
                 {
                     ServerId = conn.Id,
                     Database = TestDatabase,
-                    Schema = TestSchema,
+                    Schema = Utils.TestSchema(conn),
                     Table = "mediatype",
                     Columns = new ColumnsWithValue { { "mediatypeid", 1} }
                 }
@@ -552,8 +551,8 @@ namespace DataCloner.Core.IntegrationTests
             Assert.True(Enumerable.SequenceEqual(clonedData, expectedData));
         }
 
-        [Theory, MemberData(DbEngine)]
-        public void Cloning_With_ForeignKeyAdd(SqlConnection conn)
+        [Theory, MemberData(nameof(DbEngineToTest))]
+        public void Cloning_With_ForeignKeyAdd(Connection conn)
         {
             //Arrange
             var config = Utils.MakeDefaultSettings(conn);
@@ -571,7 +570,7 @@ namespace DataCloner.Core.IntegrationTests
                             {
                                 ServerId = conn.Id.ToString(),
                                 Database = TestDatabase,
-                                Schema = TestSchema,
+                                Schema = Utils.TestSchema(conn),
                                 Table = "playlist",
                                 Columns = new List<ForeignKeyColumn>
                                 {
@@ -592,7 +591,7 @@ namespace DataCloner.Core.IntegrationTests
             {
                 ServerId = conn.Id,
                 Database = TestDatabase,
-                Schema = TestSchema,
+                Schema = Utils.TestSchema(conn),
                 Table = "artist",
                 Columns = new ColumnsWithValue { { "artistid", 1 } }
             };
@@ -616,7 +615,7 @@ namespace DataCloner.Core.IntegrationTests
                 {
                      ServerId = conn.Id,
                      Database = TestDatabase,
-                     Schema = TestSchema,
+                     Schema = Utils.TestSchema(conn),
                      Table = "artist",
                      Columns = new ColumnsWithValue { { "artistid", 1 } }
                 },
@@ -624,7 +623,7 @@ namespace DataCloner.Core.IntegrationTests
                 {
                      ServerId = conn.Id,
                      Database = TestDatabase,
-                     Schema = TestSchema,
+                     Schema = Utils.TestSchema(conn),
                      Table = "playlist",
                      Columns = new ColumnsWithValue { { "playlistid", 1 } }
                 }
@@ -633,8 +632,8 @@ namespace DataCloner.Core.IntegrationTests
             Assert.True(Enumerable.SequenceEqual(clonedData, expectedData));
         }
 
-        [Theory, MemberData(DbEngine)]
-        public void Cloning_With_ForeignKeyRemove(SqlConnection conn)
+        [Theory, MemberData(nameof(DbEngineToTest))]
+        public void Cloning_With_ForeignKeyRemove(Connection conn)
         {
             //Arrange
             var config = Utils.MakeDefaultSettings(conn);
@@ -665,7 +664,7 @@ namespace DataCloner.Core.IntegrationTests
             {
                 ServerId = conn.Id,
                 Database = TestDatabase,
-                Schema = TestSchema,
+                Schema = Utils.TestSchema(conn),
                 Table = "album",
                 Columns = new ColumnsWithValue { { "albumid", 1 } }
             };
@@ -689,7 +688,7 @@ namespace DataCloner.Core.IntegrationTests
                 {
                      ServerId = conn.Id,
                      Database = TestDatabase,
-                     Schema = TestSchema,
+                     Schema = Utils.TestSchema(conn),
                      Table = "album",
                      Columns = new ColumnsWithValue { { "albumid", 1 } }
                 }
@@ -698,8 +697,8 @@ namespace DataCloner.Core.IntegrationTests
             Assert.True(Enumerable.SequenceEqual(clonedData, expectedData));
         }
 
-        [Theory, MemberData(DbEngine)]
-        public void Cloning_With_DataBuilder(SqlConnection conn)
+        [Theory, MemberData(nameof(DbEngineToTest))]
+        public void Cloning_With_DataBuilder(Connection conn)
         {
             //Arrange
             var config = Utils.MakeDefaultSettings(conn);
@@ -723,7 +722,7 @@ namespace DataCloner.Core.IntegrationTests
             {
                 ServerId = conn.Id,
                 Database = TestDatabase,
-                Schema = TestSchema,
+                Schema = Utils.TestSchema(conn),
                 Table = "employee",
                 Columns = new ColumnsWithValue { { "employeeid", 1 } }
             };
@@ -747,7 +746,7 @@ namespace DataCloner.Core.IntegrationTests
             Assert.Matches("(.+){20}", paramLastName.Value.ToString());
 
             var paramReportsTo = command?.Parameters["@reportsto0"] as IDataParameter;
-            Assert.IsType<int>(paramReportsTo.Value);
+            Assert.True(paramReportsTo.Value.IsNumericType());
         }
     }
 }

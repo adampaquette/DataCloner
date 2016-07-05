@@ -86,7 +86,6 @@ namespace DataCloner.Core.PlugIn
             var cmd = conn.CreateCommand();
             cmd.Transaction = transaction;
             cmd.CommandText = $"SELECT MAX({column.Name})+1 FROM {database}.{schema}.{table.Name}";
-            //using (var tran = conn.BeginTransaction())
             result = cmd.ExecuteScalar();
             return result;
         }

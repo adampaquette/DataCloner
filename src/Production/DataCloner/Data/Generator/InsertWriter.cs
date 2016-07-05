@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System;
 
 namespace DataCloner.Core.Data.Generator
 {
@@ -25,9 +26,11 @@ namespace DataCloner.Core.Data.Generator
         public IInsertWriter AppendColumns(TableIdentifier table, List<ColumnDefinition> columns)
         {
             _sb.Append("INSERT INTO ")
-               .Append(IdentifierDelemiterStart).Append(table.Database).Append(IdentifierDelemiterEnd).Append(".")
-               .Append(IdentifierDelemiterStart).Append(table.Schema).Append(IdentifierDelemiterEnd).Append(".")
-               .Append(IdentifierDelemiterStart).Append(table.Table).Append(IdentifierDelemiterEnd)
+               .Append(IdentifierDelemiterStart).Append(table.Database).Append(IdentifierDelemiterEnd).Append(".");
+
+            if (!String.IsNullOrWhiteSpace(table.Schema))
+                _sb.Append(IdentifierDelemiterStart).Append(table.Schema).Append(IdentifierDelemiterEnd).Append(".");
+            _sb.Append(IdentifierDelemiterStart).Append(table.Table).Append(IdentifierDelemiterEnd)
                .Append("(");
 
             //Nom des colonnes

@@ -10,6 +10,10 @@ namespace DataCloner.Core.Data.Generator
         public string StringDelemiter => "'";
         public string NamedParamPrefix => "@";
 
+        public ISelectWriter GetSelectWriter() =>
+            new SelectWriter(IdentifierDelemiterStart, IdentifierDelemiterEnd,
+             StringDelemiter, NamedParamPrefix);
+
         public IInsertWriter GetInsertWriter() =>
             new InsertWriter(IdentifierDelemiterStart, IdentifierDelemiterEnd,
                              StringDelemiter, NamedParamPrefix);

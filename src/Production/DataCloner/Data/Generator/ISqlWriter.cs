@@ -9,6 +9,7 @@ namespace DataCloner.Core.Data.Generator
         string IdentifierDelemiterEnd { get; }
         string StringDelemiter { get; }
         string NamedParamPrefix { get; }
+        ISelectWriter GetSelectWriter();
         IInsertWriter GetInsertWriter();
         IUpdateWriter GetUpdateWriter(UpdateStep step);
         string AssignVarWithIdentity(string sqlVarName);

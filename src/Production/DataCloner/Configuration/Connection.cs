@@ -23,5 +23,10 @@ namespace DataCloner.Core.Configuration
             ProviderName = providerName;
             ConnectionString = connectionString;
         }
+
+        public override string ToString()
+        {
+            return ProviderName;
+        }
     }
 }
