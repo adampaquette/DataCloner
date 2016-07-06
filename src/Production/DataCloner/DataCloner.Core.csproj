@@ -97,6 +97,7 @@
     <Compile Include="Data\Generator\IUpdateWriter.cs" />
     <Compile Include="Data\Generator\SelectWriter.cs" />
     <Compile Include="Data\Generator\UpdateWriter.cs" />
+    <Compile Include="Data\QueryHelperPostgreSql.cs" />
     <Compile Include="Query.cs" />
     <Compile Include="Framework\FastAccessList.cs" />
     <Compile Include="Configuration\ConfigurationException.cs" />
@@ -109,7 +110,7 @@
     <Compile Include="Data\SqlTypeConverterMySql.cs" />
     <Compile Include="Data\QueryDispatcherExtensions.cs" />
     <Compile Include="Data\QueryHelperFactory.cs" />
-    <Compile Include="Data\QueryHelperMySQL.cs" />
+    <Compile Include="Data\QueryHelperMySql.cs" />
     <Compile Include="Data\SqlType.cs" />
     <Compile Include="Internal\ExecutionPlanByServer.cs" />
     <Compile Include="Internal\ExecutionStep.cs" />

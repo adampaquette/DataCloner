@@ -19,7 +19,8 @@ namespace DataCloner.Core.IntegrationTests
             Connections = new List<object[]>
             {
                 new object[] { CreateMsSqlDatabase() },
-                new object[] { CreateMySqlDatabase() }
+                new object[] { CreateMySqlDatabase() },
+                new object[] { CreatePostgreSqlDatabase() }
             };
         }
 
@@ -32,11 +33,11 @@ namespace DataCloner.Core.IntegrationTests
                 ConnectionString = @"Data Source=(localdb)\MSSQLLocalDB;Integrated Security=True;"
             };
 
-            var provider = DbProviderFactories.GetFactory(conn.ProviderName);
-            var c = provider.CreateConnection();
-            c.ConnectionString = conn.ConnectionString;
-
-            ////Create DB
+            //Create DB
+            //var provider = DbProviderFactories.GetFactory(conn.ProviderName);
+            //var c = provider.CreateConnection();
+            //c.ConnectionString = conn.ConnectionString;
+            
             //using (var cmd = c.CreateCommand())
             //{
             //    var sql = File.ReadAllText(@"..\..\Chinook1.4\Chinook_SqlServer.sql");
@@ -65,11 +66,11 @@ namespace DataCloner.Core.IntegrationTests
                 ConnectionString = @"Server=localhost;Uid=root;Pwd=toor;default command timeout=120;"
             };
 
-            var provider = DbProviderFactories.GetFactory(conn.ProviderName);
-            var c = provider.CreateConnection();
-            c.ConnectionString = conn.ConnectionString;
-
             //Create DB
+            //var provider = DbProviderFactories.GetFactory(conn.ProviderName);
+            //var c = provider.CreateConnection();
+            //c.ConnectionString = conn.ConnectionString;
+
             //using (var cmd = c.CreateCommand())
             //{
             //    var sql = File.ReadAllText(@"..\..\Chinook1.4\Chinook_MySql.sql");
@@ -82,6 +83,18 @@ namespace DataCloner.Core.IntegrationTests
 
             //    c.Close();
             //}
+
+            return conn;
+        }
+
+        private static Connection CreatePostgreSqlDatabase()
+        {
+            var conn = new Connection()
+            {
+                Id = 1,
+                ProviderName = "Npgsql",
+                ConnectionString = @"Host=localhost;Username=postgres;Password=toor;Database=Chinook"
+            };
 
             return conn;
         }

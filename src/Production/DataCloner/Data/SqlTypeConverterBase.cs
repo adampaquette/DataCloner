@@ -153,7 +153,7 @@ namespace DataCloner.Core.Data
         
         protected virtual bool Int32FromSql(SqlType t)
         {
-            if (t.DataType == "int")
+            if (t.DataType == "int" || t.DataType == "integer")
                 return true;
             return false;
         }

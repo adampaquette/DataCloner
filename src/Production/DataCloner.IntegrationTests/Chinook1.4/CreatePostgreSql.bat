@@ -26,10 +26,10 @@ if (%ERRORLEVEL%)==(2) goto END
 :RUNSQL
 echo.
 echo Running %SQLFILE%...
-SET "PGOPTIONS=-c client_min_messages=WARNING"
-dropdb --if-exists -U postgres Chinook
-createdb -U postgres Chinook
-psql -f %SQLFILE% -q Chinook postgres
+REM SET "PGOPTIONS=-c client_min_messages=WARNING"
+"C:\Program Files\PostgreSQL\pg95\bin\dropdb" --if-exists -U postgres Chinook
+"C:\Program Files\PostgreSQL\pg95\bin\createdb" -U postgres Chinook
+"C:\Program Files\PostgreSQL\pg95\bin\psql" -f %SQLFILE% -q Chinook postgres
 
 
 :END

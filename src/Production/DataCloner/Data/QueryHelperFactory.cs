@@ -14,8 +14,8 @@ namespace DataCloner.Core.Data
                     return new QueryHelperMsSql(schema, connectionString);
                 case QueryHelperMySql.ProviderName:
                     return new QueryHelperMySql(schema, connectionString);
-                //case PostgresProvider.ProviderName:
-                //    return new PostgresProvider();
+                case QueryHelperPostgreSql.ProviderName:
+                    return new QueryHelperPostgreSql(schema, connectionString);
                 //case OracleProvider.ProviderName:
                 //    return new OracleProvider();
                 //case SqlServerCEProvider.ProviderName:
