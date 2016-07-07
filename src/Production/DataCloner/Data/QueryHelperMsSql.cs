@@ -13,10 +13,10 @@ namespace DataCloner.Core.Data
  
         protected override string SqlGetColumns =>
             "SELECT " +
-            "    LOWER(COL.TABLE_SCHEMA), " +
-            "    LOWER(COL.TABLE_NAME), " +
-            "    LOWER(COL.COLUMN_NAME), " +
-            "    LOWER(COL.DATA_TYPE), " +
+            "    COL.TABLE_SCHEMA, " +
+            "    COL.TABLE_NAME, " +
+            "    COL.COLUMN_NAME, " +
+            "    COL.DATA_TYPE, " +
             "    COLUMNPROPERTY(object_id(COL.TABLE_NAME), COL.COLUMN_NAME, 'Precision') AS 'Precision',  " +
             "    ISNULL(COLUMNPROPERTY(object_id(COL.TABLE_NAME), COL.COLUMN_NAME, 'Scale'), 0) AS 'Scale',  " +
             "    CAST(0 AS BIT) AS IsUnsigned, " +
@@ -46,13 +46,13 @@ namespace DataCloner.Core.Data
 
         protected override string SqlGetForeignKeys =>
             "SELECT " +
-            "    LOWER(TC.TABLE_SCHEMA), " +
-            "    LOWER(TC.TABLE_NAME), " +
-            "    LOWER(TC.CONSTRAINT_NAME), " +
-            "    LOWER(KCU1.COLUMN_NAME), " +
-            "    LOWER(KCU2.CONSTRAINT_NAME) AS REFERENCED_CONSTRAINT_NAME, " +
-            "    LOWER(KCU2.TABLE_NAME) AS REFERENCED_TABLE_NAME, " +
-            "    LOWER(KCU2.COLUMN_NAME) AS REFERENCED_COLUMN_NAME " +
+            "    TC.TABLE_SCHEMA, " +
+            "    TC.TABLE_NAME, " +
+            "    TC.CONSTRAINT_NAME, " +
+            "    KCU1.COLUMN_NAME, " +
+            "    KCU2.CONSTRAINT_NAME AS REFERENCED_CONSTRAINT_NAME, " +
+            "    KCU2.TABLE_NAME AS REFERENCED_TABLE_NAME, " +
+            "    KCU2.COLUMN_NAME AS REFERENCED_COLUMN_NAME " +
             "FROM information_schema.TABLE_CONSTRAINTS TC " +
             "INNER JOIN INFORMATION_SCHEMA.TABLES TBL ON TBL.TABLE_CATALOG = TC.TABLE_CATALOG AND " +
             "                                            TBL.TABLE_SCHEMA = TC.TABLE_SCHEMA AND " +
@@ -76,10 +76,10 @@ namespace DataCloner.Core.Data
 
         protected override string SqlGetUniqueKeys =>
             "SELECT " +
-            "    LOWER(TC.CONSTRAINT_SCHEMA), " +
-            "    LOWER(TC.TABLE_NAME), " +
-            "    LOWER(TC.CONSTRAINT_NAME), " +
-            "    LOWER(KCU.COLUMN_NAME) " +
+            "    TC.CONSTRAINT_SCHEMA, " +
+            "    TC.TABLE_NAME, " +
+            "    TC.CONSTRAINT_NAME, " +
+            "    KCU.COLUMN_NAME " +
             "FROM information_schema.TABLE_CONSTRAINTS TC " +
             "INNER JOIN information_schema.KEY_COLUMN_USAGE KCU ON KCU.CONSTRAINT_CATALOG = TC.CONSTRAINT_CATALOG " +
             "                                                  AND KCU.CONSTRAINT_SCHEMA = TC.CONSTRAINT_SCHEMA " +

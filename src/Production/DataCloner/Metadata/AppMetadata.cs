@@ -31,9 +31,6 @@ namespace DataCloner.Core.Metadata
 
         public void Add(Int16 server, string database, string schema, TableMetadata table)
         {
-            database = database.ToLower();
-            schema = schema.ToLower();
-
             if (!ContainsKey(server))
                 Add(server, new ServerMetadata());
 
@@ -51,9 +48,6 @@ namespace DataCloner.Core.Metadata
 
         public bool Remove(Int16 server, string database, string schema, TableMetadata table)
         {
-            database = database.ToLower();
-            schema = schema.ToLower();
-
             if (ContainsKey(server) &&
                 this[server].ContainsKey(database) &&
                 this[server][database].ContainsKey(schema) &&
@@ -80,9 +74,6 @@ namespace DataCloner.Core.Metadata
         {
             get
             {
-                database = database.ToLower();
-                schema = schema.ToLower();
-
                 if (ContainsKey(server) &&
                     this[server].ContainsKey(database) &&
                     this[server][database].ContainsKey(schema))
@@ -93,9 +84,6 @@ namespace DataCloner.Core.Metadata
             }
             set
             {
-                database = database.ToLower();
-                schema = schema.ToLower();
-
                 if (!ContainsKey(server))
                     Add(server, new ServerMetadata());
 

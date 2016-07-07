@@ -18,9 +18,9 @@ namespace DataCloner.Core.IntegrationTests
         {
             Connections = new List<object[]>
             {
-                new object[] { CreateMsSqlDatabase() },
-                new object[] { CreateMySqlDatabase() },
-                new object[] { CreatePostgreSqlDatabase() }
+                new object[] { CreateMySqlDatabase() }
+                //new object[] { CreateMsSqlDatabase() },                
+                //new object[] { CreatePostgreSqlDatabase() }
             };
         }
 

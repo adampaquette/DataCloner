@@ -11,6 +11,8 @@ namespace DataCloner.Core.IntegrationTests
         {
             if (conn.ProviderName == "MySql.Data.MySqlClient")
                 return "";
+            else if (conn.ProviderName == "Npgsql")
+                return "public";
             else
                 return "dbo";
         }
@@ -24,7 +26,7 @@ namespace DataCloner.Core.IntegrationTests
                 MapId = 1,
                 Project = new ProjectContainer
                 {
-                    Name = "chinook",
+                    Name = "Chinook",
                     ConnectionStrings = new List<Connection>
                     {
                         new Connection
@@ -58,7 +60,7 @@ namespace DataCloner.Core.IntegrationTests
                                               {
                                                    new DatabaseModifier
                                                    {
-                                                        Name = "chinook",
+                                                        Name = "Chinook",
                                                          Schemas = new List<SchemaModifier>
                                                          {
                                                               new SchemaModifier

@@ -95,9 +95,12 @@
     <Compile Include="Data\Generator\InsertWriter.cs" />
     <Compile Include="Data\Generator\ISelectWriter.cs" />
     <Compile Include="Data\Generator\IUpdateWriter.cs" />
+    <Compile Include="Data\Generator\SelectWriterPostgreSql.cs" />
     <Compile Include="Data\Generator\SelectWriter.cs" />
+    <Compile Include="Data\Generator\SqlWriterPostgreSql.cs" />
     <Compile Include="Data\Generator\UpdateWriter.cs" />
     <Compile Include="Data\QueryHelperPostgreSql.cs" />
+    <Compile Include="Data\SqlTypeConverterPostgreSql.cs" />
     <Compile Include="Query.cs" />
     <Compile Include="Framework\FastAccessList.cs" />
     <Compile Include="Configuration\ConfigurationException.cs" />

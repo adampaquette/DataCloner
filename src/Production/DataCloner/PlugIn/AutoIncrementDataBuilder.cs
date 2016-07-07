@@ -27,6 +27,9 @@ namespace DataCloner.Core.PlugIn
                     case DbEngine.SqlServer:
                         value = GetNewKeyMsSql(conn, transaction, database, schema, table, column);
                         break;
+                    case DbEngine.PostgreSql:
+                        value = GetNewKeyPostgreSql(conn, transaction, database, schema, table, column);
+                        break;
                     default:
                         throw new NotSupportedException();
                 }
@@ -86,6 +89,16 @@ namespace DataCloner.Core.PlugIn
             var cmd = conn.CreateCommand();
             cmd.Transaction = transaction;
             cmd.CommandText = $"SELECT MAX({column.Name})+1 FROM {database}.{schema}.{table.Name}";
+            result = cmd.ExecuteScalar();
+            return result;
+        }
+
+        private object GetNewKeyPostgreSql(IDbConnection conn, IDbTransaction transaction, string database, string schema, TableMetadata table, ColumnDefinition column)
+        {
+            object result = null;
+            var cmd = conn.CreateCommand();
+            cmd.Transaction = transaction;
+            cmd.CommandText = $"SELECT MAX(\"{column.Name}\")+1 FROM {schema}.\"{table.Name}\"";
             result = cmd.ExecuteScalar();
             return result;
         }

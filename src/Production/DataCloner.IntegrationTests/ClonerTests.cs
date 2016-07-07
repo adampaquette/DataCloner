@@ -9,7 +9,7 @@ namespace DataCloner.Core.IntegrationTests
 {
     public class ClonerTests
     {
-        private const string TestDatabase = "chinook";
+        private const string TestDatabase = "Chinook";
 
         public static IEnumerable<object[]> DbEngineToTest => DatabaseInitializer.Connections;
 
@@ -29,10 +29,10 @@ namespace DataCloner.Core.IntegrationTests
                 ServerId = conn.Id,
                 Database = TestDatabase,
                 Schema = Utils.TestSchema(conn),
-                Table = "customer",
+                Table = "Customer",
                 Columns = new ColumnsWithValue
                 {
-                    { "customerid", 1 }
+                    { "CustomerId", 1 }
                 }
             };
 
@@ -56,32 +56,32 @@ namespace DataCloner.Core.IntegrationTests
                      ServerId = conn.Id,
                      Database = TestDatabase,
                      Schema = Utils.TestSchema(conn),
-                     Table = "customer",
-                     Columns = new ColumnsWithValue { { "customerid", 1 } }
+                     Table = "Customer",
+                     Columns = new ColumnsWithValue { { "CustomerId", 1 } }
                 },
                 new RowIdentifier
                 {
                      ServerId = conn.Id,
                      Database = TestDatabase,
                      Schema = Utils.TestSchema(conn),
-                     Table = "employee",
-                     Columns = new ColumnsWithValue { { "employeeid", 3 } }
+                     Table = "Employee",
+                     Columns = new ColumnsWithValue { { "EmployeeId", 3 } }
                 },
                 new RowIdentifier
                 {
                      ServerId = conn.Id,
                      Database = TestDatabase,
                      Schema = Utils.TestSchema(conn),
-                     Table = "employee",
-                     Columns = new ColumnsWithValue { { "employeeid", 2 } }
+                     Table = "Employee",
+                     Columns = new ColumnsWithValue { { "EmployeeId", 2 } }
                 },
                 new RowIdentifier
                 {
                      ServerId = conn.Id,
                      Database = TestDatabase,
                      Schema = Utils.TestSchema(conn),
-                     Table = "employee",
-                     Columns = new ColumnsWithValue{ { "employeeid", 1 } }
+                     Table = "Employee",
+                     Columns = new ColumnsWithValue{ { "EmployeeId", 1 } }
                 }
             };
 
@@ -96,7 +96,7 @@ namespace DataCloner.Core.IntegrationTests
             var tablesConfig = config.GetDefaultSchema();
             tablesConfig.Add(new TableModifier
             {
-                Name = "album",
+                Name = "Album",
                 DerativeTables = new DerativeTable
                 {
                     GlobalAccess = DerivativeTableAccess.Denied
@@ -109,10 +109,10 @@ namespace DataCloner.Core.IntegrationTests
                 ServerId = conn.Id,
                 Database = TestDatabase,
                 Schema = Utils.TestSchema(conn),
-                Table = "artist",
+                Table = "Artist",
                 Columns = new ColumnsWithValue
                 {
-                    { "artistid", 1 }
+                    { "ArtistId", 1 }
                 }
             };
 
@@ -136,24 +136,24 @@ namespace DataCloner.Core.IntegrationTests
                      ServerId = conn.Id,
                      Database = TestDatabase,
                      Schema = Utils.TestSchema(conn),
-                     Table = "artist",
-                     Columns = new ColumnsWithValue { { "artistid", 1 } }
+                     Table = "Artist",
+                     Columns = new ColumnsWithValue { { "ArtistId", 1 } }
                 },
                 new RowIdentifier
                 {
                      ServerId = conn.Id,
                      Database = TestDatabase,
                      Schema = Utils.TestSchema(conn),
-                     Table = "album",
-                     Columns = new ColumnsWithValue { { "albumid", 1 } }
+                     Table = "Album",
+                     Columns = new ColumnsWithValue { { "AlbumId", 1 } }
                 },
                 new RowIdentifier
                 {
                      ServerId = conn.Id,
                      Database = TestDatabase,
                      Schema = Utils.TestSchema(conn),
-                     Table = "album",
-                     Columns = new ColumnsWithValue { { "albumid", 4 } }
+                     Table = "Album",
+                     Columns = new ColumnsWithValue { { "AlbumId", 4 } }
                 }
             };
 
@@ -170,7 +170,7 @@ namespace DataCloner.Core.IntegrationTests
             {
                 new TableModifier
                 {
-                    Name = "album",
+                    Name = "Album",
                     DerativeTables = new DerativeTable
                     {
                         GlobalAccess = DerivativeTableAccess.Denied
@@ -178,7 +178,7 @@ namespace DataCloner.Core.IntegrationTests
                 },
                 new TableModifier
                 {
-                    Name = "artist",
+                    Name = "Artist",
                     DerativeTables = new DerativeTable
                     {
                         GlobalAccess = DerivativeTableAccess.Forced
@@ -192,8 +192,8 @@ namespace DataCloner.Core.IntegrationTests
                 ServerId = conn.Id,
                 Database = TestDatabase,
                 Schema = Utils.TestSchema(conn),
-                Table = "artist",
-                Columns = new ColumnsWithValue { { "artistid", 1 } }
+                Table = "Artist",
+                Columns = new ColumnsWithValue { { "ArtistId", 1 } }
             };
 
             var clonedData = new List<RowIdentifier>();
@@ -216,24 +216,24 @@ namespace DataCloner.Core.IntegrationTests
                      ServerId = conn.Id,
                      Database = TestDatabase,
                      Schema = Utils.TestSchema(conn),
-                     Table = "artist",
-                     Columns = new ColumnsWithValue { { "artistid", 1 } }
+                     Table = "Artist",
+                     Columns = new ColumnsWithValue { { "ArtistId", 1 } }
                 },
                 new RowIdentifier
                 {
                      ServerId = conn.Id,
                      Database = TestDatabase,
                      Schema = Utils.TestSchema(conn),
-                     Table = "album",
-                     Columns = new ColumnsWithValue { { "albumid", 1 } }
+                     Table = "Album",
+                     Columns = new ColumnsWithValue { { "AlbumId", 1 } }
                 },
                 new RowIdentifier
                 {
                      ServerId = conn.Id,
                      Database = TestDatabase,
                      Schema = Utils.TestSchema(conn),
-                     Table = "album",
-                     Columns = new ColumnsWithValue { { "albumid", 4 } }
+                     Table = "Album",
+                     Columns = new ColumnsWithValue { { "AlbumId", 4 } }
                 }
             };
 
@@ -250,7 +250,7 @@ namespace DataCloner.Core.IntegrationTests
             {
                 new TableModifier
                 {
-                    Name = "album",
+                    Name = "Album",
                     DerativeTables = new DerativeTable
                     {
                         GlobalAccess = DerivativeTableAccess.Denied
@@ -258,7 +258,7 @@ namespace DataCloner.Core.IntegrationTests
                 },
                 new TableModifier
                 {
-                    Name = "artist",
+                    Name = "Artist",
                     DerativeTables = new DerativeTable
                     {
                         GlobalAccess = DerivativeTableAccess.Forced,
@@ -269,7 +269,7 @@ namespace DataCloner.Core.IntegrationTests
                                 ServerId = conn.Id.ToString(),
                                 Database = TestDatabase,
                                 Schema = Utils.TestSchema(conn),
-                                Table = "album",
+                                Table = "Album",
                                 Access = DerivativeTableAccess.Forced
                             }
                         }
@@ -283,8 +283,8 @@ namespace DataCloner.Core.IntegrationTests
                 ServerId = conn.Id,
                 Database = TestDatabase,
                 Schema = Utils.TestSchema(conn),
-                Table = "artist",
-                Columns = new ColumnsWithValue { { "artistid", 1 } }
+                Table = "Artist",
+                Columns = new ColumnsWithValue { { "ArtistId", 1 } }
             };
 
             var clonedData = new List<RowIdentifier>();
@@ -307,24 +307,24 @@ namespace DataCloner.Core.IntegrationTests
                      ServerId = conn.Id,
                      Database = TestDatabase,
                      Schema = Utils.TestSchema(conn),
-                     Table = "artist",
-                     Columns = new ColumnsWithValue { { "artistid", 1 } }
+                     Table = "Artist",
+                     Columns = new ColumnsWithValue { { "ArtistId", 1 } }
                 },
                 new RowIdentifier
                 {
                      ServerId = conn.Id,
                      Database = TestDatabase,
                      Schema = Utils.TestSchema(conn),
-                     Table = "album",
-                     Columns = new ColumnsWithValue { { "albumid", 1 } }
+                     Table = "Album",
+                     Columns = new ColumnsWithValue { { "AlbumId", 1 } }
                 },
                 new RowIdentifier
                 {
                      ServerId = conn.Id,
                      Database = TestDatabase,
                      Schema = Utils.TestSchema(conn),
-                     Table = "album",
-                     Columns = new ColumnsWithValue { { "albumid", 4 } }
+                     Table = "Album",
+                     Columns = new ColumnsWithValue { { "AlbumId", 4 } }
                 }
             };
 
@@ -341,7 +341,7 @@ namespace DataCloner.Core.IntegrationTests
             {
                 new TableModifier
                 {
-                    Name = "artist",
+                    Name = "Artist",
                     DerativeTables = new DerativeTable
                     {
                         GlobalAccess = DerivativeTableAccess.Forced,
@@ -352,7 +352,7 @@ namespace DataCloner.Core.IntegrationTests
                                 ServerId = conn.Id.ToString(),
                                 Database = TestDatabase,
                                 Schema = Utils.TestSchema(conn),
-                                Table = "album",
+                                Table = "Album",
                                 Access = DerivativeTableAccess.Denied
                             }
                         }
@@ -366,8 +366,8 @@ namespace DataCloner.Core.IntegrationTests
                 ServerId = conn.Id,
                 Database = TestDatabase,
                 Schema = Utils.TestSchema(conn),
-                Table = "artist",
-                Columns = new ColumnsWithValue { { "artistid", 1 } }
+                Table = "Artist",
+                Columns = new ColumnsWithValue { { "ArtistId", 1 } }
             };
 
             var clonedData = new List<RowIdentifier>();
@@ -390,8 +390,8 @@ namespace DataCloner.Core.IntegrationTests
                      ServerId = conn.Id,
                      Database = TestDatabase,
                      Schema = Utils.TestSchema(conn),
-                     Table = "artist",
-                     Columns = new ColumnsWithValue { { "artistid", 1 } }
+                     Table = "Artist",
+                     Columns = new ColumnsWithValue { { "ArtistId", 1 } }
                 }
             };
 
@@ -408,7 +408,7 @@ namespace DataCloner.Core.IntegrationTests
             {
                 new TableModifier
                 {
-                    Name = "artist",
+                    Name = "Artist",
                     IsStatic = true
                 }
             });
@@ -419,8 +419,8 @@ namespace DataCloner.Core.IntegrationTests
                 ServerId = conn.Id,
                 Database = TestDatabase,
                 Schema = Utils.TestSchema(conn),
-                Table = "album",
-                Columns = new ColumnsWithValue { { "albumid", 1 } }
+                Table = "Album",
+                Columns = new ColumnsWithValue { { "AlbumId", 1 } }
             };
 
             var clonedData = new List<RowIdentifier>();
@@ -443,8 +443,8 @@ namespace DataCloner.Core.IntegrationTests
                      ServerId = conn.Id,
                      Database = TestDatabase,
                      Schema = Utils.TestSchema(conn),
-                     Table = "album",
-                     Columns = new ColumnsWithValue { { "albumid", 1 } }
+                     Table = "Album",
+                     Columns = new ColumnsWithValue { { "AlbumId", 1 } }
                 }
             };
 
@@ -463,11 +463,11 @@ namespace DataCloner.Core.IntegrationTests
                 ServerId = conn.Id,
                 Database = TestDatabase,
                 Schema = Utils.TestSchema(conn),
-                Table = "playlisttrack",
+                Table = "PlaylistTrack",
                 Columns = new ColumnsWithValue
                 {
-                    { "playlistid", 1 },
-                    { "trackid", 1 }
+                    { "PlaylistId", 1 },
+                    { "TrackId", 1 }
                 }
             };
 
@@ -491,11 +491,11 @@ namespace DataCloner.Core.IntegrationTests
                     ServerId = conn.Id,
                     Database = TestDatabase,
                     Schema = Utils.TestSchema(conn),
-                    Table = "playlisttrack",
+                    Table = "PlaylistTrack",
                     Columns = new ColumnsWithValue
                     {
-                        { "playlistid", 1 },
-                        { "trackid", 1 }
+                        { "PlaylistId", 1 },
+                        { "TrackId", 1 }
                     }
                 },
                 new RowIdentifier
@@ -503,48 +503,48 @@ namespace DataCloner.Core.IntegrationTests
                     ServerId = conn.Id,
                     Database = TestDatabase,
                     Schema = Utils.TestSchema(conn),
-                    Table = "playlist",
-                    Columns = new ColumnsWithValue { { "playlistid", 1} }
+                    Table = "Playlist",
+                    Columns = new ColumnsWithValue { { "PlaylistId", 1} }
                 },
                 new RowIdentifier
                 {
                     ServerId = conn.Id,
                     Database = TestDatabase,
                     Schema = Utils.TestSchema(conn),
-                    Table = "track",
-                    Columns = new ColumnsWithValue { { "trackid", 1} }
+                    Table = "Track",
+                    Columns = new ColumnsWithValue { { "TrackId", 1} }
                 },
                 new RowIdentifier
                 {
                     ServerId = conn.Id,
                     Database = TestDatabase,
                     Schema = Utils.TestSchema(conn),
-                    Table = "album",
-                    Columns = new ColumnsWithValue { { "albumid", 1} }
+                    Table = "Album",
+                    Columns = new ColumnsWithValue { { "AlbumId", 1} }
                 },
                 new RowIdentifier
                 {
                     ServerId = conn.Id,
                     Database = TestDatabase,
                     Schema = Utils.TestSchema(conn),
-                    Table = "artist",
-                    Columns = new ColumnsWithValue { { "artistid", 1} }
+                    Table = "Artist",
+                    Columns = new ColumnsWithValue { { "ArtistId", 1} }
                 },
                 new RowIdentifier
                 {
                     ServerId = conn.Id,
                     Database = TestDatabase,
                     Schema = Utils.TestSchema(conn),
-                    Table = "genre",
-                    Columns = new ColumnsWithValue { { "genreid", 1} }
+                    Table = "Genre",
+                    Columns = new ColumnsWithValue { { "GenreId", 1} }
                 },
                 new RowIdentifier
                 {
                     ServerId = conn.Id,
                     Database = TestDatabase,
                     Schema = Utils.TestSchema(conn),
-                    Table = "mediatype",
-                    Columns = new ColumnsWithValue { { "mediatypeid", 1} }
+                    Table = "MediaType",
+                    Columns = new ColumnsWithValue { { "MediaTypeId", 1} }
                 }
             };
 
@@ -561,7 +561,7 @@ namespace DataCloner.Core.IntegrationTests
             {
                 new TableModifier
                 {
-                    Name = "artist",
+                    Name = "Artist",
                     ForeignKeys = new ForeignKeys
                     {
                         ForeignKeyAdd = new List<ForeignKeyAdd>
@@ -571,13 +571,13 @@ namespace DataCloner.Core.IntegrationTests
                                 ServerId = conn.Id.ToString(),
                                 Database = TestDatabase,
                                 Schema = Utils.TestSchema(conn),
-                                Table = "playlist",
+                                Table = "Playlist",
                                 Columns = new List<ForeignKeyColumn>
                                 {
                                     new ForeignKeyColumn
                                     {
-                                        NameFrom ="artistid",
-                                        NameTo = "playlistid"
+                                        NameFrom ="ArtistId",
+                                        NameTo = "PlaylistId"
                                     }
                                 }
                             }
@@ -592,8 +592,8 @@ namespace DataCloner.Core.IntegrationTests
                 ServerId = conn.Id,
                 Database = TestDatabase,
                 Schema = Utils.TestSchema(conn),
-                Table = "artist",
-                Columns = new ColumnsWithValue { { "artistid", 1 } }
+                Table = "Artist",
+                Columns = new ColumnsWithValue { { "ArtistId", 1 } }
             };
 
             var clonedData = new List<RowIdentifier>();
@@ -616,16 +616,16 @@ namespace DataCloner.Core.IntegrationTests
                      ServerId = conn.Id,
                      Database = TestDatabase,
                      Schema = Utils.TestSchema(conn),
-                     Table = "artist",
-                     Columns = new ColumnsWithValue { { "artistid", 1 } }
+                     Table = "Artist",
+                     Columns = new ColumnsWithValue { { "ArtistId", 1 } }
                 },
                 new RowIdentifier
                 {
                      ServerId = conn.Id,
                      Database = TestDatabase,
                      Schema = Utils.TestSchema(conn),
-                     Table = "playlist",
-                     Columns = new ColumnsWithValue { { "playlistid", 1 } }
+                     Table = "Playlist",
+                     Columns = new ColumnsWithValue { { "PlaylistId", 1 } }
                 }
             };
 
@@ -642,7 +642,7 @@ namespace DataCloner.Core.IntegrationTests
             {
                 new TableModifier
                 {
-                    Name = "album",
+                    Name = "Album",
                     ForeignKeys = new ForeignKeys
                     {
                         ForeignKeyRemove = new ForeignKeyRemove
@@ -651,7 +651,7 @@ namespace DataCloner.Core.IntegrationTests
                             {
                                 new ForeignKeyRemoveColumn
                                 {
-                                     Name = "artistid"
+                                     Name = "ArtistId"
                                 }
                             }
                         }
@@ -665,8 +665,8 @@ namespace DataCloner.Core.IntegrationTests
                 ServerId = conn.Id,
                 Database = TestDatabase,
                 Schema = Utils.TestSchema(conn),
-                Table = "album",
-                Columns = new ColumnsWithValue { { "albumid", 1 } }
+                Table = "Album",
+                Columns = new ColumnsWithValue { { "AlbumId", 1 } }
             };
 
             var clonedData = new List<RowIdentifier>();
@@ -689,8 +689,8 @@ namespace DataCloner.Core.IntegrationTests
                      ServerId = conn.Id,
                      Database = TestDatabase,
                      Schema = Utils.TestSchema(conn),
-                     Table = "album",
-                     Columns = new ColumnsWithValue { { "albumid", 1 } }
+                     Table = "Album",
+                     Columns = new ColumnsWithValue { { "AlbumId", 1 } }
                 }
             };
 
@@ -707,12 +707,12 @@ namespace DataCloner.Core.IntegrationTests
             {
                 new TableModifier
                 {
-                    Name = "employee",
+                    Name = "Employee",
                     DataBuilders = new List<DataBuilder>
                     {
-                        new DataBuilder{ Name = "firstname",  BuilderName = "StringDataBuilder" },
-                        new DataBuilder{ Name = "lastname",  BuilderName = "StringDataBuilder" },
-                        new DataBuilder{ Name = "reportsto",  BuilderName = "AutoIncrementDataBuilder" }
+                        new DataBuilder{ Name = "FirstName",  BuilderName = "StringDataBuilder" },
+                        new DataBuilder{ Name = "LastName",  BuilderName = "StringDataBuilder" },
+                        new DataBuilder{ Name = "ReportsTo",  BuilderName = "AutoIncrementDataBuilder" }
                     }
                 }
             });
@@ -723,8 +723,8 @@ namespace DataCloner.Core.IntegrationTests
                 ServerId = conn.Id,
                 Database = TestDatabase,
                 Schema = Utils.TestSchema(conn),
-                Table = "employee",
-                Columns = new ColumnsWithValue { { "employeeid", 1 } }
+                Table = "Employee",
+                Columns = new ColumnsWithValue { { "EmployeeId", 1 } }
             };
 
             //Act
@@ -739,13 +739,13 @@ namespace DataCloner.Core.IntegrationTests
             query.Execute();
 
             //Assert
-            var paramFirstName = command?.Parameters["@firstname0"] as IDataParameter;
+            var paramFirstName = command?.Parameters["@FirstName0"] as IDataParameter;
             Assert.Matches("(.+){20}", paramFirstName.Value.ToString());
 
-            var paramLastName = command?.Parameters["@lastname0"] as IDataParameter;
+            var paramLastName = command?.Parameters["@LastName0"] as IDataParameter;
             Assert.Matches("(.+){20}", paramLastName.Value.ToString());
 
-            var paramReportsTo = command?.Parameters["@reportsto0"] as IDataParameter;
+            var paramReportsTo = command?.Parameters["@ReportsTo0"] as IDataParameter;
             Assert.True(paramReportsTo.Value.IsNumericType());
         }
     }

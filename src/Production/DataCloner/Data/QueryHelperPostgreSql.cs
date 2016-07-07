@@ -8,7 +8,7 @@ namespace DataCloner.Core.Data
         public const string ProviderName = "Npgsql";
 
         protected override string SqlGetDatabasesName =>
-            "SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA " +
+            "SELECT CATALOG_NAME FROM INFORMATION_SCHEMA.SCHEMATA " +
             "WHERE SCHEMA_NAME NOT LIKE 'pg_%' AND " +
             "SCHEMA_NAME NOT IN('information_schema');";
 
@@ -33,10 +33,10 @@ namespace DataCloner.Core.Data
         //     d.deptype = 'a' ;
         protected override string SqlGetColumns =>
         "SELECT " +
-        "    LOWER(COL.TABLE_SCHEMA) AS Schema, " +
-        "    LOWER(COL.TABLE_NAME) AS TableName, " +
-        "    LOWER(COL.COLUMN_NAME) AS ColumnName, " +
-        "    LOWER(COL.DATA_TYPE) AS DataType, " +
+        "    COL.TABLE_SCHEMA AS Schema, " +
+        "    COL.TABLE_NAME AS TableName, " +
+        "    COL.COLUMN_NAME AS ColumnName, " +
+        "    COL.DATA_TYPE AS DataType, " +
         "    COALESCE(COL.CHARACTER_MAXIMUM_LENGTH, COALESCE(COL.NUMERIC_PRECISION, COALESCE(COL.DATETIME_PRECISION, 0))) AS Precision, " +
         "    COALESCE(COL.NUMERIC_SCALE, 0) AS Scale, " +
         "    FALSE AS IsUnsigned, " +
@@ -60,20 +60,23 @@ namespace DataCloner.Core.Data
         "                                            TBL.TABLE_SCHEMA = COL.TABLE_SCHEMA AND " +
         "                                            TBL.TABLE_NAME = COL.TABLE_NAME AND " +
         "                                            TBL.TABLE_TYPE = 'BASE TABLE' " +
-        "WHERE LOWER(COL.TABLE_CATALOG) = 'chinook' " +
+        "WHERE " + 
+        "    COL.TABLE_CATALOG = @DATABASE AND " +
+        "    COL.TABLE_SCHEMA NOT LIKE 'pg_%' AND " +
+        "    COL.TABLE_SCHEMA NOT IN('information_schema') " +
         "ORDER BY " +
         "    COL.TABLE_NAME, " +
         "    COL.ORDINAL_POSITION;";
 
         protected override string SqlGetForeignKeys =>
         "SELECT " +
-        "    LOWER(TC.TABLE_SCHEMA), " +
-        "    LOWER(TC.TABLE_NAME), " +
-        "    LOWER(TC.CONSTRAINT_NAME), " +
-        "    LOWER(KCU1.COLUMN_NAME), " +
-        "    LOWER(KCU2.CONSTRAINT_NAME) AS REFERENCED_CONSTRAINT_NAME, " +
-        "    LOWER(KCU2.TABLE_NAME) AS REFERENCED_TABLE_NAME, " +
-        "    LOWER(KCU2.COLUMN_NAME) AS REFERENCED_COLUMN_NAME " +
+        "    TC.TABLE_SCHEMA, " +
+        "    TC.TABLE_NAME, " +
+        "    TC.CONSTRAINT_NAME, " +
+        "    KCU1.COLUMN_NAME, " +
+        "    KCU2.CONSTRAINT_NAME AS REFERENCED_CONSTRAINT_NAME, " +
+        "    KCU2.TABLE_NAME AS REFERENCED_TABLE_NAME, " +
+        "    KCU2.COLUMN_NAME AS REFERENCED_COLUMN_NAME " +
         "FROM information_schema.TABLE_CONSTRAINTS TC " +
         "INNER JOIN INFORMATION_SCHEMA.TABLES TBL ON TBL.TABLE_CATALOG = TC.TABLE_CATALOG AND " +
         "                                            TBL.TABLE_SCHEMA = TC.TABLE_SCHEMA AND " +
@@ -97,10 +100,10 @@ namespace DataCloner.Core.Data
 
         protected override string SqlGetUniqueKeys =>
             "SELECT " +
-            "    LOWER(TC.CONSTRAINT_SCHEMA), " +
-            "    LOWER(TC.TABLE_NAME), " +
-            "    LOWER(TC.CONSTRAINT_NAME), " +
-            "    LOWER(KCU.COLUMN_NAME) " +
+            "    TC.CONSTRAINT_SCHEMA, " +
+            "    TC.TABLE_NAME, " +
+            "    TC.CONSTRAINT_NAME, " +
+            "    KCU.COLUMN_NAME " +
             "FROM information_schema.TABLE_CONSTRAINTS TC " +
             "INNER JOIN information_schema.KEY_COLUMN_USAGE KCU ON KCU.CONSTRAINT_CATALOG = TC.CONSTRAINT_CATALOG " +
             "                                                  AND KCU.CONSTRAINT_SCHEMA = TC.CONSTRAINT_SCHEMA " +
@@ -117,8 +120,7 @@ namespace DataCloner.Core.Data
         protected override string SqlEnforceIntegrityCheck
         {
             get { throw new System.NotImplementedException(); }
-        }
-        
+        }        
 
         public override DbEngine Engine => DbEngine.PostgreSql;
         public override ISqlTypeConverter TypeConverter { get; }
@@ -127,8 +129,8 @@ namespace DataCloner.Core.Data
         public QueryHelperPostgreSql(AppMetadata schema, string connectionString)
             : base(schema, ProviderName, connectionString)
         {
-            TypeConverter = new SqlTypeConverterMySql();
-            SqlWriter = new SqlWriterMySql();
+            TypeConverter = new SqlTypeConverterPostgreSql();
+            SqlWriter = new SqlWriterPostgreSql();
         }
     }
 }

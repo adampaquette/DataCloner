@@ -3,16 +3,16 @@ using System;
 
 namespace DataCloner.Core.Data.Generator
 {
-    internal class SqlWriterMySql : ISqlWriter
+    internal class SqlWriterPostgreSql : ISqlWriter
     {
-        public string IdentifierDelemiterStart => "`";
-        public string IdentifierDelemiterEnd => "`";
+        public string IdentifierDelemiterStart => "\"";
+        public string IdentifierDelemiterEnd => "\"";
         public string StringDelemiter => "'";
         public string NamedParamPrefix => "@";
 
         public ISelectWriter GetSelectWriter() =>
-            new SelectWriter(IdentifierDelemiterStart, IdentifierDelemiterEnd,
-                             StringDelemiter, NamedParamPrefix);
+            new SelectWriterPostgreSql(IdentifierDelemiterStart, IdentifierDelemiterEnd,
+                                       StringDelemiter, NamedParamPrefix);
 
         public IInsertWriter GetInsertWriter() =>
             new InsertWriter(IdentifierDelemiterStart, IdentifierDelemiterEnd,
@@ -25,6 +25,6 @@ namespace DataCloner.Core.Data.Generator
         public string AssignVarWithIdentity(string sqlVarName)
         {
             throw new NotImplementedException();
-        }           
+        }
     }
 }

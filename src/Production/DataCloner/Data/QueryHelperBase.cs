@@ -20,32 +20,26 @@ namespace DataCloner.Core.Data
         /// <summary>
         /// SQL query
         /// </summary>
-        /// <remarks>Important : Must get data in lower case format.</remarks>
         protected abstract string SqlGetDatabasesName { get; }
         /// <summary>
         /// SQL query
         /// </summary>
-        /// <remarks>Important : Must get data in lower case format.</remarks>
         protected abstract string SqlGetColumns { get; }
         /// <summary>
         /// SQL query
         /// </summary>
-        /// <remarks>Important : Must get data in lower case format.</remarks>
         protected abstract string SqlGetForeignKeys { get; }
         /// <summary>
         /// SQL query
         /// </summary>
-        /// <remarks>Important : Must get data in lower case format.</remarks>
         protected abstract string SqlGetUniqueKeys { get; }
         /// <summary>
         /// SQL query
         /// </summary>
-        /// <remarks>Important : Must get data in lower case format.</remarks>
         protected abstract string SqlGetLastInsertedPk { get; }
         /// <summary>
         /// SQL query
         /// </summary>
-        /// <remarks>Important : Must get data in lower case format.</remarks>
         protected abstract string SqlEnforceIntegrityCheck { get; }
         
         public event QueryCommitingEventHandler QueryCommmiting;
@@ -73,7 +67,7 @@ namespace DataCloner.Core.Data
                 using (var r = cmd.ExecuteReader())
                 {
                     while (r.Read())
-                        databases.Add(r.GetString(0).ToLower());
+                        databases.Add(r.GetString(0));
                 }
                 Connection.Close();
             }

@@ -1,3 +1,3 @@
 ﻿TODO : 
-1 - Exposer publiquement l'API de génération des metadata. 
-2 - 
+- Gérer le paramètre serveur qui force les noms en minuscules.  SELECT @@lower_case_table_names
+- Exposer publiquement l'API de génération des metadata. 

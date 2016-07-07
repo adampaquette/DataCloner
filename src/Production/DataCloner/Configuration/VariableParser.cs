@@ -48,9 +48,9 @@ namespace DataCloner.Core.Configuration
                     Int16.TryParse(value.Substring(posVar, posVarEnd - posVar), out server);
                 }
                 else if (i == 1)
-                    database = value.Substring(posVar, posVarEnd - posVar).ToLower();
+                    database = value.Substring(posVar, posVarEnd - posVar);
                 else if (i == 2)
-                    schema = value.Substring(posVar, posVarEnd - posVar).ToLower();
+                    schema = value.Substring(posVar, posVarEnd - posVar);
 
                 currentPos = posVarEnd;
             }
@@ -78,14 +78,14 @@ namespace DataCloner.Core.Configuration
         {
             if (value.IsVariable())
                 return value.ParseConfigVariable().Database;
-            return value.ToLower();
+            return value;
         }
 
         public static string GetSchema(this string value)
         {
             if (value.IsVariable())
                 return value.ParseConfigVariable().Schema;
-            return value.ToLower();
+            return value;
         }
 
 

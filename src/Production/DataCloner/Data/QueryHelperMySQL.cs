@@ -14,9 +14,9 @@ namespace DataCloner.Core.Data
         protected override string SqlGetColumns =>
             "SELECT " +
             "'' AS SHEMA, " +
-            "LOWER(COL.TABLE_NAME), " +
-            "LOWER(COL.COLUMN_NAME), " +
-            "LOWER(COL.DATA_TYPE), " +
+            "COL.TABLE_NAME, " +
+            "COL.COLUMN_NAME, " +
+            "COL.DATA_TYPE, " +
             "IFNULL(CHARACTER_MAXIMUM_LENGTH, IFNULL(NUMERIC_PRECISION, IFNULL(DATETIME_PRECISION, 0))) AS 'Precision', " +
             "IFNULL(NUMERIC_SCALE, 0) AS 'Scale', " +
             "0 AS 'IsUnigned', " +
@@ -35,12 +35,12 @@ namespace DataCloner.Core.Data
         protected override string SqlGetForeignKeys =>
             "SELECT " +
             "'' AS 'Schema'," +
-            "LOWER(TC.TABLE_NAME)," +
-            "LOWER(TC.CONSTRAINT_NAME)," +
-            "LOWER(K.COLUMN_NAME)," +
-            "LOWER(K.REFERENCED_TABLE_SCHEMA)," +
-            "LOWER(K.REFERENCED_TABLE_NAME)," +
-            "LOWER(K.REFERENCED_COLUMN_NAME) " +
+            "TC.TABLE_NAME," +
+            "TC.CONSTRAINT_NAME," +
+            "K.COLUMN_NAME," +
+            "K.REFERENCED_TABLE_SCHEMA," +
+            "K.REFERENCED_TABLE_NAME," +
+            "K.REFERENCED_COLUMN_NAME " +
             "FROM information_schema.TABLE_CONSTRAINTS TC " +
             "INNER JOIN information_schema.KEY_COLUMN_USAGE K ON TC.TABLE_NAME = K.TABLE_NAME " +
             "AND TC.CONSTRAINT_NAME = K.CONSTRAINT_NAME " +
@@ -57,9 +57,9 @@ namespace DataCloner.Core.Data
         protected override string SqlGetUniqueKeys =>
             "SELECT " +
             "'' AS 'Schema'," +
-            "LOWER(TC.TABLE_NAME)," +
-            "LOWER(TC.CONSTRAINT_NAME)," +
-            "LOWER(K.COLUMN_NAME) " +
+            "TC.TABLE_NAME," +
+            "TC.CONSTRAINT_NAME," +
+            "K.COLUMN_NAME " +
             "FROM information_schema.TABLE_CONSTRAINTS TC " +
             "INNER JOIN information_schema.KEY_COLUMN_USAGE K ON TC.TABLE_NAME = K.TABLE_NAME " +
             "AND TC.CONSTRAINT_NAME = K.CONSTRAINT_NAME " +

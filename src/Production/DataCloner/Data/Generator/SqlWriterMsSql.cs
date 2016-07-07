@@ -11,7 +11,7 @@ namespace DataCloner.Core.Data.Generator
 
         public ISelectWriter GetSelectWriter() =>
             new SelectWriter(IdentifierDelemiterStart, IdentifierDelemiterEnd,
-                     StringDelemiter, NamedParamPrefix);
+                             StringDelemiter, NamedParamPrefix);
 
         public IInsertWriter GetInsertWriter() =>
             new InsertWriter(IdentifierDelemiterStart, IdentifierDelemiterEnd,

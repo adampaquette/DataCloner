@@ -35,7 +35,7 @@ namespace DataCloner.Core.Data
             if (UInt64FromSql(type)) return DbType.UInt64;
             if (VarNumericFromSql(type)) return DbType.VarNumeric;
             if (XmlFromSql(type)) return DbType.Xml;
-            
+           
             throw new NotSupportedException(type.SerializeXml());
         }
 
@@ -64,9 +64,10 @@ namespace DataCloner.Core.Data
 		
 		protected virtual bool BinaryFromSql(SqlType t)
         {
-            if (t.DataType == "binary" ||
-                t.DataType == "varbinary" ||
-                t.DataType == "timestamp" ||
+            if ((t.DataType.StartsWith("bit") && t.Precision > 1) ||                
+                t.DataType == "bytea" ||
+                t.DataType == "binary" ||
+                t.DataType == "varbinary" ||                
                 t.DataType == "rowversion" ||
                 t.DataType == "image")
                 return true;
@@ -75,7 +76,8 @@ namespace DataCloner.Core.Data
         
         protected virtual bool BooleanFromSql(SqlType t)
         {
-            if (t.DataType == "bit")
+            if ((t.DataType == "bit" && t.Precision <= 1) ||
+                t.DataType == "boolean")
                 return true;
             return false;
         }
@@ -101,7 +103,8 @@ namespace DataCloner.Core.Data
         
         protected virtual bool DateTimeFromSql(SqlType t)
         {
-            if (t.DataType == "datetime")
+            if (t.DataType == "datetime" ||
+                t.DataType.StartsWith("timestamp")) 
                 return true;
             return false;
         }
@@ -132,14 +135,16 @@ namespace DataCloner.Core.Data
         
         protected virtual bool DoubleFromSql(SqlType t)
         {
-            if (t.DataType == "float")
+            if (t.DataType == "float" ||
+                t.DataType == "double precision")
                 return true;
             return false;
         }
         
         protected virtual bool GuidFromSql(SqlType t)
         {
-            if (t.DataType == "uniqueidentifier")
+            if (t.DataType == "uniqueidentifier" ||
+                t.DataType == "uuid")
                 return true;
             return false;
         }
@@ -153,14 +158,17 @@ namespace DataCloner.Core.Data
         
         protected virtual bool Int32FromSql(SqlType t)
         {
-            if (t.DataType == "int" || t.DataType == "integer")
+            if (t.DataType == "int" || 
+                t.DataType == "integer" ||
+                t.DataType == "serial")
                 return true;
             return false;
         }
         
         protected virtual bool Int64FromSql(SqlType t)
         {
-            if (t.DataType == "bigint")
+            if (t.DataType == "bigint" ||
+                t.DataType == "bigserial")
                 return true;
             return false;
         }
@@ -186,7 +194,8 @@ namespace DataCloner.Core.Data
         
         protected virtual bool StringFromSql(SqlType t)
         {
-            if (t.DataType == "char" ||
+            if (t.DataType.StartsWith("character") ||
+                t.DataType == "char" ||
                 t.DataType == "varchar" ||
                 t.DataType == "nvarchar" ||
                 t.DataType == "text" ||
@@ -204,7 +213,8 @@ namespace DataCloner.Core.Data
         
         protected virtual bool TimeFromSql(SqlType t)
         {
-            if (t.DataType == "time")
+            if (t.DataType.StartsWith("time") ||
+                t.DataType == "interval")
                 return true;
             return false;
         }
