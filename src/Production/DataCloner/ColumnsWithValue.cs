@@ -1,4 +1,5 @@
 ﻿using DataCloner.Core.Framework;
+using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -6,6 +7,8 @@ namespace DataCloner.Core
 {
     public class ColumnsWithValue : Dictionary<string, object>
     {
+        public ColumnsWithValue() : base(StringComparer.OrdinalIgnoreCase) { }
+
         public void Serialize(BinaryWriter output)
         {
             var bf = SerializationHelper.DefaultFormatter;

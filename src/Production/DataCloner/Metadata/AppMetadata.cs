@@ -11,8 +11,15 @@ using System.Text;
 namespace DataCloner.Core.Metadata
 {
     public sealed class SchemaMetadata : HashSet<TableMetadata> { }
-    public sealed class DatabaseMetadata : Dictionary<string, SchemaMetadata> { }
-    public sealed class ServerMetadata : Dictionary<string, DatabaseMetadata> { }
+    public sealed class DatabaseMetadata : Dictionary<string, SchemaMetadata>
+    {
+        public DatabaseMetadata() : base(StringComparer.OrdinalIgnoreCase) { }
+    }
+    
+    public sealed class ServerMetadata : Dictionary<string, DatabaseMetadata>
+    {
+        public ServerMetadata() : base(StringComparer.OrdinalIgnoreCase) { }
+    }
 
     /// <summary>
     /// Contient les tables statiques de la base de données
@@ -25,7 +32,7 @@ namespace DataCloner.Core.Metadata
             if (ContainsKey(server) &&
                 this[server].ContainsKey(database) &&
                 this[server][database].ContainsKey(schema))
-                return this[server][database][schema].FirstOrDefault(t => t.Name == table);
+                return this[server][database][schema].FirstOrDefault(t => t.Name.Equals(table, StringComparison.OrdinalIgnoreCase));
             return null;
         }
 
@@ -107,7 +114,7 @@ namespace DataCloner.Core.Metadata
 
             //Init first row
             var currentSchema = reader.GetString(0);
-            var previousTable = this[serverId][database][currentSchema].First(t => t.Name == reader.GetString(1));
+            var previousTable = this[serverId][database][currentSchema].First(t => t.Name.Equals(reader.GetString(1), StringComparison.OrdinalIgnoreCase));
             var previousConstraintName = reader.GetString(2);
             var previousConstraint = new ForeignKey
             {
@@ -147,7 +154,7 @@ namespace DataCloner.Core.Metadata
                     previousTable.ForeignKeys = lstForeignKeys;
 
                     //Change de table
-                    previousTable = this[serverId][database][currentSchema].First(t => t.Name == reader.GetString(1));
+                    previousTable = this[serverId][database][currentSchema].First(t => t.Name.Equals(reader.GetString(1), StringComparison.OrdinalIgnoreCase));
                     lstForeignKeys = new List<ForeignKey>();
                 }
 
@@ -160,7 +167,7 @@ namespace DataCloner.Core.Metadata
                 });
 
                 //Affecte l'indicateur dans le schema
-                var col = previousTable.ColumnsDefinition.FirstOrDefault(c => c.Name == colName);
+                var col = previousTable.ColumnsDefinition.FirstOrDefault(c => c.Name.Equals(colName, StringComparison.OrdinalIgnoreCase));
                 if (col == null)
                     throw new Exception($"The column {colName} has not been found in the metadata for the table {previousTable.Name}.");
                 col.IsForeignKey = true;
@@ -185,7 +192,7 @@ namespace DataCloner.Core.Metadata
 
             //Init first row
             var currentSchema = reader.GetString(0);
-            var previousTable = this[serverId][database][currentSchema].First(t => t.Name == reader.GetString(1));
+            var previousTable = this[serverId][database][currentSchema].First(t => t.Name.Equals(reader.GetString(1), StringComparison.OrdinalIgnoreCase));
             var previousConstraintName = reader.GetString(2);
             var previousConstraint = new UniqueKey();
 
@@ -213,7 +220,7 @@ namespace DataCloner.Core.Metadata
                     previousTable.UniqueKeys = lstUniqueKeys;
 
                     //Change de table
-                    previousTable = this[serverId][database][currentSchema].First(t => t.Name == reader.GetString(1));
+                    previousTable = this[serverId][database][currentSchema].First(t => t.Name.Equals(reader.GetString(1), StringComparison.OrdinalIgnoreCase));
                     lstUniqueKeys = new List<UniqueKey>();
                 }
 
@@ -222,7 +229,7 @@ namespace DataCloner.Core.Metadata
                 lstUniqueKeyColumns.Add(colName);
 
                 //Affecte l'indicateur dans le schema
-                var col = previousTable.ColumnsDefinition.FirstOrDefault(c => c.Name == colName);
+                var col = previousTable.ColumnsDefinition.FirstOrDefault(c => c.Name.Equals(colName, StringComparison.OrdinalIgnoreCase));
                 if (col == null)
                     throw new Exception($"The column {colName} has not been found in the metadata for the table {previousTable.Name}.");
                 col.IsUniqueKey = true;
@@ -457,17 +464,17 @@ namespace DataCloner.Core.Metadata
 
             foreach (var server in this)
             {
-                var serModifier = behaviour.Modifiers.ServerModifiers.Find(s => s.Id == server.Key.ToString());
+                var serModifier = behaviour.Modifiers.ServerModifiers.Find(s => s.Id.Equals(server.Key.ToString(), StringComparison.OrdinalIgnoreCase));
                 if (serModifier != null)
                 {
                     foreach (var database in server.Value)
                     {
-                        var dbModifier = serModifier.Databases.Find(d => d.Name == database.Key);
+                        var dbModifier = serModifier.Databases.Find(d => d.Name.Equals(database.Key, StringComparison.OrdinalIgnoreCase));
                         if (dbModifier != null)
                         {
                             foreach (var schema in database.Value)
                             {
-                                var scheModifier = dbModifier.Schemas.Find(s => s.Name == schema.Key);
+                                var scheModifier = dbModifier.Schemas.Find(s => s.Name.Equals( schema.Key, StringComparison.OrdinalIgnoreCase));
                                 if (scheModifier != null)
                                     MergeFkModifierSchema(schema.Value, scheModifier.Tables);
                             }
@@ -481,7 +488,7 @@ namespace DataCloner.Core.Metadata
         {
             foreach (var table in schemaMetadata)
             {
-                var tblModifier = tablesModifier.Find(t => t.Name == table.Name);
+                var tblModifier = tablesModifier.Find(t => t.Name.Equals(table.Name, StringComparison.OrdinalIgnoreCase));
                 if (tblModifier != null)
                 {
                     //On affecte les changements de la configuration
@@ -495,7 +502,7 @@ namespace DataCloner.Core.Metadata
 
                             for (var i = 0; i < fk.Columns.Count(); i++)
                             {
-                                if (fk.Columns[i].NameFrom == colConfig.Name)
+                                if (fk.Columns[i].NameFrom.Equals(colConfig.Name, StringComparison.OrdinalIgnoreCase))
                                 {
                                     fk.Columns.RemoveAt(i);
                                     i--;
@@ -535,22 +542,22 @@ namespace DataCloner.Core.Metadata
 
             foreach (var server in this)
             {
-                var serModifier = behaviour.Modifiers.ServerModifiers.Find(s => s.Id == server.Key.ToString());
+                var serModifier = behaviour.Modifiers.ServerModifiers.Find(s => s.Id.Equals(server.Key.ToString(), StringComparison.OrdinalIgnoreCase));
                 if (serModifier != null)
                 {
                     foreach (var database in server.Value)
                     {
-                        var dbModifier = serModifier.Databases.Find(d => d.Name == database.Key);
+                        var dbModifier = serModifier.Databases.Find(d => d.Name.Equals(database.Key, StringComparison.OrdinalIgnoreCase));
                         if (dbModifier != null)
                         {
                             foreach (var schema in database.Value)
                             {
-                                var scheModifier = dbModifier.Schemas.Find(s => s.Name == schema.Key);
+                                var scheModifier = dbModifier.Schemas.Find(s => s.Name.Equals(schema.Key, StringComparison.OrdinalIgnoreCase));
                                 if (scheModifier != null)
                                 {
                                     foreach (var table in schema.Value)
                                     {
-                                        var tblModifier = scheModifier.Tables.Find(t => t.Name == table.Name);
+                                        var tblModifier = scheModifier.Tables.Find(t => t.Name.Equals(table.Name, StringComparison.OrdinalIgnoreCase));
                                         if (tblModifier != null)
                                         {
                                             //On affecte les changements de la configuration
@@ -563,10 +570,10 @@ namespace DataCloner.Core.Metadata
                                             foreach (var derivTbl in table.DerivativeTables)
                                             {
                                                 var derivTblModifier = tblModifier.DerativeTables.DerativeSubTables
-                                                                              .FirstOrDefault(t => t.ServerId == derivTbl.ServerId.ToString() &&
-                                                                                              t.Database == derivTbl.Database &&
-                                                                                              t.Schema == derivTbl.Schema &&
-                                                                                              t.Table == derivTbl.Table);
+                                                                              .FirstOrDefault(t => t.ServerId.Equals( derivTbl.ServerId.ToString(), StringComparison.OrdinalIgnoreCase) &&
+                                                                                              t.Database.Equals( derivTbl.Database, StringComparison.OrdinalIgnoreCase) &&
+                                                                                              t.Schema.Equals(derivTbl.Schema, StringComparison.OrdinalIgnoreCase) &&
+                                                                                              t.Table.Equals( derivTbl.Table, StringComparison.OrdinalIgnoreCase));
                                                 if (derivTblModifier != null)
                                                 {
                                                     derivTbl.Access = derivTblModifier.Access;
@@ -582,7 +589,7 @@ namespace DataCloner.Core.Metadata
                                             //Data builder
                                             foreach (var builderCol in tblModifier.DataBuilders)
                                             {
-                                                var col = table.ColumnsDefinition.FirstOrDefault(c => c.Name == builderCol.Name);
+                                                var col = table.ColumnsDefinition.FirstOrDefault(c => c.Name.Equals(builderCol.Name, StringComparison.OrdinalIgnoreCase));
                                                 if (col != null)
                                                     col.BuilderName = builderCol.BuilderName;
                                             }

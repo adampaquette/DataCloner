@@ -11,7 +11,7 @@ using System.Text;
 namespace DataCloner.Core.Metadata
 {
     [DebuggerDisplay("{Name}")]
-    public sealed class TableMetadata
+    public sealed class TableMetadata : IEquatable<TableMetadata>
     {
         private string _name;
 
@@ -177,19 +177,6 @@ namespace DataCloner.Core.Metadata
             return colPkDst;
         }
 
-        public override bool Equals(object obj)
-        {
-            var t = obj as TableMetadata;
-            if (t == null)
-                return false;
-            return t.Name.Equals(Name);
-        }
-
-        public override int GetHashCode()
-        {
-            return Name.GetHashCode();
-        }
-
         public void Serialize(Stream output)
         {
             Serialize(new BinaryWriter(output, Encoding.UTF8, true));
@@ -326,6 +313,22 @@ namespace DataCloner.Core.Metadata
             t.ColumnsDefinition = schemaColList;
 
             return t;
+        }
+
+        public override bool Equals(object obj)
+        {
+            var t = obj as TableMetadata;
+            return Equals(t);
+        }
+
+        public override int GetHashCode()
+        {
+            return Name.GetHashCode();
+        }
+
+        public bool Equals(TableMetadata other)
+        {
+            return other != null && other.Name.Equals(Name, StringComparison.OrdinalIgnoreCase);
         }
     }
 

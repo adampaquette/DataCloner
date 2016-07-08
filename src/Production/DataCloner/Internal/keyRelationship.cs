@@ -35,13 +35,13 @@ namespace DataCloner.Core.Internal
         public void SetKey(Int16 server, string database, string schema, string table, object[] keyValuesSource, object[] keyValuesDestination)
         {
             if (!ContainsKey(server))
-                Add(server, new Dictionary<string, Dictionary<string, Dictionary<string, Dictionary<object[], object[]>>>>());
+                Add(server, new Dictionary<string, Dictionary<string, Dictionary<string, Dictionary<object[], object[]>>>>(StringComparer.OrdinalIgnoreCase));
 
             if (!this[server].ContainsKey(database))
-                this[server].Add(database, new Dictionary<string, Dictionary<string, Dictionary<object[], object[]>>>());
+                this[server].Add(database, new Dictionary<string, Dictionary<string, Dictionary<object[], object[]>>>(StringComparer.OrdinalIgnoreCase));
 
             if (!this[server][database].ContainsKey(schema))
-                this[server][database].Add(schema, new Dictionary<string, Dictionary<object[], object[]>>());
+                this[server][database].Add(schema, new Dictionary<string, Dictionary<object[], object[]>>(StringComparer.OrdinalIgnoreCase));
 
             if (!this[server][database][schema].ContainsKey(table))
                 this[server][database][schema].Add(table, new Dictionary<object[], object[]>(StructuralEqualityComparer<object[]>.Default));

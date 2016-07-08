@@ -1,5 +1,6 @@
 ﻿using DataCloner.Core.Configuration;
 using DataCloner.Core.Data;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -85,7 +86,7 @@ namespace DataCloner.Core.IntegrationTests
                 }
             };
 
-            Assert.True(Enumerable.SequenceEqual(clonedData, expectedData));
+            Assert.True(Enumerable.SequenceEqual(clonedData, expectedData, RowIdentifierComparer.OrdinalIgnoreCase));
         }
 
         [Theory, MemberData(nameof(DbEngineToTest))]
@@ -157,7 +158,7 @@ namespace DataCloner.Core.IntegrationTests
                 }
             };
 
-            Assert.True(Enumerable.SequenceEqual(clonedData, expectedData));
+            Assert.True(Enumerable.SequenceEqual(clonedData, expectedData, RowIdentifierComparer.OrdinalIgnoreCase));
         }
 
         [Theory, MemberData(nameof(DbEngineToTest))]
@@ -237,7 +238,7 @@ namespace DataCloner.Core.IntegrationTests
                 }
             };
 
-            Assert.True(Enumerable.SequenceEqual(clonedData, expectedData));
+            Assert.True(Enumerable.SequenceEqual(clonedData, expectedData, RowIdentifierComparer.OrdinalIgnoreCase));
         }
 
         [Theory, MemberData(nameof(DbEngineToTest))]
@@ -328,7 +329,7 @@ namespace DataCloner.Core.IntegrationTests
                 }
             };
 
-            Assert.True(Enumerable.SequenceEqual(clonedData, expectedData));
+            Assert.True(Enumerable.SequenceEqual(clonedData, expectedData, RowIdentifierComparer.OrdinalIgnoreCase));
         }
 
         [Theory, MemberData(nameof(DbEngineToTest))]
@@ -395,7 +396,7 @@ namespace DataCloner.Core.IntegrationTests
                 }
             };
 
-            Assert.True(Enumerable.SequenceEqual(clonedData, expectedData));
+            Assert.True(Enumerable.SequenceEqual(clonedData, expectedData, RowIdentifierComparer.OrdinalIgnoreCase));
         }
 
         [Theory, MemberData(nameof(DbEngineToTest))]
@@ -448,7 +449,7 @@ namespace DataCloner.Core.IntegrationTests
                 }
             };
 
-            Assert.True(Enumerable.SequenceEqual(clonedData, expectedData));          
+            Assert.True(Enumerable.SequenceEqual(clonedData, expectedData, RowIdentifierComparer.OrdinalIgnoreCase));          
         }
 
         [Theory, MemberData(nameof(DbEngineToTest))]
@@ -548,7 +549,7 @@ namespace DataCloner.Core.IntegrationTests
                 }
             };
 
-            Assert.True(Enumerable.SequenceEqual(clonedData, expectedData));
+            Assert.True(Enumerable.SequenceEqual(clonedData, expectedData, RowIdentifierComparer.OrdinalIgnoreCase));
         }
 
         [Theory, MemberData(nameof(DbEngineToTest))]
@@ -629,7 +630,7 @@ namespace DataCloner.Core.IntegrationTests
                 }
             };
 
-            Assert.True(Enumerable.SequenceEqual(clonedData, expectedData));
+            Assert.True(Enumerable.SequenceEqual(clonedData, expectedData, RowIdentifierComparer.OrdinalIgnoreCase));
         }
 
         [Theory, MemberData(nameof(DbEngineToTest))]
@@ -694,7 +695,7 @@ namespace DataCloner.Core.IntegrationTests
                 }
             };
 
-            Assert.True(Enumerable.SequenceEqual(clonedData, expectedData));
+            Assert.True(Enumerable.SequenceEqual(clonedData, expectedData, RowIdentifierComparer.OrdinalIgnoreCase));
         }
 
         [Theory, MemberData(nameof(DbEngineToTest))]
