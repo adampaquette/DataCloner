@@ -7,6 +7,16 @@ namespace DataCloner.Core.IntegrationTests
 {
     public static class Utils
     {
+        public static string TestDatabase(Connection conn)
+        {
+            if (conn.Id == 1)
+                return "Chinook";
+            else if (conn.Id == 2)
+                return "ChinookAI";
+            else
+                throw new NotSupportedException();
+        }
+
         public static string TestSchema(Connection conn)
         {
             if (conn.ProviderName == "MySql.Data.MySqlClient")

@@ -19,7 +19,8 @@ namespace DataCloner.Core.IntegrationTests
             Connections = new List<object[]>
             {
                 new object[] { CreateMySqlDatabase() },
-                new object[] { CreateMsSqlDatabase() },                
+                new object[] { CreateMySqlDatabaseAutoIncrement() },
+                new object[] { CreateMsSqlDatabase() },
                 new object[] { CreatePostgreSqlDatabase() }
             };
         }
@@ -37,7 +38,7 @@ namespace DataCloner.Core.IntegrationTests
             //var provider = DbProviderFactories.GetFactory(conn.ProviderName);
             //var c = provider.CreateConnection();
             //c.ConnectionString = conn.ConnectionString;
-            
+
             //using (var cmd = c.CreateCommand())
             //{
             //    var sql = File.ReadAllText(@"..\..\Chinook1.4\Chinook_SqlServer.sql");
@@ -83,6 +84,18 @@ namespace DataCloner.Core.IntegrationTests
 
             //    c.Close();
             //}
+
+            return conn;
+        }
+
+        private static Connection CreateMySqlDatabaseAutoIncrement()
+        {
+            var conn = new Connection()
+            {
+                Id = 2,
+                ProviderName = "MySql.Data.MySqlClient",
+                ConnectionString = @"Server=localhost;Uid=root;Pwd=toor;"
+            };
 
             return conn;
         }

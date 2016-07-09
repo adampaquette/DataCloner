@@ -26,7 +26,7 @@ namespace DataCloner.Core.Configuration
 
         public override string ToString()
         {
-            return ProviderName;
+            return ProviderName + " " + Id.ToString();
         }
     }
 }
