@@ -56,7 +56,11 @@ namespace DataCloner.Core
 
         public override int GetHashCode()
         {
-            return (ServerId + Database + Schema + Table).GetHashCode();
+            //Insensitive case
+            return (ServerId.ToString().ToLower() + 
+                    Database.ToLower() + 
+                    Schema.ToLower() + 
+                    Table.ToLower()).GetHashCode();
         }
 
         public new void Serialize(BinaryWriter output)

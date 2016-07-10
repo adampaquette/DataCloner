@@ -12,6 +12,6 @@ namespace DataCloner.Core.Data.Generator
         ISelectWriter GetSelectWriter();
         IInsertWriter GetInsertWriter();
         IUpdateWriter GetUpdateWriter(UpdateStep step);
-        string AssignVarWithIdentity(string sqlVarName);
+        string SelectLastIdentity(int sqlVarId, string tableName, string colName);
     }
 }

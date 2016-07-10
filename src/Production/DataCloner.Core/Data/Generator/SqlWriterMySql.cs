@@ -22,9 +22,16 @@ namespace DataCloner.Core.Data.Generator
             new UpdateWriter(step, IdentifierDelemiterStart, IdentifierDelemiterEnd,
                              StringDelemiter, NamedParamPrefix);
 
-        public string AssignVarWithIdentity(string sqlVarName)
-        {
-            throw new NotImplementedException();
-        }           
+        /// <summary>
+        /// Declare and select the last primary key generated.
+        /// The connection string MUST have this option "Allow User Variables=True".
+        /// </summary>
+        /// <param name="sqlVarId">Var id generated internally.</param>
+        /// <param name="tableName">Table name</param>
+        /// <param name="colName">Column name</param>
+        /// <returns>Sql query</returns>
+        public string SelectLastIdentity(int sqlVarId, string tableName, string colName) =>    
+            $"SET {NamedParamPrefix}{sqlVarId} = LAST_INSERT_ID();\r\n" +
+            $"SELECT {sqlVarId} K, {NamedParamPrefix}{sqlVarId} V;\r\n";
     }
 }

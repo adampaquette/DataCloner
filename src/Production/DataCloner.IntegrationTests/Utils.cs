@@ -2,6 +2,7 @@
 using DataCloner.Core.Data;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace DataCloner.Core.IntegrationTests
 {
@@ -58,32 +59,32 @@ namespace DataCloner.Core.IntegrationTests
                     {
                         new Behaviour
                         {
-                             Id = 1,
-                              Modifiers = new Modifiers
-                              {
-                                   ServerModifiers = new List<ServerModifier>
-                                   {
-                                        new ServerModifier
+                            Id = 1,
+                            Modifiers = new Modifiers
+                            {
+                                ServerModifiers = new List<ServerModifier>
+                                {
+                                    new ServerModifier
+                                    {
+                                        Id = conn.Id.ToString(),
+                                        Databases = new List<DatabaseModifier>
                                         {
-                                             Id = "1",
-                                              Databases = new List<DatabaseModifier>
-                                              {
-                                                   new DatabaseModifier
-                                                   {
-                                                        Name = "Chinook",
-                                                         Schemas = new List<SchemaModifier>
-                                                         {
-                                                              new SchemaModifier
-                                                              {
-                                                                   Name = TestSchema(conn),
-                                                                   Tables = new List<TableModifier>{}
-                                                              }
-                                                         }
-                                                   }
-                                              }
+                                            new DatabaseModifier
+                                            {
+                                                Name = TestDatabase(conn),
+                                                Schemas = new List<SchemaModifier>
+                                                {
+                                                    new SchemaModifier
+                                                    {
+                                                        Name = TestSchema(conn),
+                                                        Tables = new List<TableModifier>{}
+                                                    }
+                                                }
+                                            }
                                         }
-                                   }
-                              }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -114,6 +115,26 @@ namespace DataCloner.Core.IntegrationTests
                 default:
                     return false;
             }
+        }
+
+        public static bool ScrambledEquals<T>(IEnumerable<T> list1, IEnumerable<T> list2, IEqualityComparer<T> comparer)
+        {
+            var cnt = new Dictionary<T, int>(comparer);
+            foreach (T s in list1)
+            {
+                if (cnt.ContainsKey(s))
+                    cnt[s]++;
+                else
+                    cnt.Add(s, 1);
+            }
+            foreach (T s in list2)
+            {
+                if (cnt.ContainsKey(s))
+                    cnt[s]--;
+                else
+                    return false;
+            }
+            return cnt.Values.All(c => c == 0);
         }
     }
 }

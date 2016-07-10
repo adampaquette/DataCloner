@@ -18,10 +18,10 @@ namespace DataCloner.Core.IntegrationTests
         {
             Connections = new List<object[]>
             {
-                new object[] { CreateMySqlDatabase() },
-                new object[] { CreateMySqlDatabaseAutoIncrement() },
                 new object[] { CreateMsSqlDatabase() },
-                new object[] { CreatePostgreSqlDatabase() }
+                new object[] { CreatePostgreSqlDatabase() },
+                new object[] { CreateMySqlDatabase() },
+                new object[] { CreateMySqlDatabaseAutoIncrement() }
             };
         }
 
@@ -64,7 +64,7 @@ namespace DataCloner.Core.IntegrationTests
             {
                 Id = 1,
                 ProviderName = "MySql.Data.MySqlClient",
-                ConnectionString = @"Server=localhost;Uid=root;Pwd=toor;default command timeout=120;"
+                ConnectionString = @"Server=localhost;Uid=root;Pwd=toor;default command timeout=120;Allow User Variables=True"
             };
 
             //Create DB
@@ -94,7 +94,7 @@ namespace DataCloner.Core.IntegrationTests
             {
                 Id = 2,
                 ProviderName = "MySql.Data.MySqlClient",
-                ConnectionString = @"Server=localhost;Uid=root;Pwd=toor;"
+                ConnectionString = @"Server=localhost;Uid=root;Pwd=toor;Allow User Variables=True"
             };
 
             return conn;

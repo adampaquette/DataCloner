@@ -21,7 +21,9 @@ namespace DataCloner.Core.Data.Generator
             new UpdateWriter(step, IdentifierDelemiterStart, IdentifierDelemiterEnd,
                              StringDelemiter, NamedParamPrefix);
 
-        public string AssignVarWithIdentity(string sqlVarName) =>
-            "SET " + NamedParamPrefix + sqlVarName + " = SCOPE_IDENTITY();\r\n";
+        public string SelectLastIdentity(int sqlVarId, string tableName, string colName) =>
+            $"DECLARE {NamedParamPrefix}{sqlVarId} VARCHAR(MAX);" +        
+            $"SET {NamedParamPrefix}{sqlVarId} = SCOPE_IDENTITY();\r\n" +
+            $"SELECT {sqlVarId} K, {NamedParamPrefix}{sqlVarId} V;\r\n";
     }
 }

@@ -33,41 +33,45 @@ namespace DataCloner.Core.Data
             "COL.ORDINAL_POSITION;";
 
         protected override string SqlGetForeignKeys =>
-            "SELECT " +
-            "'' AS 'Schema'," +
-            "TC.TABLE_NAME," +
-            "TC.CONSTRAINT_NAME," +
-            "K.COLUMN_NAME," +
-            "K.REFERENCED_TABLE_SCHEMA," +
-            "K.REFERENCED_TABLE_NAME," +
-            "K.REFERENCED_COLUMN_NAME " +
-            "FROM information_schema.TABLE_CONSTRAINTS TC " +
-            "INNER JOIN information_schema.KEY_COLUMN_USAGE K ON TC.TABLE_NAME = K.TABLE_NAME " +
-            "AND TC.CONSTRAINT_NAME = K.CONSTRAINT_NAME " +
-            "INNER JOIN INFORMATION_SCHEMA.TABLES TBL ON TBL.TABLE_CATALOG = TC.CONSTRAINT_CATALOG AND " +
-            "TBL.TABLE_SCHEMA = TC.TABLE_SCHEMA AND " +
-            "TBL.TABLE_NAME = TC.TABLE_NAME AND " +
-            "TBL.TABLE_TYPE = 'BASE TABLE' " +
-            "WHERE TC.TABLE_SCHEMA = @DATABASE " +
-            "AND TC.CONSTRAINT_TYPE = 'FOREIGN KEY' " +
+            "SELECT   " +
+            "    '' AS 'Schema',  " +
+            "    TC.TABLE_NAME,  " +
+            "    TC.CONSTRAINT_NAME,  " +
+            "    K.COLUMN_NAME,  " +
+            "    K.REFERENCED_TABLE_SCHEMA,  " +
+            "    K.REFERENCED_TABLE_NAME,  " +
+            "    K.REFERENCED_COLUMN_NAME   " +
+            "FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS TC " +
+            "INNER JOIN INFORMATION_SCHEMA.KEY_COLUMN_USAGE K ON TC.TABLE_SCHEMA = K.TABLE_SCHEMA " +
+            "                                                AND TC.TABLE_NAME = K.TABLE_NAME   " +
+            "                                                AND TC.CONSTRAINT_NAME = K.CONSTRAINT_NAME   " +
+            "INNER JOIN INFORMATION_SCHEMA.TABLES TBL ON TBL.TABLE_CATALOG = TC.CONSTRAINT_CATALOG AND   " +
+            "                                            TBL.TABLE_SCHEMA = TC.TABLE_SCHEMA AND   " +
+            "                                            TBL.TABLE_NAME = TC.TABLE_NAME AND   " +
+            "                                            TBL.TABLE_TYPE = 'BASE TABLE'   " +
+            "WHERE " +
+            "    TC.TABLE_SCHEMA = @DATABASE " +
+            "    AND TC.CONSTRAINT_TYPE = 'FOREIGN KEY' " +
             "ORDER BY " +
-            "TC.TABLE_NAME," +
-            "TC.CONSTRAINT_NAME;";
+            "    TC.TABLE_NAME, " +
+            "    TC.CONSTRAINT_NAME;";
 
         protected override string SqlGetUniqueKeys =>
             "SELECT " +
-            "'' AS 'Schema'," +
-            "TC.TABLE_NAME," +
-            "TC.CONSTRAINT_NAME," +
-            "K.COLUMN_NAME " +
-            "FROM information_schema.TABLE_CONSTRAINTS TC " +
-            "INNER JOIN information_schema.KEY_COLUMN_USAGE K ON TC.TABLE_NAME = K.TABLE_NAME " +
-            "AND TC.CONSTRAINT_NAME = K.CONSTRAINT_NAME " +
-            "WHERE TC.TABLE_SCHEMA = @DATABASE " +
-            "AND TC.CONSTRAINT_TYPE = 'UNIQUE' " +
+            "    '' AS 'Schema', " +
+            "    TC.TABLE_NAME, " +
+            "    TC.CONSTRAINT_NAME, " +
+            "    K.COLUMN_NAME " +
+            "FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS TC " +
+            "INNER JOIN INFORMATION_SCHEMA.KEY_COLUMN_USAGE K ON TC.TABLE_SCHEMA = K.TABLE_SCHEMA " +
+            "                                                AND TC.TABLE_NAME = K.TABLE_NAME " +
+            "                                                AND TC.CONSTRAINT_NAME = K.CONSTRAINT_NAME " +
+            "WHERE  " +
+            "    TC.TABLE_SCHEMA = @DATABASE " +
+            "    AND TC.CONSTRAINT_TYPE = 'UNIQUE' " +
             "ORDER BY " +
-            "TC.TABLE_NAME," +
-            "TC.CONSTRAINT_NAME;";
+            "    TC.TABLE_NAME, " +
+            "    TC.CONSTRAINT_NAME;";
 
         protected override string SqlGetLastInsertedPk =>
             "SELECT LAST_INSERT_ID();"; 

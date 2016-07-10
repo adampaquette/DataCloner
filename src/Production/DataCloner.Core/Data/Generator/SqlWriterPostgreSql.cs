@@ -22,9 +22,7 @@ namespace DataCloner.Core.Data.Generator
             new UpdateWriter(step, IdentifierDelemiterStart, IdentifierDelemiterEnd,
                              StringDelemiter, NamedParamPrefix);
 
-        public string AssignVarWithIdentity(string sqlVarName)
-        {
-            throw new NotImplementedException();
-        }
+        public string SelectLastIdentity(int sqlVarId, string tableName, string colName) =>
+            $"SELECT {sqlVarId} K, currval(pg_get_serial_sequence('{tableName}','{colName}') V;\r\n";
     }
 }

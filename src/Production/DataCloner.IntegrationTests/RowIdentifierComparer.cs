@@ -23,12 +23,12 @@ namespace DataCloner.Core.IntegrationTests
                 !x.Schema.Equals(y.Schema, StringComparison.OrdinalIgnoreCase) ||
                 !x.Table.Equals(y.Table, StringComparison.OrdinalIgnoreCase))
                 return false;
-            return Enumerable.SequenceEqual(x.Columns, y.Columns);;
+            return Enumerable.SequenceEqual(x.Columns, y.Columns);
         }
 
         public int GetHashCode(RowIdentifier obj)
         {
-            throw new NotImplementedException();
+            return obj.GetHashCode();
         }
-    }
+    }   
 }
