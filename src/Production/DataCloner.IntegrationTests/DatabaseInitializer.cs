@@ -19,6 +19,7 @@ namespace DataCloner.Core.IntegrationTests
             Connections = new List<object[]>
             {
                 new object[] { CreateMsSqlDatabase() },
+                new object[] { CreateMsSqlDatabaseAutoIncrement() },
                 new object[] { CreatePostgreSqlDatabase() },
                 new object[] { CreateMySqlDatabase() },
                 new object[] { CreateMySqlDatabaseAutoIncrement() }
@@ -54,6 +55,18 @@ namespace DataCloner.Core.IntegrationTests
             //}
 
             conn.ConnectionString += "Initial Catalog=Chinook;";
+
+            return conn;
+        }
+
+        private static Connection CreateMsSqlDatabaseAutoIncrement()
+        {
+            var conn = new Connection()
+            {
+                Id = 2,
+                ProviderName = "System.Data.SqlClient",
+                ConnectionString = @"Data Source=(localdb)\MSSQLLocalDB;Integrated Security=True;Initial Catalog=ChinookAI;"
+            };
 
             return conn;
         }

@@ -1,5 +1,4 @@
 ﻿using DataCloner.Core.Configuration;
-using DataCloner.Core.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
