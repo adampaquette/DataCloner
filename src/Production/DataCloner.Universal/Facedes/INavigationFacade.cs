@@ -17,5 +17,10 @@
         /// Navigates to the welcome view.
         /// </summary>
         void NavigateToWelcomePage();
+
+        /// <summary>
+        /// Navigates to the cloner view.
+        /// </summary>
+        void NavigateToClonerPage();
     }
 }

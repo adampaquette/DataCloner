@@ -1,19 +1,17 @@
-﻿using DataCloner.Universal.Commands;
+﻿using System.Threading.Tasks;
 using DataCloner.Universal.Facedes;
-using Windows.UI.Xaml.Media;
+using DataCloner.Universal.ViewModels;
 
 namespace DataCloner.Universal.Menu.Left
 {
-    public class GeneralMenuItem : IMenuItem
+    public class GeneralMenuItem : TreeViewMenuItemBase
     {
-        public GeneralMenuItem(INavigationFacade navigation)
+        public GeneralMenuItem(INavigationFacade navigation) : base(navigation)
         {
+            Children.Add(new DashboardMenuItem(Navigation));
+            Children.Add(new ClonerMenuItem(Navigation));
         }
 
-        public RelayCommand Command { get; }
-        public ImageSource Image { get; }
-        public string Label => "Général";
-        public MenuItemLocation Location => MenuItemLocation.Left;
-        public MenuItemPosition Position => MenuItemPosition.Start;
-    }
+        public override string Label => "Général";
+    }    
 }

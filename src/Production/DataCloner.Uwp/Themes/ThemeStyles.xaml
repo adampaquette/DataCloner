@@ -91,6 +91,30 @@
                             <ToggleButton.Template>
                                 <ControlTemplate TargetType="ToggleButton">
                                     <Grid x:Name="Root" Background="Transparent">
+                                        <Grid Margin="2 2 5 2" HorizontalAlignment="Right">
+                                            <Path x:Name="UncheckedVisual"
+                                                  Width="6"
+                                                  Height="9"
+                                                  HorizontalAlignment="Right"
+                                                  VerticalAlignment="Center"
+                                                  Data="M 0,0 L 0,9 L 5,4.5 Z"
+                                                  Fill="#FFFFFFFF"
+                                                  StrokeLineJoin="Miter"
+                                                  StrokeThickness="1">
+                                                <Path.Stroke>
+                                                    <SolidColorBrush Color="#FF989898" />
+                                                </Path.Stroke>
+                                            </Path>
+                                            <Path x:Name="CheckedVisual"
+                                                  Width="6"
+                                                  Height="6"
+                                                  HorizontalAlignment="Center"
+                                                  VerticalAlignment="Center"
+                                                  Data="M 6,0 L 6,6 L 0,6 Z"
+                                                  Fill="#FF262626"
+                                                  Opacity="0"
+                                                  StrokeLineJoin="Miter" />
+                                        </Grid>
                                         <VisualStateManager.VisualStateGroups>
                                             <VisualStateGroup x:Name="CommonStates">
                                                 <VisualState x:Name="Normal" />
@@ -188,30 +212,6 @@
                                                 <VisualState x:Name="Checked2" />
                                             </VisualStateGroup>
                                         </VisualStateManager.VisualStateGroups>
-                                        <Grid Margin="2 2 5 2" HorizontalAlignment="Right">
-                                            <Path x:Name="UncheckedVisual"
-                                                  Width="6"
-                                                  Height="9"
-                                                  HorizontalAlignment="Right"
-                                                  VerticalAlignment="Center"
-                                                  Data="M 0,0 L 0,9 L 5,4.5 Z"
-                                                  Fill="#FFFFFFFF"
-                                                  StrokeLineJoin="Miter"
-                                                  StrokeThickness="1">
-                                                <Path.Stroke>
-                                                    <SolidColorBrush Color="#FF989898" />
-                                                </Path.Stroke>
-                                            </Path>
-                                            <Path x:Name="CheckedVisual"
-                                                  Width="6"
-                                                  Height="6"
-                                                  HorizontalAlignment="Center"
-                                                  VerticalAlignment="Center"
-                                                  Data="M 6,0 L 6,6 L 0,6 Z"
-                                                  Fill="#FF262626"
-                                                  Opacity="0"
-                                                  StrokeLineJoin="Miter" />
-                                        </Grid>
                                     </Grid>
                                 </ControlTemplate>
                             </ToggleButton.Template>
@@ -339,6 +339,30 @@
                             <ToggleButton.Template>
                                 <ControlTemplate TargetType="ToggleButton">
                                     <Grid x:Name="Root" Background="Transparent">
+                                        <Grid Margin="2 2 5 2" HorizontalAlignment="Right">
+                                            <Path x:Name="UncheckedVisual"
+                                                  Width="6"
+                                                  Height="9"
+                                                  HorizontalAlignment="Right"
+                                                  VerticalAlignment="Center"
+                                                  Data="M 0,0 L 0,9 L 5,4.5 Z"
+                                                  Fill="#FFFFFFFF"
+                                                  StrokeLineJoin="Miter"
+                                                  StrokeThickness="1">
+                                                <Path.Stroke>
+                                                    <SolidColorBrush Color="#FF989898" />
+                                                </Path.Stroke>
+                                            </Path>
+                                            <Path x:Name="CheckedVisual"
+                                                  Width="6"
+                                                  Height="6"
+                                                  HorizontalAlignment="Center"
+                                                  VerticalAlignment="Center"
+                                                  Data="M 6,0 L 6,6 L 0,6 Z"
+                                                  Fill="#FF262626"
+                                                  Opacity="0"
+                                                  StrokeLineJoin="Miter" />
+                                        </Grid>
                                         <VisualStateManager.VisualStateGroups>
                                             <VisualStateGroup x:Name="CommonStates">
                                                 <VisualState x:Name="Normal" />
@@ -436,30 +460,6 @@
                                                 <VisualState x:Name="Checked2" />
                                             </VisualStateGroup>
                                         </VisualStateManager.VisualStateGroups>
-                                        <Grid Margin="2 2 5 2" HorizontalAlignment="Right">
-                                            <Path x:Name="UncheckedVisual"
-                                                  Width="6"
-                                                  Height="9"
-                                                  HorizontalAlignment="Right"
-                                                  VerticalAlignment="Center"
-                                                  Data="M 0,0 L 0,9 L 5,4.5 Z"
-                                                  Fill="#FFFFFFFF"
-                                                  StrokeLineJoin="Miter"
-                                                  StrokeThickness="1">
-                                                <Path.Stroke>
-                                                    <SolidColorBrush Color="#FF989898" />
-                                                </Path.Stroke>
-                                            </Path>
-                                            <Path x:Name="CheckedVisual"
-                                                  Width="6"
-                                                  Height="6"
-                                                  HorizontalAlignment="Center"
-                                                  VerticalAlignment="Center"
-                                                  Data="M 6,0 L 6,6 L 0,6 Z"
-                                                  Fill="#FF262626"
-                                                  Opacity="0"
-                                                  StrokeLineJoin="Miter" />
-                                        </Grid>
                                     </Grid>
                                 </ControlTemplate>
                             </ToggleButton.Template>
@@ -598,6 +598,30 @@
                             <ToggleButton.Template>
                                 <ControlTemplate TargetType="ToggleButton">
                                     <Grid x:Name="Root" Background="Transparent">
+                                        <Grid Margin="2 2 5 2" HorizontalAlignment="Right">
+                                            <Path x:Name="UncheckedVisual"
+                                                  Width="6"
+                                                  Height="9"
+                                                  HorizontalAlignment="Right"
+                                                  VerticalAlignment="Center"
+                                                  Data="M 0,0 L 0,9 L 5,4.5 Z"
+                                                  Fill="#FFFFFFFF"
+                                                  StrokeLineJoin="Miter"
+                                                  StrokeThickness="1">
+                                                <Path.Stroke>
+                                                    <SolidColorBrush Color="#FF989898" />
+                                                </Path.Stroke>
+                                            </Path>
+                                            <Path x:Name="CheckedVisual"
+                                                  Width="6"
+                                                  Height="6"
+                                                  HorizontalAlignment="Center"
+                                                  VerticalAlignment="Center"
+                                                  Data="M 6,0 L 6,6 L 0,6 Z"
+                                                  Fill="#FF262626"
+                                                  Opacity="0"
+                                                  StrokeLineJoin="Miter" />
+                                        </Grid>
                                         <VisualStateManager.VisualStateGroups>
                                             <VisualStateGroup x:Name="CommonStates">
                                                 <VisualState x:Name="Normal" />
@@ -695,30 +719,6 @@
                                                 <VisualState x:Name="Checked2" />
                                             </VisualStateGroup>
                                         </VisualStateManager.VisualStateGroups>
-                                        <Grid Margin="2 2 5 2" HorizontalAlignment="Right">
-                                            <Path x:Name="UncheckedVisual"
-                                                  Width="6"
-                                                  Height="9"
-                                                  HorizontalAlignment="Right"
-                                                  VerticalAlignment="Center"
-                                                  Data="M 0,0 L 0,9 L 5,4.5 Z"
-                                                  Fill="#FFFFFFFF"
-                                                  StrokeLineJoin="Miter"
-                                                  StrokeThickness="1">
-                                                <Path.Stroke>
-                                                    <SolidColorBrush Color="#FF989898" />
-                                                </Path.Stroke>
-                                            </Path>
-                                            <Path x:Name="CheckedVisual"
-                                                  Width="6"
-                                                  Height="6"
-                                                  HorizontalAlignment="Center"
-                                                  VerticalAlignment="Center"
-                                                  Data="M 6,0 L 6,6 L 0,6 Z"
-                                                  Fill="#FF262626"
-                                                  Opacity="0"
-                                                  StrokeLineJoin="Miter" />
-                                        </Grid>
                                     </Grid>
                                 </ControlTemplate>
                             </ToggleButton.Template>

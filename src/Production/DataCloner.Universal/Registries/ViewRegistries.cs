@@ -10,6 +10,7 @@ namespace DataCloner.Universal.Registries
         {
             NavigationFacade.AddType(typeof(MainPage), typeof(MainPageViewModel));
             NavigationFacade.AddType(typeof(WelcomePage), typeof(WelcomePageViewModel));
+            NavigationFacade.AddType(typeof(ClonerPage), typeof(ClonerPageViewModel));
         }
     }
 }

@@ -15,8 +15,8 @@ namespace DataCloner.Universal.ViewModels
                 .ToList();
 
             NavigationBarMenuItemsLeft = ServiceLocator.Current
-                .GetAllInstances<ITreeViewLazyItem<IMenuItem>>()
-                .Where(i => i.Content.Location == MenuItemLocation.Left)
+                .GetAllInstances<ITreeViewMenuItem>()
+                .Where(i => i.Location == MenuItemLocation.Left)
                 .ToList();
         }
 
@@ -28,6 +28,6 @@ namespace DataCloner.Universal.ViewModels
         /// <summary>
         /// The navigation bar items at the left.
         /// </summary>
-        public List<ITreeViewLazyItem<IMenuItem>> NavigationBarMenuItemsLeft { get; private set; }
+        public List<ITreeViewMenuItem> NavigationBarMenuItemsLeft { get; private set; }
     }
 }

@@ -1,18 +1,19 @@
-﻿using System.Collections.ObjectModel;
+﻿using DataCloner.Universal.ViewModels;
+using System.Collections.ObjectModel;
 
 namespace DataCloner.Universal.ViewModels
 {
-    public class TreeViewLazyItem<TContent> : ViewModelBase, ITreeViewLazyItem<TContent>
+    public class TreeViewLazyItem : ViewModelBase, ITreeViewItem
     {
-        static readonly ITreeViewLazyItem<TContent> DummyChild = new TreeViewLazyItem<TContent>();
+        static readonly ITreeViewItem DummyChild = new TreeViewLazyItem();
 
         private bool _isSelected;
         private bool _isExpanded;
 
-        protected TreeViewLazyItem(ITreeViewLazyItem<TContent> parent, bool lazyLoadChildren)
+        protected TreeViewLazyItem(ITreeViewItem parent, bool lazyLoadChildren)
         {
             Parent = parent;
-            Children = new ObservableCollection<ITreeViewLazyItem<TContent>>();
+            Children = new ObservableCollection<ITreeViewItem>();
 
             if (lazyLoadChildren && !HasParentDummy)
             {
@@ -24,10 +25,8 @@ namespace DataCloner.Universal.ViewModels
         /// For dummy child
         /// </summary>
         private TreeViewLazyItem() { }
-
-        public TContent Content { get; set; }
-        public ITreeViewLazyItem<TContent> Parent { get; private set; }
-        public ObservableCollection<ITreeViewLazyItem<TContent>> Children { get; private set; }
+        public ITreeViewItem Parent { get; private set; }
+        public ObservableCollection<ITreeViewItem> Children { get; private set; }
 
         public bool IsSelected
         {
@@ -71,7 +70,7 @@ namespace DataCloner.Universal.ViewModels
         /// <summary>
         /// Invoked when the child items need to be loaded on demand.
         /// </summary>
-        protected virtual void LoadChildren()
+        public virtual void LoadChildren()
         {
         }
     }

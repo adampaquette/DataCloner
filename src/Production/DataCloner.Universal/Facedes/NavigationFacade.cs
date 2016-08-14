@@ -164,5 +164,13 @@ namespace DataCloner.Universal.Facedes
         {
             Navigate(typeof(WelcomePageViewModel));
         }
+
+        /// <summary>
+        /// Navigates to the cloner page.
+        /// </summary>
+        public void NavigateToClonerPage()
+        {
+            Navigate(typeof(ClonerPageViewModel));
+        }
     }
 }
