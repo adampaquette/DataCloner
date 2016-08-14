@@ -8,7 +8,7 @@ namespace DataCloner.Core
         public int? MapId { get; set; }
         public int? BehaviourId { get; set; }
         /// <summary>
-        /// We don't load cache from disk nor save it.
+        /// We don't load metadata cache from disk nor save it.
         /// </summary>
         public bool UseInMemoryCacheOnly { get; set; }
     }

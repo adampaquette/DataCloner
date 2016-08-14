@@ -1,0 +1,42 @@
+﻿<Page x:Class="DataCloner.Universal.Views.AppShell"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:local="using:DataCloner.Universal.Views"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      mc:Ignorable="d">
+    <Page.Resources />
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="45" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <ToggleButton x:Name="togglePaneButton"
+                      Background="Aqua"
+                      Foreground="Black"
+                      IsChecked="{Binding IsPaneOpen,
+                                          ElementName=rootSplitView,
+                                          Mode=TwoWay}"
+                      Style="{StaticResource SplitViewTogglePaneButtonStyle}"
+                      TabIndex="1" />
+
+        <SplitView x:Name="rootSplitView"
+                   Grid.Row="1"
+                   DisplayMode="Inline"
+                   IsPaneOpen="True"
+                   IsTabStop="False"
+                   OpenPaneLength="256">
+            <SplitView.Pane>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                </Grid>
+            </SplitView.Pane>
+            <Frame x:Name="frame" />
+        </SplitView>
+    </Grid>
+</Page>

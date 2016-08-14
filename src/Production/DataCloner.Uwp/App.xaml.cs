@@ -9,6 +9,7 @@ using Prism.Windows.Navigation;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Activation;
+using Windows.ApplicationModel.Core;
 using Windows.Foundation.Metadata;
 using Windows.UI;
 using Windows.UI.Core;
@@ -53,14 +54,20 @@ namespace DataCloner.Uwp
             //PC customization
             if (ApiInformation.IsTypePresent("Windows.UI.ViewManagement.ApplicationView"))
             {
-                var titleBar = ApplicationView.GetForCurrentView().TitleBar;
-                if (titleBar != null)
-                {
-                    titleBar.ButtonBackgroundColor = Color.FromArgb(0xFF, 0x24, 0x31, 0x35);
-                    titleBar.ButtonForegroundColor = Colors.White;
-                    titleBar.BackgroundColor = Color.FromArgb(0xFF, 0x24, 0x31, 0x35);
-                    titleBar.ForegroundColor = Colors.White;
-                }
+                //var titleBar = ApplicationView.GetForCurrentView().TitleBar;
+                //if (titleBar != null)
+                //{
+                //    titleBar.ButtonBackgroundColor = Color.FromArgb(0xFF, 0x24, 0x31, 0x35);
+                //    titleBar.ButtonForegroundColor = Colors.White;
+                //    titleBar.BackgroundColor = Color.FromArgb(0xFF, 0x24, 0x31, 0x35);
+                //    titleBar.ForegroundColor = Colors.White;
+                //}
+
+                ApplicationViewTitleBar formattableTitleBar = ApplicationView.GetForCurrentView().TitleBar;
+                formattableTitleBar.ButtonBackgroundColor = Colors.Transparent;
+                CoreApplicationViewTitleBar coreTitleBar = CoreApplication.GetCurrentView().TitleBar;
+                coreTitleBar.ExtendViewIntoTitleBar = true;
+                //https://www.eternalcoding.com/?p=1952
             }
 
             InitializePlugins();
