@@ -12,7 +12,7 @@
     <Page.Resources>
         <Style TargetType="ListViewItem">
             <Setter Property="MinHeight" Value="30" />
-        </Style>        
+        </Style>
     </Page.Resources>
 
     <Grid>
@@ -39,7 +39,7 @@
                        Source="../Assets/TextLogo.jpg" />
             </StackPanel>
             <ListView Grid.Column="1"
-                      Margin="20,0,0,0"                      
+                      Margin="20,0,0,0"
                       ItemsSource="{Binding NavigationBarMenuItemsTop}"
                       SelectionMode="None">
                 <ListView.ItemsPanel>
@@ -55,14 +55,14 @@
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
                             <Image Width="20"
-                       Height="20"
-                       Margin="0,0,10,0"
-                       Source="{x:Bind Image}" />
+                                   Height="20"
+                                   Margin="0,0,10,0"
+                                   Source="{x:Bind Image}" />
                             <TextBlock Grid.Column="1"
-                           Foreground="White"
-                           Text="{x:Bind Label}" />
+                                       Foreground="White"
+                                       Text="{x:Bind Label}" />
                         </Grid>
-                        </DataTemplate>
+                    </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
         </Grid>

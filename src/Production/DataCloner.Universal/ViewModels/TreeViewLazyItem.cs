@@ -2,17 +2,17 @@
 
 namespace DataCloner.Universal.ViewModels
 {
-    public class TreeViewLazyItem<T> : ViewModelBase
+    public class TreeViewLazyItem<TContent> : ViewModelBase, ITreeViewLazyItem<TContent>
     {
-        static readonly TreeViewLazyItem<T> DummyChild = new TreeViewLazyItem<T>();
+        static readonly ITreeViewLazyItem<TContent> DummyChild = new TreeViewLazyItem<TContent>();
 
         private bool _isSelected;
         private bool _isExpanded;
 
-        protected TreeViewLazyItem(TreeViewLazyItem<T> parent, bool lazyLoadChildren)
+        protected TreeViewLazyItem(ITreeViewLazyItem<TContent> parent, bool lazyLoadChildren)
         {
             Parent = parent;
-            Children = new ObservableCollection<TreeViewLazyItem<T>>();
+            Children = new ObservableCollection<ITreeViewLazyItem<TContent>>();
 
             if (lazyLoadChildren && !HasParentDummy)
             {
@@ -25,8 +25,9 @@ namespace DataCloner.Universal.ViewModels
         /// </summary>
         private TreeViewLazyItem() { }
 
-        public TreeViewLazyItem<T> Parent { get; private set; }
-        public ObservableCollection<TreeViewLazyItem<T>> Children { get; private set; }
+        public TContent Content { get; set; }
+        public ITreeViewLazyItem<TContent> Parent { get; private set; }
+        public ObservableCollection<ITreeViewLazyItem<TContent>> Children { get; private set; }
 
         public bool IsSelected
         {

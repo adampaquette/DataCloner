@@ -6,9 +6,9 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       mc:Ignorable="d">
 
-    <Grid Background="DodgerBlue">
-        <Button Width="200"
-                Height="200"
+    <Grid Background="White">
+        <Button Width="50"
+                Height="50"
                 Click="Button_Click"
                 Content="Error" />
     </Grid>

@@ -103,6 +103,8 @@
     <Compile Include="Facedes\INavigationFacade.cs" />
     <Compile Include="Facedes\NavigationFacade.cs" />
     <Compile Include="LifeCycle\AppLaunchCounter.cs" />
+    <Compile Include="Menu\Left\GeneralMenuItem.cs" />
+    <Compile Include="Menu\Left\GeneralMenuItemSection.cs" />
     <Compile Include="Menu\MenuItemLocation.cs" />
     <Compile Include="Menu\Top\ToolsMenuItem.cs" />
     <Compile Include="Menu\Top\FileMenuItem.cs" />
@@ -111,7 +113,8 @@
     <Compile Include="Registries\ServiceRegistry.cs" />
     <Compile Include="Unity\UnityExtensions.cs" />
     <Compile Include="ViewModels\Design\AppShellDesignViewModel.cs" />
-    <Compile Include="ViewModels\TreeViewLazyItemViewModel.cs" />
+    <Compile Include="ViewModels\ITreeViewLazyItem.cs" />
+    <Compile Include="ViewModels\TreeViewLazyItem.cs" />
     <Compile Include="Views\MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>

@@ -2,6 +2,8 @@
 using DataCloner.Universal.Menu.Top;
 using Microsoft.Practices.Unity;
 using DataCloner.Universal.Unity;
+using DataCloner.Universal.Menu.Left;
+using DataCloner.Universal.ViewModels;
 
 namespace DataCloner.Universal.Registries
 {
@@ -23,8 +25,12 @@ namespace DataCloner.Universal.Registries
         /// </summary>
         public void Configure()
         {
+            // Top menu
             Container.RegisterTypeWithName<IMenuItem, FileMenuItem>();
             Container.RegisterTypeWithName<IMenuItem, ToolsMenuItem>();
+
+            // Left menu
+            Container.RegisterTypeWithName<ITreeViewLazyItem<IMenuItem>, GeneralMenuItemSection>();
         }
     }
 }

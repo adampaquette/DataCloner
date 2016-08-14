@@ -3,6 +3,7 @@
                     xmlns:local="using:DataCloner.Universal">
 
     <Color x:Key="SystemAccentColor">#0095CE</Color>
+    <Color x:Key="SystemBaseHighColor">#ffffff</Color>
 
     <Style x:Key="SplitViewTogglePaneButtonStyle" TargetType="ToggleButton">
         <Setter Property="FontSize" Value="20" />
