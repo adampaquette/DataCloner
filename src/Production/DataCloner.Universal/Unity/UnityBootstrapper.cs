@@ -14,7 +14,8 @@ namespace DataCloner.Universal.Unity
         private static void AddRegistries()
         {
             Registries.Add(new ServiceRegistry(Container));
-            Registries.Add(new ViewRegistry());
+            Registries.Add(new MenuRegistry(Container));
+            Registries.Add(new ViewRegistry());            
         }
 
         /// <summary>

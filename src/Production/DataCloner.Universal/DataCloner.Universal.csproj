@@ -11,7 +11,7 @@
     <AssemblyName>DataCloner.Universal</AssemblyName>
     <DefaultLanguage>fr-FR</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
-    <TargetPlatformVersion>10.0.10240.0</TargetPlatformVersion>
+    <TargetPlatformVersion>10.0.10586.0</TargetPlatformVersion>
     <TargetPlatformMinVersion>10.0.10240.0</TargetPlatformMinVersion>
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
     <FileAlignment>512</FileAlignment>
@@ -89,6 +89,7 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
+    <None Include="project - Copier.json" />
     <None Include="project.json" />
     <PRIResource Include="Strings\fr\Resources.resw" />
   </ItemGroup>
@@ -103,10 +104,13 @@
     <Compile Include="Facedes\NavigationFacade.cs" />
     <Compile Include="LifeCycle\AppLaunchCounter.cs" />
     <Compile Include="Menu\MenuItemLocation.cs" />
+    <Compile Include="Menu\Top\ToolsMenuItem.cs" />
     <Compile Include="Menu\Top\FileMenuItem.cs" />
     <Compile Include="Registries\MenuRegistry.cs" />
     <Compile Include="Registries\RegistryBase.cs" />
     <Compile Include="Registries\ServiceRegistry.cs" />
+    <Compile Include="Unity\UnityExtensions.cs" />
+    <Compile Include="ViewModels\Design\AppShellDesignViewModel.cs" />
     <Compile Include="ViewModels\TreeViewLazyItemViewModel.cs" />
     <Compile Include="Views\MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
@@ -136,6 +140,25 @@
     <None Include="DataCloner.Universal_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\MenuIcons\arrow.png" />
+    <Content Include="Assets\MenuIcons\avatar.png" />
+    <Content Include="Assets\MenuIcons\circle-1.png" />
+    <Content Include="Assets\MenuIcons\circle-2.png" />
+    <Content Include="Assets\MenuIcons\circle.png" />
+    <Content Include="Assets\MenuIcons\command.png" />
+    <Content Include="Assets\MenuIcons\database.png" />
+    <Content Include="Assets\MenuIcons\direction.png" />
+    <Content Include="Assets\MenuIcons\interface.png" />
+    <Content Include="Assets\MenuIcons\people-1.png" />
+    <Content Include="Assets\MenuIcons\people.png" />
+    <Content Include="Assets\MenuIcons\squares.png" />
+    <Content Include="Assets\MenuIcons\symbol.png" />
+    <Content Include="Assets\MenuIcons\symbols.png" />
+    <Content Include="Assets\MenuIcons\tool.png" />
+    <Content Include="Assets\MenuIcons\web-1.png" />
+    <Content Include="Assets\MenuIcons\web.png" />
+    <Content Include="Assets\MenuIcons\wrench.png" />
+    <Content Include="Assets\TextLogo.jpg" />
     <Content Include="Properties\Default.rd.xml" />
     <Content Include="Assets\LockScreenLogo.scale-200.png" />
     <Content Include="Assets\SplashScreen.scale-200.png" />
@@ -154,7 +177,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Styles\Styles.xaml">
+    <Page Include="Themes\Styles.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -171,11 +194,6 @@
   <ItemGroup>
     <Folder Include="Models\" />
     <Folder Include="Services\" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="PresentationFramework">
-      <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5.2\PresentationFramework.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
