@@ -116,7 +116,13 @@
                                             MenuFlyoutPresenterStyle="{StaticResource MenuFlyoutPresenterItemTemplate}" />
                 </core:EventTriggerBehavior>-->
             </i:Interaction.Behaviors>
-            <TextBlock VerticalAlignment="Center" Text="{Binding Label}" />
+            <StackPanel Orientation="Horizontal">
+                <Image Width="12"
+                       Height="12"
+                       Margin="0,0,10,0"
+                       Source="{Binding Image}" />
+                <TextBlock VerticalAlignment="Center" Text="{Binding Label}" />
+            </StackPanel>
         </Border>
     </DataTemplate>
     <DataTemplate x:Key="TreeViewItemDataTemplateLevel2">
@@ -141,8 +147,13 @@
             <Border Height="37"
                     IsHitTestVisible="True"
                     IsTapEnabled="True">
-
-                <TextBlock VerticalAlignment="Center" Text="{Binding Label}" />
+                <StackPanel Orientation="Horizontal">
+                    <Image Width="20"
+                           Height="20"
+                           Margin="0,0,10,0"
+                           Source="{Binding Image}" />
+                    <TextBlock VerticalAlignment="Center" Text="{Binding Label}" />
+                </StackPanel>
             </Border>
         </Border>
     </DataTemplate>

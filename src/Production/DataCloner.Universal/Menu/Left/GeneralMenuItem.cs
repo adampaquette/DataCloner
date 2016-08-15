@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using DataCloner.Universal.Facedes;
 using DataCloner.Universal.ViewModels;
+using Windows.ApplicationModel.Resources;
 
 namespace DataCloner.Universal.Menu.Left
 {
@@ -15,3 +16,5 @@ namespace DataCloner.Universal.Menu.Left
         public override string Label => "Général";
     }    
 }
+
+

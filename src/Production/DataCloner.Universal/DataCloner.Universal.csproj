@@ -89,6 +89,7 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
+    <None Include="northWind.dcproj" />
     <None Include="project.json" />
     <PRIResource Include="Strings\fr\Resources.resw" />
   </ItemGroup>
@@ -103,7 +104,9 @@
     <Compile Include="Facedes\NavigationFacade.cs" />
     <Compile Include="LifeCycle\AppLaunchCounter.cs" />
     <Compile Include="Menu\Left\ClonerMenuItem.cs" />
+    <Compile Include="Menu\Left\SqlServersMenuItem.cs" />
     <Compile Include="Menu\Left\DashboardMenuItem.cs" />
+    <Compile Include="Menu\Left\ConfigurationMenuItem.cs" />
     <Compile Include="Menu\Left\GeneralMenuItem.cs" />
     <Compile Include="Menu\MenuItemLocation.cs" />
     <Compile Include="Menu\Top\ToolsMenuItem.cs" />

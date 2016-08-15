@@ -18,6 +18,9 @@ namespace DataCloner.Universal.ViewModels
                 .GetAllInstances<ITreeViewMenuItem>()
                 .Where(i => i.Location == MenuItemLocation.Left)
                 .ToList();
+
+            //var proj = ProjectContainer.Load("northWind.dcproj");
+
         }
 
         /// <summary>
