@@ -14,10 +14,10 @@ namespace DataCloner.Universal.ViewModels
                 .Where(i => i.Location == MenuItemLocation.Top)
                 .ToList();
 
-            NavigationBarMenuItemsLeft = ServiceLocator.Current
-                .GetAllInstances<ITreeViewMenuItem>()
-                .Where(i => i.Location == MenuItemLocation.Left)
-                .ToList();
+            //NavigationBarMenuItemsLeft = ServiceLocator.Current
+            //    .GetAllInstances<ITreeViewMenuItem>()
+            //    .Where(i => i.Location == MenuItemLocation.Left)
+            //    .ToList();
 
             //var proj = ProjectContainer.Load("northWind.dcproj");
 

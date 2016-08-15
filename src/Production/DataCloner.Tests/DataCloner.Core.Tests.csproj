@@ -97,9 +97,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DataCloner.Core\DataCloner.Core.csproj">
+    <ProjectReference Include="..\DataCloner.Core.Net\DataCloner.Core.Net.csproj">
       <Project>{3459dc7a-21ba-435c-882b-d84a333aefd0}</Project>
-      <Name>DataCloner.Core</Name>
+      <Name>DataCloner.Core.Net</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>

@@ -1,15 +1,14 @@
-﻿<ResourceDictionary 
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-    xmlns:fw="clr-namespace:DataCloner.GUI.Framework"
-    xmlns:vm="clr-namespace:DataCloner.GUI.ViewModel"
-    xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"   
-    xmlns:v="clr-namespace:DataCloner.GUI.View">
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+                    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                    xmlns:fw="clr-namespace:DataCloner.GUI.Framework"
+                    xmlns:v="clr-namespace:DataCloner.GUI.View"
+                    xmlns:vm="clr-namespace:DataCloner.GUI.ViewModel">
 
-    <vm:ViewModelLocator x:Key="Locator"/>
+    <vm:ViewModelLocator x:Key="Locator" />
 
-    <SolidColorBrush x:Key="InvalidControlBrush" Color="#E5B8B7"/>
+    <SolidColorBrush x:Key="InvalidControlBrush" Color="#E5B8B7" />
 
     <!--<Style TargetType="DataGridColumnHeader">
         <Setter Property="VerticalContentAlignment" Value="Center" />
@@ -22,14 +21,14 @@
                 <ControlTemplate TargetType="{x:Type DataGridColumnHeader}">
                     <Grid>
                         <Border x:Name="columnHeaderBorder"
-		                        BorderThickness="0,0,0,0"  
+		                        BorderThickness="0,0,0,0"
                                 Padding="10, 0"
                                 Height="28"
                                 BorderBrush="{DynamicResource AccentColorBrush4}"
-                                Background="{DynamicResource AccentColorBrush}">                           
+                                Background="{DynamicResource AccentColorBrush}">
                             <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
 			                                  VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-				                              SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" 
+				                              SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
                                               Content="{Binding RelativeSource={RelativeSource AncestorType={x:Type DataGridColumnHeader}}, Path=Content, Mode=OneWay, Converter={StaticResource ToUpperConverter}}"/>
                         </Border>
                     </Grid>
@@ -39,18 +38,18 @@
     </Style>-->
 
     <Style TargetType="TextBox">
-        <Setter Property="MinHeight" Value="25"/>
-        <Setter Property="MinWidth" Value="100"/>
-        <Setter Property="Margin" Value="11,11,0,0"/>
-        <Setter Property="HorizontalAlignment" Value="Left"/>
+        <Setter Property="MinHeight" Value="25" />
+        <Setter Property="MinWidth" Value="100" />
+        <Setter Property="Margin" Value="11,11,0,0" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
         <Style.Triggers>
             <Trigger Property="Validation.HasError" Value="true">
-                <Setter Property="Background" Value="{StaticResource InvalidControlBrush}"/>
+                <Setter Property="Background" Value="{StaticResource InvalidControlBrush}" />
                 <Setter Property="ToolTip">
                     <Setter.Value>
                         <MultiBinding Converter="{StaticResource ValidationErrorsConverter}">
-                            <Binding Path="(Validation.Errors)" RelativeSource="{RelativeSource Self}"/>
-                            <Binding Path="(Validation.Errors).Count" RelativeSource="{RelativeSource Self}"/>
+                            <Binding Path="(Validation.Errors)" RelativeSource="{RelativeSource Self}" />
+                            <Binding Path="(Validation.Errors).Count" RelativeSource="{RelativeSource Self}" />
                         </MultiBinding>
                     </Setter.Value>
                 </Setter>
@@ -61,15 +60,13 @@
     <Style x:Key="TextCellEditingStyle" TargetType="{x:Type TextBox}">
         <Setter Property="Validation.ErrorTemplate">
             <Setter.Value>
-                <ControlTemplate/>
+                <ControlTemplate />
             </Setter.Value>
         </Setter>
         <Style.Triggers>
             <Trigger Property="Validation.HasError" Value="True">
-                <Setter Property="Background" Value="Red"/>
-                <Setter Property="ToolTip" 
-                        Value="{Binding RelativeSource={RelativeSource Self},
-                        Path=(Validation.Errors).CurrentItem.ErrorContent}"/>
+                <Setter Property="Background" Value="Red" />
+                <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent}" />
             </Trigger>
         </Style.Triggers>
     </Style>
@@ -77,20 +74,18 @@
     <Style x:Key="TextCellElementStyle" TargetType="{x:Type TextBlock}">
         <Setter Property="Validation.ErrorTemplate">
             <Setter.Value>
-                <ControlTemplate/>
+                <ControlTemplate />
             </Setter.Value>
         </Setter>
         <Style.Triggers>
             <Trigger Property="Validation.HasError" Value="True">
-                <Setter Property="Background" Value="Red"/>
-                <Setter Property="ToolTip" 
-                        Value="{Binding RelativeSource={RelativeSource Self},
-                        Path=(Validation.Errors).CurrentItem.ErrorContent}"/>
+                <Setter Property="Background" Value="Red" />
+                <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent}" />
             </Trigger>
         </Style.Triggers>
     </Style>
 
     <DataTemplate DataType="{x:Type vm:SolutionExplorer.SolutionExplorerViewModel}">
-        <v:SolutionExplorer/>
+        <v:SolutionExplorer />
     </DataTemplate>
 </ResourceDictionary>
