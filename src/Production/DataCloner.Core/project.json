@@ -9,6 +9,7 @@
     "NETStandard.Library": "1.6.0",
     "System.Collections.Immutable": "1.2.0",
     "System.Data.Common": "4.1.0",
+    "System.Data.SqlClient": "4.1.0",
     "System.Runtime": "4.1.0",
     "System.Runtime.Serialization.Formatters": "4.0.0-rc3-24212-01",
     "System.Runtime.Serialization.Json": "4.0.2",

@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 
@@ -50,11 +51,22 @@ namespace DataCloner.Core.Data
 
         protected QueryHelperBase(AppMetadata metadata, string providerName, string connectionString)
         {
-            var factory = DbProviderFactories.GetFactory(providerName);
+            DbProviderFactory factory;
+            //var factory = DbProviderFactories.GetFactory(providerName);
+            switch (providerName)
+            {
+                case QueryHelperMsSql.ProviderName:
+                    factory = SqlClientFactory.Instance;
+                    break;
+                default:
+                    throw new Exception("Provider not supported");
+            }
+
             _metadata = metadata;
             Connection = factory.CreateConnection();
             Connection.ConnectionString = connectionString;
         }
+
 
         public string[] GetDatabasesName()
         {
