@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 
 namespace DataCloner.Core.Configuration
 {
-    [Serializable]
+    [DataContract]
     public static class BehaviourExtension
     {
         /// <summary>
@@ -86,7 +87,8 @@ namespace DataCloner.Core.Configuration
 
                 //Pass 1 : Search inside the behaviour
                 allDb.AddRange(behaviour.Modifiers.DatabaseModifiers);
-                behaviour.Modifiers.ServerModifiers.ForEach(s => allDb.AddRange(s.Databases));
+                foreach (var s in behaviour.Modifiers.ServerModifiers)
+                    allDb.AddRange(s.Databases);
 
                 var db = allDb.FirstOrDefault(d => d.TemplateId == dbToMerge.BasedOn);
                 if (db == null)
@@ -94,7 +96,8 @@ namespace DataCloner.Core.Configuration
                     //Pass 2 : Search inside the templates
                     allDb.Clear();
                     allDb.AddRange(templates.DatabaseModifiers);
-                    templates.ServerModifiers.ForEach(s => allDb.AddRange(s.Databases));
+                    foreach (var s in templates.ServerModifiers)
+                        allDb.AddRange(s.Databases);
                 }
                 db = allDb.First(d => d.TemplateId == dbToMerge.BasedOn);
 
@@ -131,7 +134,9 @@ namespace DataCloner.Core.Configuration
 
                 //Pass 1 : Search inside the behaviour
                 allSchema.AddRange(behaviour.Modifiers.SchemaModifiers);
-                behaviour.Modifiers.ServerModifiers.ForEach(s => s.Databases.ForEach(d => allSchema.AddRange(d.Schemas)));
+                foreach (var s in  behaviour.Modifiers.ServerModifiers)
+                    foreach (var d in s.Databases)
+                        allSchema.AddRange(d.Schemas);
 
                 var sch = allSchema.First(d => d.TemplateId == schemaToMerge.BasedOn);
                 if (sch == null)
@@ -139,7 +144,9 @@ namespace DataCloner.Core.Configuration
                     //Pass 2 : Search inside the templates
                     allSchema.Clear();
                     allSchema.AddRange(templates.SchemaModifiers);
-                    templates.ServerModifiers.ForEach(s => s.Databases.ForEach(d => allSchema.AddRange(d.Schemas)));
+                    foreach (var s in templates.ServerModifiers)
+                        foreach (var d in s.Databases)
+                            allSchema.AddRange(d.Schemas);
                 }
                 sch = allSchema.First(d => d.TemplateId == schemaToMerge.BasedOn);
 

@@ -105,7 +105,7 @@ namespace DataCloner.Core
                 metadata.Add(srv, MetadataContainer.Metadatas.First(s => s.Key == srv).Value);
             }
 
-            return new Query(metadata, _executionPlanByServer, conns, Query.CURRENT_FORMAT_VERSION);
+            return new Query(metadata, _executionPlanByServer, new HashSet<SqlConnection>(conns), Query.CURRENT_FORMAT_VERSION);
         }
 
         #endregion

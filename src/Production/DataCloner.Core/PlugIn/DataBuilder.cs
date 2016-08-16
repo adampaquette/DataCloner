@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using DataCloner.Core.Data;
 using DataCloner.Core.Metadata;
-using DataCloner.Core.Framework;
 
 namespace DataCloner.Core.PlugIn
 {
@@ -41,7 +40,7 @@ namespace DataCloner.Core.PlugIn
                 if (!CachedBuilders.ContainsKey(col.BuilderName))
                 {
                     var t = Type.GetType(col.BuilderName);
-                    builder = FastActivator.CreateInstance(t) as IDataBuilder;
+                    builder = Activator.CreateInstance(t) as IDataBuilder;
                     CachedBuilders.Add(col.BuilderName, builder);
                 }
                 else

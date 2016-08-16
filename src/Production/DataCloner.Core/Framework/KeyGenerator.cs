@@ -2,6 +2,7 @@
 using System.Text;
 using System;
 
+
 namespace DataCloner.Core.Framework
 {
     public class KeyGenerator
@@ -12,12 +13,13 @@ namespace DataCloner.Core.Framework
         {
             if (maxSize < 1) throw new ArgumentException("Max size must be positive");
 
+
             var data = new byte[1];
-            using (var crypto = new RNGCryptoServiceProvider())
+            using (var crypto = RandomNumberGenerator.Create())
             {
-                crypto.GetNonZeroBytes(data);
+                crypto.GetBytes(data);
                 data = new byte[maxSize];
-                crypto.GetNonZeroBytes(data);
+                crypto.GetBytes(data);
             }
             var result = new StringBuilder(maxSize);
             foreach (var b in data)

@@ -2,7 +2,8 @@
 using DataCloner.Core.Metadata;
 using System;
 using System.Collections.Generic;
-using System.Runtime.Serialization.Formatters.Binary;
+using System.IO;
+using System.Runtime.Serialization;
 
 namespace DataCloner.Core.Framework
 {
@@ -10,7 +11,6 @@ namespace DataCloner.Core.Framework
     {
         private static FastAccessList<Type> _tagToType = null;
         private static Dictionary<Type, int> _typeToTag = null;
-        private static BinaryFormatter _bf = null;
 
         public static FastAccessList<Type> TagToType
         {
@@ -81,14 +81,16 @@ namespace DataCloner.Core.Framework
             }
         }
 
-        public static BinaryFormatter DefaultFormatter
+        public static void Serialize<T>(Stream output, T obj)
         {
-            get
-            {
-                if (_bf == null)
-                    _bf = new BinaryFormatter();
-                return _bf;
-            }
+            var xs = new DataContractSerializer(obj.GetType());
+            xs.WriteObject(output, obj);
+        }
+
+        public static T Deserialize<T>(Stream input)
+        {
+            var xs = new DataContractSerializer(typeof(T));
+            return (T)xs.ReadObject(input);
         }
     }
 }

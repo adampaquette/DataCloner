@@ -1,23 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.Serialization;
 using System.Xml;
 using System.Xml.Serialization;
+using DataCloner.Core.Framework;
 
 namespace DataCloner.Core.Configuration
 {
-    [Serializable]
-    [XmlRoot("Project")]
+    [DataContract]
+    //TODO :[XmlRoot("Project")]
     public class ProjectContainer
     {
-        [XmlAttribute]
+        [DataMember]
         public string ToolsVersion { get; set; }
-        [XmlAttribute]
+        [DataMember]
         public string Name { get; set; }
-        [XmlArrayItem("Add")]
+        //TODO :[XmlArrayItem("Add")]
         public List<Connection> ConnectionStrings { get; set; }
         public Modifiers Templates { get; set; }
-        [XmlArrayItem("Behaviour")]
+        //TODO :[XmlArrayItem("Behaviour")]
         public List<Behaviour> Behaviours { get; set; }
         public List<Map> Maps { get; set; }
 
@@ -31,31 +33,12 @@ namespace DataCloner.Core.Configuration
 
         public void Save(string path)
         {
-            var fs = new FileStream(path, FileMode.Create);
-            var ser = new XmlSerializer(GetType());
-            var tw = new XmlTextWriter(fs, System.Text.Encoding.UTF8)
-            {
-                Formatting = Formatting.Indented,
-                Indentation = 4
-            };
-
-            var ns = new XmlSerializerNamespaces();
-            ns.Add("", "");
-            
-            ser.Serialize(tw, this, ns);
-
-            fs.Close();
+            this.SaveXml(path);
         }
 
         public static ProjectContainer Load(string path)
         {
-            var xs = new XmlSerializer(typeof(ProjectContainer));
-            if (!File.Exists(path)) return null;
-            var fs = new FileStream(path, FileMode.Open);
-            var cReturn = (ProjectContainer)xs.Deserialize(fs);
-            fs.Close();
-            //cReturn.Validate();
-            return cReturn;
-        }       
+            return Extensions.LoadXml<ProjectContainer>(path);
+        }
     }
 }

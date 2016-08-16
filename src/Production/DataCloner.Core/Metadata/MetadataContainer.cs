@@ -1,7 +1,6 @@
 ﻿using DataCloner.Core.Configuration;
 using DataCloner.Core.Data;
 using DataCloner.Core.Framework;
-using Murmur;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -53,8 +52,7 @@ namespace DataCloner.Core.Metadata
             //Hash the selected map, connnectionStrings and the cloner 
             //configuration to see if it match the lasted builded container
             var configData = new MemoryStream();
-            var bf = SerializationHelper.DefaultFormatter;
-            bf.Serialize(configData, project.ConnectionStrings);
+            SerializationHelper.Serialize(configData, project.ConnectionStrings);
 
             if (settings.MapId.HasValue)
             {
@@ -62,7 +60,7 @@ namespace DataCloner.Core.Metadata
                 if (map == null)
                     throw new Exception($"Map id '{settings.MapId}' not found in configuration file for application '{project.Name}'!");
                 containerFileName += map.From + "-" + map.To;
-                bf.Serialize(configData, map);
+                SerializationHelper.Serialize(configData, map);
 
                 if (map.UsableBehaviours != null && map.UsableBehaviours.Split(',').ToList().Contains(settings.BehaviourId.ToString()))
                 {
@@ -71,8 +69,8 @@ namespace DataCloner.Core.Metadata
                         throw new KeyNotFoundException(
                             $"There is no behaviour '{settings.BehaviourId}' in the configuration for the appName name '{project.Name}'.");
 
-                    bf.Serialize(configData, clonerBehaviour);
-                    bf.Serialize(configData, project.Templates);
+                    SerializationHelper.Serialize(configData, clonerBehaviour);
+                    SerializationHelper.Serialize(configData, project.Templates);
                 }
             }
             else
@@ -84,8 +82,9 @@ namespace DataCloner.Core.Metadata
 
             //Hash user config
             configData.Position = 0;
-            var murmur = MurmurHash.Create32(managed: false);
-            var configHash = Encoding.Default.GetString(murmur.ComputeHash(configData));
+            //var murmur = MurmurHash.Create32(managed: false);
+            //var configHash = Encoding.UTF8.GetString(murmur.ComputeHash(configData));
+            var configHash = container.ConfigFileHash + "random";
 
             //If in-memory container is good, we use it
             if (container != null && container.ConfigFileHash == configHash)
@@ -126,12 +125,12 @@ namespace DataCloner.Core.Metadata
 
             //Hash the connnectionStrings to see if it match the last build
             var configData = new MemoryStream();
-            var bf = SerializationHelper.DefaultFormatter;
-            bf.Serialize(configData, proj.ConnectionStrings);
+            SerializationHelper.Serialize(configData, proj.ConnectionStrings);
             configData.Position = 0;
 
-            HashAlgorithm murmur = MurmurHash.Create32(managed: false);
-            var configHash = Encoding.Default.GetString(murmur.ComputeHash(configData));
+            //HashAlgorithm murmur = MurmurHash.Create32(managed: false);
+            //var configHash = Encoding.UTF8.GetString(murmur.ComputeHash(configData));
+            var configHash = container.ConfigFileHash + "random";
 
             //If in-memory container is good, we use it
             if (container != null && container.ConfigFileHash == configHash)
@@ -181,9 +180,10 @@ namespace DataCloner.Core.Metadata
 
         public void Save(string path)
         {
-            var fs = new FileStream(path, FileMode.Create);
-            Serialize(fs);
-            fs.Close();
+            using (var fs = new FileStream(path, FileMode.Create))
+            {
+                Serialize(fs);
+            }
         }
 
         public static MetadataContainer Deserialize(BinaryReader input, FastAccessList<object> referenceTracking = null)

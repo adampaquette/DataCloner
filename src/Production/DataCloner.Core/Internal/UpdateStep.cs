@@ -10,18 +10,15 @@ namespace DataCloner.Core.Internal
 
         public void Serialize(BinaryWriter output)
         {
-            var bf = SerializationHelper.DefaultFormatter;
-
             output.Write(StepId);
             DestinationTable.Serialize(output);
             DestinationRow.Serialize(output);
-            bf.Serialize(output.BaseStream, ForeignKey);
+            SerializationHelper.Serialize(output.BaseStream, ForeignKey);
         }
 
         public static UpdateStep Deserialize(BinaryReader input)
         {
             var step = new UpdateStep();
-            var bf = SerializationHelper.DefaultFormatter;
 
             step.StepId = input.ReadInt32();
             step.DestinationTable = TableIdentifier.Deserialize(input);

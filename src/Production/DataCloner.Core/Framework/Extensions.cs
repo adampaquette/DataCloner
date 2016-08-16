@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Xml.Serialization;
 
 namespace DataCloner.Core.Framework
@@ -57,41 +58,45 @@ namespace DataCloner.Core.Framework
 
         public static string SerializeXml<T>(this T obj)
         {
-            var xs = new XmlSerializer(obj.GetType());
-            var sw = new StringWriter();
-            var ns = new XmlSerializerNamespaces();
-            ns.Add("", "");
-
-            xs.Serialize(sw, obj, ns);
-            return sw.ToString();
+            var xs = new DataContractSerializer(obj.GetType());
+            using (var ms = new MemoryStream())
+            using (var sr = new StreamReader(ms))
+            {
+                xs.WriteObject(ms, obj);
+                ms.Position = 0;
+                return sr.ReadToEnd();
+            }
         }
 
         public static T DeserializeXml<T>(this string str)
         {
-            var xs = new XmlSerializer(typeof (T));
-            var sr = new StringReader(str);
-            return (T) xs.Deserialize(sr);
+            var xs = new DataContractSerializer(typeof(T));
+            using (var ms = new MemoryStream())
+            using (var sw = new StreamWriter(ms))
+            {
+                sw.Write(str);
+                ms.Position = 0;
+                return (T)xs.ReadObject(ms);
+            }
         }
 
         public static void SaveXml<T>(this T obj, string path)
         {
-            var xs = new XmlSerializer(obj.GetType());
-            var fs = new FileStream(path, FileMode.Create);
-            var ns = new XmlSerializerNamespaces();
-            ns.Add("", "");
-
-            xs.Serialize(fs, obj, ns);
-            fs.Close();
+            var xs = new DataContractSerializer(obj.GetType());
+            using (var fs = new FileStream(path, FileMode.Create))
+            {
+                xs.WriteObject(fs, obj);
+            }
         }
 
         public static T LoadXml<T>(string path)
         {
-            var xs = new XmlSerializer(typeof (T));
+            var xs = new DataContractSerializer(typeof (T));
             if (!File.Exists(path)) return default(T);
-            var fs = new FileStream(path, FileMode.Open);
-            var cReturn = (T) xs.Deserialize(fs);
-            fs.Close();
-            return cReturn;
+            using (var fs = new FileStream(path, FileMode.Open))
+            {
+                return (T)xs.ReadObject(fs);
+            };
         }
 
         public static int IndexOf<T>(this IEnumerable<T> list, Predicate<T> condition)

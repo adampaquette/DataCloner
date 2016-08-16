@@ -23,8 +23,6 @@ namespace DataCloner.Core.Internal
 
         public void Serialize(BinaryWriter output, FastAccessList<object> referenceTracking)
         {
-            var bf = SerializationHelper.DefaultFormatter;
-
             output.Write(StepId);
             output.Write(Depth);
             SourceTable.Serialize(output);
@@ -57,13 +55,12 @@ namespace DataCloner.Core.Internal
                     output.Write(svId);
                 }
                 else
-                    bf.Serialize(output.BaseStream, data);
+                    SerializationHelper.Serialize(output.BaseStream, data);
             }
         }
 
         public static InsertStep Deserialize(BinaryReader input, FastAccessList<object> referenceTracking)
         {
-            var bf = SerializationHelper.DefaultFormatter;
             var step = new InsertStep();
 
             step.StepId = input.ReadInt32();
@@ -97,7 +94,7 @@ namespace DataCloner.Core.Internal
                     step.Datarow[i] = referenceTracking[id];
                 }
                 else
-                    step.Datarow[i] = bf.Deserialize(input.BaseStream);
+                    step.Datarow[i] = SerializationHelper.Deserialize<Object>(input.BaseStream);
             }
 
             return step;

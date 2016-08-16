@@ -2,10 +2,9 @@
 using DataCloner.Core.Framework;
 using DataCloner.Core.Internal;
 using DataCloner.Core.Metadata;
-using LZ4;
+//using LZ4;
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.IO;
 using System.IO.Compression;
 using System.Text;
@@ -20,7 +19,7 @@ namespace DataCloner.Core
         private IQueryDispatcher _dispatcher;
         private AppMetadata _metadata;
         private ExecutionPlanByServer _executionPlanByServer;
-        private ImmutableHashSet<SqlConnection> _connections;
+        private HashSet<SqlConnection> _connections;
         private int _formatVersion;
 
         public int FormatVersion
@@ -29,19 +28,19 @@ namespace DataCloner.Core
             set { _formatVersion = value; }
         }
         public string Description { get; set; }
-        public ImmutableHashSet<SqlConnection> Connections => _connections; 
+        public HashSet<SqlConnection> Connections => _connections; 
         public bool EnforceIntegrity { get; set; }
 
         public event QueryCommitingEventHandler Commiting;
 
         internal Query(AppMetadata metadata,
             ExecutionPlanByServer executionPlanByServer,
-            IEnumerable<SqlConnection> connections, 
+            HashSet<SqlConnection> connections, 
             int formatVersion)
         {
             _metadata = metadata;
             _executionPlanByServer = executionPlanByServer;
-            _connections = connections.ToImmutableHashSet();
+            _connections = connections;
             _dispatcher = new QueryDispatcher();
             _dispatcher.InitProviders(metadata, connections);
             FormatVersion = formatVersion;
@@ -86,15 +85,25 @@ namespace DataCloner.Core
             _executionPlanByServer.Serialize(refStream, referenceTracking);
             _metadata.Serialize(refStream, referenceTracking);
 
+            ////Compression
+            //using (var lzStream = new LZ4Stream(ostream, LZ4StreamMode.Compress))
+            //using (var bstream = new BinaryWriter(lzStream, Encoding.UTF8, true))
+            //{
+            //    bstream.Write(FormatVersion);
+            //    bstream.Write(Description ?? "");
+            //    SerializeReferenceTracking(bstream, referenceTracking);
+            //    SerializeConnections(bstream, _connections);
+            //    refStream.WriteTo(lzStream);
+            //}
+
             //Compression
-            using (var lzStream = new LZ4Stream(ostream, CompressionMode.Compress))
-            using (var bstream = new BinaryWriter(lzStream, Encoding.UTF8, true))
+            using (var bstream = new BinaryWriter(ostream, Encoding.UTF8, true))
             {
                 bstream.Write(FormatVersion);
                 bstream.Write(Description ?? "");
                 SerializeReferenceTracking(bstream, referenceTracking);
                 SerializeConnections(bstream, _connections);
-                refStream.WriteTo(lzStream);
+                refStream.WriteTo(ostream);
             }
         }
 
@@ -105,14 +114,25 @@ namespace DataCloner.Core
 
             int formatVersion;
             string description;
-            ImmutableHashSet<SqlConnection> connections;
+            HashSet<SqlConnection> connections;
             AppMetadata metadata;
             ExecutionPlanByServer executionPlanByServer;
             FastAccessList<object> referenceTracking;
 
+            //using (var istream = new FileStream(path, FileMode.Open))
+            //using (var lzstream = new LZ4Stream(istream, CompressionMode.Decompress))
+            //using (var bstream = new BinaryReader(lzstream, Encoding.UTF8, true))
+            //{
+            //    formatVersion = bstream.ReadInt32();
+            //    description = bstream.ReadString();
+            //    referenceTracking = DeserializeReferenceTracking(bstream);
+            //    connections = DeserializeConnections(bstream);
+            //    executionPlanByServer = ExecutionPlanByServer.Deserialize(bstream, referenceTracking);
+            //    metadata = AppMetadata.Deserialize(bstream, referenceTracking);
+            //}
+
             using (var istream = new FileStream(path, FileMode.Open))
-            using (var lzstream = new LZ4Stream(istream, CompressionMode.Decompress))
-            using (var bstream = new BinaryReader(lzstream, Encoding.UTF8, true))
+            using (var bstream = new BinaryReader(istream, Encoding.UTF8, true))
             {
                 formatVersion = bstream.ReadInt32();
                 description = bstream.ReadString();
@@ -130,8 +150,6 @@ namespace DataCloner.Core
 
         private static void SerializeReferenceTracking(BinaryWriter output, FastAccessList<object> referenceTracking)
         {
-            var bf = SerializationHelper.DefaultFormatter;
-
             output.Write(referenceTracking.Length);
             for (int i = 0; i < referenceTracking.Length; i++)
             {
@@ -145,13 +163,12 @@ namespace DataCloner.Core
                 else if (type == typeof(TableMetadata))
                     ((TableMetadata)data).Serialize(output);
                 else
-                    bf.Serialize(output.BaseStream, data);
+                    SerializationHelper.Serialize(output.BaseStream, data);
             }
         }
 
         private static FastAccessList<object> DeserializeReferenceTracking(BinaryReader input)
         {
-            var bf = SerializationHelper.DefaultFormatter;
             var referenceTracking = new FastAccessList<object>();
 
             var nbRef = input.ReadInt32();
@@ -165,26 +182,26 @@ namespace DataCloner.Core
                 else if (type == typeof(TableMetadata))
                     referenceTracking.Add(TableMetadata.Deserialize(input));
                 else
-                    referenceTracking.Add(bf.Deserialize(input.BaseStream));
+                    referenceTracking.Add(SerializationHelper.Deserialize<Object>(input.BaseStream));
             }
 
             return referenceTracking;
         }
 
-        private static void SerializeConnections(BinaryWriter output, ImmutableHashSet<SqlConnection> conns)
+        private static void SerializeConnections(BinaryWriter output, HashSet<SqlConnection> conns)
         {
             output.Write(conns.Count);
             foreach (var con in conns)
                 con.Serialize(output);
         }
 
-        private static ImmutableHashSet<SqlConnection> DeserializeConnections(BinaryReader input)
+        private static HashSet<SqlConnection> DeserializeConnections(BinaryReader input)
         {
             var lstConns = new List<SqlConnection>();
             var nbCons = input.ReadInt32();
             for (int i = 0; i < nbCons; i++)
                 lstConns.Add(SqlConnection.Deserialize(input));
-            return lstConns.ToImmutableHashSet();
+            return new HashSet<SqlConnection>(lstConns);
         }
 
         /// <summary>

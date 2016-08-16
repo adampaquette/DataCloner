@@ -1,0 +1,23 @@
+﻿{
+  "supports": {
+    "net46.app": {},
+    "uwp.10.0.app": {}
+  },
+  "dependencies": {
+    "fasteractivator": "1.0.0.2",
+    "Microsoft.NETCore.Portable.Compatibility": "1.0.1",
+    "NETStandard.Library": "1.6.0",
+    "System.Collections.Immutable": "1.2.0",
+    "System.Data.Common": "4.1.0",
+    "System.Runtime": "4.1.0",
+    "System.Runtime.Serialization.Formatters": "4.0.0-rc3-24212-01",
+    "System.Runtime.Serialization.Json": "4.0.2",
+    "System.Runtime.Serialization.Xml": "4.1.1",
+    "System.Security.Cryptography.Algorithms": "4.2.0",
+    "System.Security.Cryptography.Primitives": "4.0.0",
+    "System.Threading.Tasks.Parallel": "4.0.1"
+  },
+  "frameworks": {
+    ".NETStandard1.3": {}
+  }
+}

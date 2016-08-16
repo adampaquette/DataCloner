@@ -1,18 +1,19 @@
 ﻿using System;
+using System.Runtime.Serialization;
 using System.Xml.Serialization;
 
 namespace DataCloner.Core.Configuration
 {
-    [Serializable]
+    [DataContract]
     public class Behaviour
     {
-        [XmlAttribute]
+        [DataMember]
         public Int16 Id { get; set; }
 
-        [XmlAttribute]
+        [DataMember]
         public string Name { get; set; }
 
-        [XmlAttribute]
+        [DataMember]
         public string Description { get; set; }
 
         public Modifiers Modifiers { get; set; }

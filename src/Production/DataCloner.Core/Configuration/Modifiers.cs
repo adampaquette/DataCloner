@@ -1,17 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using System.Xml.Serialization;
 
 namespace DataCloner.Core.Configuration
 {
-    [Serializable]
+    [DataContract]
     public class Modifiers
     {
-        [XmlElement("Server")]
+        //TODO : [XmlElement("Server")]
         public List<ServerModifier> ServerModifiers { get; set; }
-        [XmlElement("Database")]
+        //TODO :[XmlElement("Database")]
         public List<DatabaseModifier> DatabaseModifiers { get; set; }
-        [XmlElement("Schema")]
+        //TODO :[XmlElement("Schema")]
         public List<SchemaModifier> SchemaModifiers { get; set; }
 
         public Modifiers()
@@ -22,18 +23,18 @@ namespace DataCloner.Core.Configuration
         }
     }
 
-    [Serializable]
+    [DataContract]
     public class ServerModifier
     {
-        [XmlAttribute]
+        [DataMember]
         public string Id { get; set; }
-        [XmlAttribute]
+        [DataMember]
         public string Description { get; set; }
-        [XmlAttribute]
+        [DataMember]
         public Int16 TemplateId { get; set; }
-        [XmlAttribute]
+        [DataMember]
         public Int16 BasedOn { get; set; }
-        [XmlElement("Database")]
+        //TODO :[XmlElement("Database")]
         public List<DatabaseModifier> Databases { get; set; }
 
         public ServerModifier()
@@ -42,18 +43,18 @@ namespace DataCloner.Core.Configuration
         }
     }
 
-    [Serializable]
+    [DataContract]
     public class DatabaseModifier
     {
-        [XmlAttribute]
+        [DataMember]
         public string Name { get; set; }
-        [XmlAttribute]
+        [DataMember]
         public string Description { get; set; }
-        [XmlAttribute]
+        [DataMember]
         public Int16 TemplateId { get; set; }
-        [XmlAttribute]
+        [DataMember]
         public Int16 BasedOn { get; set; }
-        [XmlElement("Schema")]
+        //TODO :[XmlElement("Schema")]
         public List<SchemaModifier> Schemas { get; set; }
 
         public DatabaseModifier()
@@ -62,18 +63,18 @@ namespace DataCloner.Core.Configuration
         }
     }
 
-    [Serializable]
+    [DataContract]
     public class SchemaModifier
     {
-        [XmlAttribute]
+        [DataMember]
         public string Name { get; set; }
-        [XmlAttribute]
+        [DataMember]
         public string Description { get; set; }
-        [XmlAttribute]
+        [DataMember]
         public Int16 TemplateId { get; set; }
-        [XmlAttribute]
+        [DataMember]
         public Int16 BasedOn { get; set; }
-        [XmlElement("Table")]
+        //TODO :[XmlElement("Table")]
         public List<TableModifier> Tables { get; set; }
 
         public SchemaModifier()
@@ -82,15 +83,15 @@ namespace DataCloner.Core.Configuration
         }
     }
 
-    [Serializable]
+    [DataContract]
     public class TableModifier
     {
-        [XmlAttribute]
+        [DataMember]
         public string Name { get; set; }
-        [XmlAttribute]
+        [DataMember]
         public bool IsStatic { get; set; }
         public DerativeTable DerativeTables { get; set; }
-        [XmlArrayItem("Column")]
+        //TODO :[XmlArrayItem("Column")]
         public List<DataBuilder> DataBuilders { get; set; }
         public ForeignKeys ForeignKeys { get; set; }
 
@@ -102,23 +103,23 @@ namespace DataCloner.Core.Configuration
         }
     }
 
-    [Serializable]
+    [DataContract]
     public class DataBuilder
     {
-        [XmlAttribute]
+        [DataMember]
         public string Name { get; set; }
-        [XmlAttribute]
+        [DataMember]
         public string BuilderName { get; set; }
     }
 
-    [Serializable]
+    [DataContract]
     public class DerativeTable
     {
-        [XmlAttribute]
+        [DataMember]
         public DerivativeTableAccess GlobalAccess { get; set; }
-        [XmlAttribute]
+        [DataMember]
         public bool GlobalCascade { get; set; }
-        [XmlElement("Table")]
+        //TODO :[XmlElement("Table")]
         public List<DerivativeSubTable> DerativeSubTables { get; set; }
 
         public DerativeTable()
@@ -127,29 +128,29 @@ namespace DataCloner.Core.Configuration
         }
     }
 
-    [Serializable]
+    [DataContract]
     public class DerivativeSubTable
     {
-        [XmlAttribute]
+        [DataMember]
         public string ServerId { get; set; }
-        [XmlAttribute]
+        [DataMember]
         public string Database { get; set; }
-        [XmlAttribute]
+        [DataMember]
         public string Schema { get; set; }
-        [XmlAttribute]
+        [DataMember]
         public string Table { get; set; }
-        [XmlAttribute]
+        [DataMember]
         public DerivativeTableAccess Access { get; set; }
-        [XmlAttribute]
+        [DataMember]
         public bool Cascade { get; set; }
     }
 
-    [Serializable]
+    [DataContract]
     public class ForeignKeys
     {
-        [XmlElement("Add")]
+        //TODO :[XmlElement("Add")]
         public List<ForeignKeyAdd> ForeignKeyAdd { get; set; }
-        [XmlElement("Remove")]
+        //TODO :[XmlElement("Remove")]
         public ForeignKeyRemove ForeignKeyRemove { get; set; }
 
         public ForeignKeys()
@@ -159,19 +160,19 @@ namespace DataCloner.Core.Configuration
         }
     }
 
-    [Serializable]
+    [DataContract]
     public class ForeignKeyAdd
     {
-        [XmlAttribute]
+        [DataMember]
         public string ServerId { get; set; }
-        [XmlAttribute]
+        [DataMember]
         public string Database { get; set; }
-        [XmlAttribute]
+        [DataMember]
         public string Schema { get; set; }
-        [XmlAttribute]
+        [DataMember]
         public string Table { get; set; }
 
-        [XmlElement("Column")]
+        //TODO :[XmlElement("Column")]
         public List<ForeignKeyColumn> Columns { get; set; }
 
         public ForeignKeyAdd()
@@ -180,19 +181,19 @@ namespace DataCloner.Core.Configuration
         }
     }
 
-    [Serializable]
+    [DataContract]
     public class ForeignKeyColumn
     {
-        [XmlAttribute]
+        [DataMember]
         public string NameFrom { get; set; }
-        [XmlAttribute]
+        [DataMember]
         public string NameTo { get; set; }
     }
 
-    [Serializable]
+    [DataContract]
     public class ForeignKeyRemove
     {
-        [XmlElement("Column")]
+        //TODO :[XmlElement("Column")]
         public List<ForeignKeyRemoveColumn> Columns { get; set; }
 
         public ForeignKeyRemove()
@@ -201,10 +202,10 @@ namespace DataCloner.Core.Configuration
         }        
     }
 
-    [Serializable]
+    [DataContract]
     public class ForeignKeyRemoveColumn
     {
-        [XmlAttribute]
+        [DataMember]
         public string Name { get; set; }
     }
 }

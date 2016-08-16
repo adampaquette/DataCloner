@@ -1,23 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using System.Xml.Serialization;
 
 namespace DataCloner.Core.Configuration
 {
-    [Serializable]
+    [DataContract]
     public class Map
     {
-        [XmlAttribute]
+        [DataMember]
         public int Id { get; set; }
-        [XmlAttribute]
+        [DataMember]
         public string From { get; set; }
-        [XmlAttribute]
+        [DataMember]
         public string To { get; set; }
-        [XmlAttribute]
+        [DataMember]
         public string UsableBehaviours { get; set; }
-        [XmlArrayItem("Var")]
+        //TODO : [XmlArrayItem("Var")]
         public List<Variable> Variables { get; set; }
-        [XmlElement("Road")]
+        //TODO : [XmlElement("Road")]
         public List<Road> Roads { get; set; }
 
         public Map()
@@ -27,29 +28,29 @@ namespace DataCloner.Core.Configuration
         }
     }
 
-    [Serializable]
+    [DataContract]
     public class Road
     {
-        [XmlAttribute]
+        [DataMember]
         public string ServerSrc { get; set; }
-        [XmlAttribute]
+        [DataMember]
         public string DatabaseSrc { get; set; }
-        [XmlAttribute]
+        [DataMember]
         public string SchemaSrc { get; set; }
-        [XmlAttribute]
+        [DataMember]
         public string ServerDst { get; set; }
-        [XmlAttribute]
+        [DataMember]
         public string DatabaseDst { get; set; }
-        [XmlAttribute]
+        [DataMember]
         public string SchemaDst { get; set; }
     }
 
-    [Serializable]
+    [DataContract]
     public class Variable
     {
-        [XmlAttribute]
+        [DataMember]
         public string Name { get; set; }
-        [XmlAttribute]
+        [DataMember]
         public string Value { get; set; }
     }
 }

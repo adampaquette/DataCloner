@@ -40,19 +40,17 @@ namespace DataCloner.Core.Internal
 
         public void Serialize(BinaryWriter output)
         {
-            var bf = SerializationHelper.DefaultFormatter;
             output.Write(Id);
             output.Write(QueryValue);
-            bf.Serialize(output.BaseStream, Value);
+            SerializationHelper.Serialize(output.BaseStream, Value);
         }
 
         public static SqlVariable Deserialize(BinaryReader input)
         {
-            var bf = SerializationHelper.DefaultFormatter;
             return new SqlVariable(input.ReadInt32())
             {
                 QueryValue = input.ReadBoolean(),
-                Value = bf.Deserialize(input.BaseStream)
+                Value = SerializationHelper.Deserialize<Object>(input.BaseStream)
             };
         }
     }

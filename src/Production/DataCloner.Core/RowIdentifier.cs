@@ -65,7 +65,6 @@ namespace DataCloner.Core
 
         public new void Serialize(BinaryWriter output)
         {
-            var bf = SerializationHelper.DefaultFormatter;
             base.Serialize(output);
             Columns.Serialize(output);            
         }
