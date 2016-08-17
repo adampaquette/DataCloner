@@ -5,6 +5,7 @@ using System.Runtime.Serialization;
 using System.Xml;
 using System.Xml.Serialization;
 using DataCloner.Core.Framework;
+using System.Threading.Tasks;
 
 namespace DataCloner.Core.Configuration
 {
@@ -36,9 +37,9 @@ namespace DataCloner.Core.Configuration
             this.SaveXml(path);
         }
 
-        public static ProjectContainer Load(string path)
+        public static async Task<ProjectContainer> LoadAsync(string path)
         {
-            return Extensions.LoadXml<ProjectContainer>(path);
+            return await Extensions.LoadXmlAsync<ProjectContainer>(path).ConfigureAwait(false);
         }
     }
 }

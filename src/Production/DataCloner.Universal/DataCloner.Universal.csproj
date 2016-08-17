@@ -89,7 +89,9 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
-    <None Include="northWind.dcproj" />
+    <None Include="northWind.dcproj">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="project.json" />
     <PRIResource Include="Strings\fr\Resources.resw" />
   </ItemGroup>
@@ -210,6 +212,12 @@
   <ItemGroup>
     <Folder Include="Models\" />
     <Folder Include="Services\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DataCloner.Core\DataCloner.Core.csproj">
+      <Project>{b6ed07e0-8a89-49ed-90e4-9c8f1a09d75c}</Project>
+      <Name>DataCloner.Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>

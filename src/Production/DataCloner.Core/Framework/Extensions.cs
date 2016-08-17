@@ -4,6 +4,7 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
+using System.Threading.Tasks;
 using System.Xml.Serialization;
 
 namespace DataCloner.Core.Framework
@@ -89,14 +90,17 @@ namespace DataCloner.Core.Framework
             }
         }
 
-        public static T LoadXml<T>(string path)
+        public static Task<T> LoadXmlAsync<T>(string path)
         {
-            var xs = new DataContractSerializer(typeof (T));
-            if (!File.Exists(path)) return default(T);
-            using (var fs = new FileStream(path, FileMode.Open))
+            return Task.Run<T>(() =>
             {
-                return (T)xs.ReadObject(fs);
-            };
+                var xs = new DataContractSerializer(typeof(T));
+                if (!File.Exists(path)) return default(T);
+                using (var fs = new FileStream(path, FileMode.Open))
+                {
+                    return (T)xs.ReadObject(fs);
+                };
+            });
         }
 
         public static int IndexOf<T>(this IEnumerable<T> list, Predicate<T> condition)
@@ -127,7 +131,7 @@ namespace DataCloner.Core.Framework
         {
             int i;
             return Int32.TryParse(input, out i) ? (int?)i : null;
-        }      
+        }
 
         /// <summary>
         /// Build a SQL text query from a DbCommand.
