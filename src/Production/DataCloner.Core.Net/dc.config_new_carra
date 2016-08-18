@@ -22,100 +22,117 @@ Règles
 1 - Le schéma source et destination doivent être pareil.
 
 
-<Configuration>
-	<Applications>
-		<Application Id="1" Name="RISE">
-			<ConnectionStrings>
-				<Add Id="1" Name="UNI" ProviderName="MySql.Data.MySqlClient" ConnectionString="server=UNI;user Id=root; password=toor; database=master; pooling=true" />
-				<Add Id="2" Name="FON" ProviderName="System.Data.Sqlite" ConnectionString="server=FON;user Id=root; password=toor; database=master; pooling=true" />
-                <Add Id="3" Name="PROD_PGIS" ProviderName="System.Data.Oracle" ConnectionString="server=PROD_PGIS;user Id=root; password=toor; database=master; pooling=true" />
-                <Add Id="4" Name="PROD_ARIEL" ProviderName="System.Data.PosgreSql" ConnectionString="server=PROD_ARIEL;user Id=root; password=toor; database=master; pooling=true" />
-                <Add Id="5" Name="PROD_SIEBEL" ProviderName="System.Data.MsSql" ConnectionString="server=PROD_SIEBEL;user Id=root; password=toor; database=master; pooling=true" />
-			</ConnectionStrings>
-			<ModifiersTemplates>
-				<ServerModifier Id="{$SERVER_SOURCE_PGIS}" TemplateId="1">
-					<DatabaseModifier Name="PGIScbl" TemplateId="1">
-						<SchemaModifier Name="dbo" TemplateId="1">
-                            <TableModifier Name="DomaineValeur" IsStatic="true"/>
-							<TableModifier Name="Transmission" IsStatic="false">
-								<!--
-                                <DerivativeTables GlobalAccess="forced" Cascade="true">  
-									<Table serverId="{$SourceContext}" database="{$SourceContext}" schema="{$SourceContext}" table="Demande" Access="NotSet" Cascade="false"/>    
-								</DerivativeTables>
-                                -->
-								<ForeignKeys>
-									<Add ServerId="{$SERVER_SOURCE_SIEBEL}" Database="SIEBELDB" Schema="dbo" Table="S_SRV_REQ">
-										<Collumn NameFrom="NoReferenceTransmission" NameTo="SR_NUM" />
-									</Add>                
-								</ForeignKeys>
-								<DataBuilders>
-									<Collumn Name="col1" BuilderName="Client.Builder.CreatePK" />
-								</DataBuilders>
-							</TableModifier>
-                            <TableModifier Name="PropositionRachat" IsStatic="false">
-								<ForeignKeys>
-									<Add ServerId="{$SERVER_SOURCE_ARIEL}" Database="Ariel" Schema="dbo" Table="S_SRV_REQ">
-										<Collumn NameFrom="NoReferenceTransmission" NameTo="SR_NUM" />
-									</Add>                
-								</ForeignKeys>
-								<DataBuilders>
-									<Collumn Name="col1" BuilderName="Client.Builder.CreatePK" />
-								</DataBuilders>
-							</TableModifier>
-						</SchemaModifier>
-					</DatabaseModifier>
-				</ServerModifier>
-   				<ServerModifier Id="{$SERVER_SOURCE_ARIEL}" TemplateId="2">
-               		<DatabaseModifier Name="Ariel" TemplateId="2"/>
-				</ServerModifier>
-                <ServerModifier Id="{$SERVER_SOURCE_SIEBEL}" TemplateId="3">
-               		<DatabaseModifier Name="SIEBEL" TemplateId="3"/>
-				</ServerModifier>
-			</ModifiersTemplates>
-			<ClonerBehaviours>
-				<ClonerBehaviour Id="1" Name="Default" Description="Configuration par défaut">	
-					<ServerModifier UseTemplateId="1"/>
-                    <ServerModifier UseTemplateId="2"/>
-                    <ServerModifier UseTemplateId="3"/>
-				</ClonerBehaviour>
-                <ClonerBehaviour Id="2" Name="Test" Description="Tests">	
-					<ServerModifier UseTemplateId="1" />
-					<ServerModifier Id="2" UseTemplateId="1" />
-				</ClonerBehaviour>
-			</ClonerBehaviours>
-			<Maps>
-				<Map From="PROD" To="UNI" UsableBehaviours="1,2">
-					<Variables>
-                        <Var Name="{$SERVER_SOURCE_PGIS}" Value="3"/>
-                        <Var Name="{$SERVER_SOURCE_ARIEL}" Value="4"/>
-                        <Var Name="{$SERVER_SOURCE_SIEBEL}" Value="5"/>
-					</Variables>
-					<Road ServerSrc="{$SERVER_SOURCE_PGIS}" DatabaseSrc="PGIS" SchemaSrc="dbo" 
-						  ServerDst="1" DatabaseDst="PGIS" SchemaDst="dbo"/>
-					<Road ServerSrc="{$SERVER_SOURCE_ARIEL}" DatabaseSrc="Ariel" SchemaSrc="dbo" 
-						  ServerDst="1" DatabaseDst="Ariel" SchemaDst="dbo"/>
-                    <Road ServerSrc="{$SERVER_SOURCE_SIEBEL}" DatabaseSrc="SIEBELDB" SchemaSrc="dbo" 
-						  ServerDst="1" DatabaseDst="SIEBELDB" SchemaDst="dbo"/>
-				</Map>	
-				<Map From="UNI" To="PROD" UsableBehaviours="1">
-					<Variables>
-                        <Var Name="{$SERVER_SOURCE_PGIS}" Value="1"/>
-                        <Var Name="{$SERVER_SOURCE_ARIEL}" Value="1"/>
-                        <Var Name="{$SERVER_SOURCE_SIEBEL}" Value="1"/>
-					</Variables>
-					<Road ServerSrc="{$SERVER_SOURCE_PGIS}" DatabaseSrc="PGIS" SchemaSrc="dbo" 
-						  ServerDst="3" DatabaseDst="PGIS" SchemaDst="dbo"/>
-					<Road ServerSrc="{$SERVER_SOURCE_ARIEL}" DatabaseSrc="Ariel" SchemaSrc="dbo" 
-						  ServerDst="4" DatabaseDst="Ariel" SchemaDst="dbo"/>
-                    <Road ServerSrc="{$SERVER_SOURCE_SIEBEL}" DatabaseSrc="SIEBELDB" SchemaSrc="dbo" 
-						  ServerDst="5" DatabaseDst="SIEBELDB" SchemaDst="dbo"/>
-				</Map>	                
-				<Map From="File" To="" UsableBehaviours="2">
-					<Road ServerSrc="5" DatabaseSrc="PGIS" SchemaSrc="" />
-					<Road ServerSrc="5" DatabaseSrc="Ariel" SchemaSrc="" />
-				</Map>
-			</Maps>
-		</Application>
-	</Applications>
-</Configuration>
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="0.1" Name="NorthWind">
+    <ConnectionStrings>
+        <Add Id="1" Name="UNI" ProviderName="MySql.Data.MySqlClient" ConnectionString="server=UNI;user Id=root; password=toor; database=master; pooling=true" />
+        <Add Id="2" Name="FON" ProviderName="System.Data.Sqlite" ConnectionString="server=FON;user Id=root; password=toor; database=master; pooling=true" />
+        <Add Id="3" Name="PROD_PGIS" ProviderName="System.Data.Oracle" ConnectionString="server=PROD_PGIS;user Id=root; password=toor; database=master; pooling=true" />
+        <Add Id="4" Name="PROD_ARIEL" ProviderName="System.Data.PosgreSql" ConnectionString="server=PROD_ARIEL;user Id=root; password=toor; database=master; pooling=true" />
+        <Add Id="5" Name="PROD_SIEBEL" ProviderName="System.Data.MsSql" ConnectionString="server=PROD_SIEBEL;user Id=root; password=toor; database=master; pooling=true" />
+    </ConnectionStrings>
+    <Templates>
+        <Server Id="{$SERVER_SOURCE_PGIS}" DefaultServerId="1" TemplateId="1" Description="Configuration par défaut serveur PGIS">
+            <Database Name="PGIScbl" DefaultServerId="1" DefaultDatabaseName="pgiscbl" TemplateId="1" Description="Configuration par défaut base de données PGIS">
+                <Schema Name="dbo" TemplateId="1" Description="Configuration par défaut du schéma DBO de la base de données PGIS">
+                    <Table Name="DomaineValeur" IsStatic="true"/>
+                    <Table Name="Transmission" IsStatic="false">
+                        <DerivativeTables GlobalAccess="forced" Cascade="true">
+                            <Table ServerId="{$PGIS_DESTINATION_SERVER}" Database="{$PGIS_DESTINATION_DATABASE}" Schema="{$PGIS_DESTINATION_SHEMA}" Table="Demande" Access="NotSet" Cascade="false"/>
+                        </DerivativeTables>
+                        <ForeignKeys>
+                            <Add ServerId="{$SIEBEL_DESTINATION_SERVER}" Database="{$SIEBEL_DESTINATION_DATABASE}" Schema="{$SIEBEL_DESTINATION_SHEMA}" Table="S_SRV_REQ">
+                                <Collumn NameFrom="NoReferenceTransmission" NameTo="SR_NUM" />
+                            </Add>
+                        </ForeignKeys>
+                        <DataBuilders>
+                            <Collumn Name="col1" BuilderName="Client.Builder.CreatePK" />
+                        </DataBuilders>
+                    </Table>
+                    <Table Name="PropositionRachat" IsStatic="false">
+                        <ForeignKeys>
+                            <Add ServerId="{$SERVER_SOURCE_ARIEL}" Database="Ariel" Schema="dbo" Table="S_SRV_REQ">
+                                <Collumn NameFrom="NoReferenceTransmission" NameTo="SR_NUM" />
+                            </Add>
+                        </ForeignKeys>
+                        <DataBuilders>
+                            <Collumn Name="col1" BuilderName="Client.Builder.CreatePK" />
+                        </DataBuilders>
+                    </Table>
+                </Schema>
+            </Database>
+        </Server>
+        <Server Id="{$ARIEL_SOURCE_SERVER}" DefaultServerId="1" TemplateId="2">
+            <Database Name="Ariel" TemplateId="2"/>
+        </Server>
+        <Server Id="{$SIEBEL_SOURCE_SERVER}"  DefaultServerId="1" TemplateId="3">
+            <Database Name="{$SIEBEL_SOURCE_DATABASE}"  DefaultServerId="1" DefaultDatabaseName="siebel" TemplateId="3"/>
+        </Server>
+    </Templates>
+    <Behaviours>
+        <Behaviour Id="1" Name="Default" Description="Configuration par défaut">
+            <Server BasedOn="1"/>
+            <Server BasedOn="2"/>
+            <Server BasedOn="3"/>
+        </Behaviour>
+        <Behaviour Id="2" Name="Customer" Description="Duplication d'un client">
+            <Server Id="{$PGIS_SOURCE_SERVER}" TemplateId="0" BasedOn="1" />
+        </Behaviour>
+    </Behaviours>
+    <Maps>
+        <From Name="UNI" UsableBehaviours="1">
+            <Var Name="{$PGIS_SOURCE_SERVER}" Value="1"/>
+            <Var Name="{$PGIS_SOURCE_DATABASE}" Value="pgis"/>
+            <Var Name="{$PGIS_SOURCE_SCHEMA}" Value="dbo"/>
+            <Var Name="{$ARIEL_SOURCE_SERVER}" Value="1"/>
+            <Var Name="{$ARIEL_SOURCE_DATABASE}" Value="ariel"/>
+            <Var Name="{$ARIEL_SOURCE_SCHEMA}" Value="dbo"/>
+            <Var Name="{$SIEBEL_SOURCE_SERVER}" Value="1"/>
+            <Var Name="{$SIEBEL_SOURCE_DATABASE}" Value="siebel"/>
+            <Var Name="{$SIEBEL_SOURCE_SCHEMA}" Value="dbo"/>
+            
+            <To Name="UNI">
+                <Var Name="{$PGIS_DESTINATION_SERVER}" Value="1"/>
+                <Var Name="{$PGIS_DESTINATION_DATABASE}" Value="pgis"/>
+                <Var Name="{$PGIS_DESTINATION_SCHEMA}" Value="dbo"/>
+                <Var Name="{$ARIEL_DESTINATION_SERVER}" Value="1"/>
+                <Var Name="{$ARIEL_DESTINATION_DATABASE}" Value="ariel"/>
+                <Var Name="{$ARIEL_DESTINATION_SCHEMA}" Value="dbo"/>
+                <Var Name="{$SIEBEL_DESTINATION_SERVER}" Value="1"/>
+                <Var Name="{$SIEBEL_DESTINATION_DATABASE}" Value="siebel"/>
+                <Var Name="{$SIEBEL_DESTINATION_SCHEMA}" Value="dbo"/>
+            </To>
+            <To Name="FON">
+                <Var Name="{$PGIS_DESTINATION_SERVER}" Value="2"/>
+                <Var Name="{$PGIS_DESTINATION_DATABASE}" Value="pgis"/>
+                <Var Name="{$PGIS_DESTINATION_SCHEMA}" Value="dbo"/>
+                <Var Name="{$ARIEL_DESTINATION_SERVER}" Value="2"/>
+                <Var Name="{$ARIEL_DESTINATION_DATABASE}" Value="ariel"/>
+                <Var Name="{$ARIEL_DESTINATION_SCHEMA}" Value="dbo"/>
+                <Var Name="{$SIEBEL_DESTINATION_SERVER}" Value="2"/>
+                <Var Name="{$SIEBEL_DESTINATION_DATABASE}" Value="siebel"/>
+                <Var Name="{$SIEBEL_DESTINATION_SCHEMA}" Value="dbo"/>
+            </To>
+            <To Name="PROD">
+                <Var Name="{$PGIS_DESTINATION_SERVER}" Value="3"/>
+                <Var Name="{$PGIS_DESTINATION_DATABASE}" Value="pgis"/>
+                <Var Name="{$PGIS_DESTINATION_SCHEMA}" Value="dbo"/>
+                <Var Name="{$ARIEL_DESTINATION_SERVER}" Value="4"/>
+                <Var Name="{$ARIEL_DESTINATION_DATABASE}" Value="ariel"/>
+                <Var Name="{$ARIEL_DESTINATION_SCHEMA}" Value="dbo"/>
+                <Var Name="{$SIEBEL_DESTINATION_SERVER}" Value="5"/>
+                <Var Name="{$SIEBEL_DESTINATION_DATABASE}" Value="siebel"/>
+                <Var Name="{$SIEBEL_DESTINATION_SCHEMA}" Value="dbo"/>
+            </To>
+            <Road ServerSrc="{$PGIS_SOURCE_SERVER}" DatabaseSrc="{$PGIS_SOURCE_DATABASE}" SchemaSrc="{$PGIS_SOURCE_SCHEMA}"
+                  ServerDst="{$PGIS_DESTINATION_SERVER}" DatabaseDst="{$PGIS_DESTINATION_DATABASE}" SchemaDst="{$PGIS_DESTINATION_SCHEMA}"/>
+           
+            <Road ServerSrc="{$ARIEL_SOURCE_SERVER}" DatabaseSrc="{$ARIEL_SOURCE_DATABASE}" SchemaSrc="{$ARIEL_SOURCE_SCHEMA}"
+                  ServerDst="{$ARIEL_DESTINATION_SERVER}" DatabaseDst="{$ARIEL_DESTINATION_DATABASE}" SchemaDst="{$ARIEL_DESTINATION_SCHEMA}"/>
+            
+            <Road ServerSrc="{$SIEBEL_SOURCE_SERVER}" DatabaseSrc="{$SIEBEL_SOURCE_DATABASE}" SchemaSrc="{$SIEBEL_SOURCE_SCHEMA}"
+                  ServerDst="{$SIEBEL_DESTINATION_SERVER}" DatabaseDst="{$SIEBEL_DESTINATION_DATABASE}" SchemaDst="{$SIEBEL_DESTINATION_SCHEMA}"/>
+        </From>
+    </Maps>
+</Project>
 	
