@@ -2,7 +2,16 @@
 Fonctionnement 
 ==============
 
-Les variables : 
+Interface utilisateur : 
+
+1 - Pour ajuster les configurations, il faudra absolument mapper le Server-Database-Schema courant dans une variable sinon les champs seront en lecture seule.
+2 - Suite à la création d'une variable nous pourrons créer un template serveur/database ou schéma.
+3 - Nous pourrons ensuite créer un behavior basé sur une variable ou un template.
+
+Et-ce que ça sert à quelque chose de créer des templates pour un database ou schéma seulement?
+Et-ce que ça sert à quelque chose de créer des beavior pour un database ou schéma seulement?
+
+Variables : 
 
 1 - Le projet doit définir les variables de base pour l'intellisence ainsi que pour la substitution des valeurs par les maps.
 2 - La valeur des variables de projet peut être écrasée au niveau des noeuds From et To pour les éléments de même clef.
