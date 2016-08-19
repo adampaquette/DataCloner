@@ -1,0 +1,104 @@
+﻿<!--
+Fonctionnement 
+==============
+
+Les variables : 
+
+1 - Le projet doit définir les variables de base pour l'intellisence ainsi que pour la substitution des valeurs par les maps.
+2 - La valeur des variables de projet peut être écrasée au niveau des noeuds From et To pour les éléments de même clef.
+3 - La clef des éléments serveur, database ainsi que schema représente toujours une variable. Ce fonctionnement permet une réutilisation des 
+    modèles (templates) ainsi que d'une intégrité des valeurs car celles-ci sont validées lors de leur création.
+-->
+
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="0.1" Name="NorthWind">
+    <ConnectionStrings>
+        <Add Id="1" Name="UNI" ProviderName="MySql.Data.MySqlClient" ConnectionString="server=UNI;user Id=root; password=toor; database=master; pooling=true" />
+        <Add Id="2" Name="FON" ProviderName="System.Data.Sqlite" ConnectionString="server=FON;user Id=root; password=toor; database=master; pooling=true" />
+        <Add Id="3" Name="PROD_PGIS" ProviderName="System.Data.Oracle" ConnectionString="server=PROD_PGIS;user Id=root; password=toor; database=master; pooling=true" />
+        <Add Id="4" Name="PROD_ARIEL" ProviderName="System.Data.PosgreSql" ConnectionString="server=PROD_ARIEL;user Id=root; password=toor; database=master; pooling=true" />
+        <Add Id="5" Name="PROD_SIEBEL" ProviderName="System.Data.MsSql" ConnectionString="server=PROD_SIEBEL;user Id=root; password=toor; database=master; pooling=true" />
+    </ConnectionStrings>
+    <Variables>
+        <Var Name="PGIS_FROM" Server="1" Database="pgis" Schema="dbo"/>
+        <Var Name="ARIEL_FROM" Server="1" Database="ariel" Schema="dbo"/>
+        <Var Name="SIEBEL_FROM" Server="1" Database="siebel" Schema="dbo"/>
+        <Var Name="PGIS_TO" Server="1" Database="pgis" Schema="dbo"/>
+        <Var Name="ARIEL_TO" Server="1" Database="ariel" Schema="dbo"/>
+        <Var Name="SIEBEL_TO" Server="1" Database="siebel" Schema="dbo"/>
+    </Variables>
+    <Templates>
+        <Server Id="PGIS_FROM" TemplateId="1" Description="Configuration par défaut serveur PGIS">
+            <Database Name="PGIS_FROM" TemplateId="1" Description="Configuration par défaut base de données PGIS">
+                <Schema Name="PGIS_FROM" TemplateId="1" Description="Configuration par défaut du schéma DBO de la base de données PGIS">
+                    <Table Name="DomaineValeur" IsStatic="true"/>
+                    <Table Name="Transmission" IsStatic="false">
+                        <DerivativeTables GlobalAccess="forced" Cascade="true">
+                            <Table Destination="PGIS_TO" Table="Demande" Access="NotSet" Cascade="false"/>
+                        </DerivativeTables>
+                        <ForeignKeys>
+                            <Add Destination="SIEBEL_TO" Table="S_SRV_REQ">
+                                <Collumn NameFrom="NoReferenceTransmission" NameTo="SR_NUM" />
+                            </Add>
+                        </ForeignKeys>
+                        <DataBuilders>
+                            <Collumn Name="col1" BuilderName="Client.Builder.CreatePK" />
+                        </DataBuilders>
+                    </Table>
+                    <Table Name="PropositionRachat" IsStatic="false">
+                        <ForeignKeys>
+                            <Add Destination="ARIEL_TO" Table="S_SRV_REQ">
+                                <Collumn NameFrom="NoReferenceTransmission" NameTo="SR_NUM" />
+                            </Add>
+                        </ForeignKeys>
+                        <DataBuilders>
+                            <Collumn Name="col1" BuilderName="Client.Builder.CreatePK" />
+                        </DataBuilders>
+                    </Table>
+                </Schema>
+            </Database>
+        </Server>
+        <Server Id="ARIEL_FROM" TemplateId="2">
+            <Database Name="ARIEL_FROM" TemplateId="2"/>
+        </Server>
+        <Server Id="SIEBEL_FROM" TemplateId="3">
+            <Database Name="SIEBEL_FROM" TemplateId="3"/>
+        </Server>
+    </Templates>
+    <Behaviours>
+        <Behaviour Id="1" Name="Default" Description="Configuration par défaut">
+            <Server BasedOn="1"/>
+            <Server BasedOn="2"/>
+            <Server BasedOn="3"/>
+        </Behaviour>
+        <Behaviour Id="2" Name="Customer" Description="Duplication d'un client">
+            <Server Id="PGIS_FROM" TemplateId="0" BasedOn="1" />
+        </Behaviour>
+    </Behaviours>
+    <Maps>
+        <From Name="UNI" UsableBehaviours="1">
+            <Var Name="PGIS_FROM" Server="1" Database="pgis" Schema="dbo"/>
+            <Var Name="ARIEL_FROM" Server="1" Database="ariel" Schema="dbo"/>
+            <Var Name="SIEBEL_FROM" Server="1" Database="siebel" Schema="dbo"/>
+
+            <To Name="UNI">
+                <Var Name="PGIS_TO" Server="1" Database="pgis" Schema="dbo"/>
+                <Var Name="ARIEL_TO" Server="1" Database="ariel" Schema="dbo"/>
+                <Var Name="SIEBEL_TO" Server="1" Database="siebel" Schema="dbo"/>
+            </To>
+            <To Name="FON">
+                <Var Name="PGIS_TO" Server="2" Database="pgis" Schema="dbo"/>
+                <Var Name="ARIEL_TO" Server="2" Database="ariel" Schema="dbo"/>
+                <Var Name="SIEBEL_TO" Server="2" Database="siebel" Schema="dbo"/>
+            </To>
+            <To Name="PROD">
+                <Var Name="PGIS_TO" Server="3" Database="pgis" Schema="dbo"/>
+                <Var Name="ARIEL_TO" Server="4" Database="ariel" Schema="dbo"/>
+                <Var Name="SIEBEL_TO" Server="5" Database="siebel" Schema="dbo"/>
+            </To>
+            <Road Source="PGIS_FROM" Destination="PGIS_TO"/>
+            <Road Source="ARIEL_FROM" Destination="ARIEL_TO"/>
+            <Road Source="SIEBEL_FROM" Destination="SIEBEL_TO"/>
+        </From>
+    </Maps>
+</Project>

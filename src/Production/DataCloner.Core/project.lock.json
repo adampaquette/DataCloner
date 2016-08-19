@@ -3,9 +3,6 @@
   "version": 2,
   "targets": {
     ".NETFramework,Version=v4.6": {
-      "fasteractivator/1.0.0.2": {
-        "type": "package"
-      },
       "Microsoft.NETCore.Platforms/1.0.1": {
         "type": "package",
         "compile": {
@@ -760,9 +757,6 @@
       }
     },
     ".NETFramework,Version=v4.6/win-x64": {
-      "fasteractivator/1.0.0.2": {
-        "type": "package"
-      },
       "Microsoft.NETCore.Platforms/1.0.1": {
         "type": "package",
         "compile": {
@@ -1459,9 +1453,6 @@
       }
     },
     ".NETFramework,Version=v4.6/win-x86": {
-      "fasteractivator/1.0.0.2": {
-        "type": "package"
-      },
       "Microsoft.NETCore.Platforms/1.0.1": {
         "type": "package",
         "compile": {
@@ -2158,9 +2149,6 @@
       }
     },
     ".NETStandard,Version=v1.3": {
-      "fasteractivator/1.0.0.2": {
-        "type": "package"
-      },
       "Microsoft.NETCore.Jit/1.0.2": {
         "type": "package"
       },
@@ -3566,9 +3554,6 @@
       }
     },
     "UAP,Version=v10.0": {
-      "fasteractivator/1.0.0.2": {
-        "type": "package"
-      },
       "Microsoft.NETCore.Jit/1.0.2": {
         "type": "package"
       },
@@ -5161,9 +5146,6 @@
       }
     },
     "UAP,Version=v10.0/win10-arm": {
-      "fasteractivator/1.0.0.2": {
-        "type": "package"
-      },
       "Microsoft.NETCore.Jit/1.0.2": {
         "type": "package"
       },
@@ -6900,9 +6882,6 @@
       }
     },
     "UAP,Version=v10.0/win10-arm-aot": {
-      "fasteractivator/1.0.0.2": {
-        "type": "package"
-      },
       "Microsoft.NETCore.Jit/1.0.2": {
         "type": "package"
       },
@@ -8675,9 +8654,6 @@
       }
     },
     "UAP,Version=v10.0/win10-x64": {
-      "fasteractivator/1.0.0.2": {
-        "type": "package"
-      },
       "Microsoft.NETCore.Jit/1.0.2": {
         "type": "package",
         "dependencies": {
@@ -10426,9 +10402,6 @@
       }
     },
     "UAP,Version=v10.0/win10-x64-aot": {
-      "fasteractivator/1.0.0.2": {
-        "type": "package"
-      },
       "Microsoft.NETCore.Jit/1.0.2": {
         "type": "package",
         "dependencies": {
@@ -12213,9 +12186,6 @@
       }
     },
     "UAP,Version=v10.0/win10-x86": {
-      "fasteractivator/1.0.0.2": {
-        "type": "package"
-      },
       "Microsoft.NETCore.Jit/1.0.2": {
         "type": "package",
         "dependencies": {
@@ -13964,9 +13934,6 @@
       }
     },
     "UAP,Version=v10.0/win10-x86-aot": {
-      "fasteractivator/1.0.0.2": {
-        "type": "package"
-      },
       "Microsoft.NETCore.Jit/1.0.2": {
         "type": "package",
         "dependencies": {
@@ -15752,15 +15719,6 @@
     }
   },
   "libraries": {
-    "fasteractivator/1.0.0.2": {
-      "sha512": "Mg6vmiaq3bCmq+ZPwk7PJzeBnmSE9yMn0Zjyh6gcCKYNxXlqyvQ1KUH7Jrqn9lxs1qyiVdnlq4OzlJmVMWdsRQ==",
-      "type": "package",
-      "files": [
-        "content/FastActivator.cs",
-        "fasteractivator.1.0.0.2.nupkg.sha512",
-        "fasteractivator.nuspec"
-      ]
-    },
     "Microsoft.NETCore.Jit/1.0.2": {
       "sha512": "Ok2vWofa6X8WD9vc4pfLHwvJz1/B6t3gOAoZcjrjrQf7lQOlNIuZIZtLn3wnWX28DuQGpPJkRlBxFj7Z5txNqw==",
       "type": "package",
@@ -20530,8 +20488,7 @@
       "System.Runtime.Serialization.Xml >= 4.1.1",
       "System.Security.Cryptography.Algorithms >= 4.2.0",
       "System.Security.Cryptography.Primitives >= 4.0.0",
-      "System.Threading.Tasks.Parallel >= 4.0.1",
-      "fasteractivator >= 1.0.0.2"
+      "System.Threading.Tasks.Parallel >= 4.0.1"
     ],
     ".NETStandard,Version=v1.3": []
   }
