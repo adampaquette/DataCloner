@@ -9,6 +9,7 @@ namespace DataCloner.Core.Configuration
     {
         [XmlElement("Add")]
         public List<ForeignKeyAdd> ForeignKeyAdd { get; set; }
+
         [XmlElement("Remove")]
         public ForeignKeyRemove ForeignKeyRemove { get; set; }
 

@@ -1,9 +1,7 @@
 ﻿using DataCloner.Core.Configuration;
+using DataCloner.Core.Framework;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using DataCloner.Core.Framework;
 
 namespace DataCloner.Core.Debug
 {
@@ -11,128 +9,190 @@ namespace DataCloner.Core.Debug
     {
         public static void Main(string[] args)
         {
-            var project = new ProjectContainer { Name = "MainApp" };
-            project.ConnectionStrings.Add(new Connection(1, "PROD", "DataCloner.Data.QueryProviderMySql", "server=localhost;user id=root; password=cdxsza; database=mysql; pooling=false"));
-            project.ConnectionStrings.Add(new Connection(2, "UNI", "DataCloner.Data.QueryProviderMySql", "server=localhost;user id=root; password=cdxsza; database=mysql; pooling=false"));
-
-            var table1 = new Table
+            try
             {
-                Name = "table1",
-                IsStatic = false,
-                DataBuilders = new List<DataBuilder>
+                TestConfiguration();
+            }
+            catch (System.Exception)
+            {
+
+                throw;
+            }
+
+            Console.WriteLine("All tests passed!");
+            Console.ReadKey();
+        }
+
+        public static void TestConfiguration()
+        {
+            var project = new ProjectContainer { Name = "MainApp" };
+
+            //ConnectionStrings
+            project.ConnectionStrings.AddRange(new List<Connection>
+            {
+                new Connection(1, "UNI", "MySql.Data.MySqlClient", "server=UNI;user Id=root; password=toor; database=master; pooling=true"),
+                new Connection(2, "FON", "System.Data.Sqlite", "server=FON;user Id=root; password=toor; database=master; pooling=true"),
+                new Connection(3, "PROD_PGIS", "System.Data.Oracle", "server=PROD_PGIS;user Id=root; password=toor; database=master; pooling=true"),
+                new Connection(4, "PROD_ARIEL", "System.Data.PosgreSql", "server=PROD_ARIEL;user Id=root; password=toor; database=master; pooling=true"),
+                new Connection(5, "PROD_SIEBEL", "System.Data.MsSql", "server=PROD_SIEBEL;user Id=root; password=toor; database=master; pooling=true")
+            });
+
+            //Variables
+            project.Variables = new List<Variable>
+            {
+                new Variable { Name = "PGIS_FROM", Server = 1, Database = "pgis", Schema = "dbo" },
+                new Variable { Name = "ARIEL_FROM", Server = 1, Database = "ariel", Schema = "dbo" },
+                new Variable { Name = "SIEBEL_FROM", Server = 1, Database = "siebel", Schema = "dbo" },
+                new Variable { Name = "PGIS_TO", Server = 1, Database = "pgis", Schema = "dbo" },
+                new Variable { Name = "ARIEL_TO", Server = 1, Database = "ariel", Schema = "dbo" },
+                new Variable { Name = "SIEBEL_TO", Server = 1, Database = "siebel", Schema = "dbo" },
+            };
+
+            //Templates
+            var PGIS_DBO = new DbSettings
+            {
+                Id = 1,
+                Var = "PGIS_FROM",
+                Description = "Configuration par défaut du serveur PGIS, schéma DBO.",
+                Tables = new List<Table>
                 {
-                    new DataBuilder
+                    new Table { Name = "domaineValeur", IsStatic = true},
+                    new Table
                     {
-                        BuilderName = "Client.Builder.CreatePK",
-                        Name = "col1"
-                    }
-                },
-                DerativeTables = new DerivativeTable
-                {
-                    GlobalAccess = DerivativeTableAccess.Forced,
-                    GlobalCascade = true,
-                    DerivativeSubTables = new List<DerivativeSubTable>
-                    {
-                        new DerivativeSubTable
+                        Name = "transmission",
+                        DerativeTables = new DerivativeTable()
                         {
-                            ServerId = "1",
-                            Database = "db",
-                            Schema = "dbo",
-                            Table = "table2",
-                            Access = DerivativeTableAccess.Denied
+                            GlobalAccess = DerivativeTableAccess.Forced,
+                            GlobalCascade = true,
+                            DerivativeSubTables = new List<DerivativeSubTable>
+                            {
+                                 new DerivativeSubTable { Destination = "PGIS_TO", Table = "demande" }
+                            }
+                        },
+                        ForeignKeys = new ForeignKeys
+                        {
+                             ForeignKeyAdd = new List<ForeignKeyAdd>
+                             {
+                                 new ForeignKeyAdd
+                                 {
+                                     Destination = "SIEBEL_TO",
+                                     Table = "s_srv_req",
+                                     Columns = new List<ForeignKeyColumn> { new ForeignKeyColumn { NameFrom = "noreferencetransmission", NameTo = "sr_num" } }
+                                 }
+                             }
+                        },
+                        DataBuilders = new List<DataBuilder>
+                        {
+                            new DataBuilder { Name = "noreferencetransmission", BuilderName = "Client.Builder.CreatePK" }
+                        }
+                    },
+                    new Table
+                    {
+                        Name = "propositionrachat",
+                        ForeignKeys = new ForeignKeys
+                        {
+                            ForeignKeyAdd = new List<ForeignKeyAdd>
+                            {
+                                new ForeignKeyAdd
+                                {
+                                    Destination = "ARIEL_TO",
+                                    Table = "s_srv_req",
+                                    Columns = new List<ForeignKeyColumn>
+                                    {
+                                        new ForeignKeyColumn { NameFrom = "noreferencetransmission", NameTo = "sr_num" }
+                                    }
+                                }
+                            }
+                        },
+                        DataBuilders = new List<DataBuilder>
+                        {
+                            new DataBuilder { Name = "col1", BuilderName = "Client.Builder.Random" }
                         }
                     }
                 }
             };
+            var ARIEL_FROM = new DbSettings { Id = 2, Var = "ARIEL_FROM" };
+            var SIEBEL_FROM = new DbSettings { Id = 3, Var = "SIEBEL_FROM" };
 
-            table1.ForeignKeys.ForeignKeyAdd.Add(new ForeignKeyAdd
+            project.Templates.AddRange(new List<DbSettings> { PGIS_DBO, ARIEL_FROM, SIEBEL_FROM });
+
+            //Behaviors
+            project.Behaviours.AddRange(new List<Behaviour>
             {
-                ServerId = "1",
-                Database = "db",
-                Schema = "dbo",
-                Table = "table55",
-                Columns = new List<ForeignKeyColumn>
+                new Behaviour
                 {
-                    new ForeignKeyColumn
+                    Id = 1,
+                    Name = "Default",
+                    Description = "Configuration par défaut",
+                    DbSettings = new List<DbSettings>
                     {
-                        NameFrom = "col1",
-                        NameTo = "col1"
-                    },
-                    new ForeignKeyColumn
-                    {
-                        NameFrom = "col2",
-                        NameTo = "col2"
+                        new DbSettings { Id = 1, BasedOn = 1 },
+                        new DbSettings { Id = 2, BasedOn = 2 },
+                        new DbSettings { Id = 3, BasedOn = 3 }
                     }
+                },
+                new Behaviour
+                {
+                    Id = 2,
+                    Name = "Client",
+                    Description = "Duplication d'un client"
                 }
             });
 
-            table1.ForeignKeys.ForeignKeyRemove = new ForeignKeyRemove
+            //Maps
+            project.Maps.AddRange(new List<MapFrom>
             {
-                Columns = new List<ForeignKeyRemoveColumn>
+                new MapFrom
                 {
-                    new ForeignKeyRemoveColumn
+                    Name = "UNI",
+                    UsableBehaviours = "1",
+                    Variables = new List<Variable>
                     {
-                        Name = "col3"
+                        new Variable { Name = "PGIS_FROM", Server = 1, Database = "pgis", Schema = "dbo" },
+                        new Variable { Name = "ARIEL_FROM", Server = 1, Database = "ariel", Schema = "dbo" },
+                        new Variable { Name = "SIEBEL_FROM", Server = 1, Database = "siebel", Schema = "dbo" }
                     },
-                    new ForeignKeyRemoveColumn
+                    MapTos = new List<MapTo>
                     {
-                        Name = "col4"
-                    }
-                }
-            };
-
-            var server1 = new ServerModifier
-            {
-                Id = "1",
-                Databases = new List<Database>
-                {
-                    new Database
-                    {
-                        Var = "db",
-                        Schemas = new List<Schema>
+                        new MapTo
                         {
-                            new Schema
+                            Name = "UNI",
+                            Variables = new List<Variable>
                             {
-                                Var = "dbo",
-                                Tables = new List<Table> { table1 }
+                                new Variable { Name = "PGIS_TO", Server = 1, Database = "pgis", Schema = "dbo" },
+                                new Variable { Name = "ARIEL_TO", Server = 1, Database = "ariel", Schema = "dbo" },
+                                new Variable { Name = "SIEBEL_TO", Server = 1, Database = "siebel", Schema = "dbo" },
+                            }
+                        },
+                        new MapTo
+                        {
+                            Name = "FON",
+                            Variables = new List<Variable>
+                            {
+                                new Variable { Name = "PGIS_TO", Server = 2, Database = "pgis", Schema = "dbo" },
+                                new Variable { Name = "ARIEL_TO", Server = 2, Database = "ariel", Schema = "dbo" },
+                                new Variable { Name = "SIEBEL_TO", Server = 2, Database = "siebel", Schema = "dbo" },
+                            }
+                        },
+                        new MapTo
+                        {
+                            Name = "PROD",
+                            Variables = new List<Variable>
+                            {
+                                new Variable { Name = "PGIS_TO", Server = 3, Database = "pgis", Schema = "dbo" },
+                                new Variable { Name = "ARIEL_TO", Server = 4, Database = "ariel", Schema = "dbo" },
+                                new Variable { Name = "SIEBEL_TO", Server = 5, Database = "siebel", Schema = "dbo" },
                             }
                         }
+                    },
+                    Roads = new List<Road>
+                    {
+                        new Road { Source = "PGIS_FROM", Destination = "PGIS_TO" },
+                        new Road { Source = "ARIEL_FROM", Destination = "PGIS_TO" },
+                        new Road { Source = "SIEBEL_FROM", Destination = "PGIS_TO" }
                     }
                 }
-            };
-
-            var clonerBehaviour = new Behaviour
-            {
-                Id = 1,
-                Name = "Basic clone",
-                Description = "Only cloning besic data",
-                //Servers = new List<ServerModifier> { server1 }
-            };
-
-            project.Behaviours.Add(clonerBehaviour);
-
-            project.Maps = new List<Map>
-            {
-                new Map
-                {
-                     From = "UNI",
-                     To = "FON",
-                     UsableBehaviours = "1,2",
-                     Variables = new List<Variable>
-                     {
-                         new Variable { Name = ""}
-                     },
-                     Roads = new List<Road>
-                     {
-                         new Road
-                         {
-                             ServerSrc = "1", SchemaSrc = "dbo", DatabaseSrc = "myDB",
-                             ServerDst = "1", SchemaDst = "dbo", DatabaseDst = "myDB"
-                         }
-                     }
-                }
-            };
-            project.Templates.Servers.Add(server1);
+            });
 
             var xml = project.SerializeXml();
         }

@@ -1,11 +1,8 @@
-﻿using System;
+﻿using DataCloner.Core.Framework;
+using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Runtime.Serialization;
-using System.Xml;
-using System.Xml.Serialization;
-using DataCloner.Core.Framework;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace DataCloner.Core.Configuration
 {
@@ -15,21 +12,29 @@ namespace DataCloner.Core.Configuration
     {
         [XmlAttribute]
         public string ToolsVersion { get; set; }
+
         [XmlAttribute]
         public string Name { get; set; }
+
         [XmlArrayItem("Add")]        
         public List<Connection> ConnectionStrings { get; set; }
-        public Modifiers Templates { get; set; }
+
+        [XmlArrayItem("Var")]
+        public List<Variable> Variables { get; set; }
+
+        public List<DbSettings> Templates { get; set; }
+
         [XmlArrayItem("Behaviour")]        
         public List<Behaviour> Behaviours { get; set; }
-        public List<Map> Maps { get; set; }
+
+        public List<MapFrom> Maps { get; set; }
 
         public ProjectContainer()
         {
             ConnectionStrings = new List<Connection>();
-            Templates = new Modifiers();
+            Templates = new List<DbSettings>();
             Behaviours = new List<Behaviour>();
-            Maps = new List<Map>();
+            Maps = new List<MapFrom>();
         }
 
         public void Save(string path)

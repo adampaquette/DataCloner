@@ -1,44 +1,42 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Xml.Serialization;
 
 namespace DataCloner.Core.Configuration
 {
     [Serializable]
-    public class Server : IEquatable<Server>
+    public class DbSettings : IEquatable<DbSettings>
     {
+        [XmlAttribute]
+        public Int16 Id { get; set; }
         [XmlAttribute]
         public string Var { get; set; }
         [XmlAttribute]
         public string Description { get; set; }
         [XmlAttribute]
-        public Int16 TemplateId { get; set; }
-        [XmlAttribute]
         public Int16 BasedOn { get; set; }
-        [XmlElement("Database")]
-        public List<Database> Databases { get; set; }
+        [XmlElement("Table")]
+        public List<Table> Tables { get; set; }
 
-        public Server()
+        public DbSettings()
         {
-            Databases = new List<Database>();
+            Tables = new List<Table>();
         }
 
         public override bool Equals(object obj)
         {
-            var o = obj as Server;
+            var o = obj as DbSettings;
             return Equals(o);
         }
 
-        public bool Equals(Server other)
+        public bool Equals(DbSettings other)
         {
-            return other != null && other.Var == Var;
+            return other != null && other.Id == Id;
         }
 
         public override int GetHashCode()
         {
-            return Var.GetHashCode();
+            return Id.GetHashCode();
         }
     }
 }

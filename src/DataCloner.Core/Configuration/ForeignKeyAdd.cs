@@ -7,7 +7,8 @@ namespace DataCloner.Core.Configuration
     [Serializable]
     public class ForeignKeyAdd
     {
-        public Variable Var { get; set; }
+        [XmlAttribute]
+        public string Destination { get; set; }
         [XmlAttribute]
         public string Table { get; set; }
 

@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Runtime.Serialization;
+using System.Collections.Generic;
 using System.Xml.Serialization;
 
 namespace DataCloner.Core.Configuration
@@ -16,11 +16,12 @@ namespace DataCloner.Core.Configuration
         [XmlAttribute]
         public string Description { get; set; }
 
-        public Modifiers Modifiers { get; set; }
+        [XmlElement("DbSetting")]
+        public List<DbSettings> DbSettings { get; set; }
 
         public Behaviour()
         {
-            Modifiers = new Modifiers();
+            DbSettings = new List<DbSettings>();
         }
     }
 }

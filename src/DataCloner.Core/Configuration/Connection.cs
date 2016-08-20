@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.Serialization;
 using System.Xml.Serialization;
 
 namespace DataCloner.Core.Configuration
@@ -43,7 +42,7 @@ namespace DataCloner.Core.Configuration
 
         public override int GetHashCode()
         {
-            return Name.GetHashCode();
+            return Id.GetHashCode();
         }
     }
 }
