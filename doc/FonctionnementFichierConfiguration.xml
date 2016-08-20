@@ -1,15 +1,18 @@
 ﻿<!--
-Fonctionnement 
-==============
-
-Interface utilisateur : 
+Interface utilisateur 
+=====================
 
 1 - Pour ajuster les configurations, il faudra absolument mapper le Server-Database-Schema courant dans une variable sinon les champs seront en lecture seule.
 2 - Suite à la création d'une variable nous pourrons créer un template serveur/database ou schéma.
 3 - Nous pourrons ensuite créer un behavior basé sur une variable ou un template.
 
-Et-ce que ça sert à quelque chose de créer des templates pour un database ou schéma seulement?
-Et-ce que ça sert à quelque chose de créer des beavior pour un database ou schéma seulement?
+
+Fichier de configuration
+========================
+
+ConnectionStrings : 
+
+1 - Représentent une connexion à un serveur SQL
 
 Variables : 
 
@@ -17,7 +20,55 @@ Variables :
 2 - La valeur des variables de projet peut être écrasée au niveau des noeuds From et To pour les éléments de même clef.
 3 - La clef des éléments serveur, database ainsi que schema représente toujours une variable. Ce fonctionnement permet une réutilisation des 
     modèles (templates) ainsi que d'une intégrité des valeurs car celles-ci sont validées lors de leur création.
+
+Templates : 
+
+1 - Par défaut les DbSettings sont réutilisables comme template de départ, pour une configuration spécifique d'un besoin.
+2 - Lorsque l'on hérite d'un DbSettings en utilisant la propriété BasedOn, la propriétée Var est innaccessible car il faut absolument que les 
+    éléments serveur, database et schéma soient identiques.
+
+Behaviors : 
+
+1 - Les même règles que les templates sont appliquées.
+
+Maps : 
+
+1 - Chaque noeud From représente la source de copie des données.
+    L'attribut Name doit être unique à travers les autres noeuds From.
+    UsableBehaviours représent les comportements, qui ont été conçues par l'utilisateur, spécifiquement pour cette source de données.
+2 - Les variables définit à même le noeud From représentent majoritairement les points d'entrée.
+3 - Les éléments To représentent la destination de copie des données.
+    Les variables définies à même le noeud To représentent majoritairement les points de sortie.
+
+
+Fichier de cache
+================
+
+1 - Les fichiers d'extension .dcc représentent la cache générée pour chaqucune des combinaisons source-destination (From-To) de l'élément Maps.
+2 - Ils contiennent le schéma des bases de données suite à l'application de la configuration utilisateur.
+3 - Ils permettent d'optimiser la copie.
+
+
+Exemple de fichiers de configuration
+====================================
+
+Case simpliste (HelloWorld)  :
+
+1 - Permet de copier de l'information à même la base de données.
 -->
+
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+    <ConnectionStrings>
+        <Add Id="1" Name="UNI" ProviderName="MySql.Data.MySqlClient" ConnectionString="server=UNI;user Id=root; password=toor;" />
+    </ConnectionStrings>
+</Project>
+
+<!--
+Cas le plus extrême :
+
+1 - Permet de copier de l'information ...
+--> 
 
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="0.1" Name="NorthWind">
@@ -37,51 +88,43 @@ Variables :
         <Var Name="SIEBEL_TO" Server="1" Database="siebel" Schema="dbo"/>
     </Variables>
     <Templates>
-        <Server Var="PGIS_FROM" TemplateId="1" Description="Configuration par défaut serveur PGIS">
-            <Database Var="PGIS_FROM" TemplateId="1" Description="Configuration par défaut base de données PGIS">
-                <Schema Var="PGIS_FROM" TemplateId="1" Description="Configuration par défaut du schéma DBO de la base de données PGIS">
-                    <Table Name="DomaineValeur" IsStatic="true"/>
-                    <Table Name="Transmission" IsStatic="false">
-                        <DerivativeTables GlobalAccess="forced" Cascade="true">
-                            <Table Destination="PGIS_TO" Table="Demande" Access="NotSet" Cascade="false"/>
-                        </DerivativeTables>
-                        <ForeignKeys>
-                            <Add Destination="SIEBEL_TO" Table="S_SRV_REQ">
-                                <Collumn NameFrom="NoReferenceTransmission" NameTo="SR_NUM" />
-                            </Add>
-                        </ForeignKeys>
-                        <DataBuilders>
-                            <Collumn Name="col1" BuilderName="Client.Builder.CreatePK" />
-                        </DataBuilders>
-                    </Table>
-                    <Table Name="PropositionRachat" IsStatic="false">
-                        <ForeignKeys>
-                            <Add Destination="ARIEL_TO" Table="S_SRV_REQ">
-                                <Collumn NameFrom="NoReferenceTransmission" NameTo="SR_NUM" />
-                            </Add>
-                        </ForeignKeys>
-                        <DataBuilders>
-                            <Collumn Name="col1" BuilderName="Client.Builder.CreatePK" />
-                        </DataBuilders>
-                    </Table>
-                </Schema>
-            </Database>
-        </Server>
-        <Server Var="ARIEL_FROM" TemplateId="2">
-            <Database Name="ARIEL_FROM" TemplateId="2"/>
-        </Server>
-        <Server Var="SIEBEL_FROM" TemplateId="3">
-            <Database Name="SIEBEL_FROM" TemplateId="3"/>
-        </Server>
+        <DbSettings Id="1" Var="PGIS_FROM" Description="Configuration par défaut serveur PGIS schéma DBO.">
+            <Table Name="DomaineValeur" IsStatic="true"/>
+            <Table Name="Transmission" IsStatic="false">
+                <DerivativeTables GlobalAccess="forced" Cascade="true">
+                    <Table Destination="PGIS_TO" Table="Demande" Access="NotSet" Cascade="false"/>
+                </DerivativeTables>
+                <ForeignKeys>
+                    <Add Destination="SIEBEL_TO" Table="S_SRV_REQ">
+                        <Collumn NameFrom="NoReferenceTransmission" NameTo="SR_NUM" />
+                    </Add>
+                </ForeignKeys>
+                <DataBuilders>
+                    <Collumn Name="col1" BuilderName="Client.Builder.CreatePK" />
+                </DataBuilders>
+            </Table>
+            <Table Name="PropositionRachat" IsStatic="false">
+                <ForeignKeys>
+                    <Add Destination="ARIEL_TO" Table="S_SRV_REQ">
+                        <Collumn NameFrom="NoReferenceTransmission" NameTo="SR_NUM" />
+                    </Add>
+                </ForeignKeys>
+                <DataBuilders>
+                    <Collumn Name="col1" BuilderName="Client.Builder.CreatePK" />
+                </DataBuilders>
+            </Table>
+        </DbSettings>
+        <DbSettings Id="2" Var="ARIEL_FROM" />
+        <DbSettings Id="3" Var="SIEBEL_FROM" />
     </Templates>
     <Behaviours>
         <Behaviour Id="1" Name="Default" Description="Configuration par défaut">
-            <Server BasedOn="1"/>
-            <Server BasedOn="2"/>
-            <Server BasedOn="3"/>
+            <DbSettings BasedOn="1"/>
+            <DbSettings BasedOn="2"/>
+            <DbSettings BasedOn="3"/>
         </Behaviour>
         <Behaviour Id="2" Name="Customer" Description="Duplication d'un client">
-            <Server Var="PGIS_FROM" TemplateId="0" BasedOn="1" />
+            <DbSettings Id="0" Var="PGIS_FROM" BasedOn="1" />
         </Behaviour>
     </Behaviours>
     <Maps>

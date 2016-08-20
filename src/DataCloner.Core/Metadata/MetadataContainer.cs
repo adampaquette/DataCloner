@@ -5,11 +5,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Text;
 
 namespace DataCloner.Core.Metadata
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public sealed class MetadataContainer
     {
         internal delegate void Initialiser(IQueryDispatcher dispatcher, Settings settings, ref MetadataContainer container);
