@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Name="MainApp">
+    <ConnectionStrings>
+        <Add Id="1" Name="PROD" ProviderName="DataCloner.Data.QueryProviderMySql" ConnectionString="server=localhost;user id=root; password=cdxsza; database=mysql; pooling=false" />
+        <Add Id="2" Name="UNI" ProviderName="DataCloner.Data.QueryProviderMySql" ConnectionString="server=localhost;user id=root; password=cdxsza; database=mysql; pooling=false" />
+    </ConnectionStrings>
+    <Templates>
+        <Server Id="1" TemplateId="0" BasedOn="0">
+            <Database Name="db" TemplateId="0" BasedOn="0">
+                <Schema Name="dbo" TemplateId="0" BasedOn="0">
+                    <Table Name="table1" IsStatic="false">
+                        <DerativeTables GlobalAccess="Forced" GlobalCascade="true">
+                            <Table ServerId="1" Database="db" Schema="dbo" Table="table2" Access="Denied" Cascade="false" />
+                        </DerativeTables>
+                        <DataBuilders>
+                            <Column Name="col1" BuilderName="Client.Builder.CreatePK" />
+                        </DataBuilders>
+                        <ForeignKeys>
+                            <Add ServerId="1" Database="db" Schema="dbo" Table="table55">
+                                <Column NameFrom="col1" NameTo="col1" />
+                                <Column NameFrom="col2" NameTo="col2" />
+                            </Add>
+                            <Remove>
+                                <Column Name="col3" />
+                                <Column Name="col4" />
+                            </Remove>
+                        </ForeignKeys>
+                    </Table>
+                </Schema>
+            </Database>
+        </Server>
+    </Templates>
+    <Behaviours>
+        <Behaviour Id="1" Name="Basic clone" Description="Only cloning besic data">
+            <Modifiers />
+        </Behaviour>
+    </Behaviours>
+    <Maps>
+        <Map Id="0" From="UNI" To="FON" UsableBehaviours="1,2">
+            <Variables>
+                <Variable Name="" Value="" />
+            </Variables>
+            <Roads>
+                <Road ServerSrc="1" DatabaseSrc="myDB" SchemaSrc="dbo" ServerDst="1" DatabaseDst="myDB" SchemaDst="dbo" />
+            </Roads>
+        </Map>
+    </Maps>
+</Project>

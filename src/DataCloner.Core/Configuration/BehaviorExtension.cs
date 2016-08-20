@@ -15,9 +15,9 @@ namespace DataCloner.Core.Configuration
         /// <param name="variables">Variables of the selected Map config section.</param>
         public static Behaviour Build(this Behaviour behaviour, Modifiers templates, List<Variable> variables)
         {
-            var compiledServersModifier = new Dictionary<string, ServerModifier>();
+            var compiledServersModifier = new Dictionary<string, Server>();
 
-            foreach (var server in behaviour.Modifiers.ServerModifiers)
+            foreach (var server in behaviour.Modifiers.Servers)
                 MergeServer(behaviour, templates, variables, compiledServersModifier, server);
 
             return new Behaviour
@@ -29,7 +29,7 @@ namespace DataCloner.Core.Configuration
                 Modifiers = new Modifiers
                 {
                     /*DatabaseModifiers et SchemaModifiers se retrouvent compilés sous les modificateurs de serveur*/
-                    ServerModifiers = compiledServersModifier.Values.ToList()
+                    Servers = compiledServersModifier.Values.ToList()
                 }
             };
         }
@@ -37,145 +37,145 @@ namespace DataCloner.Core.Configuration
         private static void MergeServer(Behaviour behaviour,
                                         Modifiers templates,
                                         List<Variable> variables,
-                                        Dictionary<string, ServerModifier> compiledConfig,
-                                        ServerModifier srvToMerge)
+                                        Dictionary<string, Server> compiledConfig,
+                                        Server srvToMerge)
         {
             //Remplacement de la variable
-            if (srvToMerge.Id.IsVariable())
-                srvToMerge.Id = variables.First(v => v.Name.ParseConfigVariable().Key == srvToMerge.Id.ParseConfigVariable().Key).Value;
+            //if (srvToMerge.Id.IsVariable())
+            //    srvToMerge.Id = variables.First(v => v.Name.ParseConfigVariable().Key == srvToMerge.Id.ParseConfigVariable().Key).Value;
 
-            if (!compiledConfig.ContainsKey(srvToMerge.Id))
-                compiledConfig.Add(srvToMerge.Id, srvToMerge);
+            //if (!compiledConfig.ContainsKey(srvToMerge.Id))
+            //    compiledConfig.Add(srvToMerge.Id, srvToMerge);
 
-            //Template
-            if (srvToMerge.BasedOn > 0)
-            {
-                var srvTemplate = behaviour.Modifiers.ServerModifiers.FirstOrDefault(s => s.TemplateId == srvToMerge.BasedOn);
-                if (srvTemplate == null)
-                    srvTemplate = templates.ServerModifiers.First(s => s.TemplateId == srvToMerge.BasedOn);
+            ////Template
+            //if (srvToMerge.BasedOn > 0)
+            //{
+            //    var srvTemplate = behaviour.Modifiers.Servers.FirstOrDefault(s => s.TemplateId == srvToMerge.BasedOn);
+            //    if (srvTemplate == null)
+            //        srvTemplate = templates.Servers.First(s => s.TemplateId == srvToMerge.BasedOn);
 
-                MergeServer(behaviour, templates, variables, compiledConfig, srvTemplate);
-                srvToMerge.TemplateId = 0;
-                srvToMerge.BasedOn = 0;
-            }
+            //    MergeServer(behaviour, templates, variables, compiledConfig, srvTemplate);
+            //    srvToMerge.TemplateId = 0;
+            //    srvToMerge.BasedOn = 0;
+            //}
 
-            //Merge
-            foreach (var database in srvToMerge.Databases)
-            {
-                var dstServer = compiledConfig[srvToMerge.Id];
-                MergeDatabase(behaviour, templates, variables, dstServer, database);
-            }
+            ////Merge
+            //foreach (var database in srvToMerge.Databases)
+            //{
+            //    var dstServer = compiledConfig[srvToMerge.Id];
+            //    MergeDatabase(behaviour, templates, variables, dstServer, database);
+            //}
         }
 
         private static void MergeDatabase(Behaviour behaviour,
                                           Modifiers templates,
                                           List<Variable> variables,
-                                          ServerModifier compiledServer,
-                                          DatabaseModifier dbToMerge)
+                                          Server compiledServer,
+                                          Database dbToMerge)
         {
-            //Remplacement de la variable
-            if (dbToMerge.Name.IsVariable())
-                dbToMerge.Name = variables.First(v => v.Name.ParseConfigVariable().Key == dbToMerge.Name.ParseConfigVariable().Key).Value;
+            ////Remplacement de la variable
+            //if (dbToMerge.Name.IsVariable())
+            //    dbToMerge.Name = variables.First(v => v.Name.ParseConfigVariable().Key == dbToMerge.Name.ParseConfigVariable().Key).Value;
 
-            if (!compiledServer.Databases.Exists(d => d.Name == dbToMerge.Name))
-                compiledServer.Databases.Add(dbToMerge);
+            //if (!compiledServer.Databases.Exists(d => d.Name == dbToMerge.Name))
+            //    compiledServer.Databases.Add(dbToMerge);
 
-            //Template
-            if (dbToMerge.BasedOn > 0)
-            {
-                var allDb = new List<DatabaseModifier>();
+            ////Template
+            //if (dbToMerge.BasedOn > 0)
+            //{
+            //    var allDb = new List<DatabaseModifier>();
 
-                //Pass 1 : Search inside the behaviour
-                allDb.AddRange(behaviour.Modifiers.DatabaseModifiers);
-                foreach (var s in behaviour.Modifiers.ServerModifiers)
-                    allDb.AddRange(s.Databases);
+            //    //Pass 1 : Search inside the behaviour
+            //    allDb.AddRange(behaviour.Modifiers.DatabaseModifiers);
+            //    foreach (var s in behaviour.Modifiers.Servers)
+            //        allDb.AddRange(s.Databases);
 
-                var db = allDb.FirstOrDefault(d => d.TemplateId == dbToMerge.BasedOn);
-                if (db == null)
-                {
-                    //Pass 2 : Search inside the templates
-                    allDb.Clear();
-                    allDb.AddRange(templates.DatabaseModifiers);
-                    foreach (var s in templates.ServerModifiers)
-                        allDb.AddRange(s.Databases);
-                }
-                db = allDb.First(d => d.TemplateId == dbToMerge.BasedOn);
+            //    var db = allDb.FirstOrDefault(d => d.TemplateId == dbToMerge.BasedOn);
+            //    if (db == null)
+            //    {
+            //        //Pass 2 : Search inside the templates
+            //        allDb.Clear();
+            //        allDb.AddRange(templates.DatabaseModifiers);
+            //        foreach (var s in templates.Servers)
+            //            allDb.AddRange(s.Databases);
+            //    }
+            //    db = allDb.First(d => d.TemplateId == dbToMerge.BasedOn);
 
-                MergeDatabase(behaviour, templates, variables, compiledServer, db);
-                dbToMerge.TemplateId = 0;
-                dbToMerge.BasedOn = 0;
-            }
+            //    MergeDatabase(behaviour, templates, variables, compiledServer, db);
+            //    dbToMerge.TemplateId = 0;
+            //    dbToMerge.BasedOn = 0;
+            //}
 
-            //Merge
-            foreach (var schema in dbToMerge.Schemas)
-            {
-                var dstDb = compiledServer.Databases.First(d => d.Name == dbToMerge.Name);
-                MergeSchema(behaviour, templates, variables, dstDb, schema);
-            }
+            ////Merge
+            //foreach (var schema in dbToMerge.Schemas)
+            //{
+            //    var dstDb = compiledServer.Databases.First(d => d.Name == dbToMerge.Name);
+            //    MergeSchema(behaviour, templates, variables, dstDb, schema);
+            //}
         }
 
         private static void MergeSchema(Behaviour behaviour,
                                         Modifiers templates,
                                         List<Variable> variables,
-                                        DatabaseModifier compiledDatabase,
-                                        SchemaModifier schemaToMerge)
+                                        Database compiledDatabase,
+                                        Schema schemaToMerge)
         {
-            //Remplacement de la variable
-            if (schemaToMerge.Name.IsVariable())
-                schemaToMerge.Name = variables.First(v => v.Name.ParseConfigVariable().Key == schemaToMerge.Name.ParseConfigVariable().Key).Value;
+            ////Remplacement de la variable
+            //if (schemaToMerge.Name.IsVariable())
+            //    schemaToMerge.Name = variables.First(v => v.Name.ParseConfigVariable().Key == schemaToMerge.Name.ParseConfigVariable().Key).Value;
 
-            if (!compiledDatabase.Schemas.Exists(d => d.Name == schemaToMerge.Name))
-                compiledDatabase.Schemas.Add(schemaToMerge);
+            //if (!compiledDatabase.Schemas.Exists(d => d.Name == schemaToMerge.Name))
+            //    compiledDatabase.Schemas.Add(schemaToMerge);
 
-            //Template
-            if (schemaToMerge.BasedOn > 0)
-            {
-                var allSchema = new List<SchemaModifier>();
+            ////Template
+            //if (schemaToMerge.BasedOn > 0)
+            //{
+            //    var allSchema = new List<SchemaModifier>();
 
-                //Pass 1 : Search inside the behaviour
-                allSchema.AddRange(behaviour.Modifiers.SchemaModifiers);
-                foreach (var s in  behaviour.Modifiers.ServerModifiers)
-                    foreach (var d in s.Databases)
-                        allSchema.AddRange(d.Schemas);
+            //    //Pass 1 : Search inside the behaviour
+            //    allSchema.AddRange(behaviour.Modifiers.SchemaModifiers);
+            //    foreach (var s in  behaviour.Modifiers.Servers)
+            //        foreach (var d in s.Databases)
+            //            allSchema.AddRange(d.Schemas);
 
-                var sch = allSchema.First(d => d.TemplateId == schemaToMerge.BasedOn);
-                if (sch == null)
-                {
-                    //Pass 2 : Search inside the templates
-                    allSchema.Clear();
-                    allSchema.AddRange(templates.SchemaModifiers);
-                    foreach (var s in templates.ServerModifiers)
-                        foreach (var d in s.Databases)
-                            allSchema.AddRange(d.Schemas);
-                }
-                sch = allSchema.First(d => d.TemplateId == schemaToMerge.BasedOn);
+            //    var sch = allSchema.First(d => d.TemplateId == schemaToMerge.BasedOn);
+            //    if (sch == null)
+            //    {
+            //        //Pass 2 : Search inside the templates
+            //        allSchema.Clear();
+            //        allSchema.AddRange(templates.SchemaModifiers);
+            //        foreach (var s in templates.Servers)
+            //            foreach (var d in s.Databases)
+            //                allSchema.AddRange(d.Schemas);
+            //    }
+            //    sch = allSchema.First(d => d.TemplateId == schemaToMerge.BasedOn);
 
-                MergeSchema(behaviour, templates, variables, compiledDatabase, sch);
-                schemaToMerge.TemplateId = 0;
-                schemaToMerge.BasedOn = 0;
-            }
+            //    MergeSchema(behaviour, templates, variables, compiledDatabase, sch);
+            //    schemaToMerge.TemplateId = 0;
+            //    schemaToMerge.BasedOn = 0;
+            //}
 
-            //Merge
-            foreach (var table in schemaToMerge.Tables)
-            {
-                var dstSchema = compiledDatabase.Schemas.First(d => d.Name == schemaToMerge.Name);
-                MergeTable(variables, dstSchema, table);
-            }
+            ////Merge
+            //foreach (var table in schemaToMerge.Tables)
+            //{
+            //    var dstSchema = compiledDatabase.Schemas.First(d => d.Name == schemaToMerge.Name);
+            //    MergeTable(variables, dstSchema, table);
+            //}
         }
 
         private static void MergeTable(List<Variable> variables,
-                                       SchemaModifier schema,
-                                       TableModifier tblToMerge)
+                                       Schema schema,
+                                       Table tblToMerge)
         {
-            //Remplacement de la variable
-            if (tblToMerge.Name.IsVariable())
-                tblToMerge.Name = variables.First(v => v.Name.ParseConfigVariable().Key == tblToMerge.Name.ParseConfigVariable().Key).Value;
+            ////Remplacement de la variable
+            //if (tblToMerge.Name.IsVariable())
+            //    tblToMerge.Name = variables.First(v => v.Name.ParseConfigVariable().Key == tblToMerge.Name.ParseConfigVariable().Key).Value;
 
-            if (!schema.Tables.Exists(d => d.Name == tblToMerge.Name))
-                schema.Tables.Add(tblToMerge);
+            //if (!schema.Tables.Exists(d => d.Name == tblToMerge.Name))
+            //    schema.Tables.Add(tblToMerge);
 
-            //TODO : 
-            //MERGE ALL
+            ////TODO : 
+            ////MERGE ALL
         }
     }
 }

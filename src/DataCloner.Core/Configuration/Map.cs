@@ -16,9 +16,9 @@ namespace DataCloner.Core.Configuration
         public string To { get; set; }
         [XmlAttribute]
         public string UsableBehaviours { get; set; }
-        //TODO : [XmlArrayItem("Var")]
+        [XmlArrayItem("Var")]
         public List<Variable> Variables { get; set; }
-        //TODO : [XmlElement("Road")]
+        [XmlElement("Road")]
         public List<Road> Roads { get; set; }
 
         public Map()
@@ -43,14 +43,5 @@ namespace DataCloner.Core.Configuration
         public string DatabaseDst { get; set; }
         [XmlAttribute]
         public string SchemaDst { get; set; }
-    }
-
-    [Serializable]
-    public class Variable
-    {
-        [XmlAttribute]
-        public string Name { get; set; }
-        [XmlAttribute]
-        public string Value { get; set; }
     }
 }

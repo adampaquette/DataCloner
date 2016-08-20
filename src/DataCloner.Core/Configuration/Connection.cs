@@ -5,7 +5,7 @@ using System.Xml.Serialization;
 namespace DataCloner.Core.Configuration
 {
     [Serializable]
-    public class Connection
+    public class Connection : IEquatable<Connection>
     {
         [XmlAttribute]
         public Int16 Id { get; set; }
@@ -28,6 +28,22 @@ namespace DataCloner.Core.Configuration
         public override string ToString()
         {
             return ProviderName + " " + Id.ToString();
+        }
+
+        public override bool Equals(object obj)
+        {
+            var o = obj as Connection;
+            return Equals(o);
+        }
+
+        public bool Equals(Connection other)
+        {
+            return other != null && other.Id == Id;
+        }
+
+        public override int GetHashCode()
+        {
+            return Name.GetHashCode();
         }
     }
 }

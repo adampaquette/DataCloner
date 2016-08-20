@@ -15,7 +15,7 @@ namespace DataCloner.Core.Debug
             project.ConnectionStrings.Add(new Connection(1, "PROD", "DataCloner.Data.QueryProviderMySql", "server=localhost;user id=root; password=cdxsza; database=mysql; pooling=false"));
             project.ConnectionStrings.Add(new Connection(2, "UNI", "DataCloner.Data.QueryProviderMySql", "server=localhost;user id=root; password=cdxsza; database=mysql; pooling=false"));
 
-            var table1 = new TableModifier
+            var table1 = new Table
             {
                 Name = "table1",
                 IsStatic = false,
@@ -27,11 +27,11 @@ namespace DataCloner.Core.Debug
                         Name = "col1"
                     }
                 },
-                DerativeTables = new DerativeTable
+                DerativeTables = new DerivativeTable
                 {
                     GlobalAccess = DerivativeTableAccess.Forced,
                     GlobalCascade = true,
-                    DerativeSubTables = new List<DerivativeSubTable>
+                    DerivativeSubTables = new List<DerivativeSubTable>
                     {
                         new DerivativeSubTable
                         {
@@ -84,17 +84,17 @@ namespace DataCloner.Core.Debug
             var server1 = new ServerModifier
             {
                 Id = "1",
-                Databases = new List<DatabaseModifier>
+                Databases = new List<Database>
                 {
-                    new DatabaseModifier
+                    new Database
                     {
-                        Name = "db",
-                        Schemas = new List<SchemaModifier>
+                        Var = "db",
+                        Schemas = new List<Schema>
                         {
-                            new SchemaModifier
+                            new Schema
                             {
-                                Name = "dbo",
-                                Tables = new List<TableModifier> { table1 }
+                                Var = "dbo",
+                                Tables = new List<Table> { table1 }
                             }
                         }
                     }
@@ -120,7 +120,7 @@ namespace DataCloner.Core.Debug
                      UsableBehaviours = "1,2",
                      Variables = new List<Variable>
                      {
-                         new Variable { Name = "", Value=""}
+                         new Variable { Name = ""}
                      },
                      Roads = new List<Road>
                      {
@@ -132,7 +132,7 @@ namespace DataCloner.Core.Debug
                      }
                 }
             };
-            project.Templates.ServerModifiers.Add(server1);
+            project.Templates.Servers.Add(server1);
 
             var xml = project.SerializeXml();
         }

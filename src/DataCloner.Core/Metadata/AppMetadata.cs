@@ -464,17 +464,17 @@ namespace DataCloner.Core.Metadata
 
             foreach (var server in this)
             {
-                var serModifier = behaviour.Modifiers.ServerModifiers.Find(s => s.Id.Equals(server.Key.ToString(), StringComparison.OrdinalIgnoreCase));
+                var serModifier = behaviour.Modifiers.Servers.Find(s => s.Id.Equals(server.Key.ToString(), StringComparison.OrdinalIgnoreCase));
                 if (serModifier != null)
                 {
                     foreach (var database in server.Value)
                     {
-                        var dbModifier = serModifier.Databases.Find(d => d.Name.Equals(database.Key, StringComparison.OrdinalIgnoreCase));
+                        var dbModifier = serModifier.Databases.Find(d => d.Var.Equals(database.Key, StringComparison.OrdinalIgnoreCase));
                         if (dbModifier != null)
                         {
                             foreach (var schema in database.Value)
                             {
-                                var scheModifier = dbModifier.Schemas.Find(s => s.Name.Equals( schema.Key, StringComparison.OrdinalIgnoreCase));
+                                var scheModifier = dbModifier.Schemas.Find(s => s.Var.Equals( schema.Key, StringComparison.OrdinalIgnoreCase));
                                 if (scheModifier != null)
                                     MergeFkModifierSchema(schema.Value, scheModifier.Tables);
                             }
@@ -484,7 +484,7 @@ namespace DataCloner.Core.Metadata
             }
         }
 
-        private void MergeFkModifierSchema(SchemaMetadata schemaMetadata, List<TableModifier> tablesModifier)
+        private void MergeFkModifierSchema(SchemaMetadata schemaMetadata, List<Table> tablesModifier)
         {
             foreach (var table in schemaMetadata)
             {
@@ -542,17 +542,17 @@ namespace DataCloner.Core.Metadata
 
             foreach (var server in this)
             {
-                var serModifier = behaviour.Modifiers.ServerModifiers.Find(s => s.Id.Equals(server.Key.ToString(), StringComparison.OrdinalIgnoreCase));
+                var serModifier = behaviour.Modifiers.Servers.Find(s => s.Id.Equals(server.Key.ToString(), StringComparison.OrdinalIgnoreCase));
                 if (serModifier != null)
                 {
                     foreach (var database in server.Value)
                     {
-                        var dbModifier = serModifier.Databases.Find(d => d.Name.Equals(database.Key, StringComparison.OrdinalIgnoreCase));
+                        var dbModifier = serModifier.Databases.Find(d => d.Var.Equals(database.Key, StringComparison.OrdinalIgnoreCase));
                         if (dbModifier != null)
                         {
                             foreach (var schema in database.Value)
                             {
-                                var scheModifier = dbModifier.Schemas.Find(s => s.Name.Equals(schema.Key, StringComparison.OrdinalIgnoreCase));
+                                var scheModifier = dbModifier.Schemas.Find(s => s.Var.Equals(schema.Key, StringComparison.OrdinalIgnoreCase));
                                 if (scheModifier != null)
                                 {
                                     foreach (var table in schema.Value)
@@ -569,7 +569,7 @@ namespace DataCloner.Core.Metadata
 
                                             foreach (var derivTbl in table.DerivativeTables)
                                             {
-                                                var derivTblModifier = tblModifier.DerativeTables.DerativeSubTables
+                                                var derivTblModifier = tblModifier.DerativeTables.DerivativeSubTables
                                                                               .FirstOrDefault(t => t.ServerId.Equals( derivTbl.ServerId.ToString(), StringComparison.OrdinalIgnoreCase) &&
                                                                                               t.Database.Equals( derivTbl.Database, StringComparison.OrdinalIgnoreCase) &&
                                                                                               t.Schema.Equals(derivTbl.Schema, StringComparison.OrdinalIgnoreCase) &&
