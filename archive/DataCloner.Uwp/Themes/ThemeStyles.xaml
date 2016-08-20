@@ -1,0 +1,964 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:xc="using:WinRTXamlToolkit.Controls">
+
+    <ResourceDictionary.ThemeDictionaries>
+        <ResourceDictionary x:Key="Default">
+            <Color x:Key="SystemAccentColor">#0095CE</Color>
+
+
+
+            <!--
+                ******************************************************************
+                COMMON CONTROL PROPERTIES
+                ******************************************************************
+            -->
+            <FontFamily x:Key="SymbolThemeFontFamily">Segoe MDL2 Assets</FontFamily>
+            <x:Double x:Key="TopBarHeight">40</x:Double>
+
+            <!--
+                ******************************************************************
+                COMMON CONTROL COLORS
+                ******************************************************************
+            -->
+
+
+            <!--
+                ******************************************************************
+                TOP BAR
+                ******************************************************************
+            -->
+            <SolidColorBrush x:Key="TopBarBackgroundBrush" Color="#0095CE" />
+
+            <!--
+                ******************************************************************
+                MENU
+                ******************************************************************
+            -->
+            <SolidColorBrush x:Key="MenuBackgroundBrush" Color="#243135" />
+
+        </ResourceDictionary>
+    </ResourceDictionary.ThemeDictionaries>
+
+
+    <!--
+        ******************************************************************
+        SECTION TOPBAR
+        ******************************************************************
+    -->
+    <Style x:Key="TopBarGrid" TargetType="Grid">
+        <Setter Property="Height" Value="{ThemeResource TopBarHeight}" />
+        <Setter Property="Background" Value="{ThemeResource TopBarBackgroundBrush}" />
+    </Style>
+
+
+    <!--
+        ******************************************************************
+        COMMUN CONTROLS
+        ******************************************************************
+    -->
+    <Style x:Key="BaseLabelStyle" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="20" />
+        <Setter Property="Foreground" Value="Blue" />
+    </Style>
+
+    <!--
+        ******************************************************************
+        SECTION MENU
+        ******************************************************************
+    -->
+    <Style x:Key="TreeViewItemContainerStyleLevel1" TargetType="xc:TreeViewItem">
+        <Setter Property="FontSize" Value="10" />
+        <Setter Property="Foreground" Value="#6c919e" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="xc:TreeViewItem">
+                    <Grid Background="{x:Null}">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="50" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="0" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <ToggleButton x:Name="ExpanderButton"
+                                      HorizontalAlignment="Stretch"
+                                      VerticalAlignment="Stretch"
+                                      IsTabStop="False"
+                                      TabNavigation="Once"
+                                      Visibility="Collapsed">
+                            <ToggleButton.Template>
+                                <ControlTemplate TargetType="ToggleButton">
+                                    <Grid x:Name="Root" Background="Transparent">
+                                        <Grid Margin="2 2 5 2" HorizontalAlignment="Right">
+                                            <Path x:Name="UncheckedVisual"
+                                                  Width="6"
+                                                  Height="9"
+                                                  HorizontalAlignment="Right"
+                                                  VerticalAlignment="Center"
+                                                  Data="M 0,0 L 0,9 L 5,4.5 Z"
+                                                  Fill="#FFFFFFFF"
+                                                  StrokeLineJoin="Miter"
+                                                  StrokeThickness="1">
+                                                <Path.Stroke>
+                                                    <SolidColorBrush Color="#FF989898" />
+                                                </Path.Stroke>
+                                            </Path>
+                                            <Path x:Name="CheckedVisual"
+                                                  Width="6"
+                                                  Height="6"
+                                                  HorizontalAlignment="Center"
+                                                  VerticalAlignment="Center"
+                                                  Data="M 6,0 L 6,6 L 0,6 Z"
+                                                  Fill="#FF262626"
+                                                  Opacity="0"
+                                                  StrokeLineJoin="Miter" />
+                                        </Grid>
+                                        <VisualStateManager.VisualStateGroups>
+                                            <VisualStateGroup x:Name="CommonStates">
+                                                <VisualState x:Name="Normal" />
+                                                <VisualState x:Name="Disabled">
+                                                    <Storyboard>
+                                                        <DoubleAnimation Duration="0"
+                                                                         Storyboard.TargetName="Root"
+                                                                         Storyboard.TargetProperty="Opacity"
+                                                                         To=".7" />
+                                                    </Storyboard>
+                                                </VisualState>
+                                                <VisualState x:Name="PointerOver">
+                                                    <Storyboard>
+                                                        <ColorAnimation Duration="0"
+                                                                        Storyboard.TargetName="UncheckedVisual"
+                                                                        Storyboard.TargetProperty="(Path.Stroke).Color"
+                                                                        To="#FF1BBBFA" />
+                                                    </Storyboard>
+                                                </VisualState>
+                                                <VisualState x:Name="Pressed">
+                                                    <Storyboard>
+                                                        <ColorAnimation Duration="0"
+                                                                        Storyboard.TargetName="UncheckedVisual"
+                                                                        Storyboard.TargetProperty="(Path.Stroke).Color"
+                                                                        To="#FF1BBBFA" />
+                                                    </Storyboard>
+                                                </VisualState>
+                                                <VisualState x:Name="Checked">
+                                                    <Storyboard>
+                                                        <DoubleAnimation Duration="0"
+                                                                         Storyboard.TargetName="UncheckedVisual"
+                                                                         Storyboard.TargetProperty="Opacity"
+                                                                         To="0" />
+                                                        <DoubleAnimation Duration="0"
+                                                                         Storyboard.TargetName="CheckedVisual"
+                                                                         Storyboard.TargetProperty="Opacity"
+                                                                         To="1" />
+                                                    </Storyboard>
+                                                </VisualState>
+                                                <VisualState x:Name="CheckedPointerOver">
+                                                    <Storyboard>
+                                                        <DoubleAnimation Duration="0"
+                                                                         Storyboard.TargetName="UncheckedVisual"
+                                                                         Storyboard.TargetProperty="Opacity"
+                                                                         To="0" />
+                                                        <DoubleAnimation Duration="0"
+                                                                         Storyboard.TargetName="CheckedVisual"
+                                                                         Storyboard.TargetProperty="Opacity"
+                                                                         To="1" />
+                                                        <ColorAnimation Duration="0"
+                                                                        Storyboard.TargetName="CheckedVisual"
+                                                                        Storyboard.TargetProperty="(Path.Fill).Color"
+                                                                        To="#FF1BBBFA" />
+                                                    </Storyboard>
+                                                </VisualState>
+                                                <VisualState x:Name="CheckedPressed">
+                                                    <Storyboard>
+                                                        <DoubleAnimation Duration="0"
+                                                                         Storyboard.TargetName="UncheckedVisual"
+                                                                         Storyboard.TargetProperty="Opacity"
+                                                                         To="0" />
+                                                        <DoubleAnimation Duration="0"
+                                                                         Storyboard.TargetName="CheckedVisual"
+                                                                         Storyboard.TargetProperty="Opacity"
+                                                                         To="1" />
+                                                        <ColorAnimation Duration="0"
+                                                                        Storyboard.TargetName="CheckedVisual"
+                                                                        Storyboard.TargetProperty="(Path.Fill).Color"
+                                                                        To="#FF1BBBFA" />
+                                                    </Storyboard>
+                                                </VisualState>
+                                                <VisualState x:Name="CheckedDisabled">
+                                                    <Storyboard>
+                                                        <DoubleAnimation Duration="0"
+                                                                         Storyboard.TargetName="Root"
+                                                                         Storyboard.TargetProperty="Opacity"
+                                                                         To=".7" />
+                                                        <DoubleAnimation Duration="0"
+                                                                         Storyboard.TargetName="UncheckedVisual"
+                                                                         Storyboard.TargetProperty="Opacity"
+                                                                         To="0" />
+                                                        <DoubleAnimation Duration="0"
+                                                                         Storyboard.TargetName="CheckedVisual"
+                                                                         Storyboard.TargetProperty="Opacity"
+                                                                         To="1" />
+                                                    </Storyboard>
+                                                </VisualState>
+                                                <VisualState x:Name="Indeterminate" />
+                                                <VisualState x:Name="IndeterminatePointerOver" />
+                                                <VisualState x:Name="IndeterminatePressed" />
+                                                <VisualState x:Name="IndeterminateDisabled" />
+                                            </VisualStateGroup>
+                                            <VisualStateGroup x:Name="CheckStates">
+                                                <VisualState x:Name="Unchecked" />
+                                                <VisualState x:Name="Checked2" />
+                                            </VisualStateGroup>
+                                        </VisualStateManager.VisualStateGroups>
+                                    </Grid>
+                                </ControlTemplate>
+                            </ToggleButton.Template>
+                        </ToggleButton>
+                        <Rectangle x:Name="Selection"
+                                   Grid.ColumnSpan="2"
+                                   IsHitTestVisible="False"
+                                   Opacity="0"
+                                   StrokeThickness="0">
+                            <Rectangle.Fill>
+                                <SolidColorBrush x:Name="SelectionFill" Color="Transparent" />
+                            </Rectangle.Fill>
+                            <Rectangle.Stroke>
+                                <SolidColorBrush x:Name="SelectionStroke" Color="Transparent" />
+                            </Rectangle.Stroke>
+                        </Rectangle>
+                        <Button x:Name="Header"
+                                Grid.Column="1"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Stretch"
+                                Background="{TemplateBinding Background}"
+                                BorderThickness="0"
+                                ClickMode="Press"
+                                Foreground="{TemplateBinding Foreground}"
+                                IsTabStop="False"
+                                TabNavigation="Once">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Grid Background="{TemplateBinding Background}"
+                                          BorderBrush="#161e20"
+                                          BorderThickness="0,0,0,1">
+                                        <Rectangle x:Name="Hover"
+                                                   Fill="#FFBADDE9"
+                                                   IsHitTestVisible="False"
+                                                   Opacity="0" />
+                                        <ContentPresenter x:Name="Content"
+                                                          HorizontalAlignment="Stretch"
+                                                          VerticalAlignment="Stretch"
+                                                          HorizontalContentAlignment="Stretch"
+                                                          VerticalContentAlignment="Center"
+                                                          Content="{TemplateBinding Content}"
+                                                          ContentTemplate="{TemplateBinding ContentTemplate}"
+                                                          Padding="{TemplateBinding Padding}" />
+                                    </Grid>
+                                </ControlTemplate>
+                            </Button.Template>
+                            <Button.Content>
+                                <ContentPresenter Content="{TemplateBinding Header}" ContentTemplate="{TemplateBinding HeaderTemplate}" />
+                            </Button.Content>
+                        </Button>
+                        <ItemsPresenter x:Name="ItemsHost"
+                                        Grid.Row="1"
+                                        Grid.Column="1"
+                                        Visibility="Visible" />
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="CommonStates">
+                                <VisualState x:Name="Normal" />
+                                <VisualState x:Name="MouseOver" />
+                                <VisualState x:Name="Pressed" />
+                                <VisualState x:Name="Disabled" />
+                            </VisualStateGroup>
+                            <VisualStateGroup x:Name="SelectionStates">
+                                <VisualState x:Name="Unselected" />
+                                <VisualState x:Name="Selected">
+                                    <Storyboard>
+                                        <DoubleAnimation Duration="0"
+                                                         Storyboard.TargetName="Selection"
+                                                         Storyboard.TargetProperty="Opacity"
+                                                         To="1" />
+                                    </Storyboard>
+                                </VisualState>
+                                <VisualState x:Name="SelectedInactive" />
+                            </VisualStateGroup>
+                            <VisualStateGroup x:Name="HasItemsStates">
+                                <VisualState x:Name="HasItems" />
+                                <VisualState x:Name="NoItems">
+                                    <Storyboard>
+                                        <ObjectAnimationUsingKeyFrames Duration="0"
+                                                                       Storyboard.TargetName="ExpanderButton"
+                                                                       Storyboard.TargetProperty="Visibility">
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="Collapsed" />
+                                        </ObjectAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+                            </VisualStateGroup>
+                            <VisualStateGroup x:Name="ExpansionStates">
+                                <VisualState x:Name="Collapsed" />
+                                <VisualState x:Name="Expanded">
+                                    <Storyboard>
+                                        <ObjectAnimationUsingKeyFrames Duration="0"
+                                                                       Storyboard.TargetName="ItemsHost"
+                                                                       Storyboard.TargetProperty="Visibility">
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="Visible" />
+                                        </ObjectAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style x:Key="TreeViewItemContainerStyleLevel2" TargetType="xc:TreeViewItem">
+        <Setter Property="FontSize" Value="18" />
+        <Setter Property="Foreground" Value="#465e66" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="xc:TreeViewItem">
+                    <Grid Background="{x:Null}">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="37" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="35" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <ToggleButton x:Name="ExpanderButton"
+                                      HorizontalAlignment="Stretch"
+                                      VerticalAlignment="Stretch"
+                                      IsTabStop="False"
+                                      TabNavigation="Once"
+                                      Visibility="Collapsed">
+                            <ToggleButton.Template>
+                                <ControlTemplate TargetType="ToggleButton">
+                                    <Grid x:Name="Root" Background="Transparent">
+                                        <Grid Margin="2 2 5 2" HorizontalAlignment="Right">
+                                            <Path x:Name="UncheckedVisual"
+                                                  Width="6"
+                                                  Height="9"
+                                                  HorizontalAlignment="Right"
+                                                  VerticalAlignment="Center"
+                                                  Data="M 0,0 L 0,9 L 5,4.5 Z"
+                                                  Fill="#FFFFFFFF"
+                                                  StrokeLineJoin="Miter"
+                                                  StrokeThickness="1">
+                                                <Path.Stroke>
+                                                    <SolidColorBrush Color="#FF989898" />
+                                                </Path.Stroke>
+                                            </Path>
+                                            <Path x:Name="CheckedVisual"
+                                                  Width="6"
+                                                  Height="6"
+                                                  HorizontalAlignment="Center"
+                                                  VerticalAlignment="Center"
+                                                  Data="M 6,0 L 6,6 L 0,6 Z"
+                                                  Fill="#FF262626"
+                                                  Opacity="0"
+                                                  StrokeLineJoin="Miter" />
+                                        </Grid>
+                                        <VisualStateManager.VisualStateGroups>
+                                            <VisualStateGroup x:Name="CommonStates">
+                                                <VisualState x:Name="Normal" />
+                                                <VisualState x:Name="Disabled">
+                                                    <Storyboard>
+                                                        <DoubleAnimation Duration="0"
+                                                                         Storyboard.TargetName="Root"
+                                                                         Storyboard.TargetProperty="Opacity"
+                                                                         To=".7" />
+                                                    </Storyboard>
+                                                </VisualState>
+                                                <VisualState x:Name="PointerOver">
+                                                    <Storyboard>
+                                                        <ColorAnimation Duration="0"
+                                                                        Storyboard.TargetName="UncheckedVisual"
+                                                                        Storyboard.TargetProperty="(Path.Stroke).Color"
+                                                                        To="#FF1BBBFA" />
+                                                    </Storyboard>
+                                                </VisualState>
+                                                <VisualState x:Name="Pressed">
+                                                    <Storyboard>
+                                                        <ColorAnimation Duration="0"
+                                                                        Storyboard.TargetName="UncheckedVisual"
+                                                                        Storyboard.TargetProperty="(Path.Stroke).Color"
+                                                                        To="#FF1BBBFA" />
+                                                    </Storyboard>
+                                                </VisualState>
+                                                <VisualState x:Name="Checked">
+                                                    <Storyboard>
+                                                        <DoubleAnimation Duration="0"
+                                                                         Storyboard.TargetName="UncheckedVisual"
+                                                                         Storyboard.TargetProperty="Opacity"
+                                                                         To="0" />
+                                                        <DoubleAnimation Duration="0"
+                                                                         Storyboard.TargetName="CheckedVisual"
+                                                                         Storyboard.TargetProperty="Opacity"
+                                                                         To="1" />
+                                                    </Storyboard>
+                                                </VisualState>
+                                                <VisualState x:Name="CheckedPointerOver">
+                                                    <Storyboard>
+                                                        <DoubleAnimation Duration="0"
+                                                                         Storyboard.TargetName="UncheckedVisual"
+                                                                         Storyboard.TargetProperty="Opacity"
+                                                                         To="0" />
+                                                        <DoubleAnimation Duration="0"
+                                                                         Storyboard.TargetName="CheckedVisual"
+                                                                         Storyboard.TargetProperty="Opacity"
+                                                                         To="1" />
+                                                        <ColorAnimation Duration="0"
+                                                                        Storyboard.TargetName="CheckedVisual"
+                                                                        Storyboard.TargetProperty="(Path.Fill).Color"
+                                                                        To="#FF1BBBFA" />
+                                                    </Storyboard>
+                                                </VisualState>
+                                                <VisualState x:Name="CheckedPressed">
+                                                    <Storyboard>
+                                                        <DoubleAnimation Duration="0"
+                                                                         Storyboard.TargetName="UncheckedVisual"
+                                                                         Storyboard.TargetProperty="Opacity"
+                                                                         To="0" />
+                                                        <DoubleAnimation Duration="0"
+                                                                         Storyboard.TargetName="CheckedVisual"
+                                                                         Storyboard.TargetProperty="Opacity"
+                                                                         To="1" />
+                                                        <ColorAnimation Duration="0"
+                                                                        Storyboard.TargetName="CheckedVisual"
+                                                                        Storyboard.TargetProperty="(Path.Fill).Color"
+                                                                        To="#FF1BBBFA" />
+                                                    </Storyboard>
+                                                </VisualState>
+                                                <VisualState x:Name="CheckedDisabled">
+                                                    <Storyboard>
+                                                        <DoubleAnimation Duration="0"
+                                                                         Storyboard.TargetName="Root"
+                                                                         Storyboard.TargetProperty="Opacity"
+                                                                         To=".7" />
+                                                        <DoubleAnimation Duration="0"
+                                                                         Storyboard.TargetName="UncheckedVisual"
+                                                                         Storyboard.TargetProperty="Opacity"
+                                                                         To="0" />
+                                                        <DoubleAnimation Duration="0"
+                                                                         Storyboard.TargetName="CheckedVisual"
+                                                                         Storyboard.TargetProperty="Opacity"
+                                                                         To="1" />
+                                                    </Storyboard>
+                                                </VisualState>
+                                                <VisualState x:Name="Indeterminate" />
+                                                <VisualState x:Name="IndeterminatePointerOver" />
+                                                <VisualState x:Name="IndeterminatePressed" />
+                                                <VisualState x:Name="IndeterminateDisabled" />
+                                            </VisualStateGroup>
+                                            <VisualStateGroup x:Name="CheckStates">
+                                                <VisualState x:Name="Unchecked" />
+                                                <VisualState x:Name="Checked2" />
+                                            </VisualStateGroup>
+                                        </VisualStateManager.VisualStateGroups>
+                                    </Grid>
+                                </ControlTemplate>
+                            </ToggleButton.Template>
+                        </ToggleButton>
+                        <Rectangle x:Name="Selection"
+                                   Grid.ColumnSpan="2"
+                                   IsHitTestVisible="False"
+                                   Opacity="0"
+                                   StrokeThickness="0">
+                            <Rectangle.Fill>
+                                <SolidColorBrush x:Name="SelectionFill" Color="#1b2528" />
+                            </Rectangle.Fill>
+                            <Rectangle.Stroke>
+                                <SolidColorBrush x:Name="SelectionStroke" Color="Transparent" />
+                            </Rectangle.Stroke>
+                        </Rectangle>
+                        <Rectangle x:Name="SelectionIndicator"
+                                   Width="5"
+                                   HorizontalAlignment="Left"
+                                   Fill="#00aeef"
+                                   IsHitTestVisible="False"
+                                   Opacity="0" />
+                        <Button x:Name="Header"
+                                Grid.Column="1"
+                                Grid.ColumnSpan="2"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Stretch"
+                                HorizontalContentAlignment="Stretch"
+                                VerticalContentAlignment="Stretch"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                ClickMode="Hover"
+                                Foreground="{TemplateBinding Foreground}"
+                                IsTabStop="False"
+                                TabNavigation="Once">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Grid Background="{TemplateBinding Background}">
+                                        <Rectangle x:Name="Hover"
+                                                   Fill="#FFBADDE9"
+                                                   IsHitTestVisible="False"
+                                                   Opacity="0"
+                                                   Stroke="#FF6DBDD1"
+                                                   StrokeThickness="1" />
+                                        <ContentPresenter x:Name="Content"
+                                                          HorizontalAlignment="Stretch"
+                                                          VerticalAlignment="Stretch"
+                                                          HorizontalContentAlignment="Stretch"
+                                                          VerticalContentAlignment="Center"
+                                                          Content="{TemplateBinding Content}"
+                                                          ContentTemplate="{TemplateBinding ContentTemplate}" />
+                                    </Grid>
+                                </ControlTemplate>
+                            </Button.Template>
+                            <Button.Content>
+                                <ContentPresenter Content="{TemplateBinding Header}" ContentTemplate="{TemplateBinding HeaderTemplate}" />
+                            </Button.Content>
+                        </Button>
+                        <ItemsPresenter x:Name="ItemsHost"
+                                        Grid.Row="1"
+                                        Grid.Column="1"
+                                        Grid.ColumnSpan="2"
+                                        Visibility="Collapsed" />
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="CommonStates">
+                                <VisualState x:Name="Normal" />
+                                <VisualState x:Name="MouseOver" />
+                                <VisualState x:Name="Pressed" />
+                                <VisualState x:Name="Disabled" />
+                            </VisualStateGroup>
+                            <VisualStateGroup x:Name="SelectionStates">
+                                <VisualState x:Name="Unselected" />
+                                <VisualState x:Name="Selected">
+                                    <Storyboard>
+                                        <DoubleAnimation Duration="0"
+                                                         Storyboard.TargetName="Selection"
+                                                         Storyboard.TargetProperty="Opacity"
+                                                         To="1" />
+                                        <DoubleAnimation Duration="0"
+                                                         Storyboard.TargetName="SelectionIndicator"
+                                                         Storyboard.TargetProperty="Opacity"
+                                                         To="1" />
+                                    </Storyboard>
+                                </VisualState>
+                                <VisualState x:Name="SelectedInactive" />
+                            </VisualStateGroup>
+                            <VisualStateGroup x:Name="HasItemsStates">
+                                <VisualState x:Name="HasItems" />
+                                <VisualState x:Name="NoItems">
+                                    <Storyboard>
+                                        <ObjectAnimationUsingKeyFrames Duration="0"
+                                                                       Storyboard.TargetName="ExpanderButton"
+                                                                       Storyboard.TargetProperty="Visibility">
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="Collapsed" />
+                                        </ObjectAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+                            </VisualStateGroup>
+                            <VisualStateGroup x:Name="ExpansionStates">
+                                <VisualState x:Name="Collapsed" />
+                                <VisualState x:Name="Expanded">
+                                    <Storyboard>
+                                        <ObjectAnimationUsingKeyFrames Duration="0"
+                                                                       Storyboard.TargetName="ItemsHost"
+                                                                       Storyboard.TargetProperty="Visibility">
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="Visible" />
+                                        </ObjectAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style x:Key="TreeViewItemContainerStyleLevel3" TargetType="xc:TreeViewItem">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="xc:TreeViewItem">
+                    <Grid Background="{x:Null}">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="15" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <ToggleButton x:Name="ExpanderButton"
+                                      HorizontalAlignment="Stretch"
+                                      VerticalAlignment="Stretch"
+                                      IsTabStop="False"
+                                      TabNavigation="Once">
+                            <ToggleButton.Template>
+                                <ControlTemplate TargetType="ToggleButton">
+                                    <Grid x:Name="Root" Background="Transparent">
+                                        <Grid Margin="2 2 5 2" HorizontalAlignment="Right">
+                                            <Path x:Name="UncheckedVisual"
+                                                  Width="6"
+                                                  Height="9"
+                                                  HorizontalAlignment="Right"
+                                                  VerticalAlignment="Center"
+                                                  Data="M 0,0 L 0,9 L 5,4.5 Z"
+                                                  Fill="#FFFFFFFF"
+                                                  StrokeLineJoin="Miter"
+                                                  StrokeThickness="1">
+                                                <Path.Stroke>
+                                                    <SolidColorBrush Color="#FF989898" />
+                                                </Path.Stroke>
+                                            </Path>
+                                            <Path x:Name="CheckedVisual"
+                                                  Width="6"
+                                                  Height="6"
+                                                  HorizontalAlignment="Center"
+                                                  VerticalAlignment="Center"
+                                                  Data="M 6,0 L 6,6 L 0,6 Z"
+                                                  Fill="#FF262626"
+                                                  Opacity="0"
+                                                  StrokeLineJoin="Miter" />
+                                        </Grid>
+                                        <VisualStateManager.VisualStateGroups>
+                                            <VisualStateGroup x:Name="CommonStates">
+                                                <VisualState x:Name="Normal" />
+                                                <VisualState x:Name="Disabled">
+                                                    <Storyboard>
+                                                        <DoubleAnimation Duration="0"
+                                                                         Storyboard.TargetName="Root"
+                                                                         Storyboard.TargetProperty="Opacity"
+                                                                         To=".7" />
+                                                    </Storyboard>
+                                                </VisualState>
+                                                <VisualState x:Name="PointerOver">
+                                                    <Storyboard>
+                                                        <ColorAnimation Duration="0"
+                                                                        Storyboard.TargetName="UncheckedVisual"
+                                                                        Storyboard.TargetProperty="(Path.Stroke).Color"
+                                                                        To="#FF1BBBFA" />
+                                                    </Storyboard>
+                                                </VisualState>
+                                                <VisualState x:Name="Pressed">
+                                                    <Storyboard>
+                                                        <ColorAnimation Duration="0"
+                                                                        Storyboard.TargetName="UncheckedVisual"
+                                                                        Storyboard.TargetProperty="(Path.Stroke).Color"
+                                                                        To="#FF1BBBFA" />
+                                                    </Storyboard>
+                                                </VisualState>
+                                                <VisualState x:Name="Checked">
+                                                    <Storyboard>
+                                                        <DoubleAnimation Duration="0"
+                                                                         Storyboard.TargetName="UncheckedVisual"
+                                                                         Storyboard.TargetProperty="Opacity"
+                                                                         To="0" />
+                                                        <DoubleAnimation Duration="0"
+                                                                         Storyboard.TargetName="CheckedVisual"
+                                                                         Storyboard.TargetProperty="Opacity"
+                                                                         To="1" />
+                                                    </Storyboard>
+                                                </VisualState>
+                                                <VisualState x:Name="CheckedPointerOver">
+                                                    <Storyboard>
+                                                        <DoubleAnimation Duration="0"
+                                                                         Storyboard.TargetName="UncheckedVisual"
+                                                                         Storyboard.TargetProperty="Opacity"
+                                                                         To="0" />
+                                                        <DoubleAnimation Duration="0"
+                                                                         Storyboard.TargetName="CheckedVisual"
+                                                                         Storyboard.TargetProperty="Opacity"
+                                                                         To="1" />
+                                                        <ColorAnimation Duration="0"
+                                                                        Storyboard.TargetName="CheckedVisual"
+                                                                        Storyboard.TargetProperty="(Path.Fill).Color"
+                                                                        To="#FF1BBBFA" />
+                                                    </Storyboard>
+                                                </VisualState>
+                                                <VisualState x:Name="CheckedPressed">
+                                                    <Storyboard>
+                                                        <DoubleAnimation Duration="0"
+                                                                         Storyboard.TargetName="UncheckedVisual"
+                                                                         Storyboard.TargetProperty="Opacity"
+                                                                         To="0" />
+                                                        <DoubleAnimation Duration="0"
+                                                                         Storyboard.TargetName="CheckedVisual"
+                                                                         Storyboard.TargetProperty="Opacity"
+                                                                         To="1" />
+                                                        <ColorAnimation Duration="0"
+                                                                        Storyboard.TargetName="CheckedVisual"
+                                                                        Storyboard.TargetProperty="(Path.Fill).Color"
+                                                                        To="#FF1BBBFA" />
+                                                    </Storyboard>
+                                                </VisualState>
+                                                <VisualState x:Name="CheckedDisabled">
+                                                    <Storyboard>
+                                                        <DoubleAnimation Duration="0"
+                                                                         Storyboard.TargetName="Root"
+                                                                         Storyboard.TargetProperty="Opacity"
+                                                                         To=".7" />
+                                                        <DoubleAnimation Duration="0"
+                                                                         Storyboard.TargetName="UncheckedVisual"
+                                                                         Storyboard.TargetProperty="Opacity"
+                                                                         To="0" />
+                                                        <DoubleAnimation Duration="0"
+                                                                         Storyboard.TargetName="CheckedVisual"
+                                                                         Storyboard.TargetProperty="Opacity"
+                                                                         To="1" />
+                                                    </Storyboard>
+                                                </VisualState>
+                                                <VisualState x:Name="Indeterminate" />
+                                                <VisualState x:Name="IndeterminatePointerOver" />
+                                                <VisualState x:Name="IndeterminatePressed" />
+                                                <VisualState x:Name="IndeterminateDisabled" />
+                                            </VisualStateGroup>
+                                            <VisualStateGroup x:Name="CheckStates">
+                                                <VisualState x:Name="Unchecked" />
+                                                <VisualState x:Name="Checked2" />
+                                            </VisualStateGroup>
+                                        </VisualStateManager.VisualStateGroups>
+                                    </Grid>
+                                </ControlTemplate>
+                            </ToggleButton.Template>
+                        </ToggleButton>
+                        <Rectangle x:Name="Selection"
+                                   Grid.ColumnSpan="2"
+                                   IsHitTestVisible="False"
+                                   Opacity="0">
+                            <Rectangle.Fill>
+                                <SolidColorBrush x:Name="SelectionFill" Color="#2a393e" />
+                            </Rectangle.Fill>
+                            <Rectangle.Stroke>
+                                <SolidColorBrush x:Name="SelectionStroke" Color="Transparent" />
+                            </Rectangle.Stroke>
+                        </Rectangle>
+                        <Button x:Name="Header"
+                                Grid.Column="1"
+                                HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                ClickMode="Hover"
+                                Foreground="{TemplateBinding Foreground}"
+                                IsTabStop="False"
+                                TabNavigation="Once">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Grid Background="{TemplateBinding Background}">
+                                        <Rectangle x:Name="Hover"
+                                                   Fill="#ff00ff00"
+                                                   IsHitTestVisible="False"
+                                                   Opacity="0" />
+                                        <ContentPresenter x:Name="Content"
+                                                          HorizontalAlignment="Stretch"
+                                                          VerticalAlignment="Stretch"
+                                                          HorizontalContentAlignment="Stretch"
+                                                          VerticalContentAlignment="Center"
+                                                          Content="{TemplateBinding Content}"
+                                                          ContentTemplate="{TemplateBinding ContentTemplate}" />
+                                    </Grid>
+                                </ControlTemplate>
+                            </Button.Template>
+                            <Button.Content>
+                                <ContentPresenter Content="{TemplateBinding Header}" ContentTemplate="{TemplateBinding HeaderTemplate}" />
+                            </Button.Content>
+                        </Button>
+                        <ItemsPresenter x:Name="ItemsHost"
+                                        Grid.Row="1"
+                                        Grid.Column="1"
+                                        Visibility="Collapsed" />
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="CommonStates">
+                                <VisualState x:Name="Normal" />
+                                <VisualState x:Name="MouseOver" />
+                                <VisualState x:Name="Pressed" />
+                                <VisualState x:Name="Disabled">
+                                    <Storyboard>
+                                        <ObjectAnimationUsingKeyFrames Duration="0"
+                                                                       Storyboard.TargetName="Header"
+                                                                       Storyboard.TargetProperty="Foreground">
+                                            <DiscreteObjectKeyFrame KeyTime="0">
+                                                <DiscreteObjectKeyFrame.Value>
+                                                    <SolidColorBrush Color="#FF999999" />
+                                                </DiscreteObjectKeyFrame.Value>
+                                            </DiscreteObjectKeyFrame>
+                                        </ObjectAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+                            </VisualStateGroup>
+                            <VisualStateGroup x:Name="SelectionStates">
+                                <VisualState x:Name="Unselected" />
+                                <VisualState x:Name="Selected">
+                                    <Storyboard>
+                                        <DoubleAnimation Duration="0"
+                                                         Storyboard.TargetName="Selection"
+                                                         Storyboard.TargetProperty="Opacity"
+                                                         To="1" />
+                                    </Storyboard>
+                                </VisualState>
+                                <VisualState x:Name="SelectedInactive" />
+                            </VisualStateGroup>
+                            <VisualStateGroup x:Name="HasItemsStates">
+                                <VisualState x:Name="HasItems" />
+                                <VisualState x:Name="NoItems">
+                                    <Storyboard>
+                                        <ObjectAnimationUsingKeyFrames Duration="0"
+                                                                       Storyboard.TargetName="ExpanderButton"
+                                                                       Storyboard.TargetProperty="Visibility">
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="Collapsed" />
+                                        </ObjectAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+                            </VisualStateGroup>
+                            <VisualStateGroup x:Name="ExpansionStates">
+                                <VisualState x:Name="Collapsed" />
+                                <VisualState x:Name="Expanded">
+                                    <Storyboard>
+                                        <ObjectAnimationUsingKeyFrames Duration="0"
+                                                                       Storyboard.TargetName="ItemsHost"
+                                                                       Storyboard.TargetProperty="Visibility">
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="Visible" />
+                                        </ObjectAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="TreeViewMenuStyle" TargetType="xc:TreeView">
+        <Setter Property="Background" Value="#243135" />
+        <Setter Property="ItemContainerStyle" Value="{StaticResource TreeViewItemContainerStyleLevel1}" />
+        <Setter Property="ItemTemplate" Value="{StaticResource TreeViewItemDataTemplateLevel1}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="xc:TreeView">
+                    <Grid>
+                        <Border>
+                            <Border Background="{TemplateBinding Background}">
+                                <ScrollViewer x:Name="ScrollViewer"
+                                              Background="{x:Null}"
+                                              BorderBrush="Transparent"
+                                              BorderThickness="0"
+                                              HorizontalScrollBarVisibility="Auto"
+                                              IsTabStop="False"
+                                              TabNavigation="Once"
+                                              VerticalScrollBarVisibility="Auto">
+                                    <ItemsPresenter />
+                                </ScrollViewer>
+                            </Border>
+                        </Border>
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="CommonStates">
+                                <VisualState x:Name="Normal" />
+                                <VisualState x:Name="MouseOver" />
+                                <VisualState x:Name="Pressed" />
+                                <VisualState x:Name="Disabled" />
+                            </VisualStateGroup>
+                            <VisualStateGroup x:Name="FocusStates">
+                                <VisualState x:Name="Unfocused" />
+                                <VisualState x:Name="Focused" />
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Name="MenuFlyoutPresenterItemTemplate" TargetType="MenuFlyoutPresenter">
+        <Setter Property="Background" Value="Gray" />
+    </Style>
+    <Style x:Name="MenuFlyoutItemStyle" TargetType="MenuFlyoutItem">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{ThemeResource SystemControlForegroundBaseHighBrush}" />
+        <Setter Property="Padding" Value="{ThemeResource MenuFlyoutItemThemePadding}" />
+        <Setter Property="FontSize" Value="{ThemeResource ControlContentThemeFontSize}" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="UseSystemFocusVisuals" Value="True" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="MenuFlyoutItem">
+                    <Grid x:Name="LayoutRoot"
+                          Background="{TemplateBinding Background}"
+                          BorderBrush="{TemplateBinding BorderBrush}"
+                          BorderThickness="{TemplateBinding BorderThickness}"
+                          Padding="{TemplateBinding Padding}">
+                        <TextBlock x:Name="TextBlock"
+                                   HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                   VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                   Foreground="{TemplateBinding Foreground}"
+                                   Text="{TemplateBinding Text}"
+                                   TextTrimming="Clip" />
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="CommonStates">
+                                <VisualState x:Name="Normal">
+                                    <Storyboard>
+                                        <PointerUpThemeAnimation Storyboard.TargetName="TextBlock" />
+                                    </Storyboard>
+                                </VisualState>
+                                <VisualState x:Name="PointerOver">
+                                    <Storyboard>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="LayoutRoot" Storyboard.TargetProperty="Background">
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlHighlightListLowBrush}" />
+                                        </ObjectAnimationUsingKeyFrames>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="TextBlock" Storyboard.TargetProperty="Foreground">
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlHighlightAltBaseHighBrush}" />
+                                        </ObjectAnimationUsingKeyFrames>
+                                        <PointerUpThemeAnimation Storyboard.TargetName="TextBlock" />
+                                    </Storyboard>
+                                </VisualState>
+                                <VisualState x:Name="Pressed">
+                                    <Storyboard>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="LayoutRoot" Storyboard.TargetProperty="Background">
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlHighlightListMediumBrush}" />
+                                        </ObjectAnimationUsingKeyFrames>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="TextBlock" Storyboard.TargetProperty="Foreground">
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlHighlightAltBaseHighBrush}" />
+                                        </ObjectAnimationUsingKeyFrames>
+                                        <PointerDownThemeAnimation Storyboard.TargetName="TextBlock" />
+                                    </Storyboard>
+                                </VisualState>
+                                <VisualState x:Name="Disabled">
+                                    <Storyboard>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="TextBlock" Storyboard.TargetProperty="Foreground">
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlDisabledBaseMediumLowBrush}" />
+                                        </ObjectAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+                            </VisualStateGroup>
+                            <VisualStateGroup x:Name="CheckPlaceholderStates">
+                                <VisualState x:Name="NoPlaceholder" />
+                                <VisualState x:Name="CheckPlaceholder">
+                                    <Storyboard>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="TextBlock" Storyboard.TargetProperty="Margin">
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource MenuFlyoutItemPlaceholderThemeThickness}" />
+                                        </ObjectAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+                            </VisualStateGroup>
+                            <VisualStateGroup x:Name="PaddingSizeStates">
+                                <VisualState x:Name="DefaultPadding" />
+                                <VisualState x:Name="NarrowPadding">
+                                    <Storyboard>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="LayoutRoot" Storyboard.TargetProperty="Padding">
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource MenuFlyoutItemThemePaddingNarrow}" />
+                                        </ObjectAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</ResourceDictionary>
