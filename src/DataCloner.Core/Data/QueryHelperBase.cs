@@ -10,12 +10,13 @@ using System.Data.Common;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
+using DataCloner.Core.Metadata.Context;
 
 namespace DataCloner.Core.Data
 {
     internal abstract class QueryHelperBase : IQueryHelper
     {
-        private readonly ExecutionContextMetadata _metadata;
+        private readonly Metadatas _metadata;
         private readonly IDbConnection _connection;
 
         /// <summary>
@@ -49,7 +50,7 @@ namespace DataCloner.Core.Data
         public abstract ISqlTypeConverter TypeConverter { get; }
         public abstract ISqlWriter SqlWriter { get;}
 
-        protected QueryHelperBase(ExecutionContextMetadata metadata, string providerName, string connectionString)
+        protected QueryHelperBase(Metadatas metadata, string providerName, string connectionString)
         {
             DbProviderFactory factory;
             //var factory = DbProviderFactories.GetFactory(providerName);
@@ -86,7 +87,7 @@ namespace DataCloner.Core.Data
             return databases.ToArray();
         }
 
-        public void GetColumns(ColumnReader reader, Int16 serverId, string database)
+        public void GetColumns(ColumnReader reader, Metadatas metadata, Int16 serverId, string database)
         {
             using (var cmd = Connection.CreateCommand())
             {
@@ -99,12 +100,12 @@ namespace DataCloner.Core.Data
 
                 Connection.Open();
                 using (var r = cmd.ExecuteReader())
-                    reader(r, serverId, database, TypeConverter);
+                    reader(r, metadata, serverId, database, TypeConverter);
                 Connection.Close();
             }
         }
 
-        public void GetForeignKeys(ForeignKeyReader reader, Int16 serverId, string database)
+        public void GetForeignKeys(ForeignKeyReader reader, Metadatas metadata, Int16 serverId, string database)
         {
             using (var cmd = Connection.CreateCommand())
             {
@@ -117,12 +118,12 @@ namespace DataCloner.Core.Data
 
                 Connection.Open();
                 using (var r = cmd.ExecuteReader())
-                    reader(r, serverId, database);
+                    reader(r, metadata, serverId, database);
                 Connection.Close();
             }
         }
 
-        public void GetUniqueKeys(UniqueKeyReader reader, Int16 serverId, string database)
+        public void GetUniqueKeys(UniqueKeyReader reader, Metadatas metadata, Int16 serverId, string database)
         {
             using (var cmd = Connection.CreateCommand())
             {
@@ -135,7 +136,7 @@ namespace DataCloner.Core.Data
 
                 Connection.Open();
                 using (var r = cmd.ExecuteReader())
-                    reader(r, serverId, database);
+                    reader(r, metadata, serverId, database);
                 Connection.Close();
             }
         }

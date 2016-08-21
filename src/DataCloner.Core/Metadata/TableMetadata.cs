@@ -11,7 +11,7 @@ using System.Text;
 namespace DataCloner.Core.Metadata
 {
     /// <summary>
-    /// Contains all the metadatas about a SQL server's table.
+    /// Contains all the metadatas of a SQL server's table.
     /// </summary>
     /// <example>Columns, PrimaryKeys, ForeignKeys...</example>
     [DebuggerDisplay("{Name}")]

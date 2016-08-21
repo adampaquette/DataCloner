@@ -12,7 +12,7 @@ namespace DataCloner.Core.Configuration
         public string Name { get; set; }
         [XmlAttribute]
         public bool? IsStatic { get; set; }
-        public DerivativeTable DerativeTables { get; set; }
+        public DerivativeTableGlobal DerativeTables { get; set; }
         [XmlArrayItem("Column")]
         public List<DataBuilder> DataBuilders { get; set; }
         public ForeignKeys ForeignKeys { get; set; }
@@ -20,7 +20,7 @@ namespace DataCloner.Core.Configuration
         public Table()
         {
             DataBuilders = new List<DataBuilder>();
-            DerativeTables = new DerivativeTable();
+            DerativeTables = new DerivativeTableGlobal();
             ForeignKeys = new ForeignKeys();
         }
 

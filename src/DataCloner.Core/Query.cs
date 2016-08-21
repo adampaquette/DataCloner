@@ -2,6 +2,7 @@
 using DataCloner.Core.Framework;
 using DataCloner.Core.Internal;
 using DataCloner.Core.Metadata;
+using DataCloner.Core.Metadata.Context;
 //using LZ4;
 using System;
 using System.Collections.Generic;
@@ -18,7 +19,7 @@ namespace DataCloner.Core
         public const int CURRENT_FORMAT_VERSION = 1;
 
         private IQueryDispatcher _dispatcher;
-        private ExecutionContextMetadata _metadata;
+        private Metadatas _metadata;
         private ExecutionPlanByServer _executionPlanByServer;
         private ImmutableHashSet<SqlConnection> _connections;
         private int _formatVersion;
@@ -34,7 +35,7 @@ namespace DataCloner.Core
 
         public event QueryCommitingEventHandler Commiting;
 
-        internal Query(ExecutionContextMetadata metadata,
+        internal Query(Metadatas metadata,
             ExecutionPlanByServer executionPlanByServer,
             ImmutableHashSet<SqlConnection> connections, 
             int formatVersion)
@@ -116,7 +117,7 @@ namespace DataCloner.Core
             int formatVersion;
             string description;
             HashSet<SqlConnection> connections;
-            ExecutionContextMetadata metadata;
+            Metadatas metadata;
             ExecutionPlanByServer executionPlanByServer;
             FastAccessList<object> referenceTracking;
 
@@ -140,7 +141,7 @@ namespace DataCloner.Core
                 referenceTracking = DeserializeReferenceTracking(bstream);
                 connections = DeserializeConnections(bstream);
                 executionPlanByServer = ExecutionPlanByServer.Deserialize(bstream, referenceTracking);
-                metadata = ExecutionContextMetadata.Deserialize(bstream, referenceTracking);
+                metadata = Metadatas.Deserialize(bstream, referenceTracking);
             }
 
             return new Query(metadata, executionPlanByServer, connections.ToImmutableHashSet(), formatVersion)

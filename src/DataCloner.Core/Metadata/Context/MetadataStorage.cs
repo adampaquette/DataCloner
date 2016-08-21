@@ -1,32 +1,32 @@
 ﻿using DataCloner.Core.Configuration;
 using DataCloner.Core.Data;
 using DataCloner.Core.Framework;
+using DataCloner.Core.Metadata.Context;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace DataCloner.Core.Metadata
+namespace DataCloner.Core.Metadata.Context
 {
     /// <summary>
-    /// Contains all the metadatas used by an execution context.
+    /// Represent a file containing all the metadatas used by an execution context.
     /// </summary>
-    /// <example>Servers, Databases, Schemas, Tables, Columns, PrimaryKeys, ForeignKeys...</example>
     public sealed class MetadataStorage
     {
         internal delegate void Initialiser(IQueryDispatcher dispatcher, CloningContext settings, ref MetadataStorage container);
 
         public string ConfigFileHash { get; set; }
-        public Dictionary<ServerIdentifier, ServerIdentifier> ServerMap { get; set; }
+        public Dictionary<SehemaIdentifier, SehemaIdentifier> Map { get; set; }
         public List<SqlConnection> ConnectionStrings { get; set; }
-        public ExecutionContextMetadata Metadatas { get; set; }
+        public Metadatas Metadatas { get; set; }
 
         public MetadataStorage()
         {
-            ServerMap = new Dictionary<ServerIdentifier, ServerIdentifier>();
+            Map = new Dictionary<SehemaIdentifier, SehemaIdentifier>();
             ConnectionStrings = new List<SqlConnection>();
-            Metadatas = new ExecutionContextMetadata();
+            Metadatas = new Metadatas();
         }
 
         /// <summary>
@@ -159,10 +159,10 @@ namespace DataCloner.Core.Metadata
         {
             output.Write(ConfigFileHash);
 
-            if (ServerMap != null)
+            if (Map != null)
             {
-                output.Write(ServerMap.Count);
-                foreach (var sm in ServerMap)
+                output.Write(Map.Count);
+                foreach (var sm in Map)
                 {
                     sm.Key.Serialize(output);
                     sm.Value.Serialize(output);
@@ -210,7 +210,7 @@ namespace DataCloner.Core.Metadata
                                                                    ConfigurationProject proj, Behavior clonerBehaviour,
                                                                    Map map, string configHash)
         {
-            var container = new MetadataStorage { ConfigFileHash = configHash, ServerMap = map.ConvertToDictionnary() };
+            var container = new MetadataStorage { ConfigFileHash = configHash, Map = map.ConvertToDictionnary() };
 
             ////Get servers source
             //var serversSource = map.Roads.Select(r => r.ServerSrc).Distinct().ToList();
@@ -303,9 +303,9 @@ namespace DataCloner.Core.Metadata
 
                 foreach (var database in provider.GetDatabasesName())
                 {
-                    provider.GetColumns(container.Metadatas.LoadColumns, cs.Id, database);
-                    provider.GetForeignKeys(container.Metadatas.LoadForeignKeys, cs.Id, database);
-                    provider.GetUniqueKeys(container.Metadatas.LoadUniqueKeys, cs.Id, database);
+                    provider.GetColumns(MetadataLoader.LoadColumns, container.Metadatas, cs.Id, database);
+                    provider.GetForeignKeys(MetadataLoader.LoadForeignKeys, container.Metadatas, cs.Id, database);
+                    provider.GetUniqueKeys(MetadataLoader.LoadUniqueKeys, container.Metadatas, cs.Id, database);
                 }
             }
         }
@@ -316,15 +316,15 @@ namespace DataCloner.Core.Metadata
             var nbServerMap = input.ReadInt32();
             for (var i = 0; i < nbServerMap; i++)
             {
-                var src = ServerIdentifier.Deserialize(input);
-                var dst = ServerIdentifier.Deserialize(input);
-                config.ServerMap.Add(src, dst);
+                var src = SehemaIdentifier.Deserialize(input);
+                var dst = SehemaIdentifier.Deserialize(input);
+                config.Map.Add(src, dst);
             }
             var nbConnection = input.ReadInt32();
             for (var i = 0; i < nbConnection; i++)
                 config.ConnectionStrings.Add(SqlConnection.Deserialize(input));
 
-            config.Metadatas = ExecutionContextMetadata.Deserialize(input, referenceTracking);
+            config.Metadatas = Metadatas.Deserialize(input, referenceTracking);
 
             return config;
         }

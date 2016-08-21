@@ -6,6 +6,18 @@ Interface utilisateur
 2 - Suite à la création d'une variable nous pourrons créer un template serveur/database ou schéma.
 3 - Nous pourrons ensuite créer un behavior basé sur une variable ou un template.
 
+Code 
+====
+
+MetadataStorage : Représente un fichier contennant les metadatas d'un contexte d'exécution. 
+Metadata : Contient les informations d'un contexte d'exécution. Ce sont les metadatas des serveurs SQL suite à l'application de la configuration utilisateur.
+MetadataBuilder : Génère les informations d'un contexte d'exécution soit les metadatas des serveurs SQL suite à l'application de la configuration utilisateur.
+ServerMetadata : 
+DatabaseMetadata : 
+SchemaMetadata : 
+TableMetadata : 
+QueryHelper : 
+QueryDispatcher : 
 
 Fichier de configuration
 ========================
@@ -27,6 +39,9 @@ Templates :
 2 - Lorsque l'on hérite d'un DbSettings en utilisant la propriété BasedOn, la propriétée Var est innaccessible car il faut absolument que les 
     éléments serveur, database et schéma soient identiques.
 3 - Les templates ne peuvent pas hériter de plus d'un parent. Il faut donc se créer une hierarchie d'objets pour réutiliser au maximum les configurations.
+4 - Deux noeuds ForeignKeyAdd ne s'additionnent pas s'ils sont identiques. Attention de ne pas définir deux FK avec un colonne partagée car elles s'additionneront.
+5 - Un ForeignKeyRemove supprime également les ForeignKeyAdd hérités.
+6 - Un ForeignKeyRemove est exécuté avant un ForeignKeyAdd.
 
 Behaviors : 
 
@@ -111,6 +126,7 @@ Cas le plus extrême :
                     <Add Destination="ARIEL_TO" Table="S_SRV_REQ">
                         <Collumn NameFrom="NoReferenceTransmission" NameTo="SR_NUM" />
                     </Add>
+                    <Remove Column="ID"/>
                 </ForeignKeys>
                 <DataBuilders>
                     <Collumn Name="col1" BuilderName="Client.Builder.CreatePK" />

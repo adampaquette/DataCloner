@@ -5,7 +5,7 @@ using System.IO;
 namespace DataCloner.Core
 {
     [DebuggerDisplay("{ServerId.ToString() + \".\" + Database + \".\" + Schema + \".\" + Table}")]
-    public class TableIdentifier : ServerIdentifier, IEquatable<TableIdentifier>
+    public class TableIdentifier : SehemaIdentifier, IEquatable<TableIdentifier>
     {
         public string Table { get; set; }
 

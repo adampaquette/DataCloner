@@ -1,4 +1,5 @@
 ﻿using DataCloner.Core.Metadata;
+using DataCloner.Core.Metadata.Context;
 using System;
 using System.Data.Common;
 
@@ -6,7 +7,7 @@ namespace DataCloner.Core.Data
 {
     internal static class QueryHelperFactory 
     {
-        public static IQueryHelper GetQueryHelper(ExecutionContextMetadata schema, string providerName, string connectionString)
+        public static IQueryHelper GetQueryHelper(Metadatas schema, string providerName, string connectionString)
         {
             switch (providerName)
             {
@@ -26,7 +27,7 @@ namespace DataCloner.Core.Data
             throw new Exception("Unkown provider");
         }
 
-        public static IQueryHelper GetQueryHelper(this DbConnection cnx, ExecutionContextMetadata schema)
+        public static IQueryHelper GetQueryHelper(this DbConnection cnx, Metadatas schema)
         {
             var type = cnx.GetType().Name;
 

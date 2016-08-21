@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Xml.Serialization;
 
 namespace DataCloner.Core.Configuration
@@ -8,17 +7,15 @@ namespace DataCloner.Core.Configuration
     public class DerivativeTable
     {
         [XmlAttribute]
-        public DerivativeTableAccess? GlobalAccess { get; set; }
+        public string Destination { get; set; }
 
         [XmlAttribute]
-        public bool? GlobalCascade { get; set; }
+        public string Name { get; set; }
 
-        [XmlElement("Table")]
-        public List<DerivativeSubTable> DerivativeSubTables { get; set; }
+        [XmlAttribute]
+        public DerivativeTableAccess? Access { get; set; }
 
-        public DerivativeTable()
-        {
-            DerivativeSubTables = new List<DerivativeSubTable>();
-        }
+        [XmlAttribute]
+        public bool? Cascade { get; set; }
     }
 }

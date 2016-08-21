@@ -8,13 +8,13 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace DataCloner.Core.Metadata
+namespace DataCloner.Core.Metadata.Context
 {
     /// <summary>
     /// Contient les tables statiques de la base de données
     /// </summary>
     /// <remarks>ServerId / Database / Schema -> TableMetadata[]</remarks>
-    public sealed class ExecutionContextMetadata : Dictionary<Int16, ServerMetadata>
+    public sealed class Metadatas : Dictionary<Int16, ServerMetadata>
     {
         public TableMetadata GetTable(Int16 server, string database, string schema, string table)
         {
@@ -23,47 +23,6 @@ namespace DataCloner.Core.Metadata
                 this[server][database].ContainsKey(schema))
                 return this[server][database][schema].FirstOrDefault(t => t.Name.Equals(table, StringComparison.OrdinalIgnoreCase));
             return null;
-        }
-
-        public void Add(Int16 server, string database, string schema, TableMetadata table)
-        {
-            if (!ContainsKey(server))
-                Add(server, new ServerMetadata());
-
-            if (!this[server].ContainsKey(database))
-                this[server].Add(database, new DatabaseMetadata());
-
-            if (!this[server][database].ContainsKey(schema))
-                this[server][database].Add(schema, new SchemaMetadata { table });
-            else
-            {
-                if (!this[server][database][schema].Contains(table))
-                    this[server][database][schema].Add(table);
-            }
-        }
-
-        public bool Remove(Int16 server, string database, string schema, TableMetadata table)
-        {
-            if (ContainsKey(server) &&
-                this[server].ContainsKey(database) &&
-                this[server][database].ContainsKey(schema) &&
-                this[server][database][schema].Contains(table))
-            {
-                this[server][database][schema].Remove(table);
-
-                if (this[server][database][schema].Count == 0)
-                {
-                    this[server][database].Remove(schema);
-                    if (this[server][database].Count == 0)
-                    {
-                        this[server].Remove(database);
-                        if (this[server].Count == 0)
-                            Remove(server);
-                    }
-                }
-                return true;
-            }
-            return false;
         }
 
         public SchemaMetadata this[Int16 server, string database, string schema]
@@ -90,220 +49,6 @@ namespace DataCloner.Core.Metadata
                     this[server][database].Add(schema, value);
                 else
                     this[server][database][schema] = value;
-            }
-        }
-
-        internal void LoadForeignKeys(IDataReader reader, Int16 serverId, String database)
-        {
-            var lstForeignKeys = new List<ForeignKey>();
-            var lstForeignKeyColumns = new List<ForeignKeyColumn>();
-
-            if (!reader.Read())
-                return;
-
-            //Init first row
-            var currentSchema = reader.GetString(0);
-            var previousTable = this[serverId][database][currentSchema].First(t => t.Name.Equals(reader.GetString(1), StringComparison.OrdinalIgnoreCase));
-            var previousConstraintName = reader.GetString(2);
-            var previousConstraint = new ForeignKey
-            {
-                ServerIdTo = serverId,
-                DatabaseTo = database,
-                SchemaTo = currentSchema,
-                TableTo = reader.GetString(5)
-            };
-
-            //Pour chaque ligne
-            do
-            {
-                currentSchema = reader.GetString(0);
-                var currentTable = reader.GetString(1);
-                var currentConstraint = reader.GetString(2);
-
-                //Si on change de constraint
-                if (currentTable != previousTable.Name || currentConstraint != previousConstraintName)
-                {
-                    previousConstraint.Columns = lstForeignKeyColumns;
-                    lstForeignKeys.Add(previousConstraint);
-
-                    lstForeignKeyColumns = new List<ForeignKeyColumn>();
-                    previousConstraint = new ForeignKey
-                    {
-                        ServerIdTo = serverId,
-                        DatabaseTo = database,
-                        SchemaTo = currentSchema,
-                        TableTo = reader.GetString(5)
-                    };
-                    previousConstraintName = currentConstraint;
-                }
-
-                //Si on change de table
-                if (currentTable != previousTable.Name)
-                {
-                    previousTable.ForeignKeys = lstForeignKeys;
-
-                    //Change de table
-                    previousTable = this[serverId][database][currentSchema].First(t => t.Name.Equals(reader.GetString(1), StringComparison.OrdinalIgnoreCase));
-                    lstForeignKeys = new List<ForeignKey>();
-                }
-
-                //Ajoute la colonne
-                var colName = reader.GetString(3);
-                lstForeignKeyColumns.Add(new ForeignKeyColumn
-                {
-                    NameFrom = colName,
-                    NameTo = reader.GetString(6)
-                });
-
-                //Affecte l'indicateur dans le schema
-                var col = previousTable.ColumnsDefinition.FirstOrDefault(c => c.Name.Equals(colName, StringComparison.OrdinalIgnoreCase));
-                if (col == null)
-                    throw new Exception($"The column {colName} has not been found in the metadata for the table {previousTable.Name}.");
-                col.IsForeignKey = true;
-            } while (reader.Read());
-
-            //Ajoute la dernière table / schema
-            if (lstForeignKeyColumns.Count > 0)
-            {
-                previousConstraint.Columns = lstForeignKeyColumns;
-                lstForeignKeys.Add(previousConstraint);
-                previousTable.ForeignKeys = lstForeignKeys;
-            }
-        }
-
-        internal void LoadUniqueKeys(IDataReader reader, Int16 serverId, String database)
-        {
-            var lstUniqueKeys = new List<UniqueKey>();
-            var lstUniqueKeyColumns = new List<string>();
-
-            if (!reader.Read())
-                return;
-
-            //Init first row
-            var currentSchema = reader.GetString(0);
-            var previousTable = this[serverId][database][currentSchema].First(t => t.Name.Equals(reader.GetString(1), StringComparison.OrdinalIgnoreCase));
-            var previousConstraintName = reader.GetString(2);
-            var previousConstraint = new UniqueKey();
-
-            //Pour chaque ligne
-            do
-            {
-                currentSchema = reader.GetString(0);
-                var currentTable = reader.GetString(1);
-                var currentConstraint = reader.GetString(2);
-
-                //Si on change de constraint
-                if (currentTable != previousTable.Name || currentConstraint != previousConstraintName)
-                {
-                    previousConstraint.Columns = lstUniqueKeyColumns;
-                    lstUniqueKeys.Add(previousConstraint);
-
-                    lstUniqueKeyColumns = new List<string>();
-                    previousConstraint = new UniqueKey();
-                    previousConstraintName = currentConstraint;
-                }
-
-                //Si on change de table
-                if (currentTable != previousTable.Name)
-                {
-                    previousTable.UniqueKeys = lstUniqueKeys;
-
-                    //Change de table
-                    previousTable = this[serverId][database][currentSchema].First(t => t.Name.Equals(reader.GetString(1), StringComparison.OrdinalIgnoreCase));
-                    lstUniqueKeys = new List<UniqueKey>();
-                }
-
-                //Ajoute la colonne
-                var colName = reader.GetString(3);
-                lstUniqueKeyColumns.Add(colName);
-
-                //Affecte l'indicateur dans le schema
-                var col = previousTable.ColumnsDefinition.FirstOrDefault(c => c.Name.Equals(colName, StringComparison.OrdinalIgnoreCase));
-                if (col == null)
-                    throw new Exception($"The column {colName} has not been found in the metadata for the table {previousTable.Name}.");
-                col.IsUniqueKey = true;
-            } while (reader.Read());
-
-            //Ajoute la dernière table / schema
-            if (lstUniqueKeyColumns.Count > 0)
-            {
-                previousConstraint.Columns = lstUniqueKeyColumns;
-                lstUniqueKeys.Add(previousConstraint);
-                previousTable.UniqueKeys = lstUniqueKeys;
-            }
-        }
-
-        /// <summary>
-        /// Load the metadata with the columns read from the IDataReader.
-        /// The query must have this defenition in order : 
-        /// Schema, Table, Column, DataType, Precision, Scale, IsUnsigned, IsPrimaryKey, IsAutoIncrement
-        /// </summary>
-        /// <param name="reader"></param>
-        /// <param name="serverId"></param>
-        /// <param name="database"></param>
-        /// <param name="typeConverter"></param>
-		internal void LoadColumns(IDataReader reader, Int16 serverId, String database, ISqlTypeConverter typeConverter)
-        {
-            var schemaMetadata = new SchemaMetadata();
-            var lstSchemaColumn = new List<ColumnDefinition>();
-            string currentSchema;
-
-            if (!reader.Read())
-                return;
-
-            //Init first row
-            var previousSchema = reader.GetString(0);
-            var previousTable = new TableMetadata(reader.GetString(1));
-
-            //Pour chaque ligne
-            do
-            {
-                currentSchema = reader.GetString(0);
-                var currentTable = reader.GetString(1);
-
-                //Si on change de table
-                if (currentSchema != previousSchema || currentTable != previousTable.Name)
-                {
-                    previousTable.ColumnsDefinition = lstSchemaColumn;
-                    schemaMetadata.Add(previousTable);
-
-                    lstSchemaColumn = new List<ColumnDefinition>();
-                    previousTable = new TableMetadata(currentTable);
-                }
-
-                //Si on change de schema
-                if (currentSchema != previousSchema)
-                {
-                    this[serverId, database, currentSchema] = schemaMetadata;
-                    schemaMetadata = new SchemaMetadata();
-                }
-
-                //Ajoute la colonne
-                var col = new ColumnDefinition
-                {
-                    Name = reader.GetString(2),
-                    SqlType = new SqlType
-                    {
-                        DataType = reader.GetString(3),
-                        Precision = reader.GetInt32(4),
-                        Scale = reader.GetInt32(5),
-                        IsUnsigned = reader.GetBoolean(6)
-                    },
-                    IsPrimary = reader.GetBoolean(7),
-                    IsAutoIncrement = reader.GetBoolean(8)
-                };
-                col.DbType = typeConverter.ConvertFromSql(col.SqlType);
-
-                lstSchemaColumn.Add(col);
-
-            } while (reader.Read());
-
-            //Ajoute la dernière table / schema
-            if (lstSchemaColumn.Count > 0)
-            {
-                previousTable.ColumnsDefinition = lstSchemaColumn;
-                schemaMetadata.Add(previousTable);
-                this[serverId, database, currentSchema] = schemaMetadata;
             }
         }
 
@@ -597,7 +342,7 @@ namespace DataCloner.Core.Metadata
             Serialize(new BinaryWriter(stream, Encoding.UTF8, true), referenceTracking);
         }
 
-        public static ExecutionContextMetadata Deserialize(Stream stream, FastAccessList<object> referenceTracking = null)
+        public static Metadatas Deserialize(Stream stream, FastAccessList<object> referenceTracking = null)
         {
             return Deserialize(new BinaryReader(stream, Encoding.UTF8, true), referenceTracking);
         }
@@ -633,9 +378,9 @@ namespace DataCloner.Core.Metadata
             }
         }
 
-        public static ExecutionContextMetadata Deserialize(BinaryReader stream, FastAccessList<object> referenceTracking = null)
+        public static Metadatas Deserialize(BinaryReader stream, FastAccessList<object> referenceTracking = null)
         {
-            var cTables = new ExecutionContextMetadata();
+            var cTables = new Metadatas();
 
             var nbServers = stream.ReadInt32();
             for (var n = 0; n < nbServers; n++)

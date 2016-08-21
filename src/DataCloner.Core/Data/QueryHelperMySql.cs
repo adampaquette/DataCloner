@@ -1,5 +1,6 @@
 ﻿using DataCloner.Core.Data.Generator;
 using DataCloner.Core.Metadata;
+using DataCloner.Core.Metadata.Context;
 
 namespace DataCloner.Core.Data
 {
@@ -83,7 +84,7 @@ namespace DataCloner.Core.Data
         public override ISqlTypeConverter TypeConverter { get; }
         public override ISqlWriter SqlWriter { get; }
 
-        public QueryHelperMySql(ExecutionContextMetadata schema, string connectionString)
+        public QueryHelperMySql(Metadatas schema, string connectionString)
             : base(schema, ProviderName, connectionString)
         {
             TypeConverter = new SqlTypeConverterMySql();

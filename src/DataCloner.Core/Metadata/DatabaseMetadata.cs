@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace DataCloner.Core.Metadata
 {
     /// <summary>
-    /// Contains all the metadatas about a SQL server's database.
+    /// Contains all the metadatas of a SQL server's database.
     /// </summary>
     /// <example>Schemas, Tables, Columns, PrimaryKeys, ForeignKeys...</example>
     public sealed class DatabaseMetadata : Dictionary<string, SchemaMetadata>

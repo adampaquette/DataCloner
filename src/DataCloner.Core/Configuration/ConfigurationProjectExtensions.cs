@@ -57,9 +57,9 @@ namespace DataCloner.Core.Configuration
                 var dup = compiledBehavior.DbSettings.FirstOrDefault(b => b.Var == compiledDbSettings.Var);
                 if (dup != null)
                     MergeDbSettings(compiledDbSettings, dup);
-
-                return compiledBehavior;
             }
+
+            return compiledBehavior;
         }
 
         public static void MergeDbSettings(DbSettings source, DbSettings target)
@@ -101,7 +101,8 @@ namespace DataCloner.Core.Configuration
 
             foreach (var sourceTable in source.DerativeTables.DerivativeSubTables)
             {
-                var targetTable = target.DerativeTables.DerivativeSubTables.FirstOrDefault(d => d.Name == sourceTable.Name);
+                var targetTable = target.DerativeTables.DerivativeSubTables.FirstOrDefault(d => d.Name == sourceTable.Name &&
+                                                                                           d.Destination == sourceTable.Destination);
                 if (targetTable == null)
                     target.DerativeTables.DerivativeSubTables.Add(targetTable);
                 else
@@ -109,24 +110,35 @@ namespace DataCloner.Core.Configuration
             }
 
             //ForeignKeys
-            //foreach (var sourceForeignKey in source.ForeignKeys.ForeignKeyAdd)
-            //{
-            //    var targetDataBuilder = target.DataBuilders.FirstOrDefault(d => d.Name == sourceForeignKey..Name);
-            //    if (targetDataBuilder == null)
-            //        target.DataBuilders.Add(dataBuilder);
-            //    else
-            //        MergeDataBuilder(dataBuilder, targetDataBuilder);
-            //}
+            foreach (var sourceForeignKey in source.ForeignKeys.ForeignKeyRemove.Columns)
+            {
+                //Add 
+                var targetForeignKey = target.ForeignKeys.ForeignKeyRemove.Columns.FirstOrDefault(c => c == sourceForeignKey);
+
+                if (targetForeignKey == null)
+                    target.ForeignKeys.ForeignKeyRemove.Columns.Add(targetForeignKey);
+            }
+
+            foreach (var sourceForeignKey in source.ForeignKeys.ForeignKeyAdd)
+            {
+                var targetForeignKey = target.ForeignKeys.ForeignKeyAdd.FirstOrDefault(fk => fk == sourceForeignKey);
+
+                if (targetForeignKey == null)
+                    target.ForeignKeys.ForeignKeyAdd.Add(targetForeignKey);
+            }
         }
 
         public static void MergeDataBuilder(DataBuilder source, DataBuilder target)
         {
-           
+            target.BuilderName = source.BuilderName;
         }
 
-        public static void MergeDerivativeSubTable(DerivativeSubTable source, DerivativeSubTable target)
+        public static void MergeDerivativeSubTable(DerivativeTable source, DerivativeTable target)
         {
-
+            if (source.Access.HasValue)
+                target.Access = source.Access;
+            if (source.Cascade.HasValue)
+                target.Cascade = source.Cascade;
         }
     }
 }

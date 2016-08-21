@@ -6,7 +6,7 @@ namespace DataCloner.Core.Configuration
 {
     static class MapExtensions
     {
-        public static Dictionary<ServerIdentifier, ServerIdentifier> ConvertToDictionnary(this MapFrom map)
+        public static Dictionary<SehemaIdentifier, SehemaIdentifier> ConvertToDictionnary(this MapFrom map)
         {
             return null;
             

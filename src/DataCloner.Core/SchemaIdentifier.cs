@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
-using System.Text;
 
 namespace DataCloner.Core
 {
     [DebuggerDisplay("{ServerId.ToString() + \".\" + Database + \".\" + Schema}")]
-    public class ServerIdentifier : IEquatable<ServerIdentifier>
+    public class SehemaIdentifier : IEquatable<SehemaIdentifier>
     {
         public Int16 ServerId { get; set; }
         public string Database { get; set; }
@@ -19,9 +18,9 @@ namespace DataCloner.Core
             output.Write(Schema);
         }
 
-        public static ServerIdentifier Deserialize(BinaryReader input)
+        public static SehemaIdentifier Deserialize(BinaryReader input)
         {
-            return new ServerIdentifier
+            return new SehemaIdentifier
             {
                 ServerId = input.ReadInt16(),
                 Database = input.ReadString(),
@@ -31,7 +30,7 @@ namespace DataCloner.Core
 
         public override bool Equals(object obj)
         {
-            var sv = obj as ServerIdentifier;
+            var sv = obj as SehemaIdentifier;
             if (sv != null)
                 return Equals(sv);
             return false;
@@ -42,7 +41,7 @@ namespace DataCloner.Core
             return (ServerId + Database + Schema).GetHashCode();
         }
 
-        public bool Equals(ServerIdentifier other)
+        public bool Equals(SehemaIdentifier other)
         {
             return other != null &&
                 ServerId == other.ServerId &&

@@ -1,5 +1,6 @@
 ﻿using DataCloner.Core.Data.Generator;
 using DataCloner.Core.Metadata;
+using DataCloner.Core.Metadata.Context;
 
 namespace DataCloner.Core.Data
 {
@@ -126,8 +127,8 @@ namespace DataCloner.Core.Data
         public override ISqlTypeConverter TypeConverter { get; }
         public override ISqlWriter SqlWriter { get; }
 
-        public QueryHelperPostgreSql(ExecutionContextMetadata schema, string connectionString)
-            : base(schema, ProviderName, connectionString)
+        public QueryHelperPostgreSql(Metadatas metadata, string connectionString)
+            : base(metadata, ProviderName, connectionString)
         {
             TypeConverter = new SqlTypeConverterPostgreSql();
             SqlWriter = new SqlWriterPostgreSql();

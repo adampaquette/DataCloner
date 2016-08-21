@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Collections.Immutable;
+using DataCloner.Core.Metadata.Context;
 
 namespace DataCloner.Core
 {
@@ -94,7 +95,7 @@ namespace DataCloner.Core
 
             //Purify
             var conns = new List<SqlConnection>();
-            var metadata = new ExecutionContextMetadata();
+            var metadata = new Metadatas();
 
             var destinationSrv = (from server in _executionPlanByServer
                                   from insertStep in server.Value.InsertSteps
@@ -169,15 +170,15 @@ namespace DataCloner.Core
             var table = MetadataStorage.Metadatas.GetTable(riSource);
 
             //By default the destination server is the source if no road is found.
-            var serverDst = new ServerIdentifier
+            var serverDst = new SehemaIdentifier
             {
                 ServerId = riSource.ServerId,
                 Database = riSource.Database,
                 Schema = riSource.Schema
             };
 
-            if (MetadataStorage.ServerMap.ContainsKey(serverDst))
-                serverDst = MetadataStorage.ServerMap[serverDst];
+            if (MetadataStorage.Map.ContainsKey(serverDst))
+                serverDst = MetadataStorage.Map[serverDst];
 
             var riReturn = new RowIdentifier
             {
@@ -468,14 +469,14 @@ namespace DataCloner.Core
                 var pkDestinationRow = _keyRelationships.GetKey(job.SourceBaseRowStartPoint);
                 var keyDestinationFkRow = _keyRelationships.GetKey(job.SourceFkRowStartPoint);
 
-                var serverDstBaseTable = MetadataStorage.ServerMap[new ServerIdentifier
+                var serverDstBaseTable = MetadataStorage.Map[new SehemaIdentifier
                 {
                     ServerId = job.SourceBaseRowStartPoint.ServerId,
                     Database = job.SourceBaseRowStartPoint.Database,
                     Schema = job.SourceBaseRowStartPoint.Schema
                 }];
 
-                var serverDstFkTable = MetadataStorage.ServerMap[new ServerIdentifier
+                var serverDstFkTable = MetadataStorage.Map[new SehemaIdentifier
                 {
                     ServerId = job.SourceFkRowStartPoint.ServerId,
                     Database = job.SourceFkRowStartPoint.Database,
