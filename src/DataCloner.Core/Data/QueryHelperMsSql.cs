@@ -104,7 +104,7 @@ namespace DataCloner.Core.Data
         public override ISqlTypeConverter TypeConverter { get; }
         public override ISqlWriter SqlWriter { get; }
 
-        public QueryHelperMsSql(AppMetadata schema, string connectionString)
+        public QueryHelperMsSql(ExecutionContextMetadata schema, string connectionString)
             : base(schema, ProviderName, connectionString)
         {
             TypeConverter = new SqlTypeConverterMsSql();

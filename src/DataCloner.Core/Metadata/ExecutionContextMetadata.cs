@@ -10,22 +10,11 @@ using System.Text;
 
 namespace DataCloner.Core.Metadata
 {
-    public sealed class SchemaMetadata : HashSet<TableMetadata> { }
-    public sealed class DatabaseMetadata : Dictionary<string, SchemaMetadata>
-    {
-        public DatabaseMetadata() : base(StringComparer.OrdinalIgnoreCase) { }
-    }
-    
-    public sealed class ServerMetadata : Dictionary<string, DatabaseMetadata>
-    {
-        public ServerMetadata() : base(StringComparer.OrdinalIgnoreCase) { }
-    }
-
     /// <summary>
     /// Contient les tables statiques de la base de données
     /// </summary>
     /// <remarks>ServerId / Database / Schema -> TableMetadata[]</remarks>
-    public sealed class AppMetadata : Dictionary<Int16, ServerMetadata>
+    public sealed class ExecutionContextMetadata : Dictionary<Int16, ServerMetadata>
     {
         public TableMetadata GetTable(Int16 server, string database, string schema, string table)
         {
@@ -323,7 +312,7 @@ namespace DataCloner.Core.Metadata
         /// </summary>
         /// <param name="behaviour"></param>
         /// <remarks>Le schéma de la BD doit préalablement avoir été obtenu. GetColumns() et GetForeignKeys()</remarks>
-        internal void FinalizeMetadata(Behaviour behaviour)
+        internal void FinalizeMetadata(Behavior behaviour)
         {
             GenerateCommands();
             MergeFk(behaviour);
@@ -457,7 +446,7 @@ namespace DataCloner.Core.Metadata
             }
         }
 
-        private void MergeFk(Behaviour behaviour)
+        private void MergeFk(Behavior behaviour)
         {
             if (behaviour == null)
                 return;
@@ -535,7 +524,7 @@ namespace DataCloner.Core.Metadata
             }
         }
 
-        private void MergeBehaviour(Behaviour behaviour)
+        private void MergeBehaviour(Behavior behaviour)
         {
             if (behaviour == null)
                 return;
@@ -608,7 +597,7 @@ namespace DataCloner.Core.Metadata
             Serialize(new BinaryWriter(stream, Encoding.UTF8, true), referenceTracking);
         }
 
-        public static AppMetadata Deserialize(Stream stream, FastAccessList<object> referenceTracking = null)
+        public static ExecutionContextMetadata Deserialize(Stream stream, FastAccessList<object> referenceTracking = null)
         {
             return Deserialize(new BinaryReader(stream, Encoding.UTF8, true), referenceTracking);
         }
@@ -644,9 +633,9 @@ namespace DataCloner.Core.Metadata
             }
         }
 
-        public static AppMetadata Deserialize(BinaryReader stream, FastAccessList<object> referenceTracking = null)
+        public static ExecutionContextMetadata Deserialize(BinaryReader stream, FastAccessList<object> referenceTracking = null)
         {
-            var cTables = new AppMetadata();
+            var cTables = new ExecutionContextMetadata();
 
             var nbServers = stream.ReadInt32();
             for (var n = 0; n < nbServers; n++)

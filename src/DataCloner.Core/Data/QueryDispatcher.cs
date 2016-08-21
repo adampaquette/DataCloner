@@ -12,7 +12,7 @@ namespace DataCloner.Core.Data
         public IQueryHelper GetQueryHelper(ServerIdentifier server) => _queryHelpers[server.ServerId];
         public IQueryHelper GetQueryHelper(Int16 server) => _queryHelpers[server];
 
-        public void InitProviders(AppMetadata appMetadata, IEnumerable<SqlConnection> connections)
+        public void InitProviders(ExecutionContextMetadata appMetadata, IEnumerable<SqlConnection> connections)
         {
             _queryHelpers = new Dictionary<short, IQueryHelper>();
 

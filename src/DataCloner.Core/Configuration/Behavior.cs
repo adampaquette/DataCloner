@@ -5,7 +5,7 @@ using System.Xml.Serialization;
 namespace DataCloner.Core.Configuration
 {
     [Serializable]
-    public class Behaviour
+    public class Behavior
     {
         [XmlAttribute]
         public Int16 Id { get; set; }
@@ -19,7 +19,7 @@ namespace DataCloner.Core.Configuration
         [XmlElement("DbSetting")]
         public List<DbSettings> DbSettings { get; set; }
 
-        public Behaviour()
+        public Behavior()
         {
             DbSettings = new List<DbSettings>();
         }

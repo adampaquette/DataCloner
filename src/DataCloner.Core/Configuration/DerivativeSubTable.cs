@@ -10,12 +10,12 @@ namespace DataCloner.Core.Configuration
         public string Destination { get; set; }
 
         [XmlAttribute]
-        public string Table { get; set; }
+        public string Name { get; set; }
 
         [XmlAttribute]
-        public DerivativeTableAccess Access { get; set; }
+        public DerivativeTableAccess? Access { get; set; }
 
         [XmlAttribute]
-        public bool Cascade { get; set; }
+        public bool? Cascade { get; set; }
     }
 }

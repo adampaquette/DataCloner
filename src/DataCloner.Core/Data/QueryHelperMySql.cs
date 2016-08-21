@@ -83,7 +83,7 @@ namespace DataCloner.Core.Data
         public override ISqlTypeConverter TypeConverter { get; }
         public override ISqlWriter SqlWriter { get; }
 
-        public QueryHelperMySql(AppMetadata schema, string connectionString)
+        public QueryHelperMySql(ExecutionContextMetadata schema, string connectionString)
             : base(schema, ProviderName, connectionString)
         {
             TypeConverter = new SqlTypeConverterMySql();

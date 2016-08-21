@@ -9,12 +9,16 @@ namespace DataCloner.Core.Configuration
     {
         [XmlAttribute]
         public Int16 Id { get; set; }
+
         [XmlAttribute]
         public string Var { get; set; }
+
         [XmlAttribute]
         public string Description { get; set; }
+
         [XmlAttribute]
-        public Int16 BasedOn { get; set; }
+        public Int16? BasedOn { get; set; }
+
         [XmlElement("Table")]
         public List<Table> Tables { get; set; }
 

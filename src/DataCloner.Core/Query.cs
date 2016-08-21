@@ -18,7 +18,7 @@ namespace DataCloner.Core
         public const int CURRENT_FORMAT_VERSION = 1;
 
         private IQueryDispatcher _dispatcher;
-        private AppMetadata _metadata;
+        private ExecutionContextMetadata _metadata;
         private ExecutionPlanByServer _executionPlanByServer;
         private ImmutableHashSet<SqlConnection> _connections;
         private int _formatVersion;
@@ -34,7 +34,7 @@ namespace DataCloner.Core
 
         public event QueryCommitingEventHandler Commiting;
 
-        internal Query(AppMetadata metadata,
+        internal Query(ExecutionContextMetadata metadata,
             ExecutionPlanByServer executionPlanByServer,
             ImmutableHashSet<SqlConnection> connections, 
             int formatVersion)
@@ -116,7 +116,7 @@ namespace DataCloner.Core
             int formatVersion;
             string description;
             HashSet<SqlConnection> connections;
-            AppMetadata metadata;
+            ExecutionContextMetadata metadata;
             ExecutionPlanByServer executionPlanByServer;
             FastAccessList<object> referenceTracking;
 
@@ -140,7 +140,7 @@ namespace DataCloner.Core
                 referenceTracking = DeserializeReferenceTracking(bstream);
                 connections = DeserializeConnections(bstream);
                 executionPlanByServer = ExecutionPlanByServer.Deserialize(bstream, referenceTracking);
-                metadata = AppMetadata.Deserialize(bstream, referenceTracking);
+                metadata = ExecutionContextMetadata.Deserialize(bstream, referenceTracking);
             }
 
             return new Query(metadata, executionPlanByServer, connections.ToImmutableHashSet(), formatVersion)

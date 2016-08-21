@@ -26,10 +26,12 @@ Templates :
 1 - Par défaut les DbSettings sont réutilisables comme template de départ, pour une configuration spécifique d'un besoin.
 2 - Lorsque l'on hérite d'un DbSettings en utilisant la propriété BasedOn, la propriétée Var est innaccessible car il faut absolument que les 
     éléments serveur, database et schéma soient identiques.
+3 - Les templates ne peuvent pas hériter de plus d'un parent. Il faut donc se créer une hierarchie d'objets pour réutiliser au maximum les configurations.
 
 Behaviors : 
 
 1 - Les même règles que les templates sont appliquées.
+2 - La création de templates dans les behaviors n'est pas supporté.
 
 Maps : 
 
@@ -54,13 +56,14 @@ Exemple de fichiers de configuration
 
 Case simpliste (HelloWorld)  :
 
-1 - Permet de copier de l'information à même la base de données.
+1 - De base, l'application permet de cloner vers et depuis deux serveurs ayant les schémas cibles identiques.
 -->
 
 <?xml version="1.0" encoding="utf-8"?>
 <Project>
     <ConnectionStrings>
         <Add Id="1" Name="UNI" ProviderName="MySql.Data.MySqlClient" ConnectionString="server=UNI;user Id=root; password=toor;" />
+        <Add Id="2" Name="FON" ProviderName="MySql.Data.MsSql" ConnectionString="server=FON;user Id=root; password=toor;" />
     </ConnectionStrings>
 </Project>
 

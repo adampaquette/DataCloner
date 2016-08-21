@@ -8,7 +8,7 @@ namespace DataCloner.Core.Configuration
 {
     [Serializable]
     [XmlRoot("Project")]
-    public class ProjectContainer
+    public class ConfigurationProject
     {
         [XmlAttribute]
         public string ToolsVersion { get; set; }
@@ -24,16 +24,16 @@ namespace DataCloner.Core.Configuration
 
         public List<DbSettings> Templates { get; set; }
 
-        [XmlArrayItem("Behaviour")]        
-        public List<Behaviour> Behaviours { get; set; }
+        [XmlArrayItem("Behavior")]        
+        public List<Behavior> Behaviors { get; set; }
 
         public List<MapFrom> Maps { get; set; }
 
-        public ProjectContainer()
+        public ConfigurationProject()
         {
             ConnectionStrings = new List<Connection>();
             Templates = new List<DbSettings>();
-            Behaviours = new List<Behaviour>();
+            Behaviors = new List<Behavior>();
             Maps = new List<MapFrom>();
         }
 
@@ -42,9 +42,9 @@ namespace DataCloner.Core.Configuration
             this.SaveXml(path);
         }
 
-        public static async Task<ProjectContainer> LoadAsync(string path)
+        public static async Task<ConfigurationProject> LoadAsync(string path)
         {
-            return await Extensions.LoadXmlAsync<ProjectContainer>(path).ConfigureAwait(false);
+            return await Extensions.LoadXmlAsync<ConfigurationProject>(path).ConfigureAwait(false);
         }
     }
 }

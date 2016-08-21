@@ -10,12 +10,14 @@ using System.Text;
 
 namespace DataCloner.Core.Metadata
 {
+    /// <summary>
+    /// Contains all the metadatas about a SQL server's table.
+    /// </summary>
+    /// <example>Columns, PrimaryKeys, ForeignKeys...</example>
     [DebuggerDisplay("{Name}")]
     public sealed class TableMetadata : IEquatable<TableMetadata>
     {
-        private string _name;
-
-        public string Name { get {return _name;} }
+        public string Name { get; }
         public bool IsStatic { get; set; }
         public string SelectCommand { get; set; }
         public string InsertCommand { get; set; }
@@ -26,7 +28,7 @@ namespace DataCloner.Core.Metadata
 
         public TableMetadata(string name)
         {
-            _name = name;
+            Name = name;
             DerivativeTables = new List<DerivativeTable>();
             ForeignKeys = new List<ForeignKey>();
             UniqueKeys = new List<UniqueKey>();

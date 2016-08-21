@@ -2,9 +2,9 @@
 
 namespace DataCloner.Core
 {
-    public class Settings
+    public class CloningContext
     {
-        public ProjectContainer Project { get; set; }
+        public ConfigurationProject Project { get; set; }
         public int? MapId { get; set; }
         public int? BehaviourId { get; set; }
         /// <summary>

@@ -13,17 +13,17 @@ namespace DataCloner.Core
     public class ExecutionPlanBuilder
     {
         private readonly IQueryDispatcher _dispatcher;
-        private readonly MetadataContainer.Initialiser _metadataInitialiser;
+        private readonly MetadataStorage.Initialiser _metadataInitialiser;
         private readonly ExecutionPlanByServer _executionPlanByServer;
         private readonly KeyRelationship _keyRelationships;
         private readonly List<CircularKeyJob> _circularKeyJobs;
-        private readonly Settings _settings;
-        private readonly MetadataContainer _metadataCtn;
+        private readonly CloningContext _settings;
+        private readonly MetadataStorage _metadataCtn;
         private readonly List<RowIdentifier> _steps;
         private int _nextVariableId;
         private int _nextStepId;
 
-        public MetadataContainer MetadataContainer { get { return _metadataCtn; } }
+        public MetadataStorage MetadataStorage { get { return _metadataCtn; } }
 
         public event StatusChangedEventHandler StatusChanged;
 
@@ -35,17 +35,17 @@ namespace DataCloner.Core
             _steps = new List<RowIdentifier>();
         }
 
-        public ExecutionPlanBuilder(Settings settings) : this()
+        public ExecutionPlanBuilder(CloningContext settings) : this()
         {
             _settings = settings;
             _dispatcher = new QueryDispatcher();
-            _metadataInitialiser = MetadataContainer.VerifyIntegrityWithSettings;
+            _metadataInitialiser = MetadataStorage.VerifyIntegrityWithSettings;
             _metadataInitialiser(_dispatcher, settings, ref _metadataCtn);
         }
 
-        internal ExecutionPlanBuilder(Settings settings, IQueryDispatcher dispatcher,
-            MetadataContainer.Initialiser metadataInit,
-            MetadataContainer metadataCtn) : this()
+        internal ExecutionPlanBuilder(CloningContext settings, IQueryDispatcher dispatcher,
+            MetadataStorage.Initialiser metadataInit,
+            MetadataStorage metadataCtn) : this()
         {
             if (dispatcher == null) throw new ArgumentNullException(nameof(dispatcher));
             if (metadataInit == null) throw new ArgumentNullException(nameof(metadataInit));
@@ -94,7 +94,7 @@ namespace DataCloner.Core
 
             //Purify
             var conns = new List<SqlConnection>();
-            var metadata = new AppMetadata();
+            var metadata = new ExecutionContextMetadata();
 
             var destinationSrv = (from server in _executionPlanByServer
                                   from insertStep in server.Value.InsertSteps
@@ -102,8 +102,8 @@ namespace DataCloner.Core
 
             foreach (var srv in destinationSrv)
             {
-                conns.Add(MetadataContainer.ConnectionStrings.First(c => c.Id == srv));
-                metadata.Add(srv, MetadataContainer.Metadatas.First(s => s.Key == srv).Value);
+                conns.Add(MetadataStorage.ConnectionStrings.First(c => c.Id == srv));
+                metadata.Add(srv, MetadataStorage.Metadatas.First(s => s.Key == srv).Value);
             }
 
             return new Query(metadata, _executionPlanByServer, conns.ToImmutableHashSet(), Query.CURRENT_FORMAT_VERSION);
@@ -166,7 +166,7 @@ namespace DataCloner.Core
         {
             var srcRows = _dispatcher.Select(riSource);
             var nbRows = srcRows.Length;
-            var table = MetadataContainer.Metadatas.GetTable(riSource);
+            var table = MetadataStorage.Metadatas.GetTable(riSource);
 
             //By default the destination server is the source if no road is found.
             var serverDst = new ServerIdentifier
@@ -176,8 +176,8 @@ namespace DataCloner.Core
                 Schema = riSource.Schema
             };
 
-            if (MetadataContainer.ServerMap.ContainsKey(serverDst))
-                serverDst = MetadataContainer.ServerMap[serverDst];
+            if (MetadataStorage.ServerMap.ContainsKey(serverDst))
+                serverDst = MetadataStorage.ServerMap[serverDst];
 
             var riReturn = new RowIdentifier
             {
@@ -233,7 +233,7 @@ namespace DataCloner.Core
                     else
                     {
                         var fkDestinationExists = false;
-                        var fkTable = MetadataContainer.Metadatas.GetTable(fk);
+                        var fkTable = MetadataStorage.Metadatas.GetTable(fk);
                         var riFk = new RowIdentifier
                         {
                             ServerId = fk.ServerIdTo,
@@ -430,7 +430,7 @@ namespace DataCloner.Core
 
             foreach (var dt in derivativeTable)
             {
-                var tableDt = MetadataContainer.Metadatas.GetTable(dt);
+                var tableDt = MetadataStorage.Metadatas.GetTable(dt);
                 if (dt.Access == DerivativeTableAccess.Forced && dt.Cascade)
                     getDerivatives = true;
                 else if (dt.Access == DerivativeTableAccess.Denied)
@@ -463,19 +463,19 @@ namespace DataCloner.Core
         {
             foreach (var job in _circularKeyJobs)
             {
-                var baseTable = MetadataContainer.Metadatas.GetTable(job.SourceBaseRowStartPoint);
-                var fkTable = MetadataContainer.Metadatas.GetTable(job.SourceFkRowStartPoint);
+                var baseTable = MetadataStorage.Metadatas.GetTable(job.SourceBaseRowStartPoint);
+                var fkTable = MetadataStorage.Metadatas.GetTable(job.SourceFkRowStartPoint);
                 var pkDestinationRow = _keyRelationships.GetKey(job.SourceBaseRowStartPoint);
                 var keyDestinationFkRow = _keyRelationships.GetKey(job.SourceFkRowStartPoint);
 
-                var serverDstBaseTable = MetadataContainer.ServerMap[new ServerIdentifier
+                var serverDstBaseTable = MetadataStorage.ServerMap[new ServerIdentifier
                 {
                     ServerId = job.SourceBaseRowStartPoint.ServerId,
                     Database = job.SourceBaseRowStartPoint.Database,
                     Schema = job.SourceBaseRowStartPoint.Schema
                 }];
 
-                var serverDstFkTable = MetadataContainer.ServerMap[new ServerIdentifier
+                var serverDstFkTable = MetadataStorage.ServerMap[new ServerIdentifier
                 {
                     ServerId = job.SourceFkRowStartPoint.ServerId,
                     Database = job.SourceFkRowStartPoint.Database,

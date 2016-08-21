@@ -11,6 +11,6 @@ namespace DataCloner.Core.Data
         IQueryHelper GetQueryHelper(ServerIdentifier server);
         IQueryHelper GetQueryHelper(Int16 server);
 
-        void InitProviders(AppMetadata appMetadata, IEnumerable<SqlConnection> connections);
+        void InitProviders(ExecutionContextMetadata appMetadata, IEnumerable<SqlConnection> connections);
     }
 }

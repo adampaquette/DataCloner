@@ -8,6 +8,7 @@ namespace DataCloner.Core.Configuration
     {
         [XmlAttribute]
         public string NameFrom { get; set; }
+
         [XmlAttribute]
         public string NameTo { get; set; }
     }

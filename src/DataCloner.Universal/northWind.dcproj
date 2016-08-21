@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="0.1" Name="NorthWind">
+    <ConnectionStrings>
+        <Add Id="1" Name="NorthWind_UNI" ProviderName="System.Data.SqlClient" ConnectionString="Data Source=(localdb)\MSSQLLocalDB;Integrated Security=True;Initial Catalog=Northwind_UNI;AttachDbFileName=|DataDirectory|\NORTHWND.mdf" />        
+        <Add Id="2" Name="Chinook" ProviderName="System.Data.SqlClient" ConnectionString="Data Source=(localdb)\MSSQLLocalDB;Integrated Security=True;Initial Catalog=Chinook;"/>
+    </ConnectionStrings>
+    <Templates>
+        <Server Id="{$SERVER_SOURCE_NORTHWIND{1}}" Description="CloneCustomer" TemplateId="1" BasedOn="0">
+            <Database Name="{$DATABASE_SOURCE_NORTHWIND{1}{northwind_uni}}" TemplateId="1" BasedOn="0">
+                <Schema Name="dbo" TemplateId="1" BasedOn="0">
+                    <Table Name="categories" IsStatic="true" />
+                    <Table Name="customers" IsStatic="false">
+                        <DataBuilders>
+                            <Column Name="contactname" BuilderName="DataCloner.PlugIn.StringDataBuilder" />
+                            <Column Name="contacttitle" BuilderName="DataCloner.PlugIn.StringDataBuilder" />
+                        </DataBuilders>
+                    </Table>
+                    <Table Name="employees" IsStatic="true" />
+                    <Table Name="orders" IsStatic="false">
+                        <DataBuilders>
+                            <Column Name="shipname" BuilderName="DataCloner.PlugIn.StringDataBuilder" />
+                            <Column Name="shipaddress" BuilderName="DataCloner.PlugIn.StringDataBuilder" />
+                        </DataBuilders>
+                    </Table>
+                    <Table Name="products" IsStatic="true" />
+                    <Table Name="region" IsStatic="true" />
+                    <Table Name="shippers" IsStatic="false">
+                        <DataBuilders>
+                            <Column Name="companyname" BuilderName="DataCloner.PlugIn.StringDataBuilder" />
+                        </DataBuilders>
+                    </Table>
+                    <Table Name="suppliers" IsStatic="true" />
+                    <Table Name="territories" IsStatic="true" />
+                </Schema>
+            </Database>
+        </Server>
+    </Templates>
+    <Behaviours>
+        <Behaviour Id="1" Name="Default" Description="Configuration par défaut">
+            <Modifiers />
+        </Behaviour>
+        <Behaviour Id="2" Name="Customer" Description="Duplication d'un client">
+            <Modifiers>
+                <Server Id="{$SERVER_SOURCE_NORTHWIND}" TemplateId="0" BasedOn="1" />
+            </Modifiers>
+        </Behaviour>
+    </Behaviours>
+    <Maps>
+        <Map Id="1" From="UNI" To="UNI" UsableBehaviours="1,2">
+            <Variables>
+                <Var Name="{$SERVER_SOURCE_NORTHWIND}" Value="1" />
+                <Var Name="{$DATABASE_SOURCE_NORTHWIND}" Value="northwind_uni" />
+            </Variables>
+            <Road ServerSrc="{$SERVER_SOURCE_NORTHWIND}" DatabaseSrc="{$DATABASE_SOURCE_NORTHWIND}" SchemaSrc="dbo"
+                  ServerDst="{$SERVER_SOURCE_NORTHWIND}" DatabaseDst="{$DATABASE_SOURCE_NORTHWIND}" SchemaDst="dbo" />
+        </Map>
+    </Maps>
+</Project>

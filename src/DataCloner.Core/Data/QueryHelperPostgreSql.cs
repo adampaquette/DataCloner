@@ -126,7 +126,7 @@ namespace DataCloner.Core.Data
         public override ISqlTypeConverter TypeConverter { get; }
         public override ISqlWriter SqlWriter { get; }
 
-        public QueryHelperPostgreSql(AppMetadata schema, string connectionString)
+        public QueryHelperPostgreSql(ExecutionContextMetadata schema, string connectionString)
             : base(schema, ProviderName, connectionString)
         {
             TypeConverter = new SqlTypeConverterPostgreSql();

@@ -8,10 +8,13 @@ namespace DataCloner.Core.Configuration
     {
         [XmlAttribute]
         public string Name { get; set; }
+
         [XmlAttribute]
         public Int16 Server { get; set; }
+
         [XmlAttribute]
         public string Database { get; set; }
+
         [XmlAttribute]
         public string Schema { get; set; }
 

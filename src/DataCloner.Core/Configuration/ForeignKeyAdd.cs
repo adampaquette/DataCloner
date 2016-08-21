@@ -9,6 +9,7 @@ namespace DataCloner.Core.Configuration
     {
         [XmlAttribute]
         public string Destination { get; set; }
+
         [XmlAttribute]
         public string Table { get; set; }
 

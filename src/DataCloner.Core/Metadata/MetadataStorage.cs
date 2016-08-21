@@ -10,66 +10,65 @@ using System.Text;
 namespace DataCloner.Core.Metadata
 {
     /// <summary>
-    /// 
+    /// Contains all the metadatas used by an execution context.
     /// </summary>
-    public sealed class MetadataContainer
+    /// <example>Servers, Databases, Schemas, Tables, Columns, PrimaryKeys, ForeignKeys...</example>
+    public sealed class MetadataStorage
     {
-        internal delegate void Initialiser(IQueryDispatcher dispatcher, Settings settings, ref MetadataContainer container);
+        internal delegate void Initialiser(IQueryDispatcher dispatcher, CloningContext settings, ref MetadataStorage container);
 
         public string ConfigFileHash { get; set; }
         public Dictionary<ServerIdentifier, ServerIdentifier> ServerMap { get; set; }
         public List<SqlConnection> ConnectionStrings { get; set; }
-        public AppMetadata Metadatas { get; set; }
+        public ExecutionContextMetadata Metadatas { get; set; }
 
-        public MetadataContainer()
+        public MetadataStorage()
         {
             ServerMap = new Dictionary<ServerIdentifier, ServerIdentifier>();
             ConnectionStrings = new List<SqlConnection>();
-            Metadatas = new AppMetadata();
+            Metadatas = new ExecutionContextMetadata();
         }
 
         /// <summary>
-        /// Verify if the last build of the container's metadata still match with the current cloning settings.
+        /// Verify if the last build of the container's metadata still match with the current cloning context.
         /// </summary>
         /// <param name="dispatcher">Query dispatcher</param>
-        /// <param name="app">Application user config</param>
-        /// <param name="mapId">MapId</param>
-        /// <param name="behaviourId">BehaviourId</param>
+        /// <param name="context">Current cloning context</param>
         /// <param name="container">Container</param>
-        public static void VerifyIntegrityWithSettings(IQueryDispatcher dispatcher, Settings settings, ref MetadataContainer container)
+        public static void VerifyIntegrityWithSettings(IQueryDispatcher dispatcher, CloningContext context, ref MetadataStorage container)
         {
             if (dispatcher == null) throw new ArgumentNullException(nameof(dispatcher));
-            if (settings == null) throw new ArgumentNullException(nameof(settings));
-            if (settings.Project == null) throw new ArgumentNullException(nameof(settings.Project));
-            if (String.IsNullOrWhiteSpace(settings.Project.Name)) throw new ArgumentException(nameof(settings.Project.Name));
-            if (settings.Project.ConnectionStrings != null &&
-                !settings.Project.ConnectionStrings.Any())
+            if (context == null) throw new ArgumentNullException(nameof(context));
+            if (context.Project == null) throw new ArgumentNullException(nameof(context.Project));
+            if (String.IsNullOrWhiteSpace(context.Project.Name)) throw new ArgumentException(nameof(context.Project.Name));
+            if (context.Project.ConnectionStrings != null &&
+                !context.Project.ConnectionStrings.Any())
                 throw new NullReferenceException("settings.Project.ConnectionStrings");
 
-            var project = settings.Project;
+            var project = context.Project;
             var containerFileName = project.Name + "_";
             Map map = null;
-            Behaviour clonerBehaviour = null;
+            Behavior clonerBehaviour = null;
 
             //Hash the selected map, connnectionStrings and the cloner 
             //configuration to see if it match the lasted builded container
             var configData = new MemoryStream();
             SerializationHelper.Serialize(configData, project.ConnectionStrings);
 
-            if (settings.MapId.HasValue)
+            if (context.MapId.HasValue)
             {
-                map = settings.Project.Maps.FirstOrDefault(m => m.Id == settings.MapId);
+                map = context.Project.Maps.FirstOrDefault(m => m.Id == context.MapId);
                 if (map == null)
-                    throw new Exception($"Map id '{settings.MapId}' not found in configuration file for application '{project.Name}'!");
+                    throw new Exception($"Map id '{context.MapId}' not found in configuration file for application '{project.Name}'!");
                 containerFileName += map.From + "-" + map.To;
                 SerializationHelper.Serialize(configData, map);
 
-                if (map.UsableBehaviours != null && map.UsableBehaviours.Split(',').ToList().Contains(settings.BehaviourId.ToString()))
+                if (map.UsableBehaviours != null && map.UsableBehaviours.Split(',').ToList().Contains(context.BehaviourId.ToString()))
                 {
-                    clonerBehaviour = project.Behaviours.FirstOrDefault(c => c.Id == settings.BehaviourId);
+                    clonerBehaviour = project.Behaviors.FirstOrDefault(c => c.Id == context.BehaviourId);
                     if (clonerBehaviour == null)
                         throw new KeyNotFoundException(
-                            $"There is no behaviour '{settings.BehaviourId}' in the configuration for the appName name '{project.Name}'.");
+                            $"There is no behaviour '{context.BehaviourId}' in the configuration for the appName name '{project.Name}'.");
 
                     SerializationHelper.Serialize(configData, clonerBehaviour);
                     SerializationHelper.Serialize(configData, project.Templates);
@@ -78,8 +77,8 @@ namespace DataCloner.Core.Metadata
             else
                 containerFileName += "defaultMap";
 
-            if (settings.BehaviourId != null)
-                containerFileName += "_" + settings.BehaviourId;
+            if (context.BehaviourId != null)
+                containerFileName += "_" + context.BehaviourId;
             containerFileName += ".cache";
 
             //Hash user config
@@ -92,7 +91,7 @@ namespace DataCloner.Core.Metadata
             if (container != null && container.ConfigFileHash == configHash)
                 return;
 
-            if (!settings.UseInMemoryCacheOnly)
+            if (!context.UseInMemoryCacheOnly)
             {
                 //If container on disk is good, we use it
                 container = TryLoadContainer(containerFileName, configHash);
@@ -107,7 +106,7 @@ namespace DataCloner.Core.Metadata
             container = BuildMetadataWithSettings(dispatcher, containerFileName, project, clonerBehaviour, map, configHash);
 
             //Persist container
-            if (!settings.UseInMemoryCacheOnly)
+            if (!context.UseInMemoryCacheOnly)
                 container.Save(containerFileName);
         }
 
@@ -117,7 +116,7 @@ namespace DataCloner.Core.Metadata
         /// <param name="dispatcher">Query dispatcher</param>
         /// <param name="proj">Project config</param>
         /// <param name="container">Metadata container</param>
-        public static void VerifyIntegrityOfSqlMetadata(IQueryDispatcher dispatcher, ProjectContainer proj, ref MetadataContainer container)
+        public static void VerifyIntegrityOfSqlMetadata(IQueryDispatcher dispatcher, ConfigurationProject proj, ref MetadataStorage container)
         {
             if (dispatcher == null) throw new ArgumentNullException(nameof(dispatcher));
             if (proj == null) throw new ArgumentNullException(nameof(proj));
@@ -151,7 +150,7 @@ namespace DataCloner.Core.Metadata
             Serialize(new BinaryWriter(output, Encoding.UTF8, true), referenceTracking);
         }        
 
-        public static MetadataContainer Deserialize(Stream input, FastAccessList<object> referenceTracking = null)
+        public static MetadataStorage Deserialize(Stream input, FastAccessList<object> referenceTracking = null)
         {
             return Deserialize(new BinaryReader(input, Encoding.UTF8, true));
         }
@@ -188,9 +187,9 @@ namespace DataCloner.Core.Metadata
             }
         }
 
-        public static MetadataContainer Deserialize(BinaryReader input, FastAccessList<object> referenceTracking = null)
+        public static MetadataStorage Deserialize(BinaryReader input, FastAccessList<object> referenceTracking = null)
         {
-            var config = new MetadataContainer { ConfigFileHash = input.ReadString() };
+            var config = new MetadataStorage { ConfigFileHash = input.ReadString() };
 
             DeserializeBody(input, config, referenceTracking);
 
@@ -207,11 +206,11 @@ namespace DataCloner.Core.Metadata
         /// <param name="map"></param>
         /// <param name="configHash"></param>
         /// <returns></returns>
-        private static MetadataContainer BuildMetadataWithSettings(IQueryDispatcher dispatcher, string containerFileName,
-                                                                   ProjectContainer proj, Behaviour clonerBehaviour,
+        private static MetadataStorage BuildMetadataWithSettings(IQueryDispatcher dispatcher, string containerFileName,
+                                                                   ConfigurationProject proj, Behavior clonerBehaviour,
                                                                    Map map, string configHash)
         {
-            var container = new MetadataContainer { ConfigFileHash = configHash, ServerMap = map.ConvertToDictionnary() };
+            var container = new MetadataStorage { ConfigFileHash = configHash, ServerMap = map.ConvertToDictionnary() };
 
             ////Get servers source
             //var serversSource = map.Roads.Select(r => r.ServerSrc).Distinct().ToList();
@@ -248,14 +247,14 @@ namespace DataCloner.Core.Metadata
 
             FetchMetadata(dispatcher, ref container);
 
-            Behaviour behaviour = null;
+            Behavior behaviour = null;
             if (clonerBehaviour != null)
             {
                 List<Variable> vars = null;
                 if (map != null)
                     vars = map.Variables;
 
-                behaviour = clonerBehaviour.Build(proj.Templates, vars);
+                behaviour = clonerBehaviour.BuildBehavior(proj.Templates, vars);
             }
             container.Metadatas.FinalizeMetadata(behaviour);
 
@@ -270,10 +269,10 @@ namespace DataCloner.Core.Metadata
         /// <param name="connections"></param>
         /// <param name="configHash"></param>
         /// <returns></returns>
-        private static MetadataContainer BuildMetadata(IQueryDispatcher dispatcher, string containerFileName,
+        private static MetadataStorage BuildMetadata(IQueryDispatcher dispatcher, string containerFileName,
                                                        List<Connection> connections, string configHash)
         {
-            var container = new MetadataContainer { ConfigFileHash = configHash };
+            var container = new MetadataStorage { ConfigFileHash = configHash };
 
             //Copy connection strings
             foreach (var cs in connections)
@@ -294,7 +293,7 @@ namespace DataCloner.Core.Metadata
             return container;
         }
 
-        private static void FetchMetadata(IQueryDispatcher dispatcher, ref MetadataContainer container)
+        private static void FetchMetadata(IQueryDispatcher dispatcher, ref MetadataStorage container)
         {
             dispatcher.InitProviders(container.Metadatas, container.ConnectionStrings);
 
@@ -311,7 +310,7 @@ namespace DataCloner.Core.Metadata
             }
         }
 
-        private static MetadataContainer DeserializeBody(BinaryReader input, MetadataContainer config, 
+        private static MetadataStorage DeserializeBody(BinaryReader input, MetadataStorage config, 
             FastAccessList<object> referenceTracking = null)
         {
             var nbServerMap = input.ReadInt32();
@@ -325,14 +324,14 @@ namespace DataCloner.Core.Metadata
             for (var i = 0; i < nbConnection; i++)
                 config.ConnectionStrings.Add(SqlConnection.Deserialize(input));
 
-            config.Metadatas = AppMetadata.Deserialize(input, referenceTracking);
+            config.Metadatas = ExecutionContextMetadata.Deserialize(input, referenceTracking);
 
             return config;
         }
 
-        private static MetadataContainer TryLoadContainer(string containerFile, string configHash)
+        private static MetadataStorage TryLoadContainer(string containerFile, string configHash)
         {
-            MetadataContainer container = null;
+            MetadataStorage container = null;
 
             if (File.Exists(containerFile))
             {
@@ -344,7 +343,7 @@ namespace DataCloner.Core.Metadata
                     //Check if container file match with config file version
                     if (fileHash == configHash)
                     {
-                        container = new MetadataContainer { ConfigFileHash = fileHash };
+                        container = new MetadataStorage { ConfigFileHash = fileHash };
                         DeserializeBody(br, container);
                     }
                 }
