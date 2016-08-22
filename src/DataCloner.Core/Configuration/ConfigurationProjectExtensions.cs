@@ -31,7 +31,7 @@ namespace DataCloner.Core.Configuration
                 stack.Push(setting);
 
                 //Stack
-                while (stack.Peek().BasedOn.HasValue)
+                while (stack.Peek().BasedOn > 0)
                 {
                     var current = stack.Peek();
 
@@ -79,7 +79,7 @@ namespace DataCloner.Core.Configuration
 
         public static void MergeTable(Table source, Table target)
         {
-            if (source.IsStatic.HasValue)
+            if (source.IsStatic != NullableBool.NotSet)
                 target.IsStatic = source.IsStatic;
 
             //DataBuilders
@@ -93,10 +93,10 @@ namespace DataCloner.Core.Configuration
             }
 
             //DerativeTables
-            if (source.DerativeTables.GlobalAccess.HasValue)
+            if (source.DerativeTables.GlobalAccess != DerivativeTableAccess.NotSet)
                 target.DerativeTables.GlobalAccess = source.DerativeTables.GlobalAccess;
 
-            if (source.DerativeTables.GlobalCascade.HasValue)
+            if (source.DerativeTables.GlobalCascade != NullableBool.NotSet)
                 target.DerativeTables.GlobalCascade = source.DerativeTables.GlobalCascade;
 
             foreach (var sourceTable in source.DerativeTables.DerivativeSubTables)
@@ -135,9 +135,9 @@ namespace DataCloner.Core.Configuration
 
         public static void MergeDerivativeSubTable(DerivativeTable source, DerivativeTable target)
         {
-            if (source.Access.HasValue)
+            if (source.Access != DerivativeTableAccess.NotSet)
                 target.Access = source.Access;
-            if (source.Cascade.HasValue)
+            if (source.Cascade != NullableBool.NotSet)
                 target.Cascade = source.Cascade;
         }
     }

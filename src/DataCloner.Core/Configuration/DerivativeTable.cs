@@ -13,9 +13,9 @@ namespace DataCloner.Core.Configuration
         public string Name { get; set; }
 
         [XmlAttribute]
-        public DerivativeTableAccess? Access { get; set; }
+        public DerivativeTableAccess Access { get; set; }
 
         [XmlAttribute]
-        public bool? Cascade { get; set; }
+        public NullableBool Cascade { get; set; }
     }
 }

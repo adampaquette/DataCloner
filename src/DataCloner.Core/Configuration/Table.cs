@@ -11,7 +11,7 @@ namespace DataCloner.Core.Configuration
         [XmlAttribute]
         public string Name { get; set; }
         [XmlAttribute]
-        public bool? IsStatic { get; set; }
+        public NullableBool IsStatic { get; set; }
         public DerivativeTableGlobal DerativeTables { get; set; }
         [XmlArrayItem("Column")]
         public List<DataBuilder> DataBuilders { get; set; }

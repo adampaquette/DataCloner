@@ -17,7 +17,7 @@ namespace DataCloner.Core.Configuration
         public string Description { get; set; }
 
         [XmlAttribute]
-        public Int16? BasedOn { get; set; }
+        public Int16 BasedOn { get; set; }
 
         [XmlElement("Table")]
         public List<Table> Tables { get; set; }

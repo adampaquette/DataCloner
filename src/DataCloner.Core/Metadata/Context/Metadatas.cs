@@ -193,148 +193,148 @@ namespace DataCloner.Core.Metadata.Context
 
         private void MergeFk(Behavior behaviour)
         {
-            if (behaviour == null)
-                return;
+            //if (behaviour == null)
+            //    return;
 
-            foreach (var server in this)
-            {
-                var serModifier = behaviour.Modifiers.Servers.Find(s => s.Id.Equals(server.Key.ToString(), StringComparison.OrdinalIgnoreCase));
-                if (serModifier != null)
-                {
-                    foreach (var database in server.Value)
-                    {
-                        var dbModifier = serModifier.Databases.Find(d => d.Var.Equals(database.Key, StringComparison.OrdinalIgnoreCase));
-                        if (dbModifier != null)
-                        {
-                            foreach (var schema in database.Value)
-                            {
-                                var scheModifier = dbModifier.Schemas.Find(s => s.Var.Equals( schema.Key, StringComparison.OrdinalIgnoreCase));
-                                if (scheModifier != null)
-                                    MergeFkModifierSchema(schema.Value, scheModifier.Tables);
-                            }
-                        }
-                    }
-                }
-            }
+            //foreach (var server in this)
+            //{
+            //    var serModifier = behaviour.Modifiers.Servers.Find(s => s.Id.Equals(server.Key.ToString(), StringComparison.OrdinalIgnoreCase));
+            //    if (serModifier != null)
+            //    {
+            //        foreach (var database in server.Value)
+            //        {
+            //            var dbModifier = serModifier.Databases.Find(d => d.Var.Equals(database.Key, StringComparison.OrdinalIgnoreCase));
+            //            if (dbModifier != null)
+            //            {
+            //                foreach (var schema in database.Value)
+            //                {
+            //                    var scheModifier = dbModifier.Schemas.Find(s => s.Var.Equals( schema.Key, StringComparison.OrdinalIgnoreCase));
+            //                    if (scheModifier != null)
+            //                        MergeFkModifierSchema(schema.Value, scheModifier.Tables);
+            //                }
+            //            }
+            //        }
+            //    }
+            //}
         }
 
         private void MergeFkModifierSchema(SchemaMetadata schemaMetadata, List<Table> tablesModifier)
         {
-            foreach (var table in schemaMetadata)
-            {
-                var tblModifier = tablesModifier.Find(t => t.Name.Equals(table.Name, StringComparison.OrdinalIgnoreCase));
-                if (tblModifier != null)
-                {
-                    //On affecte les changements de la configuration
+            //foreach (var table in schemaMetadata)
+            //{
+            //    var tblModifier = tablesModifier.Find(t => t.Name.Equals(table.Name, StringComparison.OrdinalIgnoreCase));
+            //    if (tblModifier != null)
+            //    {
+            //        //On affecte les changements de la configuration
 
-                    //On supprime les clefs
-                    foreach (var colConfig in tblModifier.ForeignKeys.ForeignKeyRemove.Columns)
-                    {
-                        for (var j = 0; j < table.ForeignKeys.Count(); j++)
-                        {
-                            var fk = table.ForeignKeys[j];
+            //        //On supprime les clefs
+            //        foreach (var colConfig in tblModifier.ForeignKeys.ForeignKeyRemove.Columns)
+            //        {
+            //            for (var j = 0; j < table.ForeignKeys.Count(); j++)
+            //            {
+            //                var fk = table.ForeignKeys[j];
 
-                            for (var i = 0; i < fk.Columns.Count(); i++)
-                            {
-                                if (fk.Columns[i].NameFrom.Equals(colConfig.Name, StringComparison.OrdinalIgnoreCase))
-                                {
-                                    fk.Columns.RemoveAt(i);
-                                    i--;
+            //                for (var i = 0; i < fk.Columns.Count(); i++)
+            //                {
+            //                    if (fk.Columns[i].NameFrom.Equals(colConfig.Name, StringComparison.OrdinalIgnoreCase))
+            //                    {
+            //                        fk.Columns.RemoveAt(i);
+            //                        i--;
 
-                                    if (fk.Columns.Count == 0)
-                                    {
-                                        table.ForeignKeys.RemoveAt(j);
-                                        j--;
-                                    }
-                                }
-                            }
-                        }
-                    }
+            //                        if (fk.Columns.Count == 0)
+            //                        {
+            //                            table.ForeignKeys.RemoveAt(j);
+            //                            j--;
+            //                        }
+            //                    }
+            //                }
+            //            }
+            //        }
 
-                    //On ajoute les clefs
-                    foreach (var fkModifier in tblModifier.ForeignKeys.ForeignKeyAdd)
-                    {
-                        var newFk = new ForeignKey
-                        {
-                            ServerIdTo = Int16.Parse(fkModifier.ServerId),
-                            DatabaseTo = fkModifier.Database,
-                            SchemaTo = fkModifier.Schema,
-                            TableTo = fkModifier.Table,
-                            Columns = (from fk in fkModifier.Columns select new ForeignKeyColumn { NameFrom = fk.NameFrom, NameTo = fk.NameTo }).ToList()
-                        };
+            //        //On ajoute les clefs
+            //        foreach (var fkModifier in tblModifier.ForeignKeys.ForeignKeyAdd)
+            //        {
+            //            var newFk = new ForeignKey
+            //            {
+            //                ServerIdTo = Int16.Parse(fkModifier.ServerId),
+            //                DatabaseTo = fkModifier.Database,
+            //                SchemaTo = fkModifier.Schema,
+            //                TableTo = fkModifier.Table,
+            //                Columns = (from fk in fkModifier.Columns select new ForeignKeyColumn { NameFrom = fk.NameFrom, NameTo = fk.NameTo }).ToList()
+            //            };
 
-                        table.ForeignKeys.Add(newFk);
-                    }
-                }
-            }
+            //            table.ForeignKeys.Add(newFk);
+            //        }
+            //    }
+            //}
         }
 
         private void MergeBehaviour(Behavior behaviour)
         {
-            if (behaviour == null)
-                return;
+            //if (behaviour == null)
+            //    return;
 
-            foreach (var server in this)
-            {
-                var serModifier = behaviour.Modifiers.Servers.Find(s => s.Id.Equals(server.Key.ToString(), StringComparison.OrdinalIgnoreCase));
-                if (serModifier != null)
-                {
-                    foreach (var database in server.Value)
-                    {
-                        var dbModifier = serModifier.Databases.Find(d => d.Var.Equals(database.Key, StringComparison.OrdinalIgnoreCase));
-                        if (dbModifier != null)
-                        {
-                            foreach (var schema in database.Value)
-                            {
-                                var scheModifier = dbModifier.Schemas.Find(s => s.Var.Equals(schema.Key, StringComparison.OrdinalIgnoreCase));
-                                if (scheModifier != null)
-                                {
-                                    foreach (var table in schema.Value)
-                                    {
-                                        var tblModifier = scheModifier.Tables.Find(t => t.Name.Equals(table.Name, StringComparison.OrdinalIgnoreCase));
-                                        if (tblModifier != null)
-                                        {
-                                            //On affecte les changements de la configuration
-                                            table.IsStatic = tblModifier.IsStatic;
+            //foreach (var server in this)
+            //{
+            //    var serModifier = behaviour.Modifiers.Servers.Find(s => s.Id.Equals(server.Key.ToString(), StringComparison.OrdinalIgnoreCase));
+            //    if (serModifier != null)
+            //    {
+            //        foreach (var database in server.Value)
+            //        {
+            //            var dbModifier = serModifier.Databases.Find(d => d.Var.Equals(database.Key, StringComparison.OrdinalIgnoreCase));
+            //            if (dbModifier != null)
+            //            {
+            //                foreach (var schema in database.Value)
+            //                {
+            //                    var scheModifier = dbModifier.Schemas.Find(s => s.Var.Equals(schema.Key, StringComparison.OrdinalIgnoreCase));
+            //                    if (scheModifier != null)
+            //                    {
+            //                        foreach (var table in schema.Value)
+            //                        {
+            //                            var tblModifier = scheModifier.Tables.Find(t => t.Name.Equals(table.Name, StringComparison.OrdinalIgnoreCase));
+            //                            if (tblModifier != null)
+            //                            {
+            //                                //On affecte les changements de la configuration
+            //                                table.IsStatic = tblModifier.IsStatic;
 
-                                            //Derivative tables
-                                            var globalAccess = tblModifier.DerativeTables.GlobalAccess;
-                                            var globalCascade = tblModifier.DerativeTables.GlobalCascade;
+            //                                //Derivative tables
+            //                                var globalAccess = tblModifier.DerativeTables.GlobalAccess;
+            //                                var globalCascade = tblModifier.DerativeTables.GlobalCascade;
 
-                                            foreach (var derivTbl in table.DerivativeTables)
-                                            {
-                                                var derivTblModifier = tblModifier.DerativeTables.DerivativeSubTables
-                                                                              .FirstOrDefault(t => t.ServerId.Equals( derivTbl.ServerId.ToString(), StringComparison.OrdinalIgnoreCase) &&
-                                                                                              t.Database.Equals( derivTbl.Database, StringComparison.OrdinalIgnoreCase) &&
-                                                                                              t.Schema.Equals(derivTbl.Schema, StringComparison.OrdinalIgnoreCase) &&
-                                                                                              t.Table.Equals( derivTbl.Table, StringComparison.OrdinalIgnoreCase));
-                                                if (derivTblModifier != null)
-                                                {
-                                                    derivTbl.Access = derivTblModifier.Access;
-                                                    derivTbl.Cascade = derivTblModifier.Cascade;
-                                                }
-                                                else
-                                                {
-                                                    derivTbl.Access = globalAccess;
-                                                    derivTbl.Cascade = globalCascade;
-                                                }
-                                            }
+            //                                foreach (var derivTbl in table.DerivativeTables)
+            //                                {
+            //                                    var derivTblModifier = tblModifier.DerativeTables.DerivativeSubTables
+            //                                                                  .FirstOrDefault(t => t.ServerId.Equals( derivTbl.ServerId.ToString(), StringComparison.OrdinalIgnoreCase) &&
+            //                                                                                  t.Database.Equals( derivTbl.Database, StringComparison.OrdinalIgnoreCase) &&
+            //                                                                                  t.Schema.Equals(derivTbl.Schema, StringComparison.OrdinalIgnoreCase) &&
+            //                                                                                  t.Table.Equals( derivTbl.Table, StringComparison.OrdinalIgnoreCase));
+            //                                    if (derivTblModifier != null)
+            //                                    {
+            //                                        derivTbl.Access = derivTblModifier.Access;
+            //                                        derivTbl.Cascade = derivTblModifier.Cascade;
+            //                                    }
+            //                                    else
+            //                                    {
+            //                                        derivTbl.Access = globalAccess;
+            //                                        derivTbl.Cascade = globalCascade;
+            //                                    }
+            //                                }
 
-                                            //Data builder
-                                            foreach (var builderCol in tblModifier.DataBuilders)
-                                            {
-                                                var col = table.ColumnsDefinition.FirstOrDefault(c => c.Name.Equals(builderCol.Name, StringComparison.OrdinalIgnoreCase));
-                                                if (col != null)
-                                                    col.BuilderName = builderCol.BuilderName;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+            //                                //Data builder
+            //                                foreach (var builderCol in tblModifier.DataBuilders)
+            //                                {
+            //                                    var col = table.ColumnsDefinition.FirstOrDefault(c => c.Name.Equals(builderCol.Name, StringComparison.OrdinalIgnoreCase));
+            //                                    if (col != null)
+            //                                        col.BuilderName = builderCol.BuilderName;
+            //                                }
+            //                            }
+            //                        }
+            //                    }
+            //                }
+            //            }
+            //        }
+            //    }
+            //}
         }
 
         public void Serialize(Stream stream, FastAccessList<object> referenceTracking = null)

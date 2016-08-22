@@ -25,7 +25,7 @@ namespace DataCloner.Core.Debug
 
         public static void TestConfiguration()
         {
-            var project = new ProjectContainer { Name = "MainApp" };
+            var project = new ConfigurationProject { Name = "MainApp" };
 
             //ConnectionStrings
             project.ConnectionStrings.AddRange(new List<Connection>
@@ -56,17 +56,17 @@ namespace DataCloner.Core.Debug
                 Description = "Configuration par défaut du serveur PGIS, schéma DBO.",
                 Tables = new List<Table>
                 {
-                    new Table { Name = "domaineValeur", IsStatic = true},
+                    new Table { Name = "domaineValeur", IsStatic = NullableBool.True},
                     new Table
                     {
                         Name = "transmission",
-                        DerativeTables = new DerivativeTable()
+                        DerativeTables = new DerivativeTableGlobal()
                         {
                             GlobalAccess = DerivativeTableAccess.Forced,
-                            GlobalCascade = true,
-                            DerivativeSubTables = new List<DerivativeSubTable>
+                            GlobalCascade = NullableBool.True,
+                            DerivativeSubTables = new List<DerivativeTable>
                             {
-                                 new DerivativeSubTable { Destination = "PGIS_TO", Table = "demande" }
+                                 new DerivativeTable { Destination = "PGIS_TO", Name = "demande" }
                             }
                         },
                         ForeignKeys = new ForeignKeys
@@ -117,9 +117,9 @@ namespace DataCloner.Core.Debug
             project.Templates.AddRange(new List<DbSettings> { PGIS_DBO, ARIEL_FROM, SIEBEL_FROM });
 
             //Behaviors
-            project.Behaviours.AddRange(new List<Behaviour>
+            project.Behaviors.AddRange(new List<Behavior>
             {
-                new Behaviour
+                new Behavior
                 {
                     Id = 1,
                     Name = "Default",
@@ -131,7 +131,7 @@ namespace DataCloner.Core.Debug
                         new DbSettings { Id = 3, BasedOn = 3 }
                     }
                 },
-                new Behaviour
+                new Behavior
                 {
                     Id = 2,
                     Name = "Client",

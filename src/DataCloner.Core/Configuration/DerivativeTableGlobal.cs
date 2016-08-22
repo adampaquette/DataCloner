@@ -8,10 +8,10 @@ namespace DataCloner.Core.Configuration
     public class DerivativeTableGlobal
     {
         [XmlAttribute]
-        public DerivativeTableAccess? GlobalAccess { get; set; }
+        public DerivativeTableAccess GlobalAccess { get; set; }
 
         [XmlAttribute]
-        public bool? GlobalCascade { get; set; }
+        public NullableBool GlobalCascade { get; set; }
 
         [XmlElement("Table")]
         public List<DerivativeTable> DerivativeSubTables { get; set; }
