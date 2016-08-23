@@ -26,3 +26,4 @@ namespace DataCloner.Core.Data.Generator
             $"SELECT {sqlVarId} K, currval(pg_get_serial_sequence('{tableName}','{colName}') V;\r\n";
     }
 }
+

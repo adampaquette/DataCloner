@@ -14,11 +14,11 @@ namespace DataCloner.Core.Configuration
         public NullableBool GlobalCascade { get; set; }
 
         [XmlElement("Table")]
-        public List<DerivativeTable> DerivativeSubTables { get; set; }
+        public List<DerivativeTable> DerivativeTables { get; set; }
 
         public DerivativeTableGlobal()
         {
-            DerivativeSubTables = new List<DerivativeTable>();
+            DerivativeTables = new List<DerivativeTable>();
         }
     }
 }

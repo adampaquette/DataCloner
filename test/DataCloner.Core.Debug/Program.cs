@@ -60,11 +60,11 @@ namespace DataCloner.Core.Debug
                     new Table
                     {
                         Name = "transmission",
-                        DerativeTables = new DerivativeTableGlobal()
+                        DerativeTableGlobal = new DerivativeTableGlobal()
                         {
                             GlobalAccess = DerivativeTableAccess.Forced,
                             GlobalCascade = NullableBool.True,
-                            DerivativeSubTables = new List<DerivativeTable>
+                            DerivativeTables = new List<DerivativeTable>
                             {
                                  new DerivativeTable { Destination = "PGIS_TO", Name = "demande" }
                             }

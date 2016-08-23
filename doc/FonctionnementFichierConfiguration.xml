@@ -63,7 +63,9 @@ Templates :
 3 - Les templates ne peuvent pas hériter de plus d'un parent. Il faut donc se créer une hierarchie d'objets pour réutiliser au maximum les configurations.
 4 - Deux noeuds ForeignKeyAdd ne s'additionnent pas s'ils sont identiques. Attention de ne pas définir deux FK avec un colonne partagée car elles s'additionneront.
 5 - Un ForeignKeyRemove supprime également les ForeignKeyAdd hérités.
-6 - Un ForeignKeyRemove est exécuté avant un ForeignKeyAdd.
+6 - Un ForeignKeyRemove est exécuté avant un ForeignKeyAdd. 
+    On peut donc écraser un ForeignKeyRemove d'un parent en ajoutant un ForeignKeyAdd dans le template hérité.
+    On peut donc écraser un ForeignKeyAdd d'un parent en ajoutant un ForeignKeyRemove dans le template hérité.
 
 Behaviors : 
 

@@ -1,15 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Serialization;
 
 namespace DataCloner.Core.Configuration
 {
+    /// <summary>
+    /// Contains the fonctionnalities to flatten a multi-hyrarchical DbSetting into a single layer.
+    /// </summary>
     [Serializable]
     public static class BehaviourBuilder
     {
         /// <summary>
-        /// Build the behavior from the templates.
+        /// Build / flatten a multi-hyrarchical DbSetting into a single layer.
         /// </summary>
         /// <remarks>Still returns abstract data with variables.</remarks>
         public static Behavior BuildBehavior(this ConfigurationProject project, Int16 behaviorId)
@@ -46,12 +48,7 @@ namespace DataCloner.Core.Configuration
                 //Destack and merge
                 var compiledDbSettings = new DbSettings();
                 while (stack.Count > 0)
-                {
-                    var source = stack.Peek();
-                    var target = stack.Pop();
-
-                    MergeDbSettings(source, target);
-                }
+                    MergeDbSettings(stack.Pop(), compiledDbSettings);
 
                 //Si le résultat du merge est sur la même variable qu'un autre setting compilée alors on merge par dessus.
                 var dup = compiledBehavior.DbSettings.FirstOrDefault(b => b.Var == compiledDbSettings.Var);
@@ -62,6 +59,11 @@ namespace DataCloner.Core.Configuration
             return compiledBehavior;
         }
 
+        /// <summary>
+        /// Merge the configuration of two elements in the same hierarchy.
+        /// </summary>
+        /// <param name="source">Child to append over a parent.</param>
+        /// <param name="target">Parent to be overrided.</param>
         public static void MergeDbSettings(DbSettings source, DbSettings target)
         {
             if (!String.IsNullOrWhiteSpace(source.Description))
@@ -77,6 +79,11 @@ namespace DataCloner.Core.Configuration
             }
         }
 
+        /// <summary>
+        /// Merge the configuration of two elements in the same hierarchy.
+        /// </summary>
+        /// <param name="source">Child to append over a parent.</param>
+        /// <param name="target">Parent to be overrided.</param>
         public static void MergeTable(Table source, Table target)
         {
             if (source.IsStatic != NullableBool.NotSet)
@@ -93,27 +100,28 @@ namespace DataCloner.Core.Configuration
             }
 
             //DerativeTables
-            if (source.DerativeTables.GlobalAccess != DerivativeTableAccess.NotSet)
-                target.DerativeTables.GlobalAccess = source.DerativeTables.GlobalAccess;
+            if (source.DerativeTableGlobal.GlobalAccess != DerivativeTableAccess.NotSet)
+                target.DerativeTableGlobal.GlobalAccess = source.DerativeTableGlobal.GlobalAccess;
 
-            if (source.DerativeTables.GlobalCascade != NullableBool.NotSet)
-                target.DerativeTables.GlobalCascade = source.DerativeTables.GlobalCascade;
+            if (source.DerativeTableGlobal.GlobalCascade != NullableBool.NotSet)
+                target.DerativeTableGlobal.GlobalCascade = source.DerativeTableGlobal.GlobalCascade;
 
-            foreach (var sourceTable in source.DerativeTables.DerivativeSubTables)
+            foreach (var sourceTable in source.DerativeTableGlobal.DerivativeTables)
             {
-                var targetTable = target.DerativeTables.DerivativeSubTables.FirstOrDefault(d => d.Name == sourceTable.Name &&
+                var targetTable = target.DerativeTableGlobal.DerivativeTables.FirstOrDefault(d => d.Name == sourceTable.Name &&
                                                                                            d.Destination == sourceTable.Destination);
                 if (targetTable == null)
-                    target.DerativeTables.DerivativeSubTables.Add(targetTable);
+                    target.DerativeTableGlobal.DerivativeTables.Add(targetTable);
                 else
                     MergeDerivativeSubTable(sourceTable, targetTable);
             }
 
             //ForeignKeys
-            foreach (var sourceForeignKey in source.ForeignKeys.ForeignKeyRemove.Columns)
+            foreach (var sourceColumn in source.ForeignKeys.ForeignKeyRemove.Columns)
             {
-                //Add 
-                var targetForeignKey = target.ForeignKeys.ForeignKeyRemove.Columns.FirstOrDefault(c => c == sourceForeignKey);
+                //TODO : Supprimer les FKAdd de la target qui ont la sourceColumn en commun.
+
+                var targetForeignKey = target.ForeignKeys.ForeignKeyRemove.Columns.FirstOrDefault(c => c == sourceColumn);
 
                 if (targetForeignKey == null)
                     target.ForeignKeys.ForeignKeyRemove.Columns.Add(targetForeignKey);
@@ -121,6 +129,8 @@ namespace DataCloner.Core.Configuration
 
             foreach (var sourceForeignKey in source.ForeignKeys.ForeignKeyAdd)
             {
+                //TODO : Supprimer les FKRemove de la target qui ont la sourceColumn en commun la sourceForeignKey.
+
                 var targetForeignKey = target.ForeignKeys.ForeignKeyAdd.FirstOrDefault(fk => fk == sourceForeignKey);
 
                 if (targetForeignKey == null)
@@ -128,11 +138,21 @@ namespace DataCloner.Core.Configuration
             }
         }
 
+        /// <summary>
+        /// Merge the configuration of two elements in the same hierarchy.
+        /// </summary>
+        /// <param name="source">Child to append over a parent.</param>
+        /// <param name="target">Parent to be overrided.</param>
         public static void MergeDataBuilder(DataBuilder source, DataBuilder target)
         {
             target.BuilderName = source.BuilderName;
         }
 
+        /// <summary>
+        /// Merge the configuration of two elements in the same hierarchy.
+        /// </summary>
+        /// <param name="source">Child to append over a parent.</param>
+        /// <param name="target">Parent to be overrided.</param>
         public static void MergeDerivativeSubTable(DerivativeTable source, DerivativeTable target)
         {
             if (source.Access != DerivativeTableAccess.NotSet)
