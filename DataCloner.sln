@@ -34,22 +34,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "design", "design", "{F89479
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "doc", "doc", "{AB88DB2F-A137-45F5-B270-38B62E0CC6DD}"
-	ProjectSection(SolutionItems) = preProject
-		doc\Algos.txt = doc\Algos.txt
-		doc\ArchitectureGlobale.xml = doc\ArchitectureGlobale.xml
-		doc\Database.xml = doc\Database.xml
-		doc\DataCloner.docx = doc\DataCloner.docx
-		doc\diagramme1.gliffy = doc\diagramme1.gliffy
-		doc\diagramme2.gliffy = doc\diagramme2.gliffy
-		doc\diagramme3.gliffy = doc\diagramme3.gliffy
-		doc\diagramme4.gliffy = doc\diagramme4.gliffy
-		doc\diagramme5.gliffy = doc\diagramme5.gliffy
-		doc\diagramme6.gliffy = doc\diagramme6.gliffy
-		doc\diagramme7.gliffy = doc\diagramme7.gliffy
-		doc\diagramme8.gliffy = doc\diagramme8.gliffy
-		doc\diagrammeGlobal.gliffy = doc\diagrammeGlobal.gliffy
-		doc\FonctionnementFichierConfiguration.xml = doc\FonctionnementFichierConfiguration.xml
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{6B8ED510-E915-48EE-BB15-F4B7ECC739BA}"
 	ProjectSection(SolutionItems) = preProject
@@ -85,6 +69,11 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestTreeViewMenu", "experiment\TestTreeViewMenu\TestTreeViewMenu.csproj", "{1FAD3B9F-C269-4890-BA45-780BD013CBC5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataCloner.Universal", "src\DataCloner.Universal\DataCloner.Universal.csproj", "{715A87A0-AC82-40F9-8B77-F18D69261FF9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "archive", "archive", "{8F7996EB-6387-463A-AD31-7CEB60B067FE}"
+	ProjectSection(SolutionItems) = preProject
+		doc\archive\FonctionnementFichierConfiguration.xml = doc\archive\FonctionnementFichierConfiguration.xml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -273,5 +262,6 @@ Global
 		{369974FC-2301-4EFC-B9AB-35922206B806} = {B89EC251-E344-499A-BD3F-47523AAD5889}
 		{1FAD3B9F-C269-4890-BA45-780BD013CBC5} = {5AA2B031-9EEE-4C0C-8893-A4D4FC818C20}
 		{715A87A0-AC82-40F9-8B77-F18D69261FF9} = {23802F9E-0E77-47C2-AB44-68C2DB72423E}
+		{8F7996EB-6387-463A-AD31-7CEB60B067FE} = {AB88DB2F-A137-45F5-B270-38B62E0CC6DD}
 	EndGlobalSection
 EndGlobal
