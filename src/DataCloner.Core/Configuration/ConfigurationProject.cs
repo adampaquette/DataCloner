@@ -1,11 +1,13 @@
 ﻿using DataCloner.Core.Framework;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
 namespace DataCloner.Core.Configuration
 {
+    [DebuggerDisplay("{Name}")]
     [Serializable]
     [XmlRoot("Project")]
     public class ConfigurationProject

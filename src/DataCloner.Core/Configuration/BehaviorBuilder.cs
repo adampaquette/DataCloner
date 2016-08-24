@@ -24,7 +24,12 @@ namespace DataCloner.Core.Configuration
             if (behavior == null)
                 throw new KeyNotFoundException($"The behavior Id {behaviorId} was not found in the configuration file.");
 
-            var compiledBehavior = new Behavior();
+            var compiledBehavior = new Behavior
+            {
+                Id = behavior.Id,
+                Name = behavior.Name,
+                Description = behavior.Description
+            };
 
             //DbSettings only have a single inheritance hierarchy so we have to destack from the top.
             foreach (var setting in behavior.DbSettings)
@@ -46,7 +51,12 @@ namespace DataCloner.Core.Configuration
                 }
 
                 //Destack and merge
-                var compiledDbSettings = new DbSettings();
+                var dbSettingsOnTop = stack.Peek();
+                var compiledDbSettings = new DbSettings
+                {
+                    Var = dbSettingsOnTop.Var,
+                    Description = dbSettingsOnTop.Description
+                };
                 while (stack.Count > 0)
                     MergeDbSettings(stack.Pop(), compiledDbSettings);
 
@@ -54,6 +64,8 @@ namespace DataCloner.Core.Configuration
                 var dup = compiledBehavior.DbSettings.FirstOrDefault(b => b.Var == compiledDbSettings.Var);
                 if (dup != null)
                     MergeDbSettings(compiledDbSettings, dup);
+                else
+                    compiledBehavior.DbSettings.Add(compiledDbSettings);
             }
 
             return compiledBehavior;
@@ -119,18 +131,32 @@ namespace DataCloner.Core.Configuration
             //ForeignKeys
             foreach (var sourceColumn in source.ForeignKeys.ForeignKeyRemove.Columns)
             {
-                //TODO : Supprimer les FKAdd de la target qui ont la sourceColumn en commun.
+                //Delete ForeignKeyAdd from the target that are ForeignKeyRemove in the source.
+                for (var i = target.ForeignKeys.ForeignKeyAdd.Count - 1; i > 0; i--)
+                {
+                    var targetFkAdd = target.ForeignKeys.ForeignKeyAdd[i];
+                    if (targetFkAdd.Columns.Any(c => c.NameFrom == sourceColumn.Name))
+                        target.ForeignKeys.ForeignKeyAdd.RemoveAt(i);
+                }
 
-                var targetForeignKey = target.ForeignKeys.ForeignKeyRemove.Columns.FirstOrDefault(c => c == sourceColumn);
+                //Add ForeignKeyRemove
+                var targetColumn = target.ForeignKeys.ForeignKeyRemove.Columns.FirstOrDefault(c => c == sourceColumn);
 
-                if (targetForeignKey == null)
-                    target.ForeignKeys.ForeignKeyRemove.Columns.Add(targetForeignKey);
+                if (targetColumn == null)
+                    target.ForeignKeys.ForeignKeyRemove.Columns.Add(targetColumn);
             }
 
             foreach (var sourceForeignKey in source.ForeignKeys.ForeignKeyAdd)
             {
-                //TODO : Supprimer les FKRemove de la target qui ont la sourceColumn en commun la sourceForeignKey.
+                //Delete ForeignKeyRemove from the target that are ForeignKeyAdd in the source.
+                for (var i = target.ForeignKeys.ForeignKeyRemove.Columns.Count - 1; i > 0; i--)
+                {
+                    var targetFkRemove = target.ForeignKeys.ForeignKeyRemove.Columns[i].Name;
+                    if (sourceForeignKey.Columns.Select(c => c.NameFrom).Contains(targetFkRemove))
+                        target.ForeignKeys.ForeignKeyRemove.Columns.RemoveAt(i);
+                }
 
+                //Add ForeignKeyAdd
                 var targetForeignKey = target.ForeignKeys.ForeignKeyAdd.FirstOrDefault(fk => fk == sourceForeignKey);
 
                 if (targetForeignKey == null)

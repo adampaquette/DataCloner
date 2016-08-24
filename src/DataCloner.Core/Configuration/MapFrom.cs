@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.Serialization;
+using System.Diagnostics;
 using System.Xml.Serialization;
 
 namespace DataCloner.Core.Configuration
 {
+    [DebuggerDisplay("{Name}")]
     [Serializable]
     public class MapFrom
     {

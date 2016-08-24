@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Xml.Serialization;
 
 namespace DataCloner.Core.Configuration
 {
+    [DebuggerDisplay("{Id.ToString() + \"_\" + Name}")]
     [Serializable]
     public class Connection : IEquatable<Connection>
     {

@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Xml.Serialization;
 
 namespace DataCloner.Core.Configuration
 {
+    [DebuggerDisplay("{Destination + \"_\" + Name}")]
     [Serializable]
     public class DerivativeTable
     {

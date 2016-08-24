@@ -11,7 +11,8 @@ namespace DataCloner.Core.Debug
         {
             try
             {
-                TestConfiguration();
+                CreateConfiguration();
+                TestBehaviorBuilder();
             }
             catch (System.Exception)
             {
@@ -23,7 +24,7 @@ namespace DataCloner.Core.Debug
             Console.ReadKey();
         }
 
-        public static void TestConfiguration()
+        public static ConfigurationProject CreateConfiguration()
         {
             var project = new ConfigurationProject { Name = "MainApp" };
 
@@ -76,7 +77,7 @@ namespace DataCloner.Core.Debug
                                  new ForeignKeyAdd
                                  {
                                      Destination = "SIEBEL_TO",
-                                     Table = "s_srv_req",
+                                     TableTo = "s_srv_req",
                                      Columns = new List<ForeignKeyColumn> { new ForeignKeyColumn { NameFrom = "noreferencetransmission", NameTo = "sr_num" } }
                                  }
                              }
@@ -96,7 +97,7 @@ namespace DataCloner.Core.Debug
                                 new ForeignKeyAdd
                                 {
                                     Destination = "ARIEL_TO",
-                                    Table = "s_srv_req",
+                                    TableTo = "s_srv_req",
                                     Columns = new List<ForeignKeyColumn>
                                     {
                                         new ForeignKeyColumn { NameFrom = "noreferencetransmission", NameTo = "sr_num" }
@@ -194,7 +195,19 @@ namespace DataCloner.Core.Debug
                 }
             });
 
+            return project;
+        }
+
+        public static void TestSerializingConfiguration()
+        {
+            var project = CreateConfiguration();
             var xml = project.SerializeXml();
+        }
+
+        public static void TestBehaviorBuilder()
+        {
+            var project = CreateConfiguration();
+            var behavior = project.BuildBehavior(1);
         }
     }
 }

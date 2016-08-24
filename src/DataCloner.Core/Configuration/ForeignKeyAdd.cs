@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Xml.Serialization;
 
 namespace DataCloner.Core.Configuration
 {
+    [DebuggerDisplay("{Destination + \"_\" + TableTo}")]
     [Serializable]
     public class ForeignKeyAdd : IEquatable<ForeignKeyAdd>
     {
@@ -11,7 +13,7 @@ namespace DataCloner.Core.Configuration
         public string Destination { get; set; }
 
         [XmlAttribute]
-        public string Table { get; set; }
+        public string TableTo { get; set; }
 
         [XmlElement("Column")]
         public List<ForeignKeyColumn> Columns { get; set; }
@@ -33,7 +35,7 @@ namespace DataCloner.Core.Configuration
                 return false;
 
             if (other.Destination == Destination &&
-                other.Table == Table)
+                other.TableTo == TableTo)
             {
                 foreach (var col in Columns)
                 {
@@ -47,7 +49,7 @@ namespace DataCloner.Core.Configuration
 
         public override int GetHashCode()
         {
-            return (Destination+Table).GetHashCode();
+            return (Destination+TableTo).GetHashCode();
         }
     }
 }
