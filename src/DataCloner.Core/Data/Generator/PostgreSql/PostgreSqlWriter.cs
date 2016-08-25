@@ -1,9 +1,8 @@
 ﻿using DataCloner.Core.Internal;
-using System;
 
-namespace DataCloner.Core.Data.Generator
+namespace DataCloner.Core.Data.Generator.PostgreSql
 {
-    internal class SqlWriterPostgreSql : ISqlWriter
+    internal class PostgreSqlWriter : ISqlWriter
     {
         public string IdentifierDelemiterStart => "\"";
         public string IdentifierDelemiterEnd => "\"";
@@ -11,7 +10,7 @@ namespace DataCloner.Core.Data.Generator
         public string NamedParamPrefix => "@";
 
         public ISelectWriter GetSelectWriter() =>
-            new SelectWriterPostgreSql(IdentifierDelemiterStart, IdentifierDelemiterEnd,
+            new PostgreSqlSelectWriter(IdentifierDelemiterStart, IdentifierDelemiterEnd,
                                        StringDelemiter, NamedParamPrefix);
 
         public IInsertWriter GetInsertWriter() =>

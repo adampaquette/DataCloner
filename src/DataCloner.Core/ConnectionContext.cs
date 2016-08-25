@@ -1,9 +1,10 @@
-﻿using DataCloner.Core.Metadata.Context;
+﻿using DataCloner.Core.Data;
+using DataCloner.Core.Metadata.Context;
 using System.Data;
 
-namespace DataCloner.Core.Data
+namespace DataCloner.Core
 {
-    public class ServerContext
+    public class ConnectionContext
     {
         public IDbConnection Connection { get; }
 
@@ -13,7 +14,7 @@ namespace DataCloner.Core.Data
 
         public Metadatas Metadatas { get; }
 
-        public ServerContext(IDbConnection connection, IMetadataProvider metadataProvider, IQueryProvider queryProvider, Metadatas metadatas)
+        public ConnectionContext(IDbConnection connection, IMetadataProvider metadataProvider, IQueryProvider queryProvider, Metadatas metadatas)
         {
             Connection = connection;
             MetadataProvider = metadataProvider;

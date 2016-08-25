@@ -15,7 +15,7 @@ namespace DataCloner.Core.Metadata.Context
     /// </summary>
     public sealed class MetadataStorage
     {
-        internal delegate void Initialiser(IQueryDispatcher dispatcher, CloningContext settings, ref MetadataStorage container);
+        internal delegate void Initialiser(IQueryProxy queryProxy, CloningContext settings, ref MetadataStorage container);
 
         public string ConfigFileHash { get; set; }
         public Dictionary<SehemaIdentifier, SehemaIdentifier> Map { get; set; }
@@ -32,10 +32,10 @@ namespace DataCloner.Core.Metadata.Context
         /// <summary>
         /// Verify if the last build of the container's metadata still match with the current cloning context.
         /// </summary>
-        /// <param name="dispatcher">Query dispatcher</param>
+        /// <param name="queryProxy">Query proxy</param>
         /// <param name="context">Current cloning context</param>
         /// <param name="container">Container</param>
-        public static void VerifyIntegrityWithSettings(IQueryDispatcher dispatcher, CloningContext context, ref MetadataStorage container)
+        public static void VerifyIntegrityWithSettings(IQueryProxy queryProxy, CloningContext context, ref MetadataStorage container)
         {
             //if (dispatcher == null) throw new ArgumentNullException(nameof(dispatcher));
             //if (context == null) throw new ArgumentNullException(nameof(context));
@@ -113,12 +113,12 @@ namespace DataCloner.Core.Metadata.Context
         /// <summary>
         /// Verify if the last build of the container's metadata still match with the sql servers (application's connectionStrings).
         /// </summary>
-        /// <param name="dispatcher">Query dispatcher</param>
+        /// <param name="queryProxy">Query proxy</param>
         /// <param name="proj">Project config</param>
         /// <param name="container">Metadata container</param>
-        public static void VerifyIntegrityOfSqlMetadata(IQueryDispatcher dispatcher, ConfigurationProject proj, ref MetadataStorage container)
+        public static void VerifyIntegrityOfSqlMetadata(IQueryProxy queryProxy, ConfigurationProject proj, ref MetadataStorage container)
         {
-            if (dispatcher == null) throw new ArgumentNullException(nameof(dispatcher));
+            if (queryProxy == null) throw new ArgumentNullException(nameof(queryProxy));
             if (proj == null) throw new ArgumentNullException(nameof(proj));
             if (proj.ConnectionStrings != null && !proj.ConnectionStrings.Any()) throw new NullReferenceException("ConnectionStrings");
 
@@ -139,10 +139,10 @@ namespace DataCloner.Core.Metadata.Context
             //If container on disk is good, we use it
             container = TryLoadContainer(containerFileName, configHash);
             if (container != null)
-                dispatcher.InitProviders(container.Metadatas, container.ConnectionStrings);
+                queryProxy.Init(container.Metadatas, container.ConnectionStrings);
             //We rebuild the container
             else
-                container = BuildMetadata(dispatcher, containerFileName, proj.ConnectionStrings, configHash);
+                container = BuildMetadata(queryProxy, containerFileName, proj.ConnectionStrings, configHash);
         }
 
         public void Serialize(Stream output, FastAccessList<object> referenceTracking = null)
@@ -199,14 +199,14 @@ namespace DataCloner.Core.Metadata.Context
         /// <summary>
         /// Also merge user configs
         /// </summary>
-        /// <param name="dispatcher"></param>
+        /// <param name="queryProxy"></param>
         /// <param name="containerFileName"></param>
         /// <param name="proj"></param>
         /// <param name="clonerBehaviour"></param>
         /// <param name="map"></param>
         /// <param name="configHash"></param>
         /// <returns></returns>
-        private static MetadataStorage BuildMetadataWithSettings(IQueryDispatcher dispatcher, string containerFileName,
+        private static MetadataStorage BuildMetadataWithSettings(IQueryProxy queryProxy, string containerFileName,
                                                                  ConfigurationProject proj, Behavior clonerBehaviour,
                                                                  MapFrom map, string configHash)
         {
@@ -245,7 +245,7 @@ namespace DataCloner.Core.Metadata.Context
             if (container.ConnectionStrings.Count() == 0)
                 throw new Exception("No connectionStrings!");
 
-            FetchMetadata(dispatcher, ref container);
+            FetchMetadata(queryProxy, ref container);
 
             Behavior behaviour = null;
             if (clonerBehaviour != null)
@@ -264,12 +264,12 @@ namespace DataCloner.Core.Metadata.Context
         /// <summary>
         /// Only build the database schema.
         /// </summary>
-        /// <param name="dispatcher"></param>
+        /// <param name="queryProxy"></param>
         /// <param name="containerFileName"></param>
         /// <param name="connections"></param>
         /// <param name="configHash"></param>
         /// <returns></returns>
-        private static MetadataStorage BuildMetadata(IQueryDispatcher dispatcher, string containerFileName,
+        private static MetadataStorage BuildMetadata(IQueryProxy queryProxy, string containerFileName,
                                                        List<Connection> connections, string configHash)
         {
             var container = new MetadataStorage { ConfigFileHash = configHash };
@@ -285,7 +285,7 @@ namespace DataCloner.Core.Metadata.Context
                     });
             }
 
-            FetchMetadata(dispatcher, ref container);
+            FetchMetadata(queryProxy, ref container);
             container.Metadatas.FinalizeSchema();
 
             //Save container
@@ -293,17 +293,17 @@ namespace DataCloner.Core.Metadata.Context
             return container;
         }
 
-        private static void FetchMetadata(IQueryDispatcher dispatcher, ref MetadataStorage container)
+        private static void FetchMetadata(IQueryProxy queryProxy, ref MetadataStorage container)
         {
-            dispatcher.InitProviders(container.Metadatas, container.ConnectionStrings);
+            queryProxy.Init(container.Metadatas, container.ConnectionStrings);
 
             foreach (var cs in container.ConnectionStrings)
             {
-                foreach (var database in dispatcher.GetDatabasesName(cs.Id))
+                foreach (var database in queryProxy.GetDatabasesName(cs.Id))
                 {
-                    dispatcher.LoadColumns(cs.Id, database);
-                    dispatcher.LoadForeignKeys(cs.Id, database);
-                    dispatcher.LoadUniqueKeys(cs.Id, database);
+                    queryProxy.LoadColumns(cs.Id, database);
+                    queryProxy.LoadForeignKeys(cs.Id, database);
+                    queryProxy.LoadUniqueKeys(cs.Id, database);
                 }
             }
         }

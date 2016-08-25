@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System;
 
-namespace DataCloner.Core.Data.Generator
+namespace DataCloner.Core.Data.Generator.PostgreSql
 {
-    public class SelectWriterPostgreSql : ISelectWriter
+    public class PostgreSqlSelectWriter : ISelectWriter
     {
         private string IdentifierDelemiterStart { get; }
         private string IdentifierDelemiterEnd { get; }
@@ -16,7 +15,7 @@ namespace DataCloner.Core.Data.Generator
         private readonly StringBuilder _sb = new StringBuilder();
         private readonly StringBuilder _sbWhere = new StringBuilder();
 
-        public SelectWriterPostgreSql(string identifierDelemiterStart, string identifierDelemiterEnd, string stringDelemiter, string namedParameterPrefix)
+        public PostgreSqlSelectWriter(string identifierDelemiterStart, string identifierDelemiterEnd, string stringDelemiter, string namedParameterPrefix)
         {
             IdentifierDelemiterStart = identifierDelemiterStart;
             IdentifierDelemiterEnd = identifierDelemiterEnd;

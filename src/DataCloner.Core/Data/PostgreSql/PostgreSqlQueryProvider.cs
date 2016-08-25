@@ -1,4 +1,5 @@
 ﻿using DataCloner.Core.Data.Generator;
+using DataCloner.Core.Data.Generator.PostgreSql;
 
 namespace DataCloner.Core.Data.PostgreSql
 {
@@ -21,7 +22,7 @@ namespace DataCloner.Core.Data.PostgreSql
         public PostgreSqlQueryProvider()
         {
             TypeConverter = new PostgreSqlTypeConverter();
-            SqlWriter = new SqlWriterPostgreSql();
+            SqlWriter = new PostgreSqlWriter();
         }
     }
 }

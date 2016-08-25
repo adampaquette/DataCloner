@@ -46,7 +46,7 @@ namespace DataCloner.Core.Configuration
 
         public static async Task<ConfigurationProject> LoadAsync(string path)
         {
-            return await Extensions.LoadXmlAsync<ConfigurationProject>(path).ConfigureAwait(false);
+            return await SerializationHelper.LoadXmlAsync<ConfigurationProject>(path).ConfigureAwait(false);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using DataCloner.Core.Data.Generator;
+using DataCloner.Core.Data.Generator.MySql;
 
 namespace DataCloner.Core.Data.MySql
 {
@@ -77,7 +78,7 @@ namespace DataCloner.Core.Data.MySql
         public MySqlMetadataProvider()
         {
             TypeConverter = new MySqlTypeConverter();
-            SqlWriter = new SqlWriterMySql();
+            SqlWriter = new MySqlWriter();
         }
     }
 }

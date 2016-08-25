@@ -1,8 +1,8 @@
 ﻿using DataCloner.Core.Internal;
 
-namespace DataCloner.Core.Data.Generator
+namespace DataCloner.Core.Data.Generator.MsSql
 {
-    internal class SqlWriterMsSql : ISqlWriter
+    internal class MsSqlWriter : ISqlWriter
     {
         public string IdentifierDelemiterStart => "[";
         public string IdentifierDelemiterEnd => "]";

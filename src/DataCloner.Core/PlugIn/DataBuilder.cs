@@ -28,7 +28,7 @@ namespace DataCloner.Core.PlugIn
             return false;
         }
 
-        public static object BuildDataColumn(IQueryProvider queryHelper, IDbTransaction transaction, Int16 serverId, string database, string schema, TableMetadata table, ColumnDefinition col)
+        public static object BuildDataColumn(IQueryProvider queryProvider, IDbTransaction transaction, Int16 serverId, string database, string schema, TableMetadata table, ColumnDefinition col)
         {
             IDataBuilder builder = null;
             var mustGenerate = false;
@@ -86,7 +86,7 @@ namespace DataCloner.Core.PlugIn
             {
                 if (builder == null)
                     throw new NullReferenceException($"Builder '{col.BuilderName}' for column '{col.Name}' is not found. Watch configuration file.");
-                return builder.BuildData(queryHelper.Connection, transaction, queryHelper.Engine, serverId, database, schema, table, col);
+                return builder.BuildData(transaction, queryProvider.Engine, serverId, database, schema, table, col);
             }
             return null;
         }

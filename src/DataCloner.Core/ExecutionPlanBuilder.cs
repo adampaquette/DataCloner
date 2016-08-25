@@ -13,7 +13,7 @@ namespace DataCloner.Core
 {
     public class ExecutionPlanBuilder
     {
-        private readonly IQueryDispatcher _dispatcher;
+        private readonly IQueryProxy _dispatcher;
         private readonly MetadataStorage.Initialiser _metadataInitialiser;
         private readonly ExecutionPlanByServer _executionPlanByServer;
         private readonly KeyRelationship _keyRelationships;
@@ -39,12 +39,12 @@ namespace DataCloner.Core
         public ExecutionPlanBuilder(CloningContext settings) : this()
         {
             _settings = settings;
-            _dispatcher = new QueryDispatcher();
+            _dispatcher = new ConnectionsContext();
             _metadataInitialiser = MetadataStorage.VerifyIntegrityWithSettings;
             _metadataInitialiser(_dispatcher, settings, ref _metadataCtn);
         }
 
-        internal ExecutionPlanBuilder(CloningContext settings, IQueryDispatcher dispatcher,
+        internal ExecutionPlanBuilder(CloningContext settings, IQueryProxy dispatcher,
             MetadataStorage.Initialiser metadataInit,
             MetadataStorage metadataCtn) : this()
         {

@@ -18,7 +18,7 @@ namespace DataCloner.Core
     {
         public const int CURRENT_FORMAT_VERSION = 1;
 
-        private IQueryDispatcher _dispatcher;
+        private IQueryProxy _dispatcher;
         private Metadatas _metadata;
         private ExecutionPlanByServer _executionPlanByServer;
         private ImmutableHashSet<SqlConnection> _connections;
@@ -43,8 +43,8 @@ namespace DataCloner.Core
             _metadata = metadata;
             _executionPlanByServer = executionPlanByServer;
             _connections = connections;
-            _dispatcher = new QueryDispatcher();
-            _dispatcher.InitProviders(metadata, connections);
+            _dispatcher = new ConnectionsContext();
+            _dispatcher.Init(metadata, connections);
             FormatVersion = formatVersion;
         }
 

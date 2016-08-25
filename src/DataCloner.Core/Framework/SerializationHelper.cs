@@ -4,6 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization;
+using System.Threading.Tasks;
+using System.Xml;
+using System.Xml.Serialization;
 
 namespace DataCloner.Core.Framework
 {
@@ -91,6 +94,74 @@ namespace DataCloner.Core.Framework
         {
             var xs = new DataContractSerializer(typeof(T));
             return (T)xs.ReadObject(input);
+        }
+
+        public static string SerializeXml<T>(this T obj)
+        {
+            using (var ms = new MemoryStream())
+            using (var sr = new StreamReader(ms))
+            {
+                var ns = new XmlSerializerNamespaces();
+                ns.Add("", "");
+
+                var xws = new XmlWriterSettings()
+                {
+                    Indent = true,
+                    IndentChars = new string(' ', 4),
+                };
+
+                var xw = XmlWriter.Create(ms, xws);
+                var xs = new XmlSerializer(obj.GetType());
+                xs.Serialize(xw, obj, ns);
+                ms.Position = 0;
+
+                return sr.ReadToEnd();
+            }
+        }
+
+        public static T DeserializeXml<T>(this string str)
+        {
+            using (var ms = new MemoryStream())
+            using (var sw = new StreamWriter(ms))
+            {
+                sw.Write(str);
+                ms.Position = 0;
+
+                var xs = new XmlSerializer(typeof(T));
+                return (T)xs.Deserialize(ms);
+            }
+        }
+
+        public static void SaveXml<T>(this T obj, string path)
+        {
+            using (var fs = new FileStream(path, FileMode.Create))
+            {
+                var ns = new XmlSerializerNamespaces();
+                ns.Add("", "");
+
+                var xws = new XmlWriterSettings()
+                {
+                    Indent = true,
+                    IndentChars = new string(' ', 4),
+                };
+
+                var xw = XmlWriter.Create(fs, xws);
+                var xs = new XmlSerializer(obj.GetType());
+                xs.Serialize(xw, obj, ns);
+            }
+        }
+
+        public static Task<T> LoadXmlAsync<T>(string path)
+        {
+            return Task.Run<T>(() =>
+            {
+                if (!File.Exists(path)) return default(T);
+                using (var fs = new FileStream(path, FileMode.Open))
+                {
+                    var xs = new XmlSerializer(typeof(T));
+                    return (T)xs.Deserialize(fs);
+                };
+            });
         }
     }
 }

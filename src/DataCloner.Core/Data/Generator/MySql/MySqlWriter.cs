@@ -1,9 +1,8 @@
 ﻿using DataCloner.Core.Internal;
-using System;
 
-namespace DataCloner.Core.Data.Generator
+namespace DataCloner.Core.Data.Generator.MySql
 {
-    internal class SqlWriterMySql : ISqlWriter
+    internal class MySqlWriter : ISqlWriter
     {
         public string IdentifierDelemiterStart => "`";
         public string IdentifierDelemiterEnd => "`";

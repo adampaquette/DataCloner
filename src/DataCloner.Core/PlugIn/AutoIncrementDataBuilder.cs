@@ -9,7 +9,7 @@ namespace DataCloner.Core.PlugIn
     {
         private static readonly Dictionary<string, object> AutoIncrementCache = new Dictionary<string, object>();
 
-        public object BuildData(IDbConnection conn, IDbTransaction transaction, DbEngine engine, Int16 serverId, string database, string schema, TableMetadata table, ColumnDefinition column)
+        public object BuildData(IDbTransaction transaction, DbEngine engine, Int16 serverId, string database, string schema, TableMetadata table, ColumnDefinition column)
         {
             var cacheId = serverId + database + schema + table.Name + column.Name;
 
@@ -22,13 +22,13 @@ namespace DataCloner.Core.PlugIn
                 switch (engine)
                 {
                     case DbEngine.MySql:
-                        value = GetNewKeyMySql(conn, transaction, database, table, column);
+                        value = GetNewKeyMySql(transaction, database, table, column);
                         break;
                     case DbEngine.SqlServer:
-                        value = GetNewKeyMsSql(conn, transaction, database, schema, table, column);
+                        value = GetNewKeyMsSql(transaction, database, schema, table, column);
                         break;
                     case DbEngine.PostgreSql:
-                        value = GetNewKeyPostgreSql(conn, transaction, database, schema, table, column);
+                        value = GetNewKeyPostgreSql(transaction, database, schema, table, column);
                         break;
                     default:
                         throw new NotSupportedException();
@@ -74,29 +74,29 @@ namespace DataCloner.Core.PlugIn
             }
         }
 
-        private object GetNewKeyMySql(IDbConnection conn, IDbTransaction transaction, string database, TableMetadata table, ColumnDefinition column)
+        private object GetNewKeyMySql(IDbTransaction transaction, string database, TableMetadata table, ColumnDefinition column)
         {
-            var cmd = conn.CreateCommand();
+            var cmd = transaction.Connection.CreateCommand();
             cmd.Transaction = transaction;
             cmd.CommandText = $"SELECT MAX({column.Name})+1 FROM {database}.{table.Name}";
             var result = cmd.ExecuteScalar();
             return result;
         }
 
-        private object GetNewKeyMsSql(IDbConnection conn, IDbTransaction transaction, string database, string schema, TableMetadata table, ColumnDefinition column)
+        private object GetNewKeyMsSql(IDbTransaction transaction, string database, string schema, TableMetadata table, ColumnDefinition column)
         {
             object result = null;
-            var cmd = conn.CreateCommand();
+            var cmd = transaction.Connection.CreateCommand();
             cmd.Transaction = transaction;
             cmd.CommandText = $"SELECT MAX({column.Name})+1 FROM {database}.{schema}.{table.Name}";
             result = cmd.ExecuteScalar();
             return result;
         }
 
-        private object GetNewKeyPostgreSql(IDbConnection conn, IDbTransaction transaction, string database, string schema, TableMetadata table, ColumnDefinition column)
+        private object GetNewKeyPostgreSql(IDbTransaction transaction, string database, string schema, TableMetadata table, ColumnDefinition column)
         {
             object result = null;
-            var cmd = conn.CreateCommand();
+            var cmd = transaction.Connection.CreateCommand();
             cmd.Transaction = transaction;
             cmd.CommandText = $"SELECT MAX(\"{column.Name}\")+1 FROM {schema}.\"{table.Name}\"";
             result = cmd.ExecuteScalar();

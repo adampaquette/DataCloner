@@ -10,6 +10,11 @@ namespace DataCloner.Core.Data
     /// </summary>
     public static class DbProviderFactories
     {
+        /// <summary>
+        /// Create an instance of a factory for a data source. 
+        /// </summary>
+        /// <param name="providerName">provider</param>
+        /// <returns>DbProviderFactory</returns>
         public static DbProviderFactory GetFactory(string providerName)
         {
             DbProviderFactory factory;

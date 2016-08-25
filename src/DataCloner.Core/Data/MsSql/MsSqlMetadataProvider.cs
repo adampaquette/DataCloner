@@ -1,4 +1,5 @@
 ﻿using DataCloner.Core.Data.Generator;
+using DataCloner.Core.Data.Generator.MsSql;
 
 namespace DataCloner.Core.Data.MsSql
 {
@@ -94,7 +95,7 @@ namespace DataCloner.Core.Data.MsSql
         public MsSqlMetadataProvider()
         {
             TypeConverter = new MsSqlTypeConverter();
-            SqlWriter = new SqlWriterMsSql();
+            SqlWriter = new MsSqlWriter();
         }
     }
 }
