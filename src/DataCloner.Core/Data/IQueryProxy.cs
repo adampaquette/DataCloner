@@ -6,10 +6,12 @@ namespace DataCloner.Core.Data
 {
     public interface IQueryProxy
     {
+        Dictionary<Int16, ConnectionContext> Contexts { get; }
+
         ConnectionContext this[SehemaIdentifier server] { get; }
 
         ConnectionContext this[Int16 server] { get; }
 
-        void Init(Metadatas contextMetadata, IEnumerable<SqlConnection> connections);
+        void Init(IEnumerable<SqlConnection> connections, Metadatas contextMetadata);
     }
 }

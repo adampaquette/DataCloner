@@ -4,11 +4,14 @@ namespace DataCloner.Core
 {
     public class CloningContext
     {
-        public ConfigurationProject Project { get; set; }
-        public int? MapId { get; set; }
-        public int? BehaviourId { get; set; }
+        public string From { get; set; }
+
+        public string To { get; set; }
+
+        public short? BehaviourId { get; set; }
+
         /// <summary>
-        /// We don't load metadata cache from disk nor save it.
+        /// When set to true the metadata's cache is not persisted over time. It is not loaded from or to the disk.
         /// </summary>
         public bool UseInMemoryCacheOnly { get; set; }
     }

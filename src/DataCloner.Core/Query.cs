@@ -43,7 +43,7 @@ namespace DataCloner.Core
             _metadata = metadata;
             _executionPlanByServer = executionPlanByServer;
             _connections = connections;
-            _dispatcher = new ConnectionsContext();
+            _dispatcher = new QueryProxy();
             _dispatcher.Init(metadata, connections);
             FormatVersion = formatVersion;
         }

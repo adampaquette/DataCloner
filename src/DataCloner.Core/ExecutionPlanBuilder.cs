@@ -39,8 +39,8 @@ namespace DataCloner.Core
         public ExecutionPlanBuilder(CloningContext settings) : this()
         {
             _settings = settings;
-            _dispatcher = new ConnectionsContext();
-            _metadataInitialiser = MetadataStorage.VerifyIntegrityWithSettings;
+            _dispatcher = new QueryProxy();
+            _metadataInitialiser = MetadataStorage.VerifyIntegrityWithContext;
             _metadataInitialiser(_dispatcher, settings, ref _metadataCtn);
         }
 

@@ -4,17 +4,17 @@ using System.Collections.Generic;
 
 namespace DataCloner.Core.Data
 {
-    public class ConnectionsContext : IQueryProxy
+    public class QueryProxy : IQueryProxy
     {
-        private Dictionary<Int16, ConnectionContext> _ctx;
+        public Dictionary<Int16, ConnectionContext> Contexts { get; }
 
-        public ConnectionContext this[SehemaIdentifier server] => _ctx[server.ServerId];
+        public ConnectionContext this[SehemaIdentifier server] => Contexts[server.ServerId];
 
-        public ConnectionContext this[Int16 server] =>_ctx[server];
+        public ConnectionContext this[Int16 server] =>Contexts[server];
 
-        public void Init(Metadatas contextMetadata, IEnumerable<SqlConnection> connections)
+        public void Init( IEnumerable<SqlConnection> connections, Metadatas contextMetadata)
         {
-            _ctx = new Dictionary<short, ConnectionContext>();
+            Contexts.Clear();
 
             foreach (var conn in connections)
             {
@@ -23,7 +23,7 @@ namespace DataCloner.Core.Data
                     MetadataProviderFactory.GetProvider(conn.ProviderName),
                     QueryProviderFactory.GetProvider(conn.ProviderName),
                     contextMetadata);
-                _ctx.Add(conn.Id, providers);
+                Contexts.Add(conn.Id, providers);
             }
         }
     }
