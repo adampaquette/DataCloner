@@ -92,7 +92,7 @@ namespace DataCloner.Core.Metadata.Context
                 //Do nothing
             }
             //If container on disk is good, we use it
-            else if ((context == null || !context.UseInMemoryCacheOnly) && LoadContainerFromFile(containerFileName, currentHash))
+            else if ((context == null || !context.UseInMemoryCacheOnly) && TryLoadContainerFromFile(containerFileName, currentHash))
             {
                 queryProxy.Init(ConnectionStrings, Metadatas);
             }
@@ -118,7 +118,7 @@ namespace DataCloner.Core.Metadata.Context
             }
         }        
 
-        private bool LoadContainerFromFile(string containerFile, string currentConfigHash)
+        private bool TryLoadContainerFromFile(string containerFile, string currentConfigHash)
         {
             if (File.Exists(containerFile))
             {

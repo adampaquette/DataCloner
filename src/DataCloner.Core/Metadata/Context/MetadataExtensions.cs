@@ -2,19 +2,19 @@
 {
     internal static class MetadataExtensions
     {
-        public static TableMetadata GetTable(this Metadatas schema, ForeignKey fk)
+        public static TableMetadata GetTable(this Metadatas metadatas, ForeignKey fk)
         {
-            return schema.GetTable(fk.ServerIdTo, fk.DatabaseTo, fk.SchemaTo, fk.TableTo);
+            return metadatas.GetTable(fk.ServerIdTo, fk.DatabaseTo, fk.SchemaTo, fk.TableTo);
         }
 
-        public static TableMetadata GetTable(this Metadatas schema, DerivativeTable dt)
+        public static TableMetadata GetTable(this Metadatas metadatas, DerivativeTable dt)
         {
-            return schema.GetTable(dt.ServerId, dt.Database, dt.Schema, dt.Table);
+            return metadatas.GetTable(dt.ServerId, dt.Database, dt.Schema, dt.Table);
         }
 
-        public static TableMetadata GetTable(this Metadatas schema, TableIdentifier dt)
+        public static TableMetadata GetTable(this Metadatas metadatas, TableIdentifier dt)
         {
-            return schema.GetTable(dt.ServerId, dt.Database, dt.Schema, dt.Table);
+            return metadatas.GetTable(dt.ServerId, dt.Database, dt.Schema, dt.Table);
         }
     }
 }

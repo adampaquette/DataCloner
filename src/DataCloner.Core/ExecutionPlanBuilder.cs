@@ -25,6 +25,7 @@ namespace DataCloner.Core
         private int _nextStepId;
 
         public MetadataStorage MetadataStorage { get { return _metadataCtn; } }
+        public Metadatas Metadatas { get { return _metadataCtn?.Metadatas; } }
 
         public event StatusChangedEventHandler StatusChanged;
 
@@ -104,7 +105,7 @@ namespace DataCloner.Core
             foreach (var srv in destinationSrv)
             {
                 conns.Add(MetadataStorage.ConnectionStrings.First(c => c.Id == srv));
-                metadata.Add(srv, MetadataStorage.Metadatas.First(s => s.Key == srv).Value);
+                metadata.Add(srv, Metadatas.First(s => s.Key == srv).Value);
             }
 
             return new Query(metadata, _executionPlanByServer, conns.ToImmutableHashSet(), Query.CURRENT_FORMAT_VERSION);
@@ -167,7 +168,7 @@ namespace DataCloner.Core
         {
             var srcRows = _dispatcher.Select(riSource);
             var nbRows = srcRows.Length;
-            var table = MetadataStorage.Metadatas.GetTable(riSource);
+            var table = Metadatas.GetTable(riSource);
 
             //By default the destination server is the source if no road is found.
             var serverDst = new SehemaIdentifier
@@ -234,7 +235,7 @@ namespace DataCloner.Core
                     else
                     {
                         var fkDestinationExists = false;
-                        var fkTable = MetadataStorage.Metadatas.GetTable(fk);
+                        var fkTable = Metadatas.GetTable(fk);
                         var riFk = new RowIdentifier
                         {
                             ServerId = fk.ServerIdTo,
@@ -431,7 +432,7 @@ namespace DataCloner.Core
 
             foreach (var dt in derivativeTable)
             {
-                var tableDt = MetadataStorage.Metadatas.GetTable(dt);
+                var tableDt = Metadatas.GetTable(dt);
                 if (dt.Access == DerivativeTableAccess.Forced && dt.Cascade)
                     getDerivatives = true;
                 else if (dt.Access == DerivativeTableAccess.Denied)
@@ -464,8 +465,8 @@ namespace DataCloner.Core
         {
             foreach (var job in _circularKeyJobs)
             {
-                var baseTable = MetadataStorage.Metadatas.GetTable(job.SourceBaseRowStartPoint);
-                var fkTable = MetadataStorage.Metadatas.GetTable(job.SourceFkRowStartPoint);
+                var baseTable = Metadatas.GetTable(job.SourceBaseRowStartPoint);
+                var fkTable = Metadatas.GetTable(job.SourceFkRowStartPoint);
                 var pkDestinationRow = _keyRelationships.GetKey(job.SourceBaseRowStartPoint);
                 var keyDestinationFkRow = _keyRelationships.GetKey(job.SourceFkRowStartPoint);
 
