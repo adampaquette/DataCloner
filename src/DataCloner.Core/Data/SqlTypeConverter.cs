@@ -4,7 +4,7 @@ using System.Data;
 
 namespace DataCloner.Core.Data
 {
-    internal abstract class SqlTypeConverterBase : ISqlTypeConverter
+    internal abstract class SqlTypeConverter : ISqlTypeConverter
     {
         public DbType ConvertFromSql(SqlType type)
         {

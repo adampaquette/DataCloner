@@ -1,17 +1,13 @@
 ﻿using DataCloner.Core.Data.Generator;
-using DataCloner.Core.Metadata;
-using DataCloner.Core.Metadata.Context;
 
-namespace DataCloner.Core.Data
+namespace DataCloner.Core.Data.MsSql
 {
-    internal sealed class QueryHelperMsSql : QueryHelperBase
+    internal class MsSqlMetadataProvider : MetadataProvider
     {
-        public const string ProviderName = "System.Data.SqlClient";
-
         protected override string SqlGetDatabasesName =>
             "SELECT D.NAME FROM SYS.DATABASES D " +
             "WHERE D.NAME NOT IN ('master', 'tempdb');";
- 
+
         protected override string SqlGetColumns =>
             "SELECT " +
             "    COL.TABLE_SCHEMA, " +
@@ -91,24 +87,13 @@ namespace DataCloner.Core.Data
             "    TC.TABLE_NAME, " +
             "    TC.CONSTRAINT_NAME;";
 
-        protected override string SqlGetLastInsertedPk =>
-            "SELECT SCOPE_IDENTITY();";
-
-        protected override string SqlEnforceIntegrityCheck =>
-            "IF @ACTIVE = 1 BEGIN " +
-            "    EXEC sp_MSForEachTable 'ALTER TABLE ? CHECK CONSTRAINT ALL' " +
-            "END ELSE BEGIN " +
-            "    EXEC sp_msforeachtable 'ALTER TABLE ? NOCHECK CONSTRAINT all;' " +
-            "END;";
-
-        public override DbEngine Engine => DbEngine.SqlServer; 
+        public override DbEngine Engine => DbEngine.SqlServer;
         public override ISqlTypeConverter TypeConverter { get; }
         public override ISqlWriter SqlWriter { get; }
 
-        public QueryHelperMsSql(Metadatas schema, string connectionString)
-            : base(schema, ProviderName, connectionString)
+        public MsSqlMetadataProvider()
         {
-            TypeConverter = new SqlTypeConverterMsSql();
+            TypeConverter = new MsSqlTypeConverter();
             SqlWriter = new SqlWriterMsSql();
         }
     }

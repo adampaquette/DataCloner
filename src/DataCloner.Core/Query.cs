@@ -64,10 +64,10 @@ namespace DataCloner.Core
             ResetExecutionPlan(_executionPlanByServer);
             Parallel.ForEach(_executionPlanByServer, a =>
             {
-                var qh = _dispatcher.GetQueryHelper(a.Key);
-                qh.QueryCommmiting += Commiting;
-                qh.Execute(a.Value);
-                qh.QueryCommmiting -= Commiting;
+                var ctx = _dispatcher[a.Key];
+                ctx.QueryProvider.QueryCommmiting += Commiting;
+                ctx.QueryProvider.Execute(ctx.Connection, ctx.Metadatas, a.Value);
+                ctx.QueryProvider.QueryCommmiting -= Commiting;
             });
 
             return new ResultSet(_executionPlanByServer);

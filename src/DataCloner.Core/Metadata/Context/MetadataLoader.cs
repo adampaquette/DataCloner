@@ -11,7 +11,7 @@ namespace DataCloner.Core.Metadata.Context
         /// <summary>
         /// Load the result of an Sql query into the metadatas object.
         /// </summary>
-        /// <param name="reader">Result of an Sql query defined in <see cref="QueryHelperBase.SqlGetForeignKeys"/></param>
+        /// <param name="reader">Result of an Sql query defined in <see cref="QueryProvider.SqlGetForeignKeys"/></param>
         /// <param name="metadata">Metadatas container</param>
         /// <param name="serverId">ServerId loaded from</param>
         /// <param name="database">Database loaded from</param>
@@ -96,7 +96,7 @@ namespace DataCloner.Core.Metadata.Context
         /// <summary>
         /// Load the result of an Sql query into the metadatas object.
         /// </summary>
-        /// <param name="reader">Result of an Sql query defined in <see cref="QueryHelperBase.SqlGetUniqueKeys"/></param>
+        /// <param name="reader">Result of an Sql query defined in <see cref="QueryProvider.SqlGetUniqueKeys"/></param>
         /// <param name="metadata">Metadatas container</param>
         /// <param name="serverId">ServerId loaded from</param>
         /// <param name="database">Database loaded from</param>
@@ -165,7 +165,7 @@ namespace DataCloner.Core.Metadata.Context
         /// <summary>
         /// Load the result of an Sql query into the metadatas object.
         /// </summary>
-        /// <param name="reader">Result of an Sql query defined in <see cref="QueryHelperBase.SqlGetColumns"/></param>
+        /// <param name="reader">Result of an Sql query defined in <see cref="QueryProvider.SqlGetColumns"/></param>
         /// <param name="metadata">Metadatas container</param>
         /// <param name="serverId">ServerId loaded from</param>
         /// <param name="database">Database loaded from</param>

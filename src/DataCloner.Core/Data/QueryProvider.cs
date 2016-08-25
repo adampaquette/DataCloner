@@ -1,40 +1,18 @@
 ﻿using DataCloner.Core.Data.Generator;
 using DataCloner.Core.Framework;
 using DataCloner.Core.Internal;
-using DataCloner.Core.Metadata;
+using DataCloner.Core.Metadata.Context;
 using DataCloner.Core.PlugIn;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Common;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
-using DataCloner.Core.Metadata.Context;
 
 namespace DataCloner.Core.Data
 {
-    internal abstract class QueryHelperBase : IQueryHelper
+    internal abstract class QueryProvider : IQueryProvider
     {
-        private readonly Metadatas _metadata;
-        private readonly IDbConnection _connection;
-
-        /// <summary>
-        /// SQL query
-        /// </summary>
-        protected abstract string SqlGetDatabasesName { get; }
-        /// <summary>
-        /// SQL query
-        /// </summary>
-        protected abstract string SqlGetColumns { get; }
-        /// <summary>
-        /// SQL query
-        /// </summary>
-        protected abstract string SqlGetForeignKeys { get; }
-        /// <summary>
-        /// SQL query
-        /// </summary>
-        protected abstract string SqlGetUniqueKeys { get; }
         /// <summary>
         /// SQL query
         /// </summary>
@@ -45,116 +23,28 @@ namespace DataCloner.Core.Data
         protected abstract string SqlEnforceIntegrityCheck { get; }
         
         public event QueryCommitingEventHandler QueryCommmiting;
-        public IDbConnection Connection { get; }
         public abstract DbEngine Engine { get; }
         public abstract ISqlTypeConverter TypeConverter { get; }
         public abstract ISqlWriter SqlWriter { get;}
 
-        protected QueryHelperBase(Metadatas metadata, string providerName, string connectionString)
+        protected QueryProvider()
         {
-            DbProviderFactory factory;
-            //var factory = DbProviderFactories.GetFactory(providerName);
-            switch (providerName)
-            {
-                case QueryHelperMsSql.ProviderName:
-                    factory = SqlClientFactory.Instance;
-                    break;
-                default:
-                    throw new Exception("Provider not supported");
-            }
-
-            _metadata = metadata;
-            Connection = factory.CreateConnection();
-            Connection.ConnectionString = connectionString;
         }
 
-
-        public string[] GetDatabasesName()
+        public object GetLastInsertedPk(IDbConnection connection)
         {
-            var databases = new List<string>();
-
-            using (var cmd = Connection.CreateCommand())
-            {
-                cmd.CommandText = SqlGetDatabasesName;
-                Connection.Open();
-                using (var r = cmd.ExecuteReader())
-                {
-                    while (r.Read())
-                        databases.Add(r.GetString(0));
-                }
-                Connection.Close();
-            }
-            return databases.ToArray();
-        }
-
-        public void GetColumns(ColumnReader reader, Metadatas metadata, Int16 serverId, string database)
-        {
-            using (var cmd = Connection.CreateCommand())
-            {
-                cmd.CommandText = SqlGetColumns;
-
-                var p = cmd.CreateParameter();
-                p.ParameterName = SqlWriter.NamedParamPrefix + "DATABASE";
-                p.Value = database;
-                cmd.Parameters.Add(p);
-
-                Connection.Open();
-                using (var r = cmd.ExecuteReader())
-                    reader(r, metadata, serverId, database, TypeConverter);
-                Connection.Close();
-            }
-        }
-
-        public void GetForeignKeys(ForeignKeyReader reader, Metadatas metadata, Int16 serverId, string database)
-        {
-            using (var cmd = Connection.CreateCommand())
-            {
-                cmd.CommandText = SqlGetForeignKeys;
-
-                var p = cmd.CreateParameter();
-                p.ParameterName = SqlWriter.NamedParamPrefix + "DATABASE";
-                p.Value = database;
-                cmd.Parameters.Add(p);
-
-                Connection.Open();
-                using (var r = cmd.ExecuteReader())
-                    reader(r, metadata, serverId, database);
-                Connection.Close();
-            }
-        }
-
-        public void GetUniqueKeys(UniqueKeyReader reader, Metadatas metadata, Int16 serverId, string database)
-        {
-            using (var cmd = Connection.CreateCommand())
-            {
-                cmd.CommandText = SqlGetUniqueKeys;
-
-                var p = cmd.CreateParameter();
-                p.ParameterName = SqlWriter.NamedParamPrefix + "DATABASE";
-                p.Value = database;
-                cmd.Parameters.Add(p);
-
-                Connection.Open();
-                using (var r = cmd.ExecuteReader())
-                    reader(r, metadata, serverId, database);
-                Connection.Close();
-            }
-        }
-
-        public object GetLastInsertedPk()
-        {
-            var cmd = Connection.CreateCommand();
+            var cmd = connection.CreateCommand();
             cmd.CommandText = SqlGetLastInsertedPk;
 
-            Connection.Open();
+            connection.Open();
             var result = cmd.ExecuteScalar();
-            Connection.Close();
+            connection.Close();
             return result;
         }
 
-        public void EnforceIntegrityCheck(bool active)
+        public void EnforceIntegrityCheck(IDbConnection connection, bool active)
         {
-            var cmd = Connection.CreateCommand();
+            var cmd = connection.CreateCommand();
 
             var p = cmd.CreateParameter();
             p.ParameterName = SqlWriter.NamedParamPrefix + "ACTIVE";
@@ -164,20 +54,20 @@ namespace DataCloner.Core.Data
 
             cmd.CommandText = SqlEnforceIntegrityCheck;
 
-            Connection.Open();
+            connection.Open();
             cmd.ExecuteNonQuery();
-            Connection.Close();
+            connection.Close();
         }
 
-        public object[][] Select(RowIdentifier row)
+        public object[][] Select(IDbConnection connection, Metadatas metadata, RowIdentifier row)
         {
             var rows = new List<object[]>();
-            var tableMetadata = _metadata.GetTable(row);           
+            var tableMetadata = metadata.GetTable(row);           
             var nbParams = row.Columns.Count;
             var selectWriter = SqlWriter.GetSelectWriter()
                                         .AppendColumns(row, tableMetadata.ColumnsDefinition);
 
-            using (var cmd = Connection.CreateCommand())
+            using (var cmd = connection.CreateCommand())
             {
                 //Build query / params
                 for (var i = 0; i < nbParams; i++)
@@ -195,7 +85,7 @@ namespace DataCloner.Core.Data
                 cmd.CommandText = selectWriter.ToStringBuilder().ToString();
 
                 //Exec query
-                Connection.Open();
+                connection.Open();
                 using (var r = cmd.ExecuteReader())
                 {
                     while (r.Read())
@@ -205,32 +95,32 @@ namespace DataCloner.Core.Data
                         rows.Add(values);
                     }
                 }
-                Connection.Close();
+                connection.Close();
             }
             return rows.ToArray();
         }
 
-        public void Execute(ExecutionPlan plan)
+        public void Execute(IDbConnection connection, Metadatas metadata, ExecutionPlan plan)
         {
             var query = new StringBuilder();
-            var cmd = Connection.CreateCommand();
+            var cmd = connection.CreateCommand();
             var nbParams = 0;
 
-            Connection.Open();
-            using (var transaction = Connection.BeginTransaction())
+            connection.Open();
+            using (var transaction = connection.BeginTransaction())
             {
                 var cancel = false;
 
                 foreach (var step in plan.InsertSteps)
                 {
-                    GemerateInsertStatment(step, cmd, query, transaction, ref nbParams);
-                    TryExecute(plan, query, transaction, ref cmd, ref nbParams, ref cancel);
+                    GemerateInsertStatment(metadata, step, cmd, query, transaction, ref nbParams);
+                    TryExecute(connection, plan, query, transaction, ref cmd, ref nbParams, ref cancel);
                 }
 
                 foreach (var step in plan.UpdateSteps)
                 {
                     GemerateUpdateStatment(step, cmd, query);
-                    TryExecute(plan, query, transaction, ref cmd, ref nbParams, ref cancel);
+                    TryExecute(connection, plan, query, transaction, ref cmd, ref nbParams, ref cancel);
                 }
 
                 //Flush
@@ -239,10 +129,10 @@ namespace DataCloner.Core.Data
                 if (!cancel)
                     transaction.Commit();
             }
-            Connection.Close();
+            connection.Close();
         }
 
-        private void TryExecute(ExecutionPlan plan, StringBuilder query, IDbTransaction transaction, ref IDbCommand cmd, 
+        private void TryExecute(IDbConnection connection, ExecutionPlan plan, StringBuilder query, IDbTransaction transaction, ref IDbCommand cmd, 
                                 ref int nbParams, ref bool cancel)
         {
             const int maxBatchSizeKo = 65536;
@@ -253,7 +143,7 @@ namespace DataCloner.Core.Data
 
             nbParams = 0;
             query.Clear();
-            cmd = Connection.CreateCommand();
+            cmd = connection.CreateCommand();
         }
 
         private void Execute(ExecutionPlan plan, StringBuilder query, IDbTransaction transaction,
@@ -298,9 +188,9 @@ namespace DataCloner.Core.Data
             } while (dr.NextResult());
         }
 
-        internal void GemerateInsertStatment(InsertStep step, IDbCommand cmd, StringBuilder sql, IDbTransaction transaction, ref int nbParams)
+        internal void GemerateInsertStatment(Metadatas metadata, InsertStep step, IDbCommand cmd, StringBuilder sql, IDbTransaction transaction, ref int nbParams)
         {
-            var tableMetadata = _metadata.GetTable(step.DestinationTable);
+            var tableMetadata = metadata.GetTable(step.DestinationTable);
             if (tableMetadata.ColumnsDefinition.Count() != step.Datarow.Length)
                 throw new Exception("The step doesn't correspond to schema!");
 
@@ -414,25 +304,6 @@ namespace DataCloner.Core.Data
             }
 
             sql.Append(updateWriter.ToStringBuilder());
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        public void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                if (Connection != null)
-                {
-                    if (Connection.State != ConnectionState.Closed)
-                        Connection.Close();
-                    Connection.Dispose();
-                }
-            }
-        }
+        }       
     }
 }

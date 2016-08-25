@@ -1,13 +1,9 @@
 ﻿using DataCloner.Core.Data.Generator;
-using DataCloner.Core.Metadata;
-using DataCloner.Core.Metadata.Context;
 
-namespace DataCloner.Core.Data
+namespace DataCloner.Core.Data.PostgreSql
 {
-    internal sealed class QueryHelperPostgreSql : QueryHelperBase
+    internal class PostgreSqlMetadataProvider : MetadataProvider
     {
-        public const string ProviderName = "Npgsql";
-
         protected override string SqlGetDatabasesName =>
             "SELECT CATALOG_NAME FROM INFORMATION_SCHEMA.SCHEMATA " +
             "WHERE SCHEMA_NAME NOT LIKE 'pg_%' AND " +
@@ -61,7 +57,7 @@ namespace DataCloner.Core.Data
         "                                            TBL.TABLE_SCHEMA = COL.TABLE_SCHEMA AND " +
         "                                            TBL.TABLE_NAME = COL.TABLE_NAME AND " +
         "                                            TBL.TABLE_TYPE = 'BASE TABLE' " +
-        "WHERE " + 
+        "WHERE " +
         "    COL.TABLE_CATALOG = @DATABASE AND " +
         "    COL.TABLE_SCHEMA NOT LIKE 'pg_%' AND " +
         "    COL.TABLE_SCHEMA NOT IN('information_schema') " +
@@ -115,22 +111,13 @@ namespace DataCloner.Core.Data
             "    TC.TABLE_NAME, " +
             "    TC.CONSTRAINT_NAME;";
 
-        protected override string SqlGetLastInsertedPk =>
-            "SELECT CURRVAL('kjhkjhr_id_seq');";
-
-        protected override string SqlEnforceIntegrityCheck
-        {
-            get { throw new System.NotImplementedException(); }
-        }        
-
         public override DbEngine Engine => DbEngine.PostgreSql;
         public override ISqlTypeConverter TypeConverter { get; }
         public override ISqlWriter SqlWriter { get; }
 
-        public QueryHelperPostgreSql(Metadatas metadata, string connectionString)
-            : base(metadata, ProviderName, connectionString)
+        public PostgreSqlMetadataProvider()
         {
-            TypeConverter = new SqlTypeConverterPostgreSql();
+            TypeConverter = new PostgreSqlTypeConverter();
             SqlWriter = new SqlWriterPostgreSql();
         }
     }

@@ -1,13 +1,9 @@
 ﻿using DataCloner.Core.Data.Generator;
-using DataCloner.Core.Metadata;
-using DataCloner.Core.Metadata.Context;
 
-namespace DataCloner.Core.Data
+namespace DataCloner.Core.Data.MySql
 {
-    internal sealed class QueryHelperMySql : QueryHelperBase
+    internal class MySqlMetadataProvider : MetadataProvider
     {
-        public const string ProviderName = "MySql.Data.MySqlClient";
-
         protected override string SqlGetDatabasesName =>
             "SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA " +
             "WHERE SCHEMA_NAME NOT IN ('information_schema','performance_schema','mysql');";
@@ -74,21 +70,14 @@ namespace DataCloner.Core.Data
             "    TC.TABLE_NAME, " +
             "    TC.CONSTRAINT_NAME;";
 
-        protected override string SqlGetLastInsertedPk =>
-            "SELECT LAST_INSERT_ID();"; 
-
-        protected override string SqlEnforceIntegrityCheck =>
-            "SET UNIQUE_CHECKS=@ACTIVE; SET FOREIGN_KEY_CHECKS=@ACTIVE;"; 
-
         public override DbEngine Engine => DbEngine.MySql;
         public override ISqlTypeConverter TypeConverter { get; }
         public override ISqlWriter SqlWriter { get; }
 
-        public QueryHelperMySql(Metadatas schema, string connectionString)
-            : base(schema, ProviderName, connectionString)
+        public MySqlMetadataProvider()
         {
-            TypeConverter = new SqlTypeConverterMySql();
+            TypeConverter = new MySqlTypeConverter();
             SqlWriter = new SqlWriterMySql();
-        }      
+        }
     }
 }

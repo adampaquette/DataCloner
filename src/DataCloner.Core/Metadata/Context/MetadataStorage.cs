@@ -299,13 +299,11 @@ namespace DataCloner.Core.Metadata.Context
 
             foreach (var cs in container.ConnectionStrings)
             {
-                var provider = dispatcher.GetQueryHelper(cs.Id);
-
-                foreach (var database in provider.GetDatabasesName())
+                foreach (var database in dispatcher.GetDatabasesName(cs.Id))
                 {
-                    provider.GetColumns(MetadataLoader.LoadColumns, container.Metadatas, cs.Id, database);
-                    provider.GetForeignKeys(MetadataLoader.LoadForeignKeys, container.Metadatas, cs.Id, database);
-                    provider.GetUniqueKeys(MetadataLoader.LoadUniqueKeys, container.Metadatas, cs.Id, database);
+                    dispatcher.LoadColumns(cs.Id, database);
+                    dispatcher.LoadForeignKeys(cs.Id, database);
+                    dispatcher.LoadUniqueKeys(cs.Id, database);
                 }
             }
         }

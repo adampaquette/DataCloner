@@ -1,6 +1,6 @@
-﻿namespace DataCloner.Core.Data
+﻿namespace DataCloner.Core.Data.PostgreSql
 {
-    internal class SqlTypeConverterMySql : SqlTypeConverterBase
+    internal class PostgreSqlTypeConverter : SqlTypeConverter
     {
         protected override SqlType AnsiStringToSql()
         {

@@ -28,7 +28,7 @@ namespace DataCloner.Core.PlugIn
             return false;
         }
 
-        public static object BuildDataColumn(IQueryHelper queryHelper, IDbTransaction transaction, Int16 serverId, string database, string schema, TableMetadata table, ColumnDefinition col)
+        public static object BuildDataColumn(IQueryProvider queryHelper, IDbTransaction transaction, Int16 serverId, string database, string schema, TableMetadata table, ColumnDefinition col)
         {
             IDataBuilder builder = null;
             var mustGenerate = false;
@@ -91,7 +91,7 @@ namespace DataCloner.Core.PlugIn
             return null;
         }
 
-        public static void BuildDataFromTable(IQueryHelper queryHelper, IDbTransaction transaction, Int16 serverId, string database, string schema, TableMetadata table, object[] dataRow)
+        public static void BuildDataFromTable(IQueryProvider queryHelper, IDbTransaction transaction, Int16 serverId, string database, string schema, TableMetadata table, object[] dataRow)
         {
             if (table.ColumnsDefinition.Count != dataRow.Length)
                 throw new ArgumentException($"The number of columns defined in the cached table {table.Name} '{table.ColumnsDefinition.Count}' " + 

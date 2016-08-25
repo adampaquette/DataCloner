@@ -1,6 +1,6 @@
 ﻿namespace DataCloner.Core.Data
 {
-    internal class SqlTypeConverterMsSql : SqlTypeConverterBase
+    internal class MySqlTypeConverter : SqlTypeConverter
     {
         protected override SqlType AnsiStringToSql()
         {
