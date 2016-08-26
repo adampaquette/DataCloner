@@ -1,7 +1,6 @@
 ﻿using DataCloner.Core.Configuration;
 using DataCloner.Core.Data;
 using DataCloner.Core.Framework;
-using Murmur;
 using System;
 using System.Collections.Generic;
 using System.IO;

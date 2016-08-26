@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using DataCloner.Core.Configuration;
-
+﻿using System.Collections.ObjectModel;
 using DataCloner.GUI.Framework;
 
 namespace DataCloner.GUI.ViewModel

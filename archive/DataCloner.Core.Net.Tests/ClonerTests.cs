@@ -1,10 +1,4 @@
-﻿using DataCloner.Core.Data;
-using DataCloner.Core.Metadata;
-using NSubstitute;
-using System;
-using Xunit;
-
-namespace DataCloner.Core.Tests
+﻿namespace DataCloner.Core.Tests
 {
     public class ClonerTests
 	{

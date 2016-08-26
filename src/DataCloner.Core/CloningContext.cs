@@ -1,6 +1,4 @@
-﻿using DataCloner.Core.Configuration;
-
-namespace DataCloner.Core
+﻿namespace DataCloner.Core
 {
     public class CloningContext
     {

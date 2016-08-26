@@ -2,7 +2,7 @@
 
 namespace DataCloner.Core.Data
 {
-    internal static class IQueryProxyExtensions
+    internal static class QueryProxyExtensions
     {
         #region QueryProvider
 

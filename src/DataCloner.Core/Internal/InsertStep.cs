@@ -61,16 +61,17 @@ namespace DataCloner.Core.Internal
 
         public static InsertStep Deserialize(BinaryReader input, FastAccessList<object> referenceTracking)
         {
-            var step = new InsertStep();
-
-            step.StepId = input.ReadInt32();
-            step.Depth = input.ReadInt32();
-            step.SourceTable = TableIdentifier.Deserialize(input);
-            step.DestinationTable = TableIdentifier.Deserialize(input);
+            var step = new InsertStep
+            {
+                StepId = input.ReadInt32(),
+                Depth = input.ReadInt32(),
+                SourceTable = TableIdentifier.Deserialize(input),
+                DestinationTable = TableIdentifier.Deserialize(input)
+            };
 
             //Variable
             var nbVars = input.ReadInt32();
-            for (int i = 0; i < nbVars; i++)
+            for (var i = 0; i < nbVars; i++)
             {
                 var id = input.ReadInt32();
                 step.Variables.Add((SqlVariable)referenceTracking[id]);
@@ -94,7 +95,7 @@ namespace DataCloner.Core.Internal
                     step.Datarow[i] = referenceTracking[id];
                 }
                 else
-                    step.Datarow[i] = SerializationHelper.Deserialize<Object>(input.BaseStream);
+                    step.Datarow[i] = SerializationHelper.Deserialize<object>(input.BaseStream);
             }
 
             return step;

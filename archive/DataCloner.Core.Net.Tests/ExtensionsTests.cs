@@ -1,9 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using DataCloner.Core.Framework;
-using Xunit;
-
-namespace DataCloner.Core.Tests
+﻿namespace DataCloner.Core.Tests
 {
     public class ExtensionsTests
     {

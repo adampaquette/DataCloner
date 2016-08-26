@@ -21,16 +21,12 @@ namespace DataCloner.Core.Internal
         public override bool Equals(object obj)
         {
             var sv = obj as SqlVariable;
-            if (sv != null)
-                return sv.Id == Id;
-            return false;
+            return sv?.Id == Id;
         }
 
         public bool Equals(SqlVariable other)
         {
-            if (other != null)
-                return other.Id == Id;
-            return false;
+            return other?.Id == Id;
         }
 
         public override int GetHashCode()

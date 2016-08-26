@@ -29,7 +29,7 @@ namespace DataCloner.Core.Internal
             var epBySrv = new ExecutionPlanByServer();
 
             var nbSrv = input.ReadInt32();
-            for (int i = 0; i < nbSrv; i++)
+            for (var i = 0; i < nbSrv; i++)
             {
                 var key = input.ReadInt16();
                 var value = ExecutionPlan.Deserialize(input, referenceTracking);

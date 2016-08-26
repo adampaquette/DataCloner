@@ -8,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
-using System.IO.Compression;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -16,21 +15,18 @@ namespace DataCloner.Core
 {
     public class Query
     {
-        public const int CURRENT_FORMAT_VERSION = 1;
+        public const int CurrentFormatVersion = 1;
 
-        private IQueryProxy _dispatcher;
-        private Metadatas _metadata;
-        private ExecutionPlanByServer _executionPlanByServer;
-        private ImmutableHashSet<SqlConnection> _connections;
-        private int _formatVersion;
+        private readonly IQueryProxy _dispatcher;
+        private readonly Metadatas _metadata;
+        private readonly ExecutionPlanByServer _executionPlanByServer;
 
-        public int FormatVersion
-        {
-            get { return _formatVersion; }
-            set { _formatVersion = value; }
-        }
+        public int FormatVersion { get; set; }
+
         public string Description { get; set; }
-        public ImmutableHashSet<SqlConnection> Connections => _connections; 
+
+        public ImmutableHashSet<SqlConnection> Connections { get; }
+
         public bool EnforceIntegrity { get; set; }
 
         public event QueryCommitingEventHandler Commiting;
@@ -42,9 +38,9 @@ namespace DataCloner.Core
         {
             _metadata = metadata;
             _executionPlanByServer = executionPlanByServer;
-            _connections = connections;
+            Connections = connections;
             _dispatcher = new QueryProxy();
-            _dispatcher.Init(metadata, connections);
+            _dispatcher.Init(connections, metadata);
             FormatVersion = formatVersion;
         }
 
@@ -104,7 +100,7 @@ namespace DataCloner.Core
                 bstream.Write(FormatVersion);
                 bstream.Write(Description ?? "");
                 SerializeReferenceTracking(bstream, referenceTracking);
-                SerializeConnections(bstream, _connections);
+                SerializeConnections(bstream, Connections);
                 refStream.WriteTo(ostream);
             }
         }
@@ -153,7 +149,7 @@ namespace DataCloner.Core
         private static void SerializeReferenceTracking(BinaryWriter output, FastAccessList<object> referenceTracking)
         {
             output.Write(referenceTracking.Length);
-            for (int i = 0; i < referenceTracking.Length; i++)
+            for (var i = 0; i < referenceTracking.Length; i++)
             {
                 var data = referenceTracking[i];
                 var type = data.GetType();
@@ -184,7 +180,7 @@ namespace DataCloner.Core
                 else if (type == typeof(TableMetadata))
                     referenceTracking.Add(TableMetadata.Deserialize(input));
                 else
-                    referenceTracking.Add(SerializationHelper.Deserialize<Object>(input.BaseStream));
+                    referenceTracking.Add(SerializationHelper.Deserialize<object>(input.BaseStream));
             }
 
             return referenceTracking;
@@ -201,7 +197,7 @@ namespace DataCloner.Core
         {
             var lstConns = new List<SqlConnection>();
             var nbCons = input.ReadInt32();
-            for (int i = 0; i < nbCons; i++)
+            for (var i = 0; i < nbCons; i++)
                 lstConns.Add(SqlConnection.Deserialize(input));
             return new HashSet<SqlConnection>(lstConns);
         }
@@ -210,7 +206,7 @@ namespace DataCloner.Core
         /// We reset the variables for the API to regenerate them.
         /// </summary>
         /// <param name="planByServer"></param>
-        private void ResetExecutionPlan(Dictionary<Int16, ExecutionPlan> planByServer)
+        private static void ResetExecutionPlan(Dictionary<Int16, ExecutionPlan> planByServer)
         {
             foreach (var server in planByServer)
                 foreach (var sqlVar in server.Value.Variables)

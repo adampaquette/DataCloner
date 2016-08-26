@@ -1,6 +1,4 @@
 ﻿using DataCloner.Infrastructure.Modularity;
-using Mntone.SvgForXaml;
-using Mntone.SvgForXaml.UI.Xaml;
 using Prism.Commands;
 using Prism.Windows.Navigation;
 using System;

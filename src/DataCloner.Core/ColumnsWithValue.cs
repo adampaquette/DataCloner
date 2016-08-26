@@ -24,7 +24,7 @@ namespace DataCloner.Core
             var cols = new ColumnsWithValue();
 
             var nbCols = input.ReadInt32();
-            for (int i = 0; i < nbCols; i++)
+            for (var i = 0; i < nbCols; i++)
             {
                 var key = input.ReadString();
                 var value = SerializationHelper.Deserialize<Object>(input.BaseStream);

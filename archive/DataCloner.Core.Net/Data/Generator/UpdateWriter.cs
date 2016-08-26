@@ -1,5 +1,4 @@
 ﻿using DataCloner.Core.Internal;
-using System;
 using System.Text;
 
 namespace DataCloner.Core.Data.Generator

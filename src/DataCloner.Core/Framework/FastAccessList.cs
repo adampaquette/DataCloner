@@ -7,8 +7,8 @@ namespace DataCloner.Core.Framework
     /// </summary>
     public class FastAccessList<T>
     {
-        T[] _data = null;
-        int _length = 0;
+        private T[] _data = null;
+        private int _length = 0;
 
         public FastAccessList()
         {
@@ -23,15 +23,9 @@ namespace DataCloner.Core.Framework
             _length = data.Length;
         }
 
-        public int Length
-        {
-            get { return _length; }
-        }
+        public int Length => _length;
 
-        public T this[int index]
-        {
-            get { return _data[index]; }
-        }
+        public T this[int index] => _data[index];
 
         public int Add(T obj)
         {
@@ -69,7 +63,7 @@ namespace DataCloner.Core.Framework
         {
             if (obj != null && _data != null)
             {
-                for (int i = 0; i < _data.Length; i++)
+                for (var i = 0; i < _data.Length; i++)
                 {
                     if (obj.Equals(_data[i]))
                         return i;
@@ -82,7 +76,7 @@ namespace DataCloner.Core.Framework
         {
             if (_data != null)
             {
-                for (int i = _data.Length - 1; i > 0; i--)
+                for (var i = _data.Length - 1; i > 0; i--)
                 {
                     if (_data[i] != null)
                     {

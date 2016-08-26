@@ -1,4 +1,4 @@
-﻿namespace DataCloner.Core.Data
+﻿namespace DataCloner.Core.Data.MySql
 {
     internal class MySqlTypeConverter : SqlTypeConverter
     {

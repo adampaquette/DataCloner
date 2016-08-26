@@ -1,6 +1,4 @@
-﻿using DataCloner.Core.Internal;
-
-namespace DataCloner.Core.Metadata
+﻿namespace DataCloner.Core.Metadata
 {
     internal static class AppMetadataExtensions
     {

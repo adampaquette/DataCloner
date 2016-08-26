@@ -1,8 +1,5 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using DataCloner.Core.Configuration;
-
-using GalaSoft.MvvmLight.Ioc;
 using DataCloner.GUI.Framework;
 
 namespace DataCloner.GUI.ViewModel

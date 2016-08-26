@@ -1,6 +1,4 @@
 ﻿using DataCloner.Core;
-using DataCloner.Core.Metadata;
-
 using DataCloner.GUI.Framework;
 using System.ComponentModel.DataAnnotations;
 

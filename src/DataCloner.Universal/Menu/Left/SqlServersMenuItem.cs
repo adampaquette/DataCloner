@@ -1,5 +1,4 @@
-﻿using DataCloner.Universal.Commands;
-using DataCloner.Universal.Facedes;
+﻿using DataCloner.Universal.Facedes;
 using DataCloner.Universal.ViewModels;
 using System;
 using Windows.UI.Xaml.Media.Imaging;

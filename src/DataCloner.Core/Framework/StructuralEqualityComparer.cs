@@ -17,9 +17,6 @@ namespace DataCloner.Core.Framework
             return StructuralComparisons.StructuralEqualityComparer.GetHashCode(obj);
         }
 
-        public static StructuralEqualityComparer<T> Default
-        {
-            get { return _defaultComparer ?? (_defaultComparer = new StructuralEqualityComparer<T>()); }
-        }
+        public static StructuralEqualityComparer<T> Default => _defaultComparer ?? (_defaultComparer = new StructuralEqualityComparer<T>());
     }
 }

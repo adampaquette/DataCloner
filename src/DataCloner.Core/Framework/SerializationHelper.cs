@@ -55,30 +55,32 @@ namespace DataCloner.Core.Framework
             {
                 if (_typeToTag == null)
                 {
-                    _typeToTag = new Dictionary<Type, int>();
-                    _typeToTag.Add(typeof(Int16), 0);
-                    _typeToTag.Add(typeof(Int32), 1);
-                    _typeToTag.Add(typeof(Int64), 2);
-                    _typeToTag.Add(typeof(UInt16), 3);
-                    _typeToTag.Add(typeof(UInt32), 4);
-                    _typeToTag.Add(typeof(UInt64), 5);
-                    _typeToTag.Add(typeof(IntPtr), 6);
-                    _typeToTag.Add(typeof(UIntPtr), 7);
-                    _typeToTag.Add(typeof(Boolean), 8);
-                    _typeToTag.Add(typeof(Byte), 9);
-                    _typeToTag.Add(typeof(SByte), 10);
-                    _typeToTag.Add(typeof(Char), 11);
-                    _typeToTag.Add(typeof(DateTime), 12);
-                    _typeToTag.Add(typeof(DateTimeOffset), 13);
-                    _typeToTag.Add(typeof(Decimal), 14);
-                    _typeToTag.Add(typeof(Double), 15);
-                    _typeToTag.Add(typeof(Guid), 16);
-                    _typeToTag.Add(typeof(Single), 17);
-                    _typeToTag.Add(typeof(String), 18);
-                    _typeToTag.Add(typeof(SqlVariable), 19);
-                    _typeToTag.Add(typeof(TableMetadata), 20);
-                    _typeToTag.Add(typeof(DBNull), 21);
-                    _typeToTag.Add(typeof(Byte[]), 22);
+                    _typeToTag = new Dictionary<Type, int>
+                    {
+                        {typeof(Int16), 0},
+                        {typeof(Int32), 1},
+                        {typeof(Int64), 2},
+                        {typeof(UInt16), 3},
+                        {typeof(UInt32), 4},
+                        {typeof(UInt64), 5},
+                        {typeof(IntPtr), 6},
+                        {typeof(UIntPtr), 7},
+                        {typeof(Boolean), 8},
+                        {typeof(Byte), 9},
+                        {typeof(SByte), 10},
+                        {typeof(Char), 11},
+                        {typeof(DateTime), 12},
+                        {typeof(DateTimeOffset), 13},
+                        {typeof(Decimal), 14},
+                        {typeof(Double), 15},
+                        {typeof(Guid), 16},
+                        {typeof(Single), 17},
+                        {typeof(String), 18},
+                        {typeof(SqlVariable), 19},
+                        {typeof(TableMetadata), 20},
+                        {typeof(DBNull), 21},
+                        {typeof(Byte[]), 22}
+                    };
                 }
                 return _typeToTag;
             }

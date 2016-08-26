@@ -10,16 +10,14 @@ namespace DataCloner.Core.Data.Generator.MsSql
         public string NamedParamPrefix => "@";
 
         public ISelectWriter GetSelectWriter() =>
-            new SelectWriter(IdentifierDelemiterStart, IdentifierDelemiterEnd,
-                             StringDelemiter, NamedParamPrefix);
+            new SelectWriter(IdentifierDelemiterStart, IdentifierDelemiterEnd);
 
         public IInsertWriter GetInsertWriter() =>
             new InsertWriter(IdentifierDelemiterStart, IdentifierDelemiterEnd,
                              StringDelemiter, NamedParamPrefix);
 
         public IUpdateWriter GetUpdateWriter(UpdateStep step) =>
-            new UpdateWriter(step, IdentifierDelemiterStart, IdentifierDelemiterEnd,
-                             StringDelemiter, NamedParamPrefix);
+            new UpdateWriter(step, IdentifierDelemiterStart, IdentifierDelemiterEnd);
 
         public string SelectLastIdentity(int sqlVarId, string tableName, string colName) =>
             $"DECLARE {NamedParamPrefix}{sqlVarId} VARCHAR(MAX);" +        

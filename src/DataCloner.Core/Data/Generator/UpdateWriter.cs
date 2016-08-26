@@ -1,5 +1,4 @@
 ﻿using DataCloner.Core.Internal;
-using System;
 using System.Text;
 
 namespace DataCloner.Core.Data.Generator
@@ -8,18 +7,14 @@ namespace DataCloner.Core.Data.Generator
     {
         private string IdentifierDelemiterStart { get; }
         private string IdentifierDelemiterEnd { get; }
-        private string StringDelemiter { get; }
-        private string NamedParameterPrefix { get; }
 
         private readonly StringBuilder _sbSet = new StringBuilder();
         private readonly StringBuilder _sbWhere = new StringBuilder();
 
-        public UpdateWriter(UpdateStep step, string identifierDelemiterStart, string identifierDelemiterEnd, string stringDelemiter, string namedParameterPrefix)
+        public UpdateWriter(UpdateStep step, string identifierDelemiterStart, string identifierDelemiterEnd)
         {
             IdentifierDelemiterStart = identifierDelemiterStart;
             IdentifierDelemiterEnd = identifierDelemiterEnd;
-            StringDelemiter = stringDelemiter;
-            NamedParameterPrefix = namedParameterPrefix;
 
             _sbSet.Append("UPDATE ")
                .Append(step.DestinationRow.Database)
@@ -39,11 +34,7 @@ namespace DataCloner.Core.Data.Generator
 
         public IUpdateWriter AppendToWhere(string colName, string paramName)
         {
-            if (_sbWhere.Length == 0)
-                _sbWhere.Append(" WHERE ");
-            else
-                _sbWhere.Append(" AND ");
-
+            _sbWhere.Append(_sbWhere.Length == 0 ? " WHERE " : " AND ");
             _sbWhere.Append(IdentifierDelemiterStart).Append(colName).Append(IdentifierDelemiterEnd).Append(" = ").Append(paramName);
             return this;
         }

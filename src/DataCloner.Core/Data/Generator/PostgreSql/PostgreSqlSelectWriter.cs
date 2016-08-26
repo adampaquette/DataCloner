@@ -9,18 +9,14 @@ namespace DataCloner.Core.Data.Generator.PostgreSql
     {
         private string IdentifierDelemiterStart { get; }
         private string IdentifierDelemiterEnd { get; }
-        private string StringDelemiter { get; }
-        private string NamedParameterPrefix { get; }
 
         private readonly StringBuilder _sb = new StringBuilder();
         private readonly StringBuilder _sbWhere = new StringBuilder();
 
-        public PostgreSqlSelectWriter(string identifierDelemiterStart, string identifierDelemiterEnd, string stringDelemiter, string namedParameterPrefix)
+        public PostgreSqlSelectWriter(string identifierDelemiterStart, string identifierDelemiterEnd)
         {
             IdentifierDelemiterStart = identifierDelemiterStart;
             IdentifierDelemiterEnd = identifierDelemiterEnd;
-            StringDelemiter = stringDelemiter;
-            NamedParameterPrefix = namedParameterPrefix;
         }
 
         public ISelectWriter AppendColumns(RowIdentifier row, List<ColumnDefinition> columns)
@@ -40,11 +36,7 @@ namespace DataCloner.Core.Data.Generator.PostgreSql
 
         public ISelectWriter AppendToWhere(string colName, string paramName)
         {
-            if (_sbWhere.Length == 0)
-                _sbWhere.Append(" WHERE ");
-            else
-                _sbWhere.Append(" AND ");
-
+            _sbWhere.Append(_sbWhere.Length == 0 ? " WHERE " : " AND ");
             _sbWhere.Append(IdentifierDelemiterStart).Append(colName).Append(IdentifierDelemiterEnd).Append(" = ").Append(paramName);
 
             return this;

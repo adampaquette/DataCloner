@@ -123,7 +123,7 @@ namespace DataCloner.Core.Configuration
                 var targetTable = target.DerativeTableGlobal.DerivativeTables.FirstOrDefault(d => d.Name == sourceTable.Name &&
                                                                                            d.Destination == sourceTable.Destination);
                 if (targetTable == null)
-                    target.DerativeTableGlobal.DerivativeTables.Add(targetTable);
+                    target.DerativeTableGlobal.DerivativeTables.Add(sourceTable);
                 else
                     MergeDerivativeSubTable(sourceTable, targetTable);
             }
@@ -140,10 +140,10 @@ namespace DataCloner.Core.Configuration
                 }
 
                 //Add ForeignKeyRemove
-                var targetColumn = target.ForeignKeys.ForeignKeyRemove.Columns.FirstOrDefault(c => c == sourceColumn);
+                var targetColumn = target.ForeignKeys.ForeignKeyRemove.Columns.FirstOrDefault(c => Equals(c, sourceColumn));
 
                 if (targetColumn == null)
-                    target.ForeignKeys.ForeignKeyRemove.Columns.Add(targetColumn);
+                    target.ForeignKeys.ForeignKeyRemove.Columns.Add(sourceColumn);
             }
 
             foreach (var sourceForeignKey in source.ForeignKeys.ForeignKeyAdd)
@@ -157,10 +157,10 @@ namespace DataCloner.Core.Configuration
                 }
 
                 //Add ForeignKeyAdd
-                var targetForeignKey = target.ForeignKeys.ForeignKeyAdd.FirstOrDefault(fk => fk == sourceForeignKey);
+                var targetForeignKey = target.ForeignKeys.ForeignKeyAdd.FirstOrDefault(fk => Equals(fk, sourceForeignKey));
 
                 if (targetForeignKey == null)
-                    target.ForeignKeys.ForeignKeyAdd.Add(targetForeignKey);
+                    target.ForeignKeys.ForeignKeyAdd.Add(sourceForeignKey);
             }
         }
 

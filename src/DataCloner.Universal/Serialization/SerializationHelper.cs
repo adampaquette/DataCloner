@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using System.Linq;
 
 namespace DataCloner.Universal.Serialization
 {

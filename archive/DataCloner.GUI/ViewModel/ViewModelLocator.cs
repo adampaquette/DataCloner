@@ -1,6 +1,3 @@
-using GalaSoft.MvvmLight.Ioc;
-using Microsoft.Practices.ServiceLocation;
-
 namespace DataCloner.GUI.ViewModel
 {
     /// <summary>

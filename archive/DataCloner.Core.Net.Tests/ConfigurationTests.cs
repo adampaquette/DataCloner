@@ -1,10 +1,4 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using DataCloner.Core.Configuration;
-using DataCloner.Core.Framework;
-using Xunit;
-
-namespace DataCloner.Core.Tests
+﻿namespace DataCloner.Core.Tests
 {
     public class ConfigurationTests
     {

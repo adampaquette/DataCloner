@@ -1,6 +1,4 @@
-﻿using DataCloner.Core.Metadata;
-
-using DataCloner.GUI.Framework;
+﻿using DataCloner.GUI.Framework;
 using System.ComponentModel.DataAnnotations;
 
 namespace DataCloner.GUI.Model

@@ -1,5 +1,4 @@
 ﻿using DataCloner.Infrastructure.UserControls;
-using Mntone.SvgForXaml;
 using Prism.Commands;
 using System;
 using Windows.UI.Xaml.Media;

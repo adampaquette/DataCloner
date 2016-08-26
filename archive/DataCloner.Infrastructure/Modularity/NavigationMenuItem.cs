@@ -1,5 +1,4 @@
-﻿using DataCloner.Infrastructure.UserControls;
-using Prism.Commands;
+﻿using Prism.Commands;
 using Windows.UI.Xaml.Controls;
 
 namespace DataCloner.Infrastructure.Modularity

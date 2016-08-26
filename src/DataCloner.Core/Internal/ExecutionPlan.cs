@@ -54,7 +54,7 @@ namespace DataCloner.Core.Internal
             var ep = new ExecutionPlan();
 
             var nbVars = input.ReadInt32();
-            for (int i = 0; i < nbVars; i++)
+            for (var i = 0; i < nbVars; i++)
             {
                 var id = input.ReadInt32();
                 ep.Variables.Add((SqlVariable)referenceTracking[id]);

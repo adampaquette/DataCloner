@@ -1,11 +1,4 @@
-﻿using System.Collections;
-using DataCloner.Core.Internal;
-using DataCloner.Core.Metadata;
-using Xunit;
-using System.IO;
-using System.Collections.Immutable;
-
-namespace DataCloner.Core.Tests
+﻿namespace DataCloner.Core.Tests
 {
     public class KeyRelationshipTests
     {

@@ -1,10 +1,3 @@
-using System.Data;
-using DataCloner.Core.Data;
-using DataCloner.Core.Internal;
-using DataCloner.Core.Metadata;
-using NSubstitute;
-using System.Collections.Generic;
-
 namespace DataCloner.Core.Tests
 {
     internal class FakeBasicDatabase

@@ -1,8 +1,6 @@
 ﻿using DataCloner.GUI.Framework;
 using DataCloner.GUI.Services;
 using DataCloner.Core.Metadata;
-
-using GalaSoft.MvvmLight.Command;
 using System;
 using System.ComponentModel.DataAnnotations;
 

@@ -18,14 +18,13 @@ namespace DataCloner.Core.Internal
 
         public static UpdateStep Deserialize(BinaryReader input)
         {
-            var step = new UpdateStep();
-
-            step.StepId = input.ReadInt32();
-            step.DestinationTable = TableIdentifier.Deserialize(input);
-            step.DestinationRow = RowIdentifier.Deserialize(input);
-            step.ForeignKey = ColumnsWithValue.Deserialize(input);
-
-            return step;
+            return new UpdateStep
+            {
+                StepId = input.ReadInt32(),
+                DestinationTable = TableIdentifier.Deserialize(input),
+                DestinationRow = RowIdentifier.Deserialize(input),
+                ForeignKey = ColumnsWithValue.Deserialize(input)
+            };
         }
     }
 }

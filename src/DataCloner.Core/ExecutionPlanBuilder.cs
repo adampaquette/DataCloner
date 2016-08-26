@@ -18,14 +18,13 @@ namespace DataCloner.Core
         private readonly ExecutionPlanByServer _executionPlanByServer;
         private readonly KeyRelationship _keyRelationships;
         private readonly List<CircularKeyJob> _circularKeyJobs;
-        private readonly CloningContext _settings;
         private readonly MetadataStorage _metadataCtn;
         private readonly List<RowIdentifier> _steps;
         private int _nextVariableId;
         private int _nextStepId;
 
-        public MetadataStorage MetadataStorage { get { return _metadataCtn; } }
-        public Metadatas Metadatas { get { return _metadataCtn?.Metadatas; } }
+        public MetadataStorage MetadataStorage => _metadataCtn;
+        public Metadatas Metadatas => _metadataCtn?.Metadatas;
 
         public event StatusChangedEventHandler StatusChanged;
 
@@ -39,7 +38,6 @@ namespace DataCloner.Core
 
         public ExecutionPlanBuilder(CloningContext settings) : this()
         {
-            _settings = settings;
             _dispatcher = new QueryProxy();
             _metadataInitialiser = MetadataStorage.VerifyIntegrityWithContext;
             _metadataInitialiser(_dispatcher, settings, ref _metadataCtn);
@@ -52,7 +50,6 @@ namespace DataCloner.Core
             if (dispatcher == null) throw new ArgumentNullException(nameof(dispatcher));
             if (metadataInit == null) throw new ArgumentNullException(nameof(metadataInit));
 
-            _settings = settings;
             _metadataCtn = metadataCtn;
             _dispatcher = dispatcher;
             _metadataInitialiser = metadataInit;
@@ -108,7 +105,7 @@ namespace DataCloner.Core
                 metadata.Add(srv, Metadatas.First(s => s.Key == srv).Value);
             }
 
-            return new Query(metadata, _executionPlanByServer, conns.ToImmutableHashSet(), Query.CURRENT_FORMAT_VERSION);
+            return new Query(metadata, _executionPlanByServer, conns.ToImmutableHashSet(), Query.CurrentFormatVersion);
         }
 
         #endregion

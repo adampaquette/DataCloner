@@ -6,6 +6,11 @@ namespace DataCloner.Core.Data
 {
     public class QueryProxy : IQueryProxy
     {
+        public QueryProxy()
+        {
+            Contexts = new Dictionary<short, ConnectionContext>();
+        }
+
         public Dictionary<Int16, ConnectionContext> Contexts { get; }
 
         public ConnectionContext this[SehemaIdentifier server] => Contexts[server.ServerId];

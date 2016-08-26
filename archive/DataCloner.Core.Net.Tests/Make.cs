@@ -1,5 +1,3 @@
-using DataCloner.Core.Internal;
-
 namespace DataCloner.Core.Tests
 {
     internal static class Make

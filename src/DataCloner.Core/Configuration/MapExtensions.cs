@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 
 namespace DataCloner.Core.Configuration
 {
-    static class MapExtensions
+    internal static class MapExtensions
     {
         public static Dictionary<SehemaIdentifier, SehemaIdentifier> ConvertToDictionnary(this MapFrom map)
         {

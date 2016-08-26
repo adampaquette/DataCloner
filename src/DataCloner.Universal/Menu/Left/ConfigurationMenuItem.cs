@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using DataCloner.Universal.Facedes;
+﻿using DataCloner.Universal.Facedes;
 using DataCloner.Universal.ViewModels;
 
 namespace DataCloner.Universal.Menu.Left

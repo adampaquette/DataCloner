@@ -1,5 +1,4 @@
-﻿using DataCloner.Universal.ViewModels;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 
 namespace DataCloner.Universal.ViewModels
 {

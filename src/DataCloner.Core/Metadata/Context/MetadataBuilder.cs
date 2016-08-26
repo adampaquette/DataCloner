@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace DataCloner.Core.Metadata.Context
 {
@@ -201,17 +200,14 @@ namespace DataCloner.Core.Metadata.Context
 
                             for (var i = 0; i < fk.Columns.Count(); i++)
                             {
-                                if (fk.Columns[i].NameFrom.Equals(colConfig.Name, StringComparison.OrdinalIgnoreCase))
-                                {
-                                    fk.Columns.RemoveAt(i);
-                                    i--;
+                                if (!fk.Columns[i].NameFrom.Equals(colConfig.Name, StringComparison.OrdinalIgnoreCase))
+                                    continue;
+                                fk.Columns.RemoveAt(i);
+                                i--;
 
-                                    if (fk.Columns.Count == 0)
-                                    {
-                                        table.ForeignKeys.RemoveAt(j);
-                                        j--;
-                                    }
-                                }
+                                if (fk.Columns.Count != 0) continue;
+                                table.ForeignKeys.RemoveAt(j);
+                                j--;
                             }
                         }
                     }

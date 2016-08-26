@@ -1,6 +1,4 @@
 ﻿using DataCloner.Universal.Commands;
-using System;
-using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 
 namespace DataCloner.Universal.Menu

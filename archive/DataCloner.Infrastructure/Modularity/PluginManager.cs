@@ -1,8 +1,6 @@
-﻿using DataCloner.Infrastructure.Modularity;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
 
 namespace DataCloner.Infrastructure.Modularity
 {

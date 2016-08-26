@@ -7,7 +7,7 @@ namespace DataCloner.Core.Framework
 {
     public class KeyGenerator
     {
-        static readonly char[] Chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890".ToCharArray();
+        private static readonly char[] Chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890".ToCharArray();
 
         public static string GetUniqueKey(int maxSize)
         {

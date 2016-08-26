@@ -31,9 +31,7 @@ namespace DataCloner.Core
         public override bool Equals(object obj)
         {
             var sv = obj as SehemaIdentifier;
-            if (sv != null)
-                return Equals(sv);
-            return false;
+            return sv != null && Equals(sv);
         }
 
         public override int GetHashCode()
