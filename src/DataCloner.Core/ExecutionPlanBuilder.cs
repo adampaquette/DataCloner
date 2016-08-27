@@ -13,18 +13,18 @@ namespace DataCloner.Core
 {
     public class ExecutionPlanBuilder
     {
-        private readonly IQueryProxy _dispatcher;
+        private readonly IQueryProxy _queryProxy;
         private readonly MetadataStorage.Initialiser _metadataInitialiser;
         private readonly ExecutionPlanByServer _executionPlanByServer;
         private readonly KeyRelationship _keyRelationships;
         private readonly List<CircularKeyJob> _circularKeyJobs;
-        private readonly MetadataStorage _metadataCtn;
+        private readonly MetadataStorage _metadataStorage;
         private readonly List<RowIdentifier> _steps;
         private int _nextVariableId;
         private int _nextStepId;
 
-        public MetadataStorage MetadataStorage => _metadataCtn;
-        public Metadatas Metadatas => _metadataCtn?.Metadatas;
+        public MetadataStorage MetadataStorage => _metadataStorage;
+        public Metadatas Metadatas => _metadataStorage?.Metadatas;
 
         public event StatusChangedEventHandler StatusChanged;
 
@@ -38,22 +38,22 @@ namespace DataCloner.Core
 
         public ExecutionPlanBuilder(CloningContext settings) : this()
         {
-            _dispatcher = new QueryProxy();
+            _queryProxy = new QueryProxy();
             _metadataInitialiser = MetadataStorage.VerifyIntegrityWithContext;
-            _metadataInitialiser(_dispatcher, settings, ref _metadataCtn);
+            _metadataInitialiser(_queryProxy, settings, ref _metadataStorage);
         }
 
-        internal ExecutionPlanBuilder(CloningContext settings, IQueryProxy dispatcher,
+        internal ExecutionPlanBuilder(CloningContext settings, IQueryProxy queryProxy,
             MetadataStorage.Initialiser metadataInit,
-            MetadataStorage metadataCtn) : this()
+            MetadataStorage metadataStorage) : this()
         {
-            if (dispatcher == null) throw new ArgumentNullException(nameof(dispatcher));
+            if (queryProxy == null) throw new ArgumentNullException(nameof(queryProxy));
             if (metadataInit == null) throw new ArgumentNullException(nameof(metadataInit));
 
-            _metadataCtn = metadataCtn;
-            _dispatcher = dispatcher;
+            _metadataStorage = metadataStorage;
+            _queryProxy = queryProxy;
             _metadataInitialiser = metadataInit;
-            _metadataInitialiser(_dispatcher, settings, ref _metadataCtn);
+            _metadataInitialiser(_queryProxy, settings, ref _metadataStorage);
         }
 
         #region Public methods
@@ -163,7 +163,7 @@ namespace DataCloner.Core
         private RowIdentifier BuildExecutionPlan(RowIdentifier riSource, bool getDerivatives, bool shouldReturnFk, int level,
                                                  Stack<RowIdentifier> rowsGenerating)
         {
-            var srcRows = _dispatcher.Select(riSource);
+            var srcRows = _queryProxy.Select(riSource);
             var nbRows = srcRows.Length;
             var table = Metadatas.GetTable(riSource);
 
@@ -246,7 +246,7 @@ namespace DataCloner.Core
                         if (fkTable.IsStatic)
                         {
                             //TODO : Tester si la FK existe dans la table de destination de clônage et non si la fk existe dans la bd source
-                            var fkRow = _dispatcher.Select(riFk);
+                            var fkRow = _queryProxy.Select(riFk);
                             fkDestinationExists = fkRow.Length == 1;
 
                             if (fkRow.Length > 1)
@@ -444,7 +444,7 @@ namespace DataCloner.Core
                     Columns = sourceTable.BuildDerivativePk(tableDt, sourceRow)
                 };
 
-                var rows = _dispatcher.Select(riDt);
+                var rows = _queryProxy.Select(riDt);
 
                 //Pour chaque ligne dérivée de la table source
                 foreach (var row in rows)

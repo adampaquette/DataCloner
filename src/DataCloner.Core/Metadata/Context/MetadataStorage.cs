@@ -36,14 +36,12 @@ namespace DataCloner.Core.Metadata.Context
         {
             if (queryProxy == null) throw new ArgumentNullException(nameof(queryProxy));
             if (project == null) throw new ArgumentNullException(nameof(project));
-            if (project.ConnectionStrings != null &&
-                !project.ConnectionStrings.Any())
-                throw new NullReferenceException("settings.Project.ConnectionStrings");
+            if (project.ConnectionStrings == null || !project.ConnectionStrings.Any())
+                throw new NullReferenceException(nameof(project.ConnectionStrings));
 
-            var containerFileName = project.Name + "_";
-            MapFrom map = null;
             Behavior behavior = null;
-
+            var containerFileName = project.Name + "_";
+            
             //Hash the selected map, connnectionStrings and the cloner 
             //configuration to see if it match the lasted builded container
             var configData = new MemoryStream();
@@ -55,16 +53,16 @@ namespace DataCloner.Core.Metadata.Context
                 if (context.From != null)
                 {
                     //Map
-                    map = project.Maps.FirstOrDefault(m => m.Name == context.From);
-                    if (map == null)
+                    var mapFrom = project.Maps.FirstOrDefault(m => m.Name == context.From);
+                    if (mapFrom == null)
                         throw new Exception($"Map name '{context.From}' not found in configuration file for application '{project.Name}'!");
                     containerFileName += context.From + "_" + context.To;
-                    SerializationHelper.Serialize(configData, map);
+                    SerializationHelper.Serialize(configData, mapFrom);
 
                     //Behavior
                     if (context.BehaviourId.HasValue)
                     {
-                        if (map.UsableBehaviours != null && map.UsableBehaviours.Split(',').ToList().Contains(context.BehaviourId.ToString()))
+                        if (mapFrom.UsableBehaviours != null && mapFrom.UsableBehaviours.Split(',').ToList().Contains(context.BehaviourId.ToString()))
                         {
                             behavior = project.BuildBehavior(context.BehaviourId.GetValueOrDefault());
 
@@ -82,7 +80,7 @@ namespace DataCloner.Core.Metadata.Context
 
             //Hash user config
             configData.Position = 0;
-            var currentHash = "";
+            string currentHash;
             using (var md5Hash = MD5.Create())
                 currentHash = Encoding.UTF8.GetString(md5Hash.ComputeHash(configData));
 
@@ -147,8 +145,8 @@ namespace DataCloner.Core.Metadata.Context
             }
         }
 
-        private static MetadataStorage DeserializeBody(BinaryReader input, MetadataStorage config,
-                                                       FastAccessList<object> referenceTracking = null)
+        private static void DeserializeBody(BinaryReader input, MetadataStorage config,
+                                            FastAccessList<object> referenceTracking = null)
         {
             var nbServerMap = input.ReadInt32();
             for (var i = 0; i < nbServerMap; i++)
@@ -162,8 +160,6 @@ namespace DataCloner.Core.Metadata.Context
                 config.ConnectionStrings.Add(SqlConnection.Deserialize(input));
 
             config.Metadatas = Metadatas.Deserialize(input, referenceTracking);
-
-            return config;
         }
 
         public void Serialize(Stream output, FastAccessList<object> referenceTracking = null)

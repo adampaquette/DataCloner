@@ -76,7 +76,7 @@ namespace DataCloner.Core.Configuration
         /// </summary>
         /// <param name="source">Child to append over a parent.</param>
         /// <param name="target">Parent to be overrided.</param>
-        public static void MergeDbSettings(DbSettings source, DbSettings target)
+        private static void MergeDbSettings(DbSettings source, DbSettings target)
         {
             if (!String.IsNullOrWhiteSpace(source.Description))
                 target.Description = source.Description;
@@ -96,7 +96,7 @@ namespace DataCloner.Core.Configuration
         /// </summary>
         /// <param name="source">Child to append over a parent.</param>
         /// <param name="target">Parent to be overrided.</param>
-        public static void MergeTable(Table source, Table target)
+        private static void MergeTable(Table source, Table target)
         {
             if (source.IsStatic != NullableBool.NotSet)
                 target.IsStatic = source.IsStatic;
@@ -169,7 +169,7 @@ namespace DataCloner.Core.Configuration
         /// </summary>
         /// <param name="source">Child to append over a parent.</param>
         /// <param name="target">Parent to be overrided.</param>
-        public static void MergeDataBuilder(DataBuilder source, DataBuilder target)
+        private static void MergeDataBuilder(DataBuilder source, DataBuilder target)
         {
             target.BuilderName = source.BuilderName;
         }
@@ -179,12 +179,38 @@ namespace DataCloner.Core.Configuration
         /// </summary>
         /// <param name="source">Child to append over a parent.</param>
         /// <param name="target">Parent to be overrided.</param>
-        public static void MergeDerivativeSubTable(DerivativeTable source, DerivativeTable target)
+        private static void MergeDerivativeSubTable(DerivativeTable source, DerivativeTable target)
         {
             if (source.Access != DerivativeTableAccess.NotSet)
                 target.Access = source.Access;
             if (source.Cascade != NullableBool.NotSet)
                 target.Cascade = source.Cascade;
+        }
+
+        public static void SubstituteVariables(this Behavior behavior, MapFrom mapFrom, string mapTo)
+        {
+            var selectedMapTo = mapFrom.MapTos.FirstOrDefault(m => m.Name == mapTo);
+            if(selectedMapTo==null)
+                throw new Exception($"The destination map '{mapTo}' was not found inside the source map '{mapFrom.Name}'.");
+
+            //Get the last overriden value of each variable
+            var variables = mapFrom.Variables.ToDictionary(variable => variable.Name);
+            foreach (var variable in selectedMapTo.Variables)
+            {
+                if (variables.ContainsKey(variable.Name))
+                    variables[variable.Name] = variable;
+                else
+                    variables.Add(variable.Name, variable);                   
+            }
+
+            foreach (var dbSettings in behavior.DbSettings)
+            {
+                if(!variables.ContainsKey(dbSettings.Var))
+                    throw new Exception($"The DbSettings.Var '{dbSettings.Var}' was not declared inside the settings of the map '{mapFrom.Name}'.");
+
+               // dbSettings.Var = variables[dbSettings.Var].Database;
+            }
+
         }
     }
 }
