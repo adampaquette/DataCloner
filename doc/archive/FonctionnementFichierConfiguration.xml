@@ -20,6 +20,15 @@ TableMetadata :
 QueryHelper : 
 QueryDispatcher : 
 
+Query.cs
+========
+
+1 - On sauvegarde 
+    1.1 - 
+2 - Par défaut, la requête est pour une destination seulement sinon, il faut la recompiler.
+3 - Pour regénérer la schéma, il faut : 
+    3.1 - 
+
 
 Gestion de bases de données similaires 
 ======================================
