@@ -375,7 +375,7 @@ namespace DataCloner.Core
                 StepId = _nextStepId++,
                 SourceTable = tiSource,
                 DestinationTable = tiDestination,
-                TableSchema = table,
+                TableMetadata = table,
                 Depth = level
             };
 

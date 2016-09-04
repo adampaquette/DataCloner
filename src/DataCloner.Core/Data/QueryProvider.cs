@@ -211,7 +211,7 @@ namespace DataCloner.Core.Data
                     if (sqlVar == null) throw new NullReferenceException();
 
                     sqlVar.Value = DataBuilder.BuildDataColumn(this, transaction, step.DestinationTable.ServerId, step.DestinationTable.Database,
-                                                               step.DestinationTable.Schema, step.TableSchema, col);
+                                                               step.DestinationTable.Schema, step.TableMetadata, col);
                     insertWriter.AppendValue(sqlVar.Value);
                 }
                 //Post insert variable (auto generated primary key)
@@ -244,7 +244,7 @@ namespace DataCloner.Core.Data
 
                         if(col.IsDataColumnBuildable())
                             p.Value = DataBuilder.BuildDataColumn(this, transaction, step.DestinationTable.ServerId, step.DestinationTable.Database,
-                                                                  step.DestinationTable.Schema, step.TableSchema, col);
+                                                                  step.DestinationTable.Schema, step.TableMetadata, col);
                         else
                             p.Value = step.Datarow[i];
                         p.DbType = col.DbType;

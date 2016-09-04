@@ -105,6 +105,33 @@ namespace DataCloner.Core.Metadata.Context
             }
         }
 
+        private static void MergeForeignKey(this Metadatas metadatas, Behavior behavior)
+        {
+            if (behavior == null)
+                return;
+
+            foreach (var server in metadatas)
+            {
+                var serModifier = behavior.DbSettings.Modifiers.Servers.Find(s => s.Id.Equals(server.Key.ToString(), StringComparison.OrdinalIgnoreCase));
+                if (serModifier != null)
+                {
+                    foreach (var database in server.Value)
+                    {
+                        var dbModifier = serModifier.Databases.Find(d => d.Var.Equals(database.Key, StringComparison.OrdinalIgnoreCase));
+                        if (dbModifier != null)
+                        {
+                            foreach (var schema in database.Value)
+                            {
+                                var scheModifier = dbModifier.Schemas.Find(s => s.Var.Equals(schema.Key, StringComparison.OrdinalIgnoreCase));
+                                if (scheModifier != null)
+                                    MergeFkModifierSchema(schema.Value, scheModifier.Tables);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         /// <summary>
         /// Génène les tables dérivées depuis les FK.
         /// </summary>
@@ -148,33 +175,6 @@ namespace DataCloner.Core.Metadata.Context
                                         }
                                     }
                                 }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        private static void MergeForeignKey(this Metadatas metadatas, Behavior behavior)
-        {
-            if (behavior == null)
-                return;
-
-            foreach (var server in metadatas)
-            {
-                var serModifier = behavior.DbSettings.Modifiers.Servers.Find(s => s.Id.Equals(server.Key.ToString(), StringComparison.OrdinalIgnoreCase));
-                if (serModifier != null)
-                {
-                    foreach (var database in server.Value)
-                    {
-                        var dbModifier = serModifier.Databases.Find(d => d.Var.Equals(database.Key, StringComparison.OrdinalIgnoreCase));
-                        if (dbModifier != null)
-                        {
-                            foreach (var schema in database.Value)
-                            {
-                                var scheModifier = dbModifier.Schemas.Find(s => s.Var.Equals(schema.Key, StringComparison.OrdinalIgnoreCase));
-                                if (scheModifier != null)
-                                    MergeFkModifierSchema(schema.Value, scheModifier.Tables);
                             }
                         }
                     }

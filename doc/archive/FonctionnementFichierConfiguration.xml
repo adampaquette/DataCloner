@@ -6,6 +6,10 @@ Interface utilisateur
 2 - Suite à la création d'une variable nous pourrons créer un template serveur/database ou schéma.
 3 - Nous pourrons ensuite créer un behavior basé sur une variable ou un template.
 
+Les variables sont intiment reliées au templates car le template ne peut vivre sans variable.
+Le nom des templates doit réfléter le nom des variables.
+Elles ne sont créable que depuis un template.
+On peut les overrider dans les maps mais seulement les variables utilisées dans lea templates utilisés dans les behaviors associés à la map.
 
 Code 
 ====

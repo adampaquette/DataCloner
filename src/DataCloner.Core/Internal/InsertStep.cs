@@ -12,7 +12,7 @@ namespace DataCloner.Core.Internal
     {
 		public Int32 Depth { get; set; }
 		public List<SqlVariable> Variables { get; set; }
-		public TableMetadata TableSchema { get; set; }
+		public TableMetadata TableMetadata { get; set; }
         public TableIdentifier SourceTable { get; set; }
         public object[] Datarow { get; set; }
 
@@ -37,14 +37,13 @@ namespace DataCloner.Core.Internal
             }
 
             //TableSchema
-            var tsId = referenceTracking.TryAdd(TableSchema);
+            var tsId = referenceTracking.TryAdd(TableMetadata);
             output.Write(tsId);
 
             //Datarow
             output.Write(Datarow.Length);
-            for(var i=0; i<Datarow.Length; i++)
+            foreach (var data in Datarow)
             {
-                var data = Datarow[i];
                 var type = data.GetType();
                 var tag = SerializationHelper.TypeToTag[type];
                 output.Write(tag);
@@ -79,7 +78,7 @@ namespace DataCloner.Core.Internal
 
             //TableSchema
             var tsId = input.ReadInt32();
-            step.TableSchema = (TableMetadata)referenceTracking[tsId];
+            step.TableMetadata = (TableMetadata)referenceTracking[tsId];
 
             //Datarow
             var nbRows = input.ReadInt32();
