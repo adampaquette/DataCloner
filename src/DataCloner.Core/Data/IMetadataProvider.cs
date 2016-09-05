@@ -1,6 +1,5 @@
 ﻿using DataCloner.Core.Data.Generator;
 using DataCloner.Core.Metadata.Context;
-using System;
 using System.Data;
 
 namespace DataCloner.Core.Data
@@ -9,11 +8,11 @@ namespace DataCloner.Core.Data
     {
         string[] GetDatabasesName(IDbConnection connection);
 
-        void LoadColumns(IDbConnection connection, Metadatas metadata, Int16 serverId, string database);
+        void LoadColumns(IDbConnection connection, Metadatas metadata, short serverId, string database);
 
-        void LoadForeignKeys(IDbConnection connection, Metadatas metadata, Int16 serverId, string database);
+        void LoadForeignKeys(IDbConnection connection, Metadatas metadata, short serverId, string database);
 
-        void LoadUniqueKeys(IDbConnection connection, Metadatas metadata, Int16 serverId, string database);
+        void LoadUniqueKeys(IDbConnection connection, Metadatas metadata, short serverId, string database);
 
         ISqlTypeConverter TypeConverter { get; }
 

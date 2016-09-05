@@ -1,11 +1,10 @@
 ﻿using DataCloner.Core.Framework;
-using System;
 using System.Collections.Generic;
 using System.IO;
 
 namespace DataCloner.Core.Internal
 {
-    public class ExecutionPlanByServer : Dictionary<Int16, ExecutionPlan>
+    public class ExecutionPlanByServer : Dictionary<short, ExecutionPlan>
     {
         public void Serialize(Stream output, FastAccessList<object> referenceTracking)
         {

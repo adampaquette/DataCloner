@@ -1,5 +1,4 @@
 ﻿using DataCloner.Core.Internal;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -9,12 +8,12 @@ namespace DataCloner.Core
     {
         public List<RowIdentifier> Results { get; }
 
-        internal ResultSet(Dictionary<Int16, ExecutionPlan> exucutionPlanByServer)
+        internal ResultSet(Dictionary<short, ExecutionPlan> exucutionPlanByServer)
         {
             Results = ParseClonedRows(exucutionPlanByServer);
         }   
 
-        private List<RowIdentifier> ParseClonedRows(Dictionary<Int16, ExecutionPlan> exucutionPlanByServer)
+        private static List<RowIdentifier> ParseClonedRows(Dictionary<short, ExecutionPlan> exucutionPlanByServer)
         {
             var clonedRows = new List<RowIdentifier>();
 
@@ -22,7 +21,7 @@ namespace DataCloner.Core
             {
                 foreach (var row in server.Value.InsertSteps.Where(s=>s.Depth==0))
                 {
-                    var pkTemp = row.TableSchema.BuildPkFromDataRow(row.Datarow);
+                    var pkTemp = row.TableMetadata.BuildPkFromDataRow(row.Datarow);
 
                     //Clone for new reference
                     var clonedPk = new ColumnsWithValue();

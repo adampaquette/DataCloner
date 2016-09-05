@@ -1,13 +1,12 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 
 namespace DataCloner.Core.Data
 {
     public class SqlType
     {
         public string DataType { get; set; }
-        public Int32 Precision { get; set; }
-        public Int32 Scale { get; set; }
+        public int Precision { get; set; }
+        public int Scale { get; set; }
         public bool IsUnsigned { get; set; }
 
         internal void Serialize(BinaryWriter stream)

@@ -1,10 +1,8 @@
-﻿using System;
-
-namespace DataCloner.Core.Metadata
+﻿namespace DataCloner.Core.Metadata
 {
     public sealed class DerivativeTable
     {
-        public Int16 ServerId { get; set; }
+        public short ServerId { get; set; }
 
         public string Database { get; set; }
 

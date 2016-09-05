@@ -21,15 +21,11 @@ namespace DataCloner.Core.Data
         /// SQL query
         /// </summary>
         protected abstract string SqlEnforceIntegrityCheck { get; }
-        
+
         public event QueryCommitingEventHandler QueryCommmiting;
         public abstract DbEngine Engine { get; }
         public abstract ISqlTypeConverter TypeConverter { get; }
-        public abstract ISqlWriter SqlWriter { get;}
-
-        protected QueryProvider()
-        {
-        }
+        public abstract ISqlWriter SqlWriter { get; }
 
         public object GetLastInsertedPk(IDbConnection connection)
         {
@@ -62,7 +58,7 @@ namespace DataCloner.Core.Data
         public object[][] Select(IDbConnection connection, Metadatas metadata, RowIdentifier row)
         {
             var rows = new List<object[]>();
-            var tableMetadata = metadata.GetTable(row);           
+            var tableMetadata = metadata.GetTable(row);
             var nbParams = row.Columns.Count;
             var selectWriter = SqlWriter.GetSelectWriter()
                                         .AppendColumns(row, tableMetadata.ColumnsDefinition);
@@ -132,7 +128,7 @@ namespace DataCloner.Core.Data
             connection.Close();
         }
 
-        private void TryExecute(IDbConnection connection, ExecutionPlan plan, StringBuilder query, IDbTransaction transaction, ref IDbCommand cmd, 
+        private void TryExecute(IDbConnection connection, ExecutionPlan plan, StringBuilder query, IDbTransaction transaction, ref IDbCommand cmd,
                                 ref int nbParams, ref bool cancel)
         {
             const int maxBatchSizeKo = 65536;
@@ -191,7 +187,7 @@ namespace DataCloner.Core.Data
         internal void GemerateInsertStatment(Metadatas metadata, InsertStep step, IDbCommand cmd, StringBuilder sql, IDbTransaction transaction, ref int nbParams)
         {
             var tableMetadata = metadata.GetTable(step.DestinationTable);
-            if (tableMetadata.ColumnsDefinition.Count() != step.Datarow.Length)
+            if (tableMetadata.ColumnsDefinition.Count != step.Datarow.Length)
                 throw new Exception("The step doesn't correspond to schema!");
 
             var insertWriter = SqlWriter.GetInsertWriter()
@@ -200,7 +196,7 @@ namespace DataCloner.Core.Data
             var sbPostInsert = new StringBuilder();
 
             //Valeurs des colonnes
-            for (var i = 0; i < tableMetadata.ColumnsDefinition.Count(); i++)
+            for (var i = 0; i < tableMetadata.ColumnsDefinition.Count; i++)
             {
                 var col = tableMetadata.ColumnsDefinition[i];
                 var sqlVar = step.Datarow[i] as SqlVariable;
@@ -242,7 +238,7 @@ namespace DataCloner.Core.Data
                         var p = cmd.CreateParameter();
                         p.ParameterName = sqlVarName;
 
-                        if(col.IsDataColumnBuildable())
+                        if (col.IsDataColumnBuildable())
                             p.Value = DataBuilder.BuildDataColumn(this, transaction, step.DestinationTable.ServerId, step.DestinationTable.Database,
                                                                   step.DestinationTable.Schema, step.TableMetadata, col);
                         else
@@ -271,7 +267,7 @@ namespace DataCloner.Core.Data
         public void GemerateUpdateStatment(UpdateStep step, IDbCommand cmd, StringBuilder sql)
         {
             if (!step.DestinationRow.Columns.Any())
-                throw new ArgumentNullException("You must specify at least one column in the step identifier.");
+                throw new NullReferenceException("You must specify at least one column in the step identifier.");
 
             var updateWriter = SqlWriter.GetUpdateWriter(step);
 
@@ -279,9 +275,11 @@ namespace DataCloner.Core.Data
             {
                 var paramName = SqlWriter.NamedParamPrefix + col.Key.FormatSqlParam() + step.StepId;
                 var sqlVar = col.Value as SqlVariable;
+                if (sqlVar == null)
+                    throw new NullReferenceException();
 
                 var p = cmd.CreateParameter();
-                p.ParameterName =  paramName;
+                p.ParameterName = paramName;
                 p.Value = sqlVar.Value ?? SqlWriter.NamedParamPrefix + sqlVar.Id;
 
                 cmd.Parameters.Add(p);
@@ -293,9 +291,11 @@ namespace DataCloner.Core.Data
             {
                 var paramName = SqlWriter.NamedParamPrefix + kv.Key.FormatSqlParam() + step.StepId;
                 var sqlVar = kv.Value as SqlVariable;
+                if (sqlVar == null)
+                    throw new NullReferenceException();
 
-                var p = cmd.CreateParameter(); 
-                p.ParameterName =  paramName;
+                var p = cmd.CreateParameter();
+                p.ParameterName = paramName;
                 p.Value = sqlVar.Value ?? SqlWriter.NamedParamPrefix + sqlVar.Id;
 
                 cmd.Parameters.Add(p);
@@ -304,6 +304,6 @@ namespace DataCloner.Core.Data
             }
 
             sql.Append(updateWriter.ToStringBuilder());
-        }       
+        }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using DataCloner.Core.Data.Generator;
 using DataCloner.Core.Metadata.Context;
-using System;
 using System.Collections.Generic;
 using System.Data;
 
@@ -34,10 +33,6 @@ namespace DataCloner.Core.Data
 
         public abstract ISqlWriter SqlWriter { get; }
 
-        public MetadataProvider()
-        {
-        }
-
         public string[] GetDatabasesName(IDbConnection connection)
         {
             var databases = new List<string>();
@@ -56,7 +51,7 @@ namespace DataCloner.Core.Data
             return databases.ToArray();
         }
 
-        public void LoadColumns(IDbConnection connection, Metadatas metadata, Int16 serverId, string database)
+        public void LoadColumns(IDbConnection connection, Metadatas metadata, short serverId, string database)
         {
             using (var cmd = connection.CreateCommand())
             {
@@ -74,7 +69,7 @@ namespace DataCloner.Core.Data
             }
         }
 
-        public void LoadForeignKeys(IDbConnection connection, Metadatas metadata, Int16 serverId, string database)
+        public void LoadForeignKeys(IDbConnection connection, Metadatas metadata, short serverId, string database)
         {
             using (var cmd = connection.CreateCommand())
             {
@@ -92,7 +87,7 @@ namespace DataCloner.Core.Data
             }
         }
 
-        public void LoadUniqueKeys(IDbConnection connection, Metadatas metadata, Int16 serverId, string database)
+        public void LoadUniqueKeys(IDbConnection connection, Metadatas metadata, short serverId, string database)
         {
             using (var cmd = connection.CreateCommand())
             {

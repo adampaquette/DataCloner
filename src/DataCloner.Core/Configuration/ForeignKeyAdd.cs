@@ -5,12 +5,12 @@ using System.Xml.Serialization;
 
 namespace DataCloner.Core.Configuration
 {
-    [DebuggerDisplay("{Destination + \"_\" + TableTo}")]
+    [DebuggerDisplay("{DestinationVar + \"_\" + TableTo}")]
     [Serializable]
     public class ForeignKeyAdd : IEquatable<ForeignKeyAdd>
     {
         [XmlAttribute]
-        public string Destination { get; set; }
+        public string DestinationVar { get; set; }
 
         [XmlAttribute]
         public string TableTo { get; set; }
@@ -34,7 +34,7 @@ namespace DataCloner.Core.Configuration
             if (other == null)
                 return false;
 
-            if (other.Destination == Destination &&
+            if (other.DestinationVar == DestinationVar &&
                 other.TableTo == TableTo)
             {
                 foreach (var col in Columns)
@@ -49,7 +49,7 @@ namespace DataCloner.Core.Configuration
 
         public override int GetHashCode()
         {
-            return (Destination+TableTo).GetHashCode();
+            return (DestinationVar+TableTo).GetHashCode();
         }
     }
 }

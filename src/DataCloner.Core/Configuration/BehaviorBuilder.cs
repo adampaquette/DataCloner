@@ -14,7 +14,7 @@ namespace DataCloner.Core.Configuration
         /// Build / flatten a multi-hyrarchical DbSetting into a single layer.
         /// </summary>
         /// <remarks>Still returns abstract data with variables.</remarks>
-        public static Behavior BuildBehavior(this ConfigurationProject project, Int16 behaviorId)
+        public static Behavior BuildBehavior(this ConfigurationProject project, short behaviorId)
         {
             if (project == null)
                 throw new ArgumentNullException(nameof(project));
@@ -78,7 +78,7 @@ namespace DataCloner.Core.Configuration
         /// <param name="target">Parent to be overrided.</param>
         private static void MergeDbSettings(DbSettings source, DbSettings target)
         {
-            if (!String.IsNullOrWhiteSpace(source.Description))
+            if (!string.IsNullOrWhiteSpace(source.Description))
                 target.Description = source.Description;
 
             foreach (var table in source.Tables)
@@ -121,7 +121,7 @@ namespace DataCloner.Core.Configuration
             foreach (var sourceTable in source.DerativeTableGlobal.DerivativeTables)
             {
                 var targetTable = target.DerativeTableGlobal.DerivativeTables.FirstOrDefault(d => d.Name == sourceTable.Name &&
-                                                                                           d.Destination == sourceTable.Destination);
+                                                                                           d.DestinationVar == sourceTable.DestinationVar);
                 if (targetTable == null)
                     target.DerativeTableGlobal.DerivativeTables.Add(sourceTable);
                 else

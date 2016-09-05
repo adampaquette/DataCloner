@@ -11,11 +11,11 @@ namespace DataCloner.Core.Metadata.Context
         /// <summary>
         /// Load the result of an Sql query into the metadatas object.
         /// </summary>
-        /// <param name="reader">Result of an Sql query defined in <see cref="QueryProvider.SqlGetForeignKeys"/></param>
+        /// <param name="reader">Result of an Sql query defined in <see cref="MetadataProvider.SqlGetForeignKeys"/></param>
         /// <param name="metadata">Metadatas container</param>
         /// <param name="serverId">ServerId loaded from</param>
         /// <param name="database">Database loaded from</param>
-        internal static void LoadForeignKeys(IDataReader reader, Metadatas metadata, Int16 serverId, String database)
+        internal static void LoadForeignKeys(IDataReader reader, Metadatas metadata, short serverId, string database)
         {
             var lstForeignKeys = new List<ForeignKey>();
             var lstForeignKeyColumns = new List<ForeignKeyColumn>();
@@ -96,11 +96,11 @@ namespace DataCloner.Core.Metadata.Context
         /// <summary>
         /// Load the result of an Sql query into the metadatas object.
         /// </summary>
-        /// <param name="reader">Result of an Sql query defined in <see cref="QueryProvider.SqlGetUniqueKeys"/></param>
+        /// <param name="reader">Result of an Sql query defined in <see cref="MetadataProvider.SqlGetUniqueKeys"/></param>
         /// <param name="metadata">Metadatas container</param>
         /// <param name="serverId">ServerId loaded from</param>
         /// <param name="database">Database loaded from</param>
-        internal static void LoadUniqueKeys(IDataReader reader, Metadatas metadata, Int16 serverId, String database)
+        internal static void LoadUniqueKeys(IDataReader reader, Metadatas metadata, short serverId, string database)
         {
             var lstUniqueKeys = new List<UniqueKey>();
             var lstUniqueKeyColumns = new List<string>();
@@ -165,11 +165,12 @@ namespace DataCloner.Core.Metadata.Context
         /// <summary>
         /// Load the result of an Sql query into the metadatas object.
         /// </summary>
-        /// <param name="reader">Result of an Sql query defined in <see cref="QueryProvider.SqlGetColumns"/></param>
+        /// <param name="reader">Result of an Sql query defined in <see cref="MetadataProvider.SqlGetColumns"/></param>
         /// <param name="metadata">Metadatas container</param>
         /// <param name="serverId">ServerId loaded from</param>
         /// <param name="database">Database loaded from</param>
-		internal static void LoadColumns(IDataReader reader, Metadatas metadata, Int16 serverId, String database, ISqlTypeConverter typeConverter)
+        /// <param name="typeConverter">Classe performing type conversion between database and .NET.</param>
+		internal static void LoadColumns(IDataReader reader, Metadatas metadata, short serverId, string database, ISqlTypeConverter typeConverter)
         {
             var schemaMetadata = new SchemaMetadata();
             var lstSchemaColumn = new List<ColumnDefinition>();

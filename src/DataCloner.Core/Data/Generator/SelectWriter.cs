@@ -1,8 +1,6 @@
 ﻿using DataCloner.Core.Metadata;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System;
 
 namespace DataCloner.Core.Data.Generator
 {
@@ -25,12 +23,12 @@ namespace DataCloner.Core.Data.Generator
             _sb.Append("SELECT ");
 
             //Nom des colonnes
-            for (var i = 0; i < columns.Count(); i++)
-                _sb.Append(IdentifierDelemiterStart).Append(columns[i].Name).Append(IdentifierDelemiterEnd).Append(",");
+            foreach (var column in columns)
+                _sb.Append(IdentifierDelemiterStart).Append(column.Name).Append(IdentifierDelemiterEnd).Append(",");
             _sb.Remove(_sb.Length - 1, 1)
                .Append(" FROM ")
                .Append(IdentifierDelemiterStart).Append(row.Database).Append(IdentifierDelemiterEnd).Append(".");
-            if (!String.IsNullOrWhiteSpace(row.Schema))
+            if (!string.IsNullOrWhiteSpace(row.Schema))
                 _sb.Append(IdentifierDelemiterStart).Append(row.Schema).Append(IdentifierDelemiterEnd).Append(".");
             _sb.Append(IdentifierDelemiterStart).Append(row.Table).Append(IdentifierDelemiterEnd);
 

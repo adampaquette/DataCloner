@@ -9,7 +9,7 @@ namespace DataCloner.Core.Configuration
     public class Connection : IEquatable<Connection>
     {
         [XmlAttribute]
-        public Int16 Id { get; set; }
+        public short Id { get; set; }
         [XmlAttribute]
         public string Name { get; set; }
         [XmlAttribute]
@@ -18,7 +18,7 @@ namespace DataCloner.Core.Configuration
         public string ConnectionString { get; set; }
 
         public Connection() { }
-        public Connection(Int16 id, string name, string providerName, string connectionString)
+        public Connection(short id, string name, string providerName, string connectionString)
         {
             Id = id;
             Name = name;

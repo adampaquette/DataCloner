@@ -4,7 +4,6 @@ using DataCloner.Core.Internal;
 using DataCloner.Core.Metadata;
 using DataCloner.Core.Metadata.Context;
 //using LZ4;
-using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
@@ -206,7 +205,7 @@ namespace DataCloner.Core
         /// We reset the variables for the API to regenerate them.
         /// </summary>
         /// <param name="planByServer"></param>
-        private static void ResetExecutionPlan(Dictionary<Int16, ExecutionPlan> planByServer)
+        private static void ResetExecutionPlan(Dictionary<short, ExecutionPlan> planByServer)
         {
             foreach (var server in planByServer)
                 foreach (var sqlVar in server.Value.Variables)

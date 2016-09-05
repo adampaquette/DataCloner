@@ -9,7 +9,7 @@ namespace DataCloner.Core.PlugIn
     {
         private static readonly Dictionary<string, object> AutoIncrementCache = new Dictionary<string, object>();
 
-        public object BuildData(IDbTransaction transaction, DbEngine engine, Int16 serverId, string database, string schema, TableMetadata table, ColumnDefinition column)
+        public object BuildData(IDbTransaction transaction, DbEngine engine, short serverId, string database, string schema, TableMetadata table, ColumnDefinition column)
         {
             var cacheId = serverId + database + schema + table.Name + column.Name;
 
@@ -42,39 +42,39 @@ namespace DataCloner.Core.PlugIn
         private static void IncrementNumber(string cacheId)
         {
             var t = AutoIncrementCache[cacheId].GetType();
-            if (t == typeof(Int16))
+            if (t == typeof(short))
             {
-                var n = (Int16)AutoIncrementCache[cacheId];
+                var n = (short)AutoIncrementCache[cacheId];
                 AutoIncrementCache[cacheId] = ++n;
             }
-            else if (t == typeof(Int32))
+            else if (t == typeof(int))
             {
-                var n = (Int32)AutoIncrementCache[cacheId];
+                var n = (int)AutoIncrementCache[cacheId];
                 AutoIncrementCache[cacheId] = ++n;
             }
-            else if (t == typeof(Int64))
+            else if (t == typeof(long))
             {
-                var n = (Int64)AutoIncrementCache[cacheId];
+                var n = (long)AutoIncrementCache[cacheId];
                 AutoIncrementCache[cacheId] = ++n;
             }
-            else if (t == typeof(UInt16))
+            else if (t == typeof(ushort))
             {
-                var n = (UInt16)AutoIncrementCache[cacheId];
+                var n = (ushort)AutoIncrementCache[cacheId];
                 AutoIncrementCache[cacheId] = ++n;
             }
-            else if (t == typeof(UInt32))
+            else if (t == typeof(uint))
             {
-                var n = (UInt32)AutoIncrementCache[cacheId];
+                var n = (uint)AutoIncrementCache[cacheId];
                 AutoIncrementCache[cacheId] = ++n;
             }
-            else if (t == typeof(UInt64))
+            else if (t == typeof(ulong))
             {
-                var n = (UInt64)AutoIncrementCache[cacheId];
+                var n = (ulong)AutoIncrementCache[cacheId];
                 AutoIncrementCache[cacheId] = ++n;
             }
         }
 
-        private object GetNewKeyMySql(IDbTransaction transaction, string database, TableMetadata table, ColumnDefinition column)
+        private static object GetNewKeyMySql(IDbTransaction transaction, string database, TableMetadata table, ColumnDefinition column)
         {
             var cmd = transaction.Connection.CreateCommand();
             cmd.Transaction = transaction;
@@ -83,23 +83,21 @@ namespace DataCloner.Core.PlugIn
             return result;
         }
 
-        private object GetNewKeyMsSql(IDbTransaction transaction, string database, string schema, TableMetadata table, ColumnDefinition column)
+        private static object GetNewKeyMsSql(IDbTransaction transaction, string database, string schema, TableMetadata table, ColumnDefinition column)
         {
-            object result = null;
             var cmd = transaction.Connection.CreateCommand();
             cmd.Transaction = transaction;
             cmd.CommandText = $"SELECT MAX({column.Name})+1 FROM {database}.{schema}.{table.Name}";
-            result = cmd.ExecuteScalar();
+            var result = cmd.ExecuteScalar();
             return result;
         }
 
-        private object GetNewKeyPostgreSql(IDbTransaction transaction, string database, string schema, TableMetadata table, ColumnDefinition column)
+        private static object GetNewKeyPostgreSql(IDbTransaction transaction, string database, string schema, TableMetadata table, ColumnDefinition column)
         {
-            object result = null;
             var cmd = transaction.Connection.CreateCommand();
             cmd.Transaction = transaction;
             cmd.CommandText = $"SELECT MAX(\"{column.Name}\")+1 FROM {schema}.\"{table.Name}\"";
-            result = cmd.ExecuteScalar();
+            var result = cmd.ExecuteScalar();
             return result;
         }
 

@@ -4,12 +4,12 @@ using System.Xml.Serialization;
 
 namespace DataCloner.Core.Configuration
 {
-    [DebuggerDisplay("{Destination + \"_\" + Name}")]
+    [DebuggerDisplay("{DestinationVar + \"_\" + Name}")]
     [Serializable]
     public class DerivativeTable
     {
         [XmlAttribute]
-        public string Destination { get; set; }
+        public string DestinationVar { get; set; }
 
         [XmlAttribute]
         public string Name { get; set; }

@@ -8,11 +8,11 @@ namespace DataCloner.Core.Internal
     [DebuggerDisplay("SqlVar: Key={Id}, Value={Value}")]
     public class SqlVariable : IEquatable<SqlVariable>
     {
-        public Int32 Id { get; }
+        public int Id { get; }
         public object Value { get; set; }
         public bool QueryValue { get; set; }
 
-        public SqlVariable(Int32 id)
+        public SqlVariable(int id)
         {
             Id = id;
             QueryValue = true;

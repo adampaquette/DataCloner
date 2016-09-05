@@ -2,29 +2,28 @@
 using DataCloner.Core.Framework;
 using DataCloner.Core.Internal;
 using DataCloner.Core.Metadata;
-using DataCloner.Core.PlugIn;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Collections.Immutable;
+using DataCloner.Core.Configuration;
 using DataCloner.Core.Metadata.Context;
+using DataBuilder = DataCloner.Core.PlugIn.DataBuilder;
 
 namespace DataCloner.Core
 {
     public class ExecutionPlanBuilder
     {
         private readonly IQueryProxy _queryProxy;
-        private readonly MetadataStorage.Initialiser _metadataInitialiser;
         private readonly ExecutionPlanByServer _executionPlanByServer;
         private readonly KeyRelationship _keyRelationships;
         private readonly List<CircularKeyJob> _circularKeyJobs;
-        private readonly MetadataStorage _metadataStorage;
         private readonly List<RowIdentifier> _steps;
         private int _nextVariableId;
         private int _nextStepId;
 
-        public MetadataStorage MetadataStorage => _metadataStorage;
-        public Metadatas Metadatas => _metadataStorage?.Metadatas;
+        private IMetadataStorage MetadataStorage { get; }
+        public Metadatas Metadatas => MetadataStorage.Metadatas;
 
         public event StatusChangedEventHandler StatusChanged;
 
@@ -36,24 +35,21 @@ namespace DataCloner.Core
             _steps = new List<RowIdentifier>();
         }
 
-        public ExecutionPlanBuilder(CloningContext settings) : this()
+        public ExecutionPlanBuilder(ConfigurationProject project, CloningContext settings) : this()
         {
             _queryProxy = new QueryProxy();
-            _metadataInitialiser = MetadataStorage.VerifyIntegrityWithContext;
-            _metadataInitialiser(_queryProxy, settings, ref _metadataStorage);
+            MetadataStorage = new MetadataStorage();
+            MetadataStorage.LoadMetadata(project, ref _queryProxy, settings);
         }
 
-        internal ExecutionPlanBuilder(CloningContext settings, IQueryProxy queryProxy,
-            MetadataStorage.Initialiser metadataInit,
-            MetadataStorage metadataStorage) : this()
+        internal ExecutionPlanBuilder(ConfigurationProject project, CloningContext settings, 
+            IQueryProxy queryProxy, IMetadataStorage metadataStorage) : this()
         {
             if (queryProxy == null) throw new ArgumentNullException(nameof(queryProxy));
-            if (metadataInit == null) throw new ArgumentNullException(nameof(metadataInit));
 
-            _metadataStorage = metadataStorage;
+            MetadataStorage = metadataStorage;
             _queryProxy = queryProxy;
-            _metadataInitialiser = metadataInit;
-            _metadataInitialiser(_queryProxy, settings, ref _metadataStorage);
+            MetadataStorage.LoadMetadata(project, ref _queryProxy, settings);
         }
 
         #region Public methods

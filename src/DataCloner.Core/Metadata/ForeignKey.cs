@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace DataCloner.Core.Metadata
 {
     public sealed class ForeignKey
     {
-        public Int16 ServerIdTo { get; set; }
+        public short ServerIdTo { get; set; }
 
         public string DatabaseTo { get; set; }
 

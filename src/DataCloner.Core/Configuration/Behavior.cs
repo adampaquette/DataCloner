@@ -10,7 +10,7 @@ namespace DataCloner.Core.Configuration
     public class Behavior
     {
         [XmlAttribute]
-        public Int16 Id { get; set; }
+        public short Id { get; set; }
 
         [XmlAttribute]
         public string Name { get; set; }

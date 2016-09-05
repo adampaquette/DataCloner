@@ -12,8 +12,8 @@ namespace DataCloner.Core.Framework
 {
     public static class SerializationHelper
     {
-        private static FastAccessList<Type> _tagToType = null;
-        private static Dictionary<Type, int> _typeToTag = null;
+        private static FastAccessList<Type> _tagToType;
+        private static Dictionary<Type, int> _typeToTag;
 
         public static FastAccessList<Type> TagToType
         {
@@ -22,29 +22,29 @@ namespace DataCloner.Core.Framework
                 if (_tagToType == null)
                 {
                     _tagToType = new FastAccessList<Type>();
-                    _tagToType.Add(typeof(Int16));
-                    _tagToType.Add(typeof(Int32));
-                    _tagToType.Add(typeof(Int64));
-                    _tagToType.Add(typeof(UInt16));
-                    _tagToType.Add(typeof(UInt32));
-                    _tagToType.Add(typeof(UInt64));
+                    _tagToType.Add(typeof(short));
+                    _tagToType.Add(typeof(int));
+                    _tagToType.Add(typeof(long));
+                    _tagToType.Add(typeof(ushort));
+                    _tagToType.Add(typeof(uint));
+                    _tagToType.Add(typeof(ulong));
                     _tagToType.Add(typeof(IntPtr));
                     _tagToType.Add(typeof(UIntPtr));
-                    _tagToType.Add(typeof(Boolean));
-                    _tagToType.Add(typeof(Byte));
-                    _tagToType.Add(typeof(SByte));
-                    _tagToType.Add(typeof(Char));
+                    _tagToType.Add(typeof(bool));
+                    _tagToType.Add(typeof(byte));
+                    _tagToType.Add(typeof(sbyte));
+                    _tagToType.Add(typeof(char));
                     _tagToType.Add(typeof(DateTime));
                     _tagToType.Add(typeof(DateTimeOffset));
-                    _tagToType.Add(typeof(Decimal));
-                    _tagToType.Add(typeof(Double));
+                    _tagToType.Add(typeof(decimal));
+                    _tagToType.Add(typeof(double));
                     _tagToType.Add(typeof(Guid));
-                    _tagToType.Add(typeof(Single));
-                    _tagToType.Add(typeof(String));
+                    _tagToType.Add(typeof(float));
+                    _tagToType.Add(typeof(string));
                     _tagToType.Add(typeof(SqlVariable));
                     _tagToType.Add(typeof(TableMetadata));
                     _tagToType.Add(typeof(DBNull));
-                    _tagToType.Add(typeof(Byte[]));
+                    _tagToType.Add(typeof(byte[]));
                 }
                 return _tagToType;
             }
@@ -57,29 +57,29 @@ namespace DataCloner.Core.Framework
                 {
                     _typeToTag = new Dictionary<Type, int>
                     {
-                        {typeof(Int16), 0},
-                        {typeof(Int32), 1},
-                        {typeof(Int64), 2},
-                        {typeof(UInt16), 3},
-                        {typeof(UInt32), 4},
-                        {typeof(UInt64), 5},
+                        {typeof(short), 0},
+                        {typeof(int), 1},
+                        {typeof(long), 2},
+                        {typeof(ushort), 3},
+                        {typeof(uint), 4},
+                        {typeof(ulong), 5},
                         {typeof(IntPtr), 6},
                         {typeof(UIntPtr), 7},
-                        {typeof(Boolean), 8},
-                        {typeof(Byte), 9},
-                        {typeof(SByte), 10},
-                        {typeof(Char), 11},
+                        {typeof(bool), 8},
+                        {typeof(byte), 9},
+                        {typeof(sbyte), 10},
+                        {typeof(char), 11},
                         {typeof(DateTime), 12},
                         {typeof(DateTimeOffset), 13},
-                        {typeof(Decimal), 14},
-                        {typeof(Double), 15},
+                        {typeof(decimal), 14},
+                        {typeof(double), 15},
                         {typeof(Guid), 16},
-                        {typeof(Single), 17},
-                        {typeof(String), 18},
+                        {typeof(float), 17},
+                        {typeof(string), 18},
                         {typeof(SqlVariable), 19},
                         {typeof(TableMetadata), 20},
                         {typeof(DBNull), 21},
-                        {typeof(Byte[]), 22}
+                        {typeof(byte[]), 22}
                     };
                 }
                 return _typeToTag;
@@ -155,14 +155,14 @@ namespace DataCloner.Core.Framework
 
         public static Task<T> LoadXmlAsync<T>(string path)
         {
-            return Task.Run<T>(() =>
+            return Task.Run(() =>
             {
                 if (!File.Exists(path)) return default(T);
                 using (var fs = new FileStream(path, FileMode.Open))
                 {
                     var xs = new XmlSerializer(typeof(T));
                     return (T)xs.Deserialize(fs);
-                };
+                }
             });
         }
     }

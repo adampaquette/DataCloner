@@ -16,6 +16,8 @@ namespace DataCloner.Core.Framework
             foreach (var parameter in dbCommand.Parameters)
             {
                 var param = parameter as IDataParameter;
+                if (param == null)
+                    throw new Exception();
                 string newValue;
 
                 if (param.Direction == ParameterDirection.Output)
@@ -32,7 +34,7 @@ namespace DataCloner.Core.Framework
 
         internal static string FormatSqlParam(this string value)
         {
-            return value.Replace(" ", String.Empty);
+            return value.Replace(" ", string.Empty);
         }
 
         internal static string EscapeSql(this string value)

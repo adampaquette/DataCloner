@@ -15,8 +15,6 @@ namespace DataCloner.Core.Metadata.Context
     /// </summary>
     public sealed class MetadataStorage : IMetadataStorage
     {
-        internal delegate void Initialiser(IQueryProxy queryProxy, CloningContext settings, ref MetadataStorage container);
-
         public string ConfigFileHash { get; set; }
         public Dictionary<SehemaIdentifier, SehemaIdentifier> Map { get; set; }
         public List<SqlConnection> ConnectionStrings { get; set; }
@@ -47,9 +45,13 @@ namespace DataCloner.Core.Metadata.Context
             var configData = new MemoryStream();
             SerializationHelper.Serialize(configData, project.ConnectionStrings);
 
+            HashSet<Variable> variables = null;
+
             //Append context data
             if (context != null)
             {
+                variables = project.GetVariablesForMap(context.From, context.To);
+
                 if (context.From != null)
                 {
                     //Map
@@ -110,7 +112,7 @@ namespace DataCloner.Core.Metadata.Context
                 }
 
                 queryProxy.Init(ConnectionStrings, Metadatas);
-                MetadataBuilder.BuildMetadata(project.ConnectionStrings, queryProxy, behavior);
+                MetadataBuilder.BuildMetadata(queryProxy, behavior, variables);
 
                 Save(containerFileName);
             }

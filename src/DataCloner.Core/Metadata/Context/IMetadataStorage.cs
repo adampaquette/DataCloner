@@ -1,4 +1,5 @@
-﻿using DataCloner.Core.Data;
+﻿using DataCloner.Core.Configuration;
+using DataCloner.Core.Data;
 using System.Collections.Generic;
 
 namespace DataCloner.Core.Metadata.Context
@@ -12,5 +13,7 @@ namespace DataCloner.Core.Metadata.Context
          List<SqlConnection> ConnectionStrings { get; set; }
 
          Metadatas Metadatas { get; set; }
+
+        void LoadMetadata(ConfigurationProject project, ref IQueryProxy queryProxy, CloningContext context = null);
     }
 }

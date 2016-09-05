@@ -1,6 +1,5 @@
 ﻿using DataCloner.Core.Metadata;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
 namespace DataCloner.Core.Data.Generator.PostgreSql
@@ -24,8 +23,8 @@ namespace DataCloner.Core.Data.Generator.PostgreSql
             _sb.Append("SELECT ");
 
             //Nom des colonnes
-            for (var i = 0; i < columns.Count(); i++)
-                _sb.Append(IdentifierDelemiterStart).Append(columns[i].Name).Append(IdentifierDelemiterEnd).Append(",");
+            foreach (var column in columns)
+                _sb.Append(IdentifierDelemiterStart).Append(column.Name).Append(IdentifierDelemiterEnd).Append(",");
             _sb.Remove(_sb.Length - 1, 1)
                .Append(" FROM ")
                .Append(row.Schema).Append(".");

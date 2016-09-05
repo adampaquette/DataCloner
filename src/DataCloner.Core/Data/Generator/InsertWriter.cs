@@ -1,8 +1,6 @@
 ﻿using DataCloner.Core.Metadata;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System;
 
 namespace DataCloner.Core.Data.Generator
 {
@@ -28,16 +26,16 @@ namespace DataCloner.Core.Data.Generator
             _sb.Append("INSERT INTO ")
                .Append(IdentifierDelemiterStart).Append(table.Database).Append(IdentifierDelemiterEnd).Append(".");
 
-            if (!String.IsNullOrWhiteSpace(table.Schema))
+            if (!string.IsNullOrWhiteSpace(table.Schema))
                 _sb.Append(IdentifierDelemiterStart).Append(table.Schema).Append(IdentifierDelemiterEnd).Append(".");
             _sb.Append(IdentifierDelemiterStart).Append(table.Table).Append(IdentifierDelemiterEnd)
                .Append("(");
 
             //Nom des colonnes
-            for (var i = 0; i < columns.Count(); i++)
+            foreach (var column in columns)
             {
-                if (!columns[i].IsAutoIncrement)
-                    _sb.Append(IdentifierDelemiterStart).Append(columns[i].Name).Append(IdentifierDelemiterEnd).Append(",");
+                if (!column.IsAutoIncrement)
+                    _sb.Append(IdentifierDelemiterStart).Append(column.Name).Append(IdentifierDelemiterEnd).Append(",");
             }
             _sb.Remove(_sb.Length - 1, 1);
             _sb.Append(")VALUES(");

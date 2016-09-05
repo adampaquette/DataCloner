@@ -7,7 +7,7 @@ namespace DataCloner.Core
     [DebuggerDisplay("{ServerId.ToString() + \".\" + Database + \".\" + Schema}")]
     public class SehemaIdentifier : IEquatable<SehemaIdentifier>
     {
-        public Int16 ServerId { get; set; }
+        public short ServerId { get; set; }
         public string Database { get; set; }
         public string Schema { get; set; }
 

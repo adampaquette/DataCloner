@@ -98,7 +98,7 @@ namespace DataCloner.Core.Metadata
                 throw new Exception("The key doesn't correspond to table defenition.");
 
             var pk = new ColumnsWithValue();
-            for (var i = 0; i < pkColumns.Count(); i++)
+            for (var i = 0; i < pkColumns.Length; i++)
                 pk.Add(pkColumns[i].Name, key[i]);
             return pk;
         }
@@ -132,7 +132,7 @@ namespace DataCloner.Core.Metadata
         public void SetPkFromKey(ref object[] row, object[] key)
         {
             var nbPkColumns = ColumnsDefinition.Count(c => c.IsPrimary);
-            var nbCols = ColumnsDefinition.Count();
+            var nbCols = ColumnsDefinition.Count;
 
             if (key.Length != nbPkColumns)
                 throw new Exception("The key doesn't correspond to table defenition.");
@@ -167,12 +167,10 @@ namespace DataCloner.Core.Metadata
             foreach (var fk in derivativeTable.ForeignKeys.Where(k=>k.TableTo == Name))
             {
                 //Toutes les colonnes doivent correspondre
-                if (!fk.Columns.Any(c => !colPkSrc.ContainsKey(c.NameTo)))
-                {
-                    foreach (var col in fk.Columns)
-                        colPkDst.Add(col.NameFrom, colPkSrc[col.NameTo]);
-                    break;
-                }
+                if (!fk.Columns.All(c => colPkSrc.ContainsKey(c.NameTo))) continue;
+                foreach (var col in fk.Columns)
+                    colPkDst.Add(col.NameFrom, colPkSrc[col.NameTo]);
+                break;
             }
             if(!colPkDst.Any())
                 throw new Exception($"A problem append with the metadata. The derivative table '{derivativeTable.Name}' dosen't have a foreign key to the table '{Name}'.");
@@ -231,7 +229,7 @@ namespace DataCloner.Core.Metadata
             for (var i = 0; i < nbRows; i++)
             {
                 output.Write(ColumnsDefinition[i].Name);
-                output.Write((Int32)ColumnsDefinition[i].DbType);
+                output.Write((int)ColumnsDefinition[i].DbType);
                 output.Write(ColumnsDefinition[i].IsPrimary);
                 output.Write(ColumnsDefinition[i].IsForeignKey);
                 output.Write(ColumnsDefinition[i].IsAutoIncrement);

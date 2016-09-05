@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
@@ -47,6 +48,35 @@ namespace DataCloner.Core.Configuration
         public static async Task<ConfigurationProject> LoadAsync(string path)
         {
             return await SerializationHelper.LoadXmlAsync<ConfigurationProject>(path).ConfigureAwait(false);
+        }
+
+        public HashSet<Variable> GetVariablesForMap(string nameFrom, string nameTo)
+        {
+            var mapFrom = Maps.FirstOrDefault(m => m.Name == nameFrom);
+            if(mapFrom == null)
+                throw new NullReferenceException($"The MapFrom node {nameFrom} was not found.");
+
+            var mapTo = mapFrom.MapTos.FirstOrDefault(m => m.Name == nameTo);
+            if (mapTo == null)
+                throw new NullReferenceException($"The MapTo node {nameTo} was not found.");
+
+            var variables = new HashSet<Variable>(Variables);
+
+            //Override values in cascade
+            foreach (var v in mapFrom.Variables)
+            {
+                if (variables.Contains(v))
+                    variables.Remove(v);//Will it blend?
+                variables.Add(v);
+            }
+            foreach (var v in mapTo.Variables)
+            {
+                if (variables.Contains(v))
+                    variables.Remove(v);//Will it blend?
+                variables.Add(v);
+            }
+
+            return variables;
         }
     }
 }

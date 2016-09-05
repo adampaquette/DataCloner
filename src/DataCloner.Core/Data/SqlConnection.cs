@@ -6,11 +6,11 @@ namespace DataCloner.Core.Data
 {
     public class SqlConnection : IEquatable<SqlConnection>
     {
-        public Int16 Id { get; }
+        public short Id { get; }
         public string ProviderName { get; set; }
         public string ConnectionString { get; set; }
 
-        public SqlConnection(Int16 id)
+        public SqlConnection(short id)
         {
             Id = id;
         }
