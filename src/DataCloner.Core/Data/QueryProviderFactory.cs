@@ -12,11 +12,11 @@ namespace DataCloner.Core.Data
             switch (providerName)
             {
                 case MsSqlQueryProvider.ProviderName:
-                    return new MsSqlQueryProvider();//TODO : Implement singleton
+                    return MsSqlQueryProvider.Instance;
                 case QueryHelperMySql.ProviderName:
-                    return new QueryHelperMySql();//TODO : Implement singleton
+                    return QueryHelperMySql.Instance;
                 case PostgreSqlQueryProvider.ProviderName:
-                    return new PostgreSqlQueryProvider();//TODO : Implement singleton
+                    return PostgreSqlQueryProvider.Instance;
             }
             throw new NotSupportedException($"Unkown provider : {providerName}");
         }

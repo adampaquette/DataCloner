@@ -3,8 +3,10 @@ using DataCloner.Core.Data.Generator.MsSql;
 
 namespace DataCloner.Core.Data.MsSql
 {
-    internal sealed class MsSqlQueryProvider : QueryProvider
+    internal sealed class MsSqlQueryProvider : QueryProvider 
     {
+        private static MsSqlQueryProvider _instance;
+
         public const string ProviderName = "System.Data.SqlClient";
 
         protected override string SqlGetLastInsertedPk =>
@@ -20,6 +22,16 @@ namespace DataCloner.Core.Data.MsSql
         public override DbEngine Engine => DbEngine.SqlServer; 
         public override ISqlTypeConverter TypeConverter { get; }
         public override ISqlWriter SqlWriter { get; }
+
+        public static MsSqlQueryProvider Instance
+        {
+            get
+            {
+                if (_instance == null)
+                    _instance = new MsSqlQueryProvider();
+                return _instance;
+            }
+        }
 
         public MsSqlQueryProvider()
         {

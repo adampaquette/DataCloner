@@ -3,8 +3,10 @@ using DataCloner.Core.Data.Generator.MsSql;
 
 namespace DataCloner.Core.Data.MsSql
 {
-    internal class MsSqlMetadataProvider : MetadataProvider
+    internal class MsSqlMetadataProvider : MetadataProvider 
     {
+        private static MsSqlMetadataProvider _instance;
+
         protected override string SqlGetDatabasesName =>
             "SELECT D.NAME FROM SYS.DATABASES D " +
             "WHERE D.NAME NOT IN ('master', 'tempdb');";
@@ -91,6 +93,16 @@ namespace DataCloner.Core.Data.MsSql
         public override DbEngine Engine => DbEngine.SqlServer;
         public override ISqlTypeConverter TypeConverter { get; }
         public override ISqlWriter SqlWriter { get; }
+
+        public static MsSqlMetadataProvider Instance
+        {
+            get
+            {
+                if (_instance == null)
+                    _instance = new MsSqlMetadataProvider();
+                return _instance;
+            }
+        }
 
         public MsSqlMetadataProvider()
         {

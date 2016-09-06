@@ -3,8 +3,10 @@ using DataCloner.Core.Data.Generator.MySql;
 
 namespace DataCloner.Core.Data.MySql
 {
-    internal sealed class QueryHelperMySql : QueryProvider
+    internal sealed class QueryHelperMySql : QueryProvider 
     {
+        private static QueryHelperMySql _instance;
+
         public const string ProviderName = "MySql.Data.MySqlClient";
 
          protected override string SqlGetLastInsertedPk =>
@@ -16,6 +18,16 @@ namespace DataCloner.Core.Data.MySql
         public override DbEngine Engine => DbEngine.MySql;
         public override ISqlTypeConverter TypeConverter { get; }
         public override ISqlWriter SqlWriter { get; }
+
+        public static QueryHelperMySql Instance
+        {
+            get
+            {
+                if (_instance == null)
+                    _instance = new QueryHelperMySql();
+                return _instance;
+            }
+        }
 
         public QueryHelperMySql()
         {

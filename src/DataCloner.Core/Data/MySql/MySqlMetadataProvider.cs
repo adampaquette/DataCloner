@@ -3,8 +3,10 @@ using DataCloner.Core.Data.Generator.MySql;
 
 namespace DataCloner.Core.Data.MySql
 {
-    internal class MySqlMetadataProvider : MetadataProvider
+    internal class MySqlMetadataProvider : MetadataProvider 
     {
+        private static MySqlMetadataProvider _instance;
+
         protected override string SqlGetDatabasesName =>
             "SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA " +
             "WHERE SCHEMA_NAME NOT IN ('information_schema','performance_schema','mysql');";
@@ -74,6 +76,16 @@ namespace DataCloner.Core.Data.MySql
         public override DbEngine Engine => DbEngine.MySql;
         public override ISqlTypeConverter TypeConverter { get; }
         public override ISqlWriter SqlWriter { get; }
+
+        public static MySqlMetadataProvider Instance
+        {
+            get
+            {
+                if (_instance == null)
+                    _instance = new MySqlMetadataProvider();
+                return _instance;
+            }
+        }
 
         public MySqlMetadataProvider()
         {

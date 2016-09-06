@@ -5,6 +5,8 @@ namespace DataCloner.Core.Data.PostgreSql
 {
     internal class PostgreSqlMetadataProvider : MetadataProvider
     {
+        private static PostgreSqlMetadataProvider _instance;
+
         protected override string SqlGetDatabasesName =>
             "SELECT CATALOG_NAME FROM INFORMATION_SCHEMA.SCHEMATA " +
             "WHERE SCHEMA_NAME NOT LIKE 'pg_%' AND " +
@@ -115,6 +117,16 @@ namespace DataCloner.Core.Data.PostgreSql
         public override DbEngine Engine => DbEngine.PostgreSql;
         public override ISqlTypeConverter TypeConverter { get; }
         public override ISqlWriter SqlWriter { get; }
+
+        public static PostgreSqlMetadataProvider Instance
+        {
+            get
+            {
+                if (_instance == null)
+                    _instance = new PostgreSqlMetadataProvider();
+                return _instance;
+            }
+        }
 
         public PostgreSqlMetadataProvider()
         {

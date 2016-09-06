@@ -9,22 +9,17 @@ namespace DataCloner.Core.Data
     {
         public static MetadataProvider GetProvider(string providerName)
         {
-            MetadataProvider provider;
             switch (providerName)
             {
                 case MsSqlQueryProvider.ProviderName:
-                    provider = new MsSqlMetadataProvider(); //TODO : Implement singleton
-                    break;
+                    return MsSqlMetadataProvider.Instance; 
                 case QueryHelperMySql.ProviderName:
-                    provider = new MySqlMetadataProvider(); //TODO : Implement singleton
-                    break;
+                    return MySqlMetadataProvider.Instance;
                 case PostgreSqlQueryProvider.ProviderName:
-                    provider = new PostgreSqlMetadataProvider(); //TODO : Implement singleton
-                    break;
+                    return PostgreSqlMetadataProvider.Instance;
                 default:
                     throw new NotSupportedException($"Unkown provider : {providerName}");
             }
-            return provider;
         }
     }
 }

@@ -17,16 +17,13 @@ namespace DataCloner.Core.Data
         /// <returns>DbProviderFactory</returns>
         public static DbProviderFactory GetFactory(string providerName)
         {
-            DbProviderFactory factory;
             switch (providerName)
             {
                 case MsSqlQueryProvider.ProviderName:
-                    factory = SqlClientFactory.Instance;
-                    break;
+                    return SqlClientFactory.Instance;
                 default:
                     throw new NotSupportedException($"Provider not supported : {providerName}");
             }
-            return factory;
         }
     }
 }
