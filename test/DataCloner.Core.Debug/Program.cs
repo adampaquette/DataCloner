@@ -2,6 +2,7 @@
 using DataCloner.Core.Framework;
 using System;
 using System.Collections.Generic;
+using DataCloner.Core.IntegrationTests;
 
 namespace DataCloner.Core.Debug
 {
@@ -11,12 +12,22 @@ namespace DataCloner.Core.Debug
         {
             try
             {
+                var epb = new ExecutionPlanBuilderTest();
+
+                foreach (var connection in DatabaseInitializer.Connections)
+                {
+                    var conn = connection[0] as Connection;
+
+                    epb.CloningDependencies_With_DefaultConfig(conn);
+                    epb.CloningDerivatives_With_GlobalAccessDenied(conn);
+                }
+
                 CreateConfiguration();
+                TestSerializingConfiguration();
                 TestBehaviorBuilder();
             }
             catch (System.Exception)
             {
-
                 throw;
             }
 
@@ -50,7 +61,7 @@ namespace DataCloner.Core.Debug
             };
 
             //Templates
-            var PGIS_DBO = new DbSettings
+            var pgisDbo = new DbSettings
             {
                 Id = 1,
                 Var = "PGIS_FROM",
@@ -67,7 +78,7 @@ namespace DataCloner.Core.Debug
                             GlobalCascade = NullableBool.True,
                             DerivativeTables = new List<DerivativeTable>
                             {
-                                 new DerivativeTable { Destination = "PGIS_TO", Name = "demande" }
+                                 new DerivativeTable { DestinationVar = "PGIS_TO", Name = "demande" }
                             }
                         },
                         ForeignKeys = new ForeignKeys
@@ -76,7 +87,7 @@ namespace DataCloner.Core.Debug
                              {
                                  new ForeignKeyAdd
                                  {
-                                     Destination = "SIEBEL_TO",
+                                     DestinationVar = "SIEBEL_TO",
                                      TableTo = "s_srv_req",
                                      Columns = new List<ForeignKeyColumn> { new ForeignKeyColumn { NameFrom = "noreferencetransmission", NameTo = "sr_num" } }
                                  }
@@ -96,7 +107,7 @@ namespace DataCloner.Core.Debug
                             {
                                 new ForeignKeyAdd
                                 {
-                                    Destination = "ARIEL_TO",
+                                    DestinationVar = "ARIEL_TO",
                                     TableTo = "s_srv_req",
                                     Columns = new List<ForeignKeyColumn>
                                     {
@@ -112,10 +123,10 @@ namespace DataCloner.Core.Debug
                     }
                 }
             };
-            var ARIEL_FROM = new DbSettings { Id = 2, Var = "ARIEL_FROM" };
-            var SIEBEL_FROM = new DbSettings { Id = 3, Var = "SIEBEL_FROM" };
+            var arielFrom = new DbSettings { Id = 2, Var = "ARIEL_FROM" };
+            var siebelFrom = new DbSettings { Id = 3, Var = "SIEBEL_FROM" };
 
-            project.Templates.AddRange(new List<DbSettings> { PGIS_DBO, ARIEL_FROM, SIEBEL_FROM });
+            project.Templates.AddRange(new List<DbSettings> { pgisDbo, arielFrom, siebelFrom });
 
             //Behaviors
             project.Behaviors.AddRange(new List<Behavior>
@@ -188,9 +199,9 @@ namespace DataCloner.Core.Debug
                     },
                     Roads = new List<Road>
                     {
-                        new Road { Source = "PGIS_FROM", Destination = "PGIS_TO" },
-                        new Road { Source = "ARIEL_FROM", Destination = "PGIS_TO" },
-                        new Road { Source = "SIEBEL_FROM", Destination = "PGIS_TO" }
+                        new Road { SourceVar = "PGIS_FROM", DestinationVar = "PGIS_TO" },
+                        new Road { SourceVar = "ARIEL_FROM", DestinationVar = "PGIS_TO" },
+                        new Road { SourceVar = "SIEBEL_FROM", DestinationVar = "PGIS_TO" }
                     }
                 }
             });

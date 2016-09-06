@@ -22,8 +22,10 @@ namespace DataCloner.Core.Data
 
             foreach (var conn in connections)
             {
-                var context = new ConnectionContext(
-                    DbProviderFactories.GetFactory(conn.ProviderName).CreateConnection(),                    
+                var dbConnection = DbProviderFactories.GetFactory(conn.ProviderName).CreateConnection();
+                dbConnection.ConnectionString = conn.ConnectionString;
+
+                var context = new ConnectionContext(dbConnection,                    
                     MetadataProviderFactory.GetProvider(conn.ProviderName),
                     QueryProviderFactory.GetProvider(conn.ProviderName),
                     contextMetadata);

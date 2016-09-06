@@ -22,8 +22,9 @@ namespace DataCloner.Core
         private int _nextVariableId;
         private int _nextStepId;
 
-        private IMetadataStorage MetadataStorage { get; }
-        public Metadatas Metadatas => MetadataStorage.Metadatas;
+        private IMetadataCache MetadataCache { get; }
+        private ExecutionContext ExecutionContext  { get; }
+        public Metadatas Metadatas => ExecutionContext.Metadatas;
 
         public event StatusChangedEventHandler StatusChanged;
 
@@ -35,21 +36,21 @@ namespace DataCloner.Core
             _steps = new List<RowIdentifier>();
         }
 
-        public ExecutionPlanBuilder(ConfigurationProject project, CloningContext settings) : this()
+        public ExecutionPlanBuilder(ConfigurationProject project, CloningContext context) : this()
         {
             _queryProxy = new QueryProxy();
-            MetadataStorage = new MetadataStorage();
-            MetadataStorage.LoadMetadata(project, ref _queryProxy, settings);
+            MetadataCache = new MetadataCache();
+            ExecutionContext = MetadataCache.LoadCache(project, context);
         }
-
-        internal ExecutionPlanBuilder(ConfigurationProject project, CloningContext settings, 
-            IQueryProxy queryProxy, IMetadataStorage metadataStorage) : this()
+    
+        internal ExecutionPlanBuilder(ConfigurationProject project, CloningContext context, 
+            IQueryProxy queryProxy, IMetadataCache metadataCache) : this()
         {
             if (queryProxy == null) throw new ArgumentNullException(nameof(queryProxy));
 
-            MetadataStorage = metadataStorage;
             _queryProxy = queryProxy;
-            MetadataStorage.LoadMetadata(project, ref _queryProxy, settings);
+            MetadataCache = metadataCache;
+            ExecutionContext = MetadataCache.LoadCache(project, context);
         }
 
         #region Public methods
@@ -97,7 +98,7 @@ namespace DataCloner.Core
 
             foreach (var srv in destinationSrv)
             {
-                conns.Add(MetadataStorage.ConnectionStrings.First(c => c.Id == srv));
+                conns.Add(MetadataCache.ConnectionStrings.First(c => c.Id == srv));
                 metadata.Add(srv, Metadatas.First(s => s.Key == srv).Value);
             }
 
@@ -171,8 +172,8 @@ namespace DataCloner.Core
                 Schema = riSource.Schema
             };
 
-            if (MetadataStorage.Map.ContainsKey(serverDst))
-                serverDst = MetadataStorage.Map[serverDst];
+            if (MetadataCache.Map.ContainsKey(serverDst))
+                serverDst = MetadataCache.Map[serverDst];
 
             var riReturn = new RowIdentifier
             {
@@ -463,14 +464,14 @@ namespace DataCloner.Core
                 var pkDestinationRow = _keyRelationships.GetKey(job.SourceBaseRowStartPoint);
                 var keyDestinationFkRow = _keyRelationships.GetKey(job.SourceFkRowStartPoint);
 
-                var serverDstBaseTable = MetadataStorage.Map[new SehemaIdentifier
+                var serverDstBaseTable = MetadataCache.Map[new SehemaIdentifier
                 {
                     ServerId = job.SourceBaseRowStartPoint.ServerId,
                     Database = job.SourceBaseRowStartPoint.Database,
                     Schema = job.SourceBaseRowStartPoint.Schema
                 }];
 
-                var serverDstFkTable = MetadataStorage.Map[new SehemaIdentifier
+                var serverDstFkTable = MetadataCache.Map[new SehemaIdentifier
                 {
                     ServerId = job.SourceFkRowStartPoint.ServerId,
                     Database = job.SourceFkRowStartPoint.Database,

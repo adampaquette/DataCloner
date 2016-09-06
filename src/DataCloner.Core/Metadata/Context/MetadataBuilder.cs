@@ -2,6 +2,7 @@
 using DataCloner.Core.Data;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 
@@ -16,9 +17,9 @@ namespace DataCloner.Core.Metadata.Context
         /// <param name="behavior">A behavior for cloning data</param>
         /// <param name="variables">The compiled cascade variables</param>
         /// <returns>The databases metadatas.</returns>
-        public static Metadatas BuildMetadata(IQueryProxy queryProxy, Behavior behavior, HashSet<Variable> variables)
+        public static Metadatas BuildMetadata(Dictionary<short, IDbConnection> connections, Behavior behavior, HashSet<Variable> variables)
         {
-            var metadatas = FetchMetadata(queryProxy);
+            var metadatas = FetchMetadata(connections);
             metadatas.GenerateCommands();
             metadatas.MergeForeignKey(behavior, variables);
             metadatas.GenerateDerivativeTables();
@@ -31,13 +32,16 @@ namespace DataCloner.Core.Metadata.Context
         /// </summary>
         /// <param name="queryProxy">The proxy used to fetch data</param>
         /// <returns>The default metadatas from the databases.</returns>
-        private static Metadatas FetchMetadata(IQueryProxy queryProxy)
+        private static Metadatas FetchMetadata(Dictionary<short, IDbConnection> connections)
         {
             var metadatas = new Metadatas();
 
-            foreach (var ctx in queryProxy.Contexts)
+            foreach (var connection in connections)
             {
-                foreach (var database in queryProxy.GetDatabasesName(ctx.Key))
+
+                var provider = MetadataProviderFactory.GetProvider(connection.ProviderName);
+
+                foreach (var database in provider.GetDatabasesName(connection))
                 {
                     queryProxy.LoadColumns(ctx.Key, database);
                     queryProxy.LoadForeignKeys(ctx.Key, database);

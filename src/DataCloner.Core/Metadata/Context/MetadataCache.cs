@@ -3,6 +3,8 @@ using DataCloner.Core.Data;
 using DataCloner.Core.Framework;
 using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.Common;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -13,32 +15,31 @@ namespace DataCloner.Core.Metadata.Context
     /// <summary>
     /// Represent a file containing all the metadatas used by an execution context.
     /// </summary>
-    public sealed class MetadataStorage : IMetadataStorage
+    public sealed class MetadataCache : IMetadataCache
     {
         public string ConfigFileHash { get; set; }
-        public Dictionary<SehemaIdentifier, SehemaIdentifier> Map { get; set; }
-        public List<SqlConnection> ConnectionStrings { get; set; }
         public Metadatas Metadatas { get; set; }
 
-        public MetadataStorage()
+        private ExecutionContext ExecutionContextCache { get; }
+
+        public MetadataCache()
         {
-            Map = new Dictionary<SehemaIdentifier, SehemaIdentifier>();
-            ConnectionStrings = new List<SqlConnection>();
             Metadatas = new Metadatas();
         }
 
         /// <summary>
         /// Verify if the last build of the container's metadata still match with the current cloning context.
         /// </summary>
-        public void LoadMetadata(ConfigurationProject project, ref IQueryProxy queryProxy, CloningContext context = null)
+        public ExecutionContext LoadCache(ConfigurationProject project, CloningContext context = null)
         {
-            if (queryProxy == null) throw new ArgumentNullException(nameof(queryProxy));
             if (project == null) throw new ArgumentNullException(nameof(project));
             if (project.ConnectionStrings == null || !project.ConnectionStrings.Any())
                 throw new NullReferenceException(nameof(project.ConnectionStrings));
 
             Behavior behavior = null;
             var containerFileName = project.Name + "_";
+            MapFrom mapFrom = null;
+            MapTo mapTo = null;
             
             //Hash the selected map, connnectionStrings and the cloner 
             //configuration to see if it match the lasted builded container
@@ -55,9 +56,13 @@ namespace DataCloner.Core.Metadata.Context
                 if (context.From != null)
                 {
                     //Map
-                    var mapFrom = project.Maps.FirstOrDefault(m => m.Name == context.From);
+                    mapFrom = project.Maps.FirstOrDefault(m => m.Name == context.From);
                     if (mapFrom == null)
-                        throw new Exception($"Map name '{context.From}' not found in configuration file for application '{project.Name}'!");
+                        throw new Exception($"MapFrom name '{context.From}' not found in configuration file for application '{project.Name}'!");
+                    mapTo = mapFrom.MapTos.FirstOrDefault(m => m.Name == context.To);
+                    if (mapTo == null)
+                        throw new Exception($"MapTo name '{context.To}' not found in configuration file for application '{project.Name}'!");
+
                     containerFileName += context.From + "_" + context.To;
                     SerializationHelper.Serialize(configData, mapFrom);
 
@@ -94,29 +99,62 @@ namespace DataCloner.Core.Metadata.Context
             //If container on disk is good, we use it
             else if ((context == null || !context.UseInMemoryCacheOnly) && TryLoadContainerFromFile(containerFileName, currentHash))
             {
-                queryProxy.Init(ConnectionStrings, Metadatas);
+                //queryProxy.Init(ConnectionStrings, Metadatas);
+                InitExecutionContext(project, mapFrom?.Roads, variables);
             }
             //We rebuild the container
             else
             {
                 ConfigFileHash = currentHash;
-                //Copy connection strings
-                foreach (var cs in project.ConnectionStrings)
-                {
-                    ConnectionStrings.Add(
-                        new SqlConnection(cs.Id)
-                        {
-                            ProviderName = cs.ProviderName,
-                            ConnectionString = cs.ConnectionString
-                        });
-                }
+                InitExecutionContext(project, mapFrom?.Roads, variables);
 
-                queryProxy.Init(ConnectionStrings, Metadatas);
-                MetadataBuilder.BuildMetadata(queryProxy, behavior, variables);
+                //queryProxy.Init(ConnectionStrings, Metadatas);
+                MetadataBuilder.BuildMetadata(ExecutionContextCache.DbConnections, behavior, variables);
 
                 Save(containerFileName);
             }
-        }        
+
+            return ExecutionContextCache;
+        }
+
+        private void InitExecutionContext(ConfigurationProject project, List<Road> roads, HashSet<Variable> variables)
+        {
+            //Init connection strings
+            ExecutionContextCache.DbConnections = new Dictionary<short, IDbConnection>();
+            foreach (var conn in project.ConnectionStrings)
+            {
+                var dbConnection = DbProviderFactories.GetFactory(conn.ProviderName).CreateConnection();
+                dbConnection.ConnectionString = conn.ConnectionString;
+                ExecutionContextCache.DbConnections.Add(conn.Id, dbConnection);
+            }
+
+            //Init metadatas
+            ExecutionContextCache.Metadatas = Metadatas;
+
+            //Init maps
+            foreach (var road in roads)
+            {
+                var sourceVar = variables.First(v => v.Name == road.SourceVar);
+                var destinationVar = variables.First(v => v.Name == road.DestinationVar);
+
+                var source = new SehemaIdentifier
+                {
+                    ServerId = sourceVar.Server,
+                    Database = sourceVar.Database,
+                    Schema = sourceVar.Schema
+                };
+
+                var destination = new SehemaIdentifier
+                {
+                    ServerId = destinationVar.Server,
+                    Database = destinationVar.Database,
+                    Schema = destinationVar.Schema
+                };
+
+                if (!ExecutionContextCache.Map.ContainsKey(source))
+                    ExecutionContextCache.Map.Add(source, destination);
+            }
+        }
 
         private bool TryLoadContainerFromFile(string containerFile, string currentConfigHash)
         {
@@ -147,19 +185,19 @@ namespace DataCloner.Core.Metadata.Context
             }
         }
 
-        private static void DeserializeBody(BinaryReader input, MetadataStorage config,
+        private static void DeserializeBody(BinaryReader input, MetadataCache config,
                                             FastAccessList<object> referenceTracking = null)
         {
-            var nbServerMap = input.ReadInt32();
-            for (var i = 0; i < nbServerMap; i++)
-            {
-                var src = SehemaIdentifier.Deserialize(input);
-                var dst = SehemaIdentifier.Deserialize(input);
-                config.Map.Add(src, dst);
-            }
-            var nbConnection = input.ReadInt32();
-            for (var i = 0; i < nbConnection; i++)
-                config.ConnectionStrings.Add(SqlConnection.Deserialize(input));
+            //var nbServerMap = input.ReadInt32();
+            //for (var i = 0; i < nbServerMap; i++)
+            //{
+            //    var src = SehemaIdentifier.Deserialize(input);
+            //    var dst = SehemaIdentifier.Deserialize(input);
+            //    config.Map.Add(src, dst);
+            //}
+            //var nbConnection = input.ReadInt32();
+            //for (var i = 0; i < nbConnection; i++)
+            //    config.ConnectionStrings.Add(SqlConnection.Deserialize(input));
 
             config.Metadatas = Metadatas.Deserialize(input, referenceTracking);
         }
@@ -169,7 +207,7 @@ namespace DataCloner.Core.Metadata.Context
             Serialize(new BinaryWriter(output, Encoding.UTF8, true), referenceTracking);
         }
 
-        public static MetadataStorage Deserialize(Stream input, FastAccessList<object> referenceTracking = null)
+        public static MetadataCache Deserialize(Stream input, FastAccessList<object> referenceTracking = null)
         {
             return Deserialize(new BinaryReader(input, Encoding.UTF8, true));
         }
@@ -178,29 +216,29 @@ namespace DataCloner.Core.Metadata.Context
         {
             output.Write(ConfigFileHash);
 
-            if (Map != null)
-            {
-                output.Write(Map.Count);
-                foreach (var sm in Map)
-                {
-                    sm.Key.Serialize(output);
-                    sm.Value.Serialize(output);
-                }
-            }
-            else
-                output.Write(0);
+            //if (Map != null)
+            //{
+            //    output.Write(Map.Count);
+            //    foreach (var sm in Map)
+            //    {
+            //        sm.Key.Serialize(output);
+            //        sm.Value.Serialize(output);
+            //    }
+            //}
+            //else
+            //    output.Write(0);
 
-            output.Write(ConnectionStrings.Count);
-            foreach (var cs in ConnectionStrings)
-                cs.Serialize(output);
+            //output.Write(ConnectionStrings.Count);
+            //foreach (var cs in ConnectionStrings)
+            //    cs.Serialize(output);
             Metadatas.Serialize(output, referenceTracking);
 
             output.Flush();
         }
 
-        public static MetadataStorage Deserialize(BinaryReader input, FastAccessList<object> referenceTracking = null)
+        public static MetadataCache Deserialize(BinaryReader input, FastAccessList<object> referenceTracking = null)
         {
-            var config = new MetadataStorage { ConfigFileHash = input.ReadString() };
+            var config = new MetadataCache { ConfigFileHash = input.ReadString() };
 
             DeserializeBody(input, config, referenceTracking);
 

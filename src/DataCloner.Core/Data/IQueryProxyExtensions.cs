@@ -34,29 +34,29 @@ namespace DataCloner.Core.Data
 
         #region MetadataProvider
 
-        public static string[] GetDatabasesName(this IQueryProxy dispatcher, short serverId)
-        {
-            var ctx = dispatcher[serverId];
-            return ctx.MetadataProvider.GetDatabasesName(ctx.Connection);
-        }
+        //public static string[] GetDatabasesName(this IQueryProxy dispatcher, short serverId)
+        //{
+        //    var ctx = dispatcher[serverId];
+        //    return ctx.MetadataProvider.GetDatabasesName(ctx.Connection);
+        //}
 
-        public static void LoadColumns(this IQueryProxy dispatcher, short serverId, string database)
-        {
-            var ctx = dispatcher[serverId];
-            ctx.MetadataProvider.LoadColumns(ctx.Connection, ctx.Metadatas, serverId, database);
-        }
+        //public static void LoadColumns(this IQueryProxy dispatcher, short serverId, string database)
+        //{
+        //    var ctx = dispatcher[serverId];
+        //    ctx.MetadataProvider.LoadColumns(ctx.Connection, ctx.Metadatas, serverId, database);
+        //}
 
-        public static void LoadForeignKeys(this IQueryProxy dispatcher, short serverId, string database)
-        {
-            var ctx = dispatcher[serverId];
-            ctx.MetadataProvider.LoadForeignKeys(ctx.Connection, ctx.Metadatas, serverId, database);
-        }
+        //public static void LoadForeignKeys(this IQueryProxy dispatcher, short serverId, string database)
+        //{
+        //    var ctx = dispatcher[serverId];
+        //    ctx.MetadataProvider.LoadForeignKeys(ctx.Connection, ctx.Metadatas, serverId, database);
+        //}
 
-        public static void LoadUniqueKeys(this IQueryProxy dispatcher, short serverId, string database)
-        {
-            var ctx = dispatcher[serverId];
-            ctx.MetadataProvider.LoadUniqueKeys(ctx.Connection, ctx.Metadatas, serverId, database);
-        }
+        //public static void LoadUniqueKeys(this IQueryProxy dispatcher, short serverId, string database)
+        //{
+        //    var ctx = dispatcher[serverId];
+        //    ctx.MetadataProvider.LoadUniqueKeys(ctx.Connection, ctx.Metadatas, serverId, database);
+        //}
 
         #endregion
     }
