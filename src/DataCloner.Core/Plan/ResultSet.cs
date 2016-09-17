@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace DataCloner.Core
+namespace DataCloner.Core.Plan
 {
     public class ResultSet
     {

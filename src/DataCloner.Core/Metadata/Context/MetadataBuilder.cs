@@ -2,7 +2,6 @@
 using DataCloner.Core.Data;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using System.Text;
 
@@ -17,7 +16,7 @@ namespace DataCloner.Core.Metadata.Context
         /// <param name="behavior">A behavior for cloning data</param>
         /// <param name="variables">The compiled cascade variables</param>
         /// <returns>The databases metadatas.</returns>
-        public static Metadatas BuildMetadata(Dictionary<short, IDbConnection> connections, Behavior behavior, HashSet<Variable> variables)
+        public static Metadatas BuildMetadata(List<Connection> connections, Behavior behavior, HashSet<Variable> variables)
         {
             var metadatas = FetchMetadata(connections);
             metadatas.GenerateCommands();
@@ -32,20 +31,22 @@ namespace DataCloner.Core.Metadata.Context
         /// </summary>
         /// <param name="queryProxy">The proxy used to fetch data</param>
         /// <returns>The default metadatas from the databases.</returns>
-        private static Metadatas FetchMetadata(Dictionary<short, IDbConnection> connections)
+        private static Metadatas FetchMetadata(List<Connection> connections)
         {
             var metadatas = new Metadatas();
 
             foreach (var connection in connections)
             {
+                var dbConnection = DbProviderFactories.GetFactory(connection.ProviderName).CreateConnection();
+                dbConnection.ConnectionString = connection.ConnectionString;
 
                 var provider = MetadataProviderFactory.GetProvider(connection.ProviderName);
 
-                foreach (var database in provider.GetDatabasesName(connection))
+                foreach (var database in provider.GetDatabasesName(dbConnection))
                 {
-                    queryProxy.LoadColumns(ctx.Key, database);
-                    queryProxy.LoadForeignKeys(ctx.Key, database);
-                    queryProxy.LoadUniqueKeys(ctx.Key, database);
+                    provider.LoadColumns(dbConnection, metadatas, connection.Id, database);
+                    provider.LoadForeignKeys(dbConnection, metadatas, connection.Id, database);
+                    provider.LoadUniqueKeys(dbConnection, metadatas, connection.Id, database);
                 }
             }
             return metadatas;

@@ -1,5 +1,4 @@
-﻿using DataCloner.Core.Data;
-using DataCloner.Core.Framework;
+﻿using DataCloner.Core.Framework;
 using DataCloner.Core.Internal;
 using DataCloner.Core.Metadata;
 using System;
@@ -9,12 +8,16 @@ using System.Collections.Immutable;
 using DataCloner.Core.Configuration;
 using DataCloner.Core.Metadata.Context;
 using DataBuilder = DataCloner.Core.PlugIn.DataBuilder;
+using DataCloner.Core.Clone;
 
-namespace DataCloner.Core
+namespace DataCloner.Core.Plan
 {
+    /// <summary>
+    /// Class responsible for collecting data on multiples databases to create a blueprint of a desired object.
+    /// It builds a <see cref="Query" that will then be executed on Sql Servers./>
+    /// </summary>
     public class ExecutionPlanBuilder
     {
-        private readonly IQueryProxy _queryProxy;
         private readonly ExecutionPlanByServer _executionPlanByServer;
         private readonly KeyRelationship _keyRelationships;
         private readonly List<CircularKeyJob> _circularKeyJobs;
@@ -22,9 +25,10 @@ namespace DataCloner.Core
         private int _nextVariableId;
         private int _nextStepId;
 
-        private IMetadataCache MetadataCache { get; }
-        private ExecutionContext ExecutionContext  { get; }
-        public Metadatas Metadatas => ExecutionContext.Metadatas;
+        private IExecutionContext ExecutionContext { get; }
+
+        public Metadatas Metadatas => ExecutionContext.ConnectionsContext.Metadatas;
+        public ConnectionsContext ConnectionsContext => ExecutionContext.ConnectionsContext;
 
         public event StatusChangedEventHandler StatusChanged;
 
@@ -36,39 +40,56 @@ namespace DataCloner.Core
             _steps = new List<RowIdentifier>();
         }
 
-        public ExecutionPlanBuilder(ConfigurationProject project, CloningContext context) : this()
+        /// <summary>
+        /// Constructor used for unit tests.
+        /// </summary>
+        /// <param name="project">User configuration influencing the execution plan.</param>
+        /// <param name="cloningContext">Cloning task</param>
+        public ExecutionPlanBuilder(ConfigurationProject project, CloningContext cloningContext) : this()
         {
-            _queryProxy = new QueryProxy();
-            MetadataCache = new MetadataCache();
-            ExecutionContext = MetadataCache.LoadCache(project, context);
+            ExecutionContext = new ExecutionContext();
+            ExecutionContext.Initialize(project, cloningContext);
         }
-    
-        internal ExecutionPlanBuilder(ConfigurationProject project, CloningContext context, 
-            IQueryProxy queryProxy, IMetadataCache metadataCache) : this()
-        {
-            if (queryProxy == null) throw new ArgumentNullException(nameof(queryProxy));
 
-            _queryProxy = queryProxy;
-            MetadataCache = metadataCache;
-            ExecutionContext = MetadataCache.LoadCache(project, context);
+        /// <summary>
+        /// Constructor used for unit tests.
+        /// </summary>
+        /// <param name="project">User configuration influencing the execution plan.</param>
+        /// <param name="cloningContext">Cloning task</param>
+        /// <param name="executionContext">ExecutionContext</param>
+        internal ExecutionPlanBuilder(ConfigurationProject project, CloningContext cloningContext, ExecutionContext executionContext) : this()
+        {
+            if (executionContext == null) throw new ArgumentNullException(nameof(executionContext));
+
+            ExecutionContext = executionContext;
+            ExecutionContext.Initialize(project, cloningContext);
         }
 
         #region Public methods
 
-        public ExecutionPlanBuilder Append(RowIdentifier riSource, bool getDerivatives = true)
+        /// <summary>
+        /// Append a blueprint of the desired object to the execution plan.
+        /// </summary>
+        /// <param name="sourceData">Source data representing 0 to N rows.</param>
+        /// <param name="getDerivatives">If set to 1 the Sql data referencing the <see cref="sourceData"/> will be collected.</param>
+        /// <returns>A reference to this <see cref="ExecutionPlanBuilder"/>.</returns>
+        public ExecutionPlanBuilder Append(RowIdentifier sourceData, bool getDerivatives = true)
         {
-            if (riSource == null) throw new ArgumentNullException(nameof(riSource));
+            if (sourceData == null) throw new ArgumentNullException(nameof(sourceData));
 
-            _steps.Add(riSource);
+            _steps.Add(sourceData);
             var rowsGenerating = new Stack<RowIdentifier>();
-            rowsGenerating.Push(riSource);
+            rowsGenerating.Push(sourceData);
 
-            BuildExecutionPlan(riSource, getDerivatives, false, 0, rowsGenerating);
+            BuildExecutionPlan(sourceData, getDerivatives, false, 0, rowsGenerating);
             BuildCircularReferencesPlan();
 
             return this;
         }
 
+        /// <summary>
+        /// Used for regenerating data. Lighten the memory footprint.
+        /// </summary>
         public void Clear()
         {
             _executionPlanByServer.Clear();
@@ -81,7 +102,7 @@ namespace DataCloner.Core
         }
 
         /// <summary>
-        /// Compile the execution plan with default values.
+        /// Produce a <see cref="Query"/> that can be executed, saved and loaded endlessly.
         /// </summary>
         /// <returns>An executable query.</returns>
         public Query Compile()
@@ -89,7 +110,7 @@ namespace DataCloner.Core
             OptimizeExecutionPlans(_executionPlanByServer);
 
             //Purify
-            var conns = new List<SqlConnection>();
+            var conns = new List<Connection>();
             var metadata = new Metadatas();
 
             var destinationSrv = (from server in _executionPlanByServer
@@ -98,17 +119,21 @@ namespace DataCloner.Core
 
             foreach (var srv in destinationSrv)
             {
-                conns.Add(MetadataCache.ConnectionStrings.First(c => c.Id == srv));
+                conns.Add(ConnectionsContext.Connections.Keys.First(c => c.Id == srv));
                 metadata.Add(srv, Metadatas.First(s => s.Key == srv).Value);
             }
 
-            return new Query(metadata, _executionPlanByServer, conns.ToImmutableHashSet(), Query.CurrentFormatVersion);
+            return new Query(ConnectionsContext, _executionPlanByServer, Query.CurrentFormatVersion);
         }
 
         #endregion
 
         #region Private methods
 
+        /// <summary>
+        /// Optimize the execution plan by removing unnescessary data.
+        /// </summary>
+        /// <param name="plans">Execution plan to optimize.</param>
         private static void OptimizeExecutionPlans(Dictionary<short, ExecutionPlan> plans)
         {
             var data = new List<object>();
@@ -149,48 +174,48 @@ namespace DataCloner.Core
         }
 
         /// <summary>
-        /// Build execution plan for the specific source row to be able to clone blazing fast.
+        /// Build an execution plan for the specified data source for blazing fast performance.
         /// </summary>
-        /// <param name="riSource">Identify a single or multiples plan to clone.</param>
-        /// <param name="getDerivatives">Specify if we clone data related to the input(s) line(s) from other tables.</param>
+        /// <param name="sourceRow">Identify a single or multiples rows to clone.</param>
+        /// <param name="getDerivatives">When true the data related to the input(s) line(s) from other tables will be cloned.</param>
         /// <param name="shouldReturnFk">Indicate that a source row should only return a single line.</param>
         /// <param name="level">Current recursion level.</param>
         /// <param name="rowsGenerating">Current stack to handle circular foreign keys.</param>
         /// <returns>Always return the primary key of the source row, same if the value queried is a foreign key.</returns>
-        private RowIdentifier BuildExecutionPlan(RowIdentifier riSource, bool getDerivatives, bool shouldReturnFk, int level,
+        private RowIdentifier BuildExecutionPlan(RowIdentifier sourceRow, bool getDerivatives, bool shouldReturnFk, int level,
                                                  Stack<RowIdentifier> rowsGenerating)
         {
-            var srcRows = _queryProxy.Select(riSource);
+            var srcRows = ConnectionsContext.Select(sourceRow);
             var nbRows = srcRows.Length;
-            var table = Metadatas.GetTable(riSource);
+            var table = Metadatas.GetTable(sourceRow);
 
             //By default the destination server is the source if no road is found.
             var serverDst = new SehemaIdentifier
             {
-                ServerId = riSource.ServerId,
-                Database = riSource.Database,
-                Schema = riSource.Schema
+                ServerId = sourceRow.ServerId,
+                Database = sourceRow.Database,
+                Schema = sourceRow.Schema
             };
 
-            if (MetadataCache.Map.ContainsKey(serverDst))
-                serverDst = MetadataCache.Map[serverDst];
+            if (ExecutionContext.Map.ContainsKey(serverDst))
+                serverDst = ExecutionContext.Map[serverDst];
 
             var riReturn = new RowIdentifier
             {
                 ServerId = serverDst.ServerId,
                 Database = serverDst.Database,
                 Schema = serverDst.Schema,
-                Table = riSource.Table
+                Table = sourceRow.Table
             };
             var tiDestination = new TableIdentifier
             {
                 ServerId = serverDst.ServerId,
                 Database = serverDst.Database,
                 Schema = serverDst.Schema,
-                Table = riSource.Table
+                Table = sourceRow.Table
             };
 
-            LogStatusChanged(riSource, level);
+            LogStatusChanged(sourceRow, level);
 
             if (shouldReturnFk && nbRows > 1)
                 throw new Exception("The foreignkey is not unique!");
@@ -203,7 +228,7 @@ namespace DataCloner.Core
 
                 //Si ligne déjà enregistrée
                 var dstKey = _keyRelationships.GetKey(serverDst.ServerId, serverDst.Database,
-                                                      serverDst.Schema, riSource.Table, srcKey);
+                                                      serverDst.Schema, sourceRow.Table, srcKey);
                 if (dstKey != null)
                 {
                     if (shouldReturnFk)
@@ -243,7 +268,7 @@ namespace DataCloner.Core
                         if (fkTable.IsStatic)
                         {
                             //TODO : Tester si la FK existe dans la table de destination de clônage et non si la fk existe dans la bd source
-                            var fkRow = _queryProxy.Select(riFk);
+                            var fkRow = ConnectionsContext.Select(riFk);
                             fkDestinationExists = fkRow.Length == 1;
 
                             if (fkRow.Length > 1)
@@ -273,10 +298,10 @@ namespace DataCloner.Core
                                 {
                                     SourceBaseRowStartPoint = new RowIdentifier
                                     {
-                                        ServerId = riSource.ServerId,
-                                        Database = riSource.Database,
-                                        Schema = riSource.Schema,
-                                        Table = riSource.Table,
+                                        ServerId = sourceRow.ServerId,
+                                        Database = sourceRow.Database,
+                                        Schema = sourceRow.Schema,
+                                        Table = sourceRow.Table,
                                         Columns = table.BuildPkFromDataRow(currentRow)
                                     },
                                     SourceFkRowStartPoint = riFk,
@@ -299,11 +324,11 @@ namespace DataCloner.Core
                     }
                 }
 
-                var step = CreateExecutionStep(riSource, tiDestination, table, destinationRow, level);
+                var step = CreateExecutionStep(sourceRow, tiDestination, table, destinationRow, level);
 
                 //Sauve la PK dans la cache
                 dstKey = table.BuildRawPkFromDataRow(step.Datarow);
-                _keyRelationships.SetKey(riSource.ServerId, riSource.Database, riSource.Schema, riSource.Table, srcKey, dstKey);
+                _keyRelationships.SetKey(sourceRow.ServerId, sourceRow.Database, sourceRow.Schema, sourceRow.Table, srcKey, dstKey);
 
                 //Ajouter les colonnes de contrainte unique dans _keyRelationships
                 //...
@@ -441,7 +466,7 @@ namespace DataCloner.Core
                     Columns = sourceTable.BuildDerivativePk(tableDt, sourceRow)
                 };
 
-                var rows = _queryProxy.Select(riDt);
+                var rows = ConnectionsContext.Select(riDt);
 
                 //Pour chaque ligne dérivée de la table source
                 foreach (var row in rows)
@@ -464,14 +489,14 @@ namespace DataCloner.Core
                 var pkDestinationRow = _keyRelationships.GetKey(job.SourceBaseRowStartPoint);
                 var keyDestinationFkRow = _keyRelationships.GetKey(job.SourceFkRowStartPoint);
 
-                var serverDstBaseTable = MetadataCache.Map[new SehemaIdentifier
+                var serverDstBaseTable = ExecutionContext.Map[new SehemaIdentifier
                 {
                     ServerId = job.SourceBaseRowStartPoint.ServerId,
                     Database = job.SourceBaseRowStartPoint.Database,
                     Schema = job.SourceBaseRowStartPoint.Schema
                 }];
 
-                var serverDstFkTable = MetadataCache.Map[new SehemaIdentifier
+                var serverDstFkTable = ExecutionContext.Map[new SehemaIdentifier
                 {
                     ServerId = job.SourceFkRowStartPoint.ServerId,
                     Database = job.SourceFkRowStartPoint.Database,

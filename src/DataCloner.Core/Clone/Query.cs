@@ -1,45 +1,39 @@
-﻿using DataCloner.Core.Data;
+﻿using DataCloner.Core.Configuration;
 using DataCloner.Core.Framework;
 using DataCloner.Core.Internal;
 using DataCloner.Core.Metadata;
 using DataCloner.Core.Metadata.Context;
+using DataCloner.Core.Plan;
 //using LZ4;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DataCloner.Core
+namespace DataCloner.Core.Clone
 {
     public class Query
     {
         public const int CurrentFormatVersion = 1;
 
-        private readonly IQueryProxy _dispatcher;
-        private readonly Metadatas _metadata;
+        private readonly ConnectionsContext _connectionsContext;
         private readonly ExecutionPlanByServer _executionPlanByServer;
 
         public int FormatVersion { get; set; }
 
         public string Description { get; set; }
 
-        public ImmutableHashSet<SqlConnection> Connections { get; }
-
         public bool EnforceIntegrity { get; set; }
 
         public event QueryCommitingEventHandler Commiting;
 
-        internal Query(Metadatas metadata,
+        internal Query(ConnectionsContext connectionsContext,
             ExecutionPlanByServer executionPlanByServer,
-            ImmutableHashSet<SqlConnection> connections, 
             int formatVersion)
         {
-            _metadata = metadata;
+            _connectionsContext = connectionsContext;
             _executionPlanByServer = executionPlanByServer;
-            Connections = connections;
-            _dispatcher = new QueryProxy();
-            _dispatcher.Init(connections, metadata);
             FormatVersion = formatVersion;
         }
 
@@ -59,9 +53,9 @@ namespace DataCloner.Core
             ResetExecutionPlan(_executionPlanByServer);
             Parallel.ForEach(_executionPlanByServer, a =>
             {
-                var ctx = _dispatcher[a.Key];
+                var ctx = _connectionsContext[a.Key];
                 ctx.QueryProvider.QueryCommmiting += Commiting;
-                ctx.QueryProvider.Execute(ctx.Connection, ctx.Metadatas, a.Value);
+                ctx.QueryProvider.Execute(ctx.Connection, _connectionsContext.Metadatas, a.Value);
                 ctx.QueryProvider.QueryCommmiting -= Commiting;
             });
 
@@ -80,7 +74,7 @@ namespace DataCloner.Core
             var refStream = new MemoryStream();
 
             _executionPlanByServer.Serialize(refStream, referenceTracking);
-            _metadata.Serialize(refStream, referenceTracking);
+            _connectionsContext.Metadatas.Serialize(refStream, referenceTracking);
 
             ////Compression
             //using (var lzStream = new LZ4Stream(ostream, LZ4StreamMode.Compress))
@@ -99,7 +93,7 @@ namespace DataCloner.Core
                 bstream.Write(FormatVersion);
                 bstream.Write(Description ?? "");
                 SerializeReferenceTracking(bstream, referenceTracking);
-                SerializeConnections(bstream, Connections);
+                SerializeConnections(bstream, _connectionsContext.Connections.Keys.ToList());
                 refStream.WriteTo(ostream);
             }
         }
@@ -111,7 +105,7 @@ namespace DataCloner.Core
 
             int formatVersion;
             string description;
-            HashSet<SqlConnection> connections;
+            HashSet<Connection> connections;
             Metadatas metadata;
             ExecutionPlanByServer executionPlanByServer;
             FastAccessList<object> referenceTracking;
@@ -139,7 +133,11 @@ namespace DataCloner.Core
                 metadata = Metadatas.Deserialize(bstream, referenceTracking);
             }
 
-            return new Query(metadata, executionPlanByServer, connections.ToImmutableHashSet(), formatVersion)
+            //Initialize a connection context with values used at the time of the creation of the clone.
+            var connectionsContext = new ConnectionsContext();
+            connectionsContext.Initialize(connections.ToList(), metadata);
+
+            return new Query(connectionsContext, executionPlanByServer, formatVersion)
             {
                 Description = description
             };
@@ -185,20 +183,20 @@ namespace DataCloner.Core
             return referenceTracking;
         }
 
-        private static void SerializeConnections(BinaryWriter output, ImmutableHashSet<SqlConnection> conns)
+        private static void SerializeConnections(BinaryWriter output, List<Connection> conns)
         {
             output.Write(conns.Count);
             foreach (var con in conns)
                 con.Serialize(output);
         }
 
-        private static HashSet<SqlConnection> DeserializeConnections(BinaryReader input)
+        private static HashSet<Connection> DeserializeConnections(BinaryReader input)
         {
-            var lstConns = new List<SqlConnection>();
+            var lstConns = new List<Connection>();
             var nbCons = input.ReadInt32();
             for (var i = 0; i < nbCons; i++)
-                lstConns.Add(SqlConnection.Deserialize(input));
-            return new HashSet<SqlConnection>(lstConns);
+                lstConns.Add(Connection.Deserialize(input));
+            return new HashSet<Connection>(lstConns);
         }
 
         /// <summary>

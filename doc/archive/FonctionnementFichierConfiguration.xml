@@ -30,7 +30,7 @@ Query.cs
 1 - On sauvegarde la destination par défaut donc si on reclone vers la même destination, on a qu'à regénérer les variables.
     Dans le cas qu'on choisi une destination différente, on peut ou non à la demande de l'utilisateur vérifier que le chéma de destination n'a pas changer.
 2 - Si on change de destination et que l'on demande la vérification des shémas.
-    2.1 - On obtient les shémas de destination des endpoints de la nouvelle map.
+    2.1 - On obtient les shémas de destination des endpoints de la nouvelle mapTo.
     2.2 - Si une colonne c'est ajoutée, on met la valeur par défaut du type. Il faut réajuster tous les tableaux de datas des InsertsSteps.
     3.3 - Si une colonne est supprimé, on supprime l'élément des tous les tableaux de datas des InsertsSteps.
 3 - On a besoin des metadatas source dans le fichier. On obtiendra les metadatas destination au runtime pour s'assurer qu'il n'y a pas eu de changements à la BD.

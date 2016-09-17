@@ -1,34 +1,33 @@
-﻿using DataCloner.Core.Internal;
-
-namespace DataCloner.Core.Data
+﻿namespace DataCloner.Core
 {
-    internal static class QueryProxyExtensions
+    public static class ConnectionsContextExtensions
     {
         #region QueryProvider
 
-        public static object[][] Select(this IQueryProxy dispatcher, RowIdentifier row)
+        public static object[][] Select(this ConnectionsContext connectionsContext, RowIdentifier row)
         {
-            var ctx = dispatcher[row];
-            return ctx.QueryProvider.Select(ctx.Connection, ctx.Metadatas, row);
+            var ctx = connectionsContext[row];
+            return ctx.QueryProvider.Select(ctx.Connection, connectionsContext.Metadatas, row);
         }
 
-        public static void EnforceIntegrityCheck(this IQueryProxy dispatcher, SehemaIdentifier schema, bool active)
-        {
-            var ctx = dispatcher[schema];
-            ctx.QueryProvider.EnforceIntegrityCheck(ctx.Connection, active);
-        }
 
-        public static void Execute(this IQueryProxy dispatcher, SehemaIdentifier schema, ExecutionPlan plan)
-        {
-            var ctx = dispatcher[schema];
-            ctx.QueryProvider.Execute(ctx.Connection, ctx.Metadatas, plan);
-        }
+        //public static void EnforceIntegrityCheck(this IQueryProxy dispatcher, SehemaIdentifier schema, bool active)
+        //{
+        //    var ctx = dispatcher[schema];
+        //    ctx.QueryProvider.EnforceIntegrityCheck(ctx.Connection, active);
+        //}
 
-        public static object GetLastInsertedPk(this IQueryProxy dispatcher, short serverId)
-        {
-            var ctx = dispatcher[serverId];
-            return ctx.QueryProvider.GetLastInsertedPk(ctx.Connection);
-        }
+        //public static void Execute(this IQueryProxy dispatcher, SehemaIdentifier schema, ExecutionPlan plan)
+        //{
+        //    var ctx = dispatcher[schema];
+        //    ctx.QueryProvider.Execute(ctx.Connection, ctx.Metadatas, plan);
+        //}
+
+        //public static object GetLastInsertedPk(this IQueryProxy dispatcher, short serverId)
+        //{
+        //    var ctx = dispatcher[serverId];
+        //    return ctx.QueryProvider.GetLastInsertedPk(ctx.Connection);
+        //}
 
         #endregion
 

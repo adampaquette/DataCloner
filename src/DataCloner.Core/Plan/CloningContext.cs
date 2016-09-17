@@ -1,4 +1,4 @@
-﻿namespace DataCloner.Core
+﻿namespace DataCloner.Core.Plan
 {
     public class CloningContext
     {

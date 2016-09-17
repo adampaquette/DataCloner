@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
+using System.Text;
 using System.Xml.Serialization;
 
 namespace DataCloner.Core.Configuration
@@ -45,6 +47,28 @@ namespace DataCloner.Core.Configuration
         public override int GetHashCode()
         {
             return Id.GetHashCode();
+        }
+
+        public void Serialize(Stream stream)
+        {
+            Serialize(new BinaryWriter(stream, Encoding.UTF8, true));
+        }
+
+        public static Connection Deserialize(Stream stream)
+        {
+            return Deserialize(new BinaryReader(stream, Encoding.UTF8, true));
+        }
+
+        public void Serialize(BinaryWriter stream)
+        {
+            stream.Write(Id);
+            stream.Write(ProviderName);
+            stream.Write(ConnectionString);
+        }
+
+        public static Connection Deserialize(BinaryReader stream)
+        {
+            return new Connection(stream.ReadInt16(), null, stream.ReadString(),stream.ReadString());
         }
     }
 }

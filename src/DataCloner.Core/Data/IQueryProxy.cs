@@ -1,16 +1,17 @@
-﻿using DataCloner.Core.Metadata.Context;
+﻿using DataCloner.Core.Configuration;
+using DataCloner.Core.Metadata.Context;
 using System.Collections.Generic;
 
 namespace DataCloner.Core.Data
 {
     public interface IQueryProxy
     {
-        Dictionary<short, ConnectionContext> Contexts { get; }
+        Dictionary<short, ConnectionsContext> Contexts { get; }
 
-        ConnectionContext this[SehemaIdentifier server] { get; }
+        ConnectionsContext this[SehemaIdentifier server] { get; }
 
-        ConnectionContext this[short server] { get; }
+        ConnectionsContext this[short server] { get; }
 
-        void Init(IEnumerable<SqlConnection> connections, Metadatas contextMetadata);
+        void Init(IEnumerable<Connection> connections, Metadatas contextMetadata);
     }
 }
