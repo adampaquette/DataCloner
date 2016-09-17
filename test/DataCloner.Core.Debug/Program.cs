@@ -20,6 +20,14 @@ namespace DataCloner.Core.Debug
 
                     epb.CloningDependencies_With_DefaultConfig(conn);
                     epb.CloningDerivatives_With_GlobalAccessDenied(conn);
+                    epb.CloningDerivatives_With_GlobalAccessForced(conn);
+                    epb.CloningDerivatives_With_DerivativeSubTableAccessForced(conn);
+                    epb.CloningDerivatives_With_DerivativeSubTableAccessDenied(conn);
+                    epb.Cloning_With_StaticTable(conn);
+                    epb.Cloning_Should_NotCloneDerivativeOfDependancy(conn);
+                    epb.Cloning_With_ForeignKeyAdd(conn);
+                    epb.Cloning_With_ForeignKeyRemove(conn);
+                    epb.Cloning_With_DataBuilder(conn);
                 }
 
                 CreateConfiguration();

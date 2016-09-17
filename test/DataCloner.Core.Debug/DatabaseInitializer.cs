@@ -14,10 +14,10 @@ namespace DataCloner.Core.IntegrationTests
             Connections = new List<object[]>
             {
                 new object[] { CreateMsSqlDatabase() },
-                //new object[] { CreateMsSqlDatabaseAutoIncrement() }
-                //new object[] { CreatePostgreSqlDatabase() },
-                //new object[] { CreateMySqlDatabase() },
-                //new object[] { CreateMySqlDatabaseAutoIncrement() }
+                new object[] { CreateMsSqlDatabaseAutoIncrement() },
+                new object[] { CreatePostgreSqlDatabase() },
+                new object[] { CreateMySqlDatabase() },
+                new object[] { CreateMySqlDatabaseAutoIncrement() }
             };
         }
 

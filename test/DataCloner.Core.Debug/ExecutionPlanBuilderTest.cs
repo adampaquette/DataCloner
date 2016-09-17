@@ -2,11 +2,16 @@
 using DataCloner.Core.Configuration;
 using Xunit;
 using DataCloner.Core.Plan;
+using DataCloner.Core.IntegrationTests;
+using System.Data;
 
 namespace DataCloner.Core.Debug
 {
     public class ExecutionPlanBuilderTest
     {
+        public static IEnumerable<object[]> DbEngineToTest => DatabaseInitializer.Connections;
+
+        [Theory, MemberData(nameof(DbEngineToTest))]
         public void CloningDependencies_With_DefaultConfig(Connection conn)
         {
             //Arrange
@@ -76,11 +81,11 @@ namespace DataCloner.Core.Debug
             Assert.True(Utils.ScrambledEquals(clonedData, expectedData, RowIdentifierComparer.OrdinalIgnoreCase));
         }
 
+        [Theory, MemberData(nameof(DbEngineToTest))]
         public void CloningDerivatives_With_GlobalAccessDenied(Connection conn)
         {
             //Arrange
             var project = Utils.MakeDefaultProject(conn);
-
             project.Templates[0].Tables.Add(new Table
             {
                 Name = "Album",
@@ -145,6 +150,583 @@ namespace DataCloner.Core.Debug
             };
 
             Assert.True(Utils.ScrambledEquals(clonedData, expectedData, RowIdentifierComparer.OrdinalIgnoreCase));
+        }
+
+        [Theory, MemberData(nameof(DbEngineToTest))]
+        public void CloningDerivatives_With_GlobalAccessForced(Connection conn)
+        {
+            //Arrange
+            var project = Utils.MakeDefaultProject(conn);
+            project.Templates[0].Tables.AddRange(new List<Table>
+            {
+                new Table
+                {
+                    Name = "Album",
+                    DerativeTableGlobal = new DerivativeTableGlobal
+                    {
+                        GlobalAccess = DerivativeTableAccess.Denied
+                    }
+                },
+                new Table
+                {
+                    Name = "Artist",
+                    DerativeTableGlobal = new DerivativeTableGlobal
+                    {
+                        GlobalAccess = DerivativeTableAccess.Forced
+                    }
+                }
+            });
+
+            var executionPlanBuilder = new ExecutionPlanBuilder(project, Utils.MakeDefaultContext());
+
+            var source = new RowIdentifier
+            {
+                ServerId = conn.Id,
+                Database = Utils.TestDatabase(conn),
+                Schema = Utils.TestSchema(conn),
+                Table = "Artist",
+                Columns = new ColumnsWithValue { { "ArtistId", 1 } }
+            };
+
+            var clonedData = new List<RowIdentifier>();
+            executionPlanBuilder.StatusChanged += (s, e) =>
+            {
+                if (e.Status == Status.Cloning)
+                    clonedData.Add(e.SourceRow);
+            };
+
+            //Act
+            var query = executionPlanBuilder.Append(source, false).Compile();
+            query.Execute();
+            query.Commiting += (s, e) => e.Cancel = true;
+
+            //Assert
+            var expectedData = new List<RowIdentifier>
+            {
+                new RowIdentifier
+                {
+                     ServerId = conn.Id,
+                     Database = Utils.TestDatabase(conn),
+                     Schema = Utils.TestSchema(conn),
+                     Table = "Artist",
+                     Columns = new ColumnsWithValue { { "ArtistId", 1 } }
+                },
+                new RowIdentifier
+                {
+                     ServerId = conn.Id,
+                     Database = Utils.TestDatabase(conn),
+                     Schema = Utils.TestSchema(conn),
+                     Table = "Album",
+                     Columns = new ColumnsWithValue { { "AlbumId", 1 } }
+                },
+                new RowIdentifier
+                {
+                     ServerId = conn.Id,
+                     Database = Utils.TestDatabase(conn),
+                     Schema = Utils.TestSchema(conn),
+                     Table = "Album",
+                     Columns = new ColumnsWithValue { { "AlbumId", 4 } }
+                }
+            };
+
+            Assert.True(Utils.ScrambledEquals(clonedData, expectedData, RowIdentifierComparer.OrdinalIgnoreCase));
+        }
+
+        [Theory, MemberData(nameof(DbEngineToTest))]
+        public void CloningDerivatives_With_DerivativeSubTableAccessForced(Connection conn)
+        {
+            //Arrange
+            var project = Utils.MakeDefaultProject(conn);
+            project.Templates[0].Tables.AddRange(new List<Table>
+            {
+                new Table
+                {
+                    Name = "Album",
+                    DerativeTableGlobal = new DerivativeTableGlobal
+                    {
+                        GlobalAccess = DerivativeTableAccess.Denied
+                    }
+                },
+                new Table
+                {
+                    Name = "Artist",
+                    DerativeTableGlobal = new DerivativeTableGlobal
+                    {
+                        GlobalAccess = DerivativeTableAccess.Forced,
+                        DerivativeTables =  new List<DerivativeTable>
+                        {
+                            new DerivativeTable
+                            {
+                                DestinationVar = "chinookFrom",
+                                Name = "Album",
+                                Access = DerivativeTableAccess.Forced
+                            }
+                        }
+                    }
+                }
+            });
+
+            var executionPlanBuilder = new ExecutionPlanBuilder(project, Utils.MakeDefaultContext());
+            var source = new RowIdentifier
+            {
+                ServerId = conn.Id,
+                Database = Utils.TestDatabase(conn),
+                Schema = Utils.TestSchema(conn),
+                Table = "Artist",
+                Columns = new ColumnsWithValue { { "ArtistId", 1 } }
+            };
+
+            var clonedData = new List<RowIdentifier>();
+            executionPlanBuilder.StatusChanged += (s, e) =>
+            {
+                if (e.Status == Status.Cloning)
+                    clonedData.Add(e.SourceRow);
+            };
+
+            //Act
+            var query = executionPlanBuilder.Append(source, false).Compile();
+            query.Execute();
+            query.Commiting += (s, e) => e.Cancel = true;
+
+            //Assert
+            var expectedData = new List<RowIdentifier>
+            {
+                new RowIdentifier
+                {
+                     ServerId = conn.Id,
+                     Database = Utils.TestDatabase(conn),
+                     Schema = Utils.TestSchema(conn),
+                     Table = "Artist",
+                     Columns = new ColumnsWithValue { { "ArtistId", 1 } }
+                },
+                new RowIdentifier
+                {
+                     ServerId = conn.Id,
+                     Database = Utils.TestDatabase(conn),
+                     Schema = Utils.TestSchema(conn),
+                     Table = "Album",
+                     Columns = new ColumnsWithValue { { "AlbumId", 1 } }
+                },
+                new RowIdentifier
+                {
+                     ServerId = conn.Id,
+                     Database = Utils.TestDatabase(conn),
+                     Schema = Utils.TestSchema(conn),
+                     Table = "Album",
+                     Columns = new ColumnsWithValue { { "AlbumId", 4 } }
+                }
+            };
+
+            Assert.True(Utils.ScrambledEquals(clonedData, expectedData, RowIdentifierComparer.OrdinalIgnoreCase));
+        }
+
+        [Theory, MemberData(nameof(DbEngineToTest))]
+        public void CloningDerivatives_With_DerivativeSubTableAccessDenied(Connection conn)
+        {
+            //Arrange
+            var project = Utils.MakeDefaultProject(conn);
+            project.Templates[0].Tables.AddRange(new List<Table>
+            {
+                new Table
+                {
+                    Name = "Artist",
+                    DerativeTableGlobal = new DerivativeTableGlobal
+                    {
+                        GlobalAccess = DerivativeTableAccess.Forced,
+                        DerivativeTables = new List<DerivativeTable>
+                        {
+                            new DerivativeTable
+                            {
+                                DestinationVar = "chinookFrom",
+                                Name = "Album",
+                                Access = DerivativeTableAccess.Denied
+                            }
+                        }
+                    }
+                }
+            });
+
+            var executionPlanBuilder = new ExecutionPlanBuilder(project, Utils.MakeDefaultContext());
+            var source = new RowIdentifier
+            {
+                ServerId = conn.Id,
+                Database = Utils.TestDatabase(conn),
+                Schema = Utils.TestSchema(conn),
+                Table = "Artist",
+                Columns = new ColumnsWithValue { { "ArtistId", 1 } }
+            };
+
+            var clonedData = new List<RowIdentifier>();
+            executionPlanBuilder.StatusChanged += (s, e) =>
+            {
+                if (e.Status == Status.Cloning)
+                    clonedData.Add(e.SourceRow);
+            };
+
+            //Act
+            var query = executionPlanBuilder.Append(source, true).Compile();
+            query.Execute();
+            query.Commiting += (s, e) => e.Cancel = true;
+
+            //Assert
+            var expectedData = new List<RowIdentifier>
+            {
+                new RowIdentifier
+                {
+                     ServerId = conn.Id,
+                     Database = Utils.TestDatabase(conn),
+                     Schema = Utils.TestSchema(conn),
+                     Table = "Artist",
+                     Columns = new ColumnsWithValue { { "ArtistId", 1 } }
+                }
+            };
+
+            Assert.True(Utils.ScrambledEquals(clonedData, expectedData, RowIdentifierComparer.OrdinalIgnoreCase));
+        }
+
+        [Theory, MemberData(nameof(DbEngineToTest))]
+        public void Cloning_With_StaticTable(Connection conn)
+        {
+            //Arrange
+            var project = Utils.MakeDefaultProject(conn);
+            project.Templates[0].Tables.AddRange(new List<Table>
+            {
+                new Table
+                {
+                    Name = "Artist",
+                    IsStatic = NullableBool.True
+                }
+            });
+            var executionPlanBuilder = new ExecutionPlanBuilder(project, Utils.MakeDefaultContext());
+
+            var source = new RowIdentifier
+            {
+                ServerId = conn.Id,
+                Database = Utils.TestDatabase(conn),
+                Schema = Utils.TestSchema(conn),
+                Table = "Album",
+                Columns = new ColumnsWithValue { { "AlbumId", 1 } }
+            };
+
+            var clonedData = new List<RowIdentifier>();
+            executionPlanBuilder.StatusChanged += (s, e) =>
+            {
+                if (e.Status == Status.Cloning)
+                    clonedData.Add(e.SourceRow);
+            };
+
+            //Act
+            var query = executionPlanBuilder.Append(source, false).Compile();
+            query.Commiting += (s, e) => e.Cancel = true;
+            query.Execute();
+
+            //Assert
+            var expectedData = new List<RowIdentifier>
+            {
+                new RowIdentifier
+                {
+                     ServerId = conn.Id,
+                     Database = Utils.TestDatabase(conn),
+                     Schema = Utils.TestSchema(conn),
+                     Table = "Album",
+                     Columns = new ColumnsWithValue { { "AlbumId", 1 } }
+                }
+            };
+
+            Assert.True(Utils.ScrambledEquals(clonedData, expectedData, RowIdentifierComparer.OrdinalIgnoreCase));
+        }
+
+        [Theory, MemberData(nameof(DbEngineToTest))]
+        public void Cloning_Should_NotCloneDerivativeOfDependancy(Connection conn)
+        {
+            //Arrange
+            var project = Utils.MakeDefaultProject(conn);
+            var executionPlanBuilder = new ExecutionPlanBuilder(project, Utils.MakeDefaultContext());
+
+            var source = new RowIdentifier
+            {
+                ServerId = conn.Id,
+                Database = Utils.TestDatabase(conn),
+                Schema = Utils.TestSchema(conn),
+                Table = "PlaylistTrack",
+                Columns = new ColumnsWithValue
+                {
+                    { "PlaylistId", 1 },
+                    { "TrackId", 1 }
+                }
+            };
+
+            var clonedData = new List<RowIdentifier>();
+            executionPlanBuilder.StatusChanged += (s, e) =>
+            {
+                if (e.Status == Status.Cloning)
+                    clonedData.Add(e.SourceRow);
+            };
+
+            //Act
+            var query = executionPlanBuilder.Append(source, false).Compile();
+            query.Execute();
+            query.Commiting += (s, e) => e.Cancel = true;
+
+            //Assert
+            var expectedData = new List<RowIdentifier>
+            {
+                new RowIdentifier
+                {
+                    ServerId = conn.Id,
+                    Database = Utils.TestDatabase(conn),
+                    Schema = Utils.TestSchema(conn),
+                    Table = "PlaylistTrack",
+                    Columns = new ColumnsWithValue
+                    {
+                        { "PlaylistId", 1 },
+                        { "TrackId", 1 }
+                    }
+                },
+                new RowIdentifier
+                {
+                    ServerId = conn.Id,
+                    Database = Utils.TestDatabase(conn),
+                    Schema = Utils.TestSchema(conn),
+                    Table = "Playlist",
+                    Columns = new ColumnsWithValue { { "PlaylistId", 1} }
+                },
+                new RowIdentifier
+                {
+                    ServerId = conn.Id,
+                    Database = Utils.TestDatabase(conn),
+                    Schema = Utils.TestSchema(conn),
+                    Table = "Track",
+                    Columns = new ColumnsWithValue { { "TrackId", 1} }
+                },
+                new RowIdentifier
+                {
+                    ServerId = conn.Id,
+                    Database = Utils.TestDatabase(conn),
+                    Schema = Utils.TestSchema(conn),
+                    Table = "Album",
+                    Columns = new ColumnsWithValue { { "AlbumId", 1} }
+                },
+                new RowIdentifier
+                {
+                    ServerId = conn.Id,
+                    Database = Utils.TestDatabase(conn),
+                    Schema = Utils.TestSchema(conn),
+                    Table = "Artist",
+                    Columns = new ColumnsWithValue { { "ArtistId", 1} }
+                },
+                new RowIdentifier
+                {
+                    ServerId = conn.Id,
+                    Database = Utils.TestDatabase(conn),
+                    Schema = Utils.TestSchema(conn),
+                    Table = "Genre",
+                    Columns = new ColumnsWithValue { { "GenreId", 1} }
+                },
+                new RowIdentifier
+                {
+                    ServerId = conn.Id,
+                    Database = Utils.TestDatabase(conn),
+                    Schema = Utils.TestSchema(conn),
+                    Table = "MediaType",
+                    Columns = new ColumnsWithValue { { "MediaTypeId", 1} }
+                }
+            };
+
+            Assert.True(Utils.ScrambledEquals(clonedData, expectedData, RowIdentifierComparer.OrdinalIgnoreCase));
+        }
+
+        [Theory, MemberData(nameof(DbEngineToTest))]
+        public void Cloning_With_ForeignKeyAdd(Connection conn)
+        {
+            //Arrange
+            var project = Utils.MakeDefaultProject(conn);
+            project.Templates[0].Tables.AddRange(new List<Table>
+            {
+                new Table
+                {
+                    Name = "Artist",
+                    ForeignKeys = new ForeignKeys
+                    {
+                        ForeignKeyAdd = new List<ForeignKeyAdd>
+                        {
+                            new ForeignKeyAdd
+                            {
+                                DestinationVar = "chinookFrom",
+                                TableTo = "Playlist",
+                                Columns = new List<ForeignKeyColumn>
+                                {
+                                    new ForeignKeyColumn
+                                    {
+                                        NameFrom ="ArtistId",
+                                        NameTo = "PlaylistId"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            var executionPlanBuilder = new ExecutionPlanBuilder(project, Utils.MakeDefaultContext());
+            var source = new RowIdentifier
+            {
+                ServerId = conn.Id,
+                Database = Utils.TestDatabase(conn),
+                Schema = Utils.TestSchema(conn),
+                Table = "Artist",
+                Columns = new ColumnsWithValue { { "ArtistId", 1 } }
+            };
+
+            var clonedData = new List<RowIdentifier>();
+            executionPlanBuilder.StatusChanged += (s, e) =>
+            {
+                if (e.Status == Status.Cloning)
+                    clonedData.Add(e.SourceRow);
+            };
+
+            //Act
+            var query = executionPlanBuilder.Append(source, false).Compile();
+            query.Commiting += (s, e) => e.Cancel = true;
+            query.Execute();
+
+            //Assert
+            var expectedData = new List<RowIdentifier>
+            {
+                new RowIdentifier
+                {
+                     ServerId = conn.Id,
+                     Database = Utils.TestDatabase(conn),
+                     Schema = Utils.TestSchema(conn),
+                     Table = "Artist",
+                     Columns = new ColumnsWithValue { { "ArtistId", 1 } }
+                },
+                new RowIdentifier
+                {
+                     ServerId = conn.Id,
+                     Database = Utils.TestDatabase(conn),
+                     Schema = Utils.TestSchema(conn),
+                     Table = "Playlist",
+                     Columns = new ColumnsWithValue { { "PlaylistId", 1 } }
+                }
+            };
+
+            Assert.True(Utils.ScrambledEquals(clonedData, expectedData, RowIdentifierComparer.OrdinalIgnoreCase));
+        }
+
+        [Theory, MemberData(nameof(DbEngineToTest))]
+        public void Cloning_With_ForeignKeyRemove(Connection conn)
+        {
+            //Arrange
+            var project = Utils.MakeDefaultProject(conn);
+            project.Templates[0].Tables.AddRange(new List<Table>
+            {
+                new Table
+                {
+                    Name = "Album",
+                    ForeignKeys = new ForeignKeys
+                    {
+                        ForeignKeyRemove = new ForeignKeyRemove
+                        {
+                            Columns = new List<ForeignKeyRemoveColumn>
+                            {
+                                new ForeignKeyRemoveColumn
+                                {
+                                     Name = "ArtistId"
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            var executionPlanBuilder = new ExecutionPlanBuilder(project, Utils.MakeDefaultContext());
+            var source = new RowIdentifier
+            {
+                ServerId = conn.Id,
+                Database = Utils.TestDatabase(conn),
+                Schema = Utils.TestSchema(conn),
+                Table = "Album",
+                Columns = new ColumnsWithValue { { "AlbumId", 1 } }
+            };
+
+            var clonedData = new List<RowIdentifier>();
+            executionPlanBuilder.StatusChanged += (s, e) =>
+            {
+                if (e.Status == Status.Cloning)
+                    clonedData.Add(e.SourceRow);
+            };
+
+            //Act
+            var query = executionPlanBuilder.Append(source, false).Compile();
+            query.Commiting += (s, e) => e.Cancel = true;
+            query.Execute();
+
+            //Assert
+            var expectedData = new List<RowIdentifier>
+            {
+                new RowIdentifier
+                {
+                     ServerId = conn.Id,
+                     Database = Utils.TestDatabase(conn),
+                     Schema = Utils.TestSchema(conn),
+                     Table = "Album",
+                     Columns = new ColumnsWithValue { { "AlbumId", 1 } }
+                }
+            };
+
+            Assert.True(Utils.ScrambledEquals(clonedData, expectedData, RowIdentifierComparer.OrdinalIgnoreCase));
+        }
+
+        [Theory, MemberData(nameof(DbEngineToTest))]
+        public void Cloning_With_DataBuilder(Connection conn)
+        {
+            //Arrange
+            var project = Utils.MakeDefaultProject(conn);
+            project.Templates[0].Tables.AddRange(new List<Table>
+            {
+                new Table
+                {
+                    Name = "Employee",
+                    DataBuilders = new List<DataBuilder>
+                    {
+                        new DataBuilder{ Name = "FirstName",  BuilderName = "StringDataBuilder" },
+                        new DataBuilder{ Name = "LastName",  BuilderName = "StringDataBuilder" },
+                        new DataBuilder{ Name = "ReportsTo",  BuilderName = "AutoIncrementDataBuilder" }
+                    }
+                }
+            });
+            var executionPlanBuilder = new ExecutionPlanBuilder(project, Utils.MakeDefaultContext());
+
+            var source = new RowIdentifier
+            {
+                ServerId = conn.Id,
+                Database = Utils.TestDatabase(conn),
+                Schema = Utils.TestSchema(conn),
+                Table = "Employee",
+                Columns = new ColumnsWithValue { { "EmployeeId", 1 } }
+            };
+
+            //Act
+            var query = executionPlanBuilder.Append(source, false).Compile();
+
+            IDbCommand command = null;
+            query.Commiting += (s, e) =>
+            {
+                e.Cancel = true;
+                command = e.Command;
+            };
+            query.Execute();
+
+            //Assert
+            var paramFirstName = command?.Parameters["@FirstName0"] as IDataParameter;
+            Assert.Matches("(.+){20}", paramFirstName.Value.ToString());
+
+            var paramLastName = command?.Parameters["@LastName0"] as IDataParameter;
+            Assert.Matches("(.+){20}", paramLastName.Value.ToString());
+
+            var paramReportsTo = command?.Parameters["@ReportsTo0"] as IDataParameter;
+            Assert.True(paramReportsTo.Value.IsNumericType());
         }
     }
 }

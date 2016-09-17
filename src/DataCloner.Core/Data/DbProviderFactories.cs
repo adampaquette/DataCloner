@@ -1,7 +1,11 @@
-﻿using DataCloner.Core.Data.MsSql;
-using System;
+﻿using System;
 using System.Data.Common;
 using System.Data.SqlClient;
+using DataCloner.Core.Data.MsSql;
+using DataCloner.Core.Data.MySql;
+using DataCloner.Core.Data.PostgreSql;
+using MySql.Data.MySqlClient;
+using Npgsql;
 
 namespace DataCloner.Core.Data
 {
@@ -21,6 +25,10 @@ namespace DataCloner.Core.Data
             {
                 case MsSqlQueryProvider.ProviderName:
                     return SqlClientFactory.Instance;
+                case PostgreSqlQueryProvider.ProviderName:
+                    return NpgsqlFactory.Instance;
+                case MySqlQueryProvider.ProviderName:
+                    return MySqlClientFactory.Instance;
                 default:
                     throw new NotSupportedException($"Provider not supported : {providerName}");
             }

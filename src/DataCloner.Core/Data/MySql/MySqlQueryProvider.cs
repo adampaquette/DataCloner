@@ -3,9 +3,9 @@ using DataCloner.Core.Data.Generator.MySql;
 
 namespace DataCloner.Core.Data.MySql
 {
-    internal sealed class QueryHelperMySql : QueryProvider 
+    internal sealed class MySqlQueryProvider : QueryProvider 
     {
-        private static QueryHelperMySql _instance;
+        private static MySqlQueryProvider _instance;
 
         public const string ProviderName = "MySql.Data.MySqlClient";
 
@@ -19,17 +19,17 @@ namespace DataCloner.Core.Data.MySql
         public override ISqlTypeConverter TypeConverter { get; }
         public override ISqlWriter SqlWriter { get; }
 
-        public static QueryHelperMySql Instance
+        public static MySqlQueryProvider Instance
         {
             get
             {
                 if (_instance == null)
-                    _instance = new QueryHelperMySql();
+                    _instance = new MySqlQueryProvider();
                 return _instance;
             }
         }
 
-        public QueryHelperMySql()
+        public MySqlQueryProvider()
         {
             TypeConverter = new MySqlTypeConverter();
             SqlWriter = new MySqlWriter();

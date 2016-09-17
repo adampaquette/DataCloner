@@ -56,7 +56,7 @@ namespace DataCloner.Core.Debug
                 },
                 Variables = new List<Variable>
                 {
-                    new Variable {Name = "chinookFrom", Server = 1, Database = "chinook", Schema = "dbo"}
+                    new Variable {Name = "chinookFrom", Server = conn.Id, Database = TestDatabase(conn), Schema = TestSchema(conn)}
                 },
                 Templates = new List<DbSettings>
                 {
@@ -92,7 +92,7 @@ namespace DataCloner.Core.Debug
                                 Name = "UNI",
                                 Variables = new List<Variable>
                                 {
-                                    new Variable {Name = "chinookTo", Server = 1, Database = "chinook", Schema = "dbo"}
+                                    new Variable {Name = "chinookTo", Server = conn.Id, Database = TestDatabase(conn), Schema = TestSchema(conn)}
                                 }
                             }
                         }
@@ -119,6 +119,27 @@ namespace DataCloner.Core.Debug
                     return false;
             }
             return cnt.Values.All(c => c == 0);
+        }
+
+        public static bool IsNumericType(this object o)
+        {
+            switch (Type.GetTypeCode(o.GetType()))
+            {
+                case TypeCode.Byte:
+                case TypeCode.SByte:
+                case TypeCode.UInt16:
+                case TypeCode.UInt32:
+                case TypeCode.UInt64:
+                case TypeCode.Int16:
+                case TypeCode.Int32:
+                case TypeCode.Int64:
+                case TypeCode.Decimal:
+                case TypeCode.Double:
+                case TypeCode.Single:
+                    return true;
+                default:
+                    return false;
+            }
         }
     }
 }

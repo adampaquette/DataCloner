@@ -13,8 +13,8 @@ namespace DataCloner.Core.Data
             {
                 case MsSqlQueryProvider.ProviderName:
                     return MsSqlQueryProvider.Instance;
-                case QueryHelperMySql.ProviderName:
-                    return QueryHelperMySql.Instance;
+                case MySqlQueryProvider.ProviderName:
+                    return MySqlQueryProvider.Instance;
                 case PostgreSqlQueryProvider.ProviderName:
                     return PostgreSqlQueryProvider.Instance;
             }
