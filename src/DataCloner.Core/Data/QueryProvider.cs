@@ -2,6 +2,7 @@
 using DataCloner.Core.Framework;
 using DataCloner.Core.Internal;
 using DataCloner.Core.Metadata.Context;
+using DataCloner.Core.Plan;
 using DataCloner.Core.PlugIn;
 using System;
 using System.Collections.Generic;

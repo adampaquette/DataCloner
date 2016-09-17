@@ -1,6 +1,7 @@
 ﻿using DataCloner.Core.Data.Generator;
 using DataCloner.Core.Internal;
 using DataCloner.Core.Metadata.Context;
+using DataCloner.Core.Plan;
 using System.Data;
 
 namespace DataCloner.Core.Data

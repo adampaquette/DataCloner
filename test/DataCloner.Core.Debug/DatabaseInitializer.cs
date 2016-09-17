@@ -1,9 +1,4 @@
-﻿using DataCloner.Core.Data;
-using System.Collections.Generic;
-using System.Data.Common;
-using System.IO;
-using System.Text;
-using System.Text.RegularExpressions;
+﻿using System.Collections.Generic;
 using DataCloner.Core.Configuration;
 
 namespace DataCloner.Core.IntegrationTests
@@ -32,7 +27,7 @@ namespace DataCloner.Core.IntegrationTests
             {
                 Id = 1,
                 ProviderName = "System.Data.SqlClient",
-                ConnectionString = @"Data SourceVar=(localdb)\MSSQLLocalDB;Integrated Security=True;"
+                ConnectionString = @"Data Source=(localdb)\MSSQLLocalDB;Integrated Security=True;"
             };
 
             //Create DB
@@ -65,7 +60,7 @@ namespace DataCloner.Core.IntegrationTests
             {
                 Id = 2,
                 ProviderName = "System.Data.SqlClient",
-                ConnectionString = @"Data SourceVar=(localdb)\MSSQLLocalDB;Integrated Security=True;Initial Catalog=ChinookAI;"
+                ConnectionString = @"Data Source=(localdb)\MSSQLLocalDB;Integrated Security=True;Initial Catalog=ChinookAI;"
             };
 
             return conn;

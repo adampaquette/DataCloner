@@ -22,10 +22,11 @@ namespace DataCloner.Core
                 var key = Connections.Keys.First(c => c.Id == server);
                 return Connections[key];
             }
-        } 
+        }
 
         public ConnectionsContext()
         {
+            Connections = new Dictionary<Connection, ConnectionContext>();
         }
 
         public void Initialize(List<Connection> connectionsString, Metadatas metadatas)
@@ -37,7 +38,7 @@ namespace DataCloner.Core
                 var dbConnection = DbProviderFactories.GetFactory(conn.ProviderName).CreateConnection();
                 dbConnection.ConnectionString = conn.ConnectionString;
 
-                Connections.Add(conn, 
+                Connections.Add(conn,
                     new ConnectionContext(dbConnection,
                     QueryProviderFactory.GetProvider(conn.ProviderName)));
             }

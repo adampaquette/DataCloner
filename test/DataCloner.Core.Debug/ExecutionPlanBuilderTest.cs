@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using DataCloner.Core.Configuration;
-using DataCloner.Core.Metadata;
 using Xunit;
+using DataCloner.Core.Plan;
 
 namespace DataCloner.Core.Debug
 {
@@ -36,8 +33,8 @@ namespace DataCloner.Core.Debug
 
             //Act
             var query = executionPlanBuilder.Append(source, false).Compile();
-            query.Execute();
             query.Commiting += (s, e) => e.Cancel = true;
+            query.Execute();
 
             //Assert
             var expectedData = new List<RowIdentifier>
@@ -115,8 +112,8 @@ namespace DataCloner.Core.Debug
 
             //Act
             var query = executionPlanBuilder.Append(source, true).Compile();
-            query.Execute();
             query.Commiting += (s, e) => e.Cancel = true;
+            query.Execute();
 
             //Assert
             var expectedData = new List<RowIdentifier>

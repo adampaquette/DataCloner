@@ -22,6 +22,8 @@ namespace DataCloner.Core.Plan
 
         public ExecutionContext()
         {
+            ConnectionsContext = new ConnectionsContext();
+            Map = new Dictionary<SehemaIdentifier, SehemaIdentifier>();
         }
 
         /// <summary>
@@ -115,13 +117,12 @@ namespace DataCloner.Core.Plan
             }
 
             //Else we rebuild the container
-            ExecutionContextCacheHash = currentHash;
-
-            //Init metadatas
             metadatas = MetadataBuilder.BuildMetadata(project.ConnectionStrings, behavior, variables);
             InitExecutionContext(project, mapFrom?.Roads, variables, currentHash, metadatas);
 
-            Save(containerFileName);
+            if ((context == null || !context.UseInMemoryCacheOnly))
+                Save(containerFileName);
+
         }
 
         private void InitExecutionContext(ConfigurationProject project, List<Road> roads, 
