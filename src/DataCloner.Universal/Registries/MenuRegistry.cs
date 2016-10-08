@@ -30,8 +30,9 @@ namespace DataCloner.Universal.Registries
             Container.RegisterTypeWithName<IMenuItem, ToolsMenuItem>();
 
             // Left menu
-            Container.RegisterTypeWithName<ITreeViewMenuItem, GeneralMenuItem>();
-            Container.RegisterTypeWithName<ITreeViewMenuItem, ConfigurationMenuItem>();            
+            Container.RegisterTypeWithName<ITreeViewMenuItem, DashboardMenuItem>();
+            Container.RegisterTypeWithName<ITreeViewMenuItem, ClonerMenuItem>();
+            Container.RegisterTypeWithName<ITreeViewMenuItem, ModelMenuItem>();
         }
     }
 }

@@ -104,10 +104,8 @@
     <Compile Include="Facedes\NavigationFacade.cs" />
     <Compile Include="LifeCycle\AppLaunchCounter.cs" />
     <Compile Include="Menu\Left\ClonerMenuItem.cs" />
-    <Compile Include="Menu\Left\SqlServersMenuItem.cs" />
+    <Compile Include="Menu\Left\ModelMenuItem.cs" />
     <Compile Include="Menu\Left\DashboardMenuItem.cs" />
-    <Compile Include="Menu\Left\ConfigurationMenuItem.cs" />
-    <Compile Include="Menu\Left\GeneralMenuItem.cs" />
     <Compile Include="Menu\MenuItemLocation.cs" />
     <Compile Include="Menu\Top\ToolsMenuItem.cs" />
     <Compile Include="Menu\Top\FileMenuItem.cs" />
@@ -157,7 +155,9 @@
     <Content Include="Assets\MenuIcons\circle-1.png" />
     <Content Include="Assets\MenuIcons\circle-2.png" />
     <Content Include="Assets\MenuIcons\circle.png" />
+    <Content Include="Assets\MenuIcons\columns.png" />
     <Content Include="Assets\MenuIcons\command.png" />
+    <Content Include="Assets\MenuIcons\cube.png" />
     <Content Include="Assets\MenuIcons\database.png" />
     <Content Include="Assets\MenuIcons\direction.png" />
     <Content Include="Assets\MenuIcons\interface.png" />
@@ -166,6 +166,7 @@
     <Content Include="Assets\MenuIcons\squares.png" />
     <Content Include="Assets\MenuIcons\symbol.png" />
     <Content Include="Assets\MenuIcons\symbols.png" />
+    <Content Include="Assets\MenuIcons\table-1.png" />
     <Content Include="Assets\MenuIcons\tool.png" />
     <Content Include="Assets\MenuIcons\web-1.png" />
     <Content Include="Assets\MenuIcons\web.png" />
