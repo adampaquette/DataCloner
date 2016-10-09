@@ -16,7 +16,7 @@
     <Page.Resources>
         <Style TargetType="ListViewItem">
             <Setter Property="MinHeight" Value="30" />
-            <Setter Property="Template">
+            <!--<Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="ListViewItem">
                         <Grid x:Name="Root">
@@ -39,7 +39,7 @@
                         </Grid>
                     </ControlTemplate>
                 </Setter.Value>
-            </Setter>
+            </Setter>-->
         </Style>
     </Page.Resources>
 

@@ -2,6 +2,16 @@
 Interface utilisateur 
 =====================
 
+Fonctionnalités : 
+
+1 - Ouverture d'un fichier de requête
+    Options de clonage seulement source-destination
+2 - Ouverture d'un projet
+    Options de configuration des serveurs, modèles, maps, comportements
+
+
+Configuration : 
+
 1 - Pour ajuster les configurations, il faudra absolument mapper le Server-Database-Schema courant dans une variable sinon les champs seront en lecture seule.
 2 - Suite à la création d'une variable nous pourrons créer un template serveur/database ou schéma.
 3 - Nous pourrons ensuite créer un behavior basé sur une variable ou un template.
