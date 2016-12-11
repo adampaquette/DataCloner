@@ -1,4 +1,12 @@
 ﻿<!--
+Fonctionnement voulu de l'interface utilisateur
+===============================================
+Partie 1 : Configuration
+    
+
+Partie 2 : Clonage
+
+
 Interface utilisateur 
 =====================
 
@@ -139,7 +147,7 @@ Cas le plus extrême :
 -->
 
 <?xml version="1.0" encoding="utf-8"?>
-<Project Name="MainApp">
+<Project Name="MainApp" Guid="2150E333-8FDC-42A3-9474-1A3956D46DE8" Inherits="">
     <ConnectionStrings>
         <Add Id="1" Name="UNI" ProviderName="MySql.Data.MySqlClient" ConnectionString="server=UNI;user Id=root; password=toor; database=master; pooling=true" />
         <Add Id="2" Name="FON" ProviderName="System.Data.Sqlite" ConnectionString="server=FON;user Id=root; password=toor; database=master; pooling=true" />
@@ -166,7 +174,9 @@ Cas le plus extrême :
             </Table>
             <Table Name="transmission" IsStatic="NotSet">
                 <DerativeTables GlobalAccess="Forced" GlobalCascade="True">
-                    <Table DestinationVar="PGIS_TO" Name="demande" Access="NotSet" Cascade="NotSet" />
+                    <Table DestinationVar="PGIS_TO" Name="demande" Access="NotSet" Cascade="NotSet">
+                        <Restriction>S.CreatedDate > NOW()</Restriction>
+                    </Table>
                 </DerativeTables>
                 <DataBuilders>
                     <Column Name="noreferencetransmission" BuilderName="Client.Builder.CreatePK" />
@@ -226,5 +236,111 @@ Cas le plus extrême :
             <Road Source="ARIEL_FROM" Destination="PGIS_TO" />
             <Road Source="SIEBEL_FROM" Destination="PGIS_TO" />
         </MapFrom>
+        <MapFrom Name="PROD" UsableBehaviours="1">
+            <Var Name="PGIS_FROM" Server="3" Database="pgis" Schema="dbo" />
+            <Var Name="ARIEL_FROM" Server="4" Database="ariel" Schema="dbo" />
+            <Var Name="SIEBEL_FROM" Server="5" Database="siebel" Schema="dbo" />
+            <To Name="UNI">
+                <Var Name="PGIS_TO" Server="1" Database="pgis" Schema="dbo" />
+                <Var Name="ARIEL_TO" Server="1" Database="ariel" Schema="dbo" />
+                <Var Name="SIEBEL_TO" Server="1" Database="siebel" Schema="dbo" />
+            </To>
+            <To Name="FON">
+                <Var Name="PGIS_TO" Server="2" Database="pgis" Schema="dbo" />
+                <Var Name="ARIEL_TO" Server="2" Database="ariel" Schema="dbo" />
+                <Var Name="SIEBEL_TO" Server="2" Database="siebel" Schema="dbo" />
+            </To>
+            <To Name="PROD">
+                <Var Name="PGIS_TO" Server="3" Database="pgis" Schema="dbo" />
+                <Var Name="ARIEL_TO" Server="4" Database="ariel" Schema="dbo" />
+                <Var Name="SIEBEL_TO" Server="5" Database="siebel" Schema="dbo" />
+            </To>
+            <Road Source="PGIS_FROM" Destination="PGIS_TO" />
+            <Road Source="ARIEL_FROM" Destination="PGIS_TO" />
+            <Road Source="SIEBEL_FROM" Destination="PGIS_TO" />
+        </MapFrom>
     </Maps>
+</Project>
+
+
+
+
+<!--/***************************************************************/-->
+
+
+
+
+<?xml version="1.0" encoding="utf-8"?>
+<Project Name="MainApp" Guid="2150E333-8FDC-42A3-9474-1A3956D46DE8" Inherits="">
+    <ConnectionStrings>
+        <Add Id="UNI" Description="Unitaire" ProviderName="MySql.Data.MySqlClient" ConnectionString="server=UNI;user Id=root; password=toor; database=master; pooling=true" />
+        <Add Id="FON" Description="Fonctionnel" ProviderName="System.Data.Sqlite" ConnectionString="server=FON;user Id=root; password=toor; database=master; pooling=true" />
+        <Add Id="PROD_PGIS" Description="Production Pgis" ProviderName="System.Data.Oracle" ConnectionString="server=PROD_PGIS;user Id=root; password=toor; database=master; pooling=true" />
+        <Add Id="PROD_ARIEL" Description="Production Ariel" ProviderName="System.Data.PosgreSql" ConnectionString="server=PROD_ARIEL;user Id=root; password=toor; database=master; pooling=true" />
+        <Add Id="PROD_SIEBEL" Description="Production Siebel" ProviderName="System.Data.MsSql" ConnectionString="server=PROD_SIEBEL;user Id=root; password=toor; database=master; pooling=true" />
+    </ConnectionStrings>
+    <EnvironmentComposition>
+        <Schema Id="PGIS" Server="UNI" Database="pgis" Schema="dbo" />
+        <Schema Id="ARIEL" Server="UNI" Database="ariel" Schema="dbo" />
+        <Schema Id="SIEBEL" Server="UNI" Database="siebel" Schema="dbo" />
+    </EnvironmentComposition>
+    <Environments>
+        <Environment Name="UNI">
+            <Schema Id="PGIS" Server="UNI" Database="pgis" Schema="dbo" />
+            <Schema Id="ARIEL" Server="UNI" Database="ariel" Schema="dbo" />
+            <Schema Id="SIEBEL" Server="UNI" Database="siebel" Schema="dbo" />
+        </Environment>
+        <Environment Name="FON">
+            <Schema Id="PGIS" Server="FON" Database="pgis" Schema="dbo" />
+            <Schema Id="ARIEL" Server="FON" Database="ariel" Schema="dbo" />
+            <Schema Id="SIEBEL" Server="FON" Database="siebel" Schema="dbo" />
+        </Environment>
+        <Environment Name="PROD">
+            <Schema Id="PGIS" Server="PROD_PGIS" Database="pgis" Schema="dbo" />
+            <Schema Id="ARIEL" Server="PROD_ARIEL" Database="ariel" Schema="dbo" />
+            <Schema Id="SIEBEL" Server="PROD_SIEBEL" Database="siebel" Schema="dbo" />
+        </Environment>
+    </Environments>
+    <ExtractionTemplates>
+        <DbSettings Id="DefaultPGIS" ForSchemaId="PGIS" Description="Configuration par défaut du serveur PGIS, schéma DBO." BasedOn="">
+            <Table Name="domaineValeur" IsStatic="True"/>
+            <Table Name="transmission" IsStatic="NotSet">
+                <DerativeTables GlobalAccess="Forced" GlobalCascade="True">
+                    <Table DestinationSchema="PGIS" Name="demande" Access="NotSet" Cascade="NotSet">
+                        <Restriction>S.CreatedDate > NOW()</Restriction>
+                    </Table>
+                </DerativeTables>
+                <DataBuilders>
+                    <Column Name="noreferencetransmission" BuilderName="Client.Builder.CreatePK" />
+                </DataBuilders>
+                <ForeignKeys>
+                    <Add DestinationSchema="SIEBEL" Table="s_srv_req">
+                        <Column NameFrom="noreferencetransmission" NameTo="sr_num" />
+                    </Add>
+                    <Remove />
+                </ForeignKeys>
+            </Table>
+            <Table Name="propositionrachat" IsStatic="NotSet">
+                <DerativeTables GlobalAccess="NotSet" GlobalCascade="NotSet" />
+                <DataBuilders>
+                    <Column Name="col1" BuilderName="Client.Builder.Random" />
+                </DataBuilders>
+                <ForeignKeys>
+                    <Add DestinationSchema="ARIEL" Table="s_srv_req">
+                        <Column NameFrom="noreferencetransmission" NameTo="sr_num" />
+                    </Add>
+                    <Remove />
+                </ForeignKeys>
+            </Table>
+        </DbSettings>
+        <DbSettings Id="DefaultARIEL" ForSchemaId="ARIEL" BasedOn="" />
+        <DbSettings Id="DefaultSIEBEL" ForSchemaId="SIEBEL" BasedOn="" />
+    </ExtractionTemplates>
+    <Behaviors>
+        <Behavior Id="Default" Description="Configuration par défaut">
+            <DbSetting BasedOn="DefaultPGIS" />
+            <DbSetting BasedOn="DefaultARIEL" />
+            <DbSetting BasedOn="DefaultSIEBEL" />
+        </Behavior>
+    </Behaviors>    
 </Project>
