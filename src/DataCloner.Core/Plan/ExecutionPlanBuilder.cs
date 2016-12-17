@@ -45,7 +45,7 @@ namespace DataCloner.Core.Plan
         /// </summary>
         /// <param name="project">User configuration influencing the execution plan.</param>
         /// <param name="cloningContext">Cloning task</param>
-        public ExecutionPlanBuilder(ConfigurationProject project, CloningContext cloningContext) : this()
+        public ExecutionPlanBuilder(Project project, CloningContext cloningContext) : this()
         {
             ExecutionContext = new ExecutionContext();
             ExecutionContext.Initialize(project, cloningContext);
@@ -57,7 +57,7 @@ namespace DataCloner.Core.Plan
         /// <param name="project">User configuration influencing the execution plan.</param>
         /// <param name="cloningContext">Cloning task</param>
         /// <param name="executionContext">ExecutionContext</param>
-        internal ExecutionPlanBuilder(ConfigurationProject project, CloningContext cloningContext, ExecutionContext executionContext) : this()
+        internal ExecutionPlanBuilder(Project project, CloningContext cloningContext, ExecutionContext executionContext) : this()
         {
             if (executionContext == null) throw new ArgumentNullException(nameof(executionContext));
 
@@ -134,7 +134,7 @@ namespace DataCloner.Core.Plan
         /// Optimize the execution plan by removing unnescessary data.
         /// </summary>
         /// <param name="plans">Execution plan to optimize.</param>
-        private static void OptimizeExecutionPlans(Dictionary<short, ExecutionPlan> plans)
+        private static void OptimizeExecutionPlans(Dictionary<string, ExecutionPlan> plans)
         {
             var data = new List<object>();
 

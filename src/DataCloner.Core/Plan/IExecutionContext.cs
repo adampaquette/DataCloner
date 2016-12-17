@@ -11,6 +11,6 @@ namespace DataCloner.Core.Plan
 
         ConnectionsContext ConnectionsContext { get; set; }
 
-        void Initialize(ConfigurationProject project, CloningContext context = null);
+        void Initialize(Project project, CloningContext context = null);
     }
 }

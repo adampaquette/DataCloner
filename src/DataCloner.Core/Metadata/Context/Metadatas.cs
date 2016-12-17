@@ -11,9 +11,9 @@ namespace DataCloner.Core.Metadata.Context
     /// Contains metadatas grouped by connection string. 
     /// </summary>
     /// <remarks>ServerId / Database / Schema -> TableMetadata[]</remarks>
-    public sealed class Metadatas : Dictionary<short, ServerMetadata>
+    public sealed class Metadatas : Dictionary<string, ServerMetadata>
     {
-        public TableMetadata GetTable(short server, string database, string schema, string table)
+        public TableMetadata GetTable(string server, string database, string schema, string table)
         {
             if (ContainsKey(server) &&
                 this[server].ContainsKey(database) &&
@@ -22,7 +22,7 @@ namespace DataCloner.Core.Metadata.Context
             return null;
         }
 
-        public SchemaMetadata this[short server, string database, string schema]
+        public SchemaMetadata this[string server, string database, string schema]
         {
             get
             {
@@ -97,7 +97,7 @@ namespace DataCloner.Core.Metadata.Context
             var nbServers = stream.ReadInt32();
             for (var n = 0; n < nbServers; n++)
             {
-                var serverId = stream.ReadInt16();
+                var serverId = stream.ReadString();
                 cTables.Add(serverId, new ServerMetadata());
 
                 var nbDatabases = stream.ReadInt32();

@@ -51,15 +51,29 @@ namespace DataCloner.Core.Clone
             //_dispatcher[riSource].EnforceIntegrityCheck(EnforceIntegrity);
             PlugIn.DataBuilder.ClearBuildersCache();
             ResetExecutionPlan(_executionPlanByServer);
-            Parallel.ForEach(_executionPlanByServer, a =>
+            Parallel.ForEach(_executionPlanByServer, ep =>
             {
-                var ctx = _connectionsContext[a.Key];
+                var ctx = _connectionsContext[ep.Key];
                 ctx.QueryProvider.QueryCommmiting += Commiting;
-                ctx.QueryProvider.Execute(ctx.Connection, _connectionsContext.Metadatas, a.Value);
+                ctx.QueryProvider.Execute(ctx.Connection, _connectionsContext.Metadatas, ep.Value);
                 ctx.QueryProvider.QueryCommmiting -= Commiting;
             });
 
             return new ResultSet(_executionPlanByServer);
+        }
+
+        public void ProduceSqlScript(Stream output)
+        {
+            //_dispatcher[riSource].EnforceIntegrityCheck(EnforceIntegrity);
+            PlugIn.DataBuilder.ClearBuildersCache();
+            ResetExecutionPlan(_executionPlanByServer);
+            Parallel.ForEach(_executionPlanByServer, ep =>
+            {
+                var ctx = _connectionsContext[ep.Key];
+                ctx.QueryProvider.QueryCommmiting += Commiting;
+                ctx.QueryProvider.Execute(ctx.Connection, _connectionsContext.Metadatas, ep.Value);
+                ctx.QueryProvider.QueryCommmiting -= Commiting;
+            });
         }
 
         public void Save(string path)
@@ -203,7 +217,7 @@ namespace DataCloner.Core.Clone
         /// We reset the variables for the API to regenerate them.
         /// </summary>
         /// <param name="planByServer"></param>
-        private static void ResetExecutionPlan(Dictionary<short, ExecutionPlan> planByServer)
+        private static void ResetExecutionPlan(Dictionary<string, ExecutionPlan> planByServer)
         {
             foreach (var server in planByServer)
                 foreach (var sqlVar in server.Value.Variables)

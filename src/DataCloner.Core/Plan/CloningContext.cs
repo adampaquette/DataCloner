@@ -2,11 +2,11 @@
 {
     public class CloningContext
     {
-        public string From { get; set; }
+        public string SourceEnvironment { get; set; }
 
-        public string To { get; set; }
+        public string DestinationEnvironment { get; set; }
 
-        public short? BehaviourId { get; set; }
+        public string Behaviour { get; set; }
 
         /// <summary>
         /// When set to true the metadata's cache is not persisted over time. It is not loaded from or to the disk.

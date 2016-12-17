@@ -7,7 +7,7 @@ namespace DataCloner.Core
     [DebuggerDisplay("{ServerId.ToString() + \".\" + Database + \".\" + Schema}")]
     public class SehemaIdentifier : IEquatable<SehemaIdentifier>
     {
-        public short ServerId { get; set; }
+        public string ServerId { get; set; }
         public string Database { get; set; }
         public string Schema { get; set; }
 
@@ -22,7 +22,7 @@ namespace DataCloner.Core
         {
             return new SehemaIdentifier
             {
-                ServerId = input.ReadInt16(),
+                ServerId = input.ReadString(),
                 Database = input.ReadString(),
                 Schema = input.ReadString()
             };

@@ -9,7 +9,7 @@ namespace DataCloner.Core.PlugIn
     {
         private static readonly Dictionary<string, object> AutoIncrementCache = new Dictionary<string, object>();
 
-        public object BuildData(IDbTransaction transaction, DbEngine engine, short serverId, string database, string schema, TableMetadata table, ColumnDefinition column)
+        public object BuildData(IDbTransaction transaction, DbEngine engine, string serverId, string database, string schema, TableMetadata table, ColumnDefinition column)
         {
             var cacheId = serverId + database + schema + table.Name + column.Name;
 

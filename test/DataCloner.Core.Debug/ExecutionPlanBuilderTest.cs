@@ -86,7 +86,7 @@ namespace DataCloner.Core.Debug
         {
             //Arrange
             var project = Utils.MakeDefaultProject(conn);
-            project.Templates[0].Tables.Add(new Table
+            project.ExtractionTemplates[0].Tables.Add(new Table
             {
                 Name = "Album",
                 DerativeTableGlobal = new DerivativeTableGlobal
@@ -157,7 +157,7 @@ namespace DataCloner.Core.Debug
         {
             //Arrange
             var project = Utils.MakeDefaultProject(conn);
-            project.Templates[0].Tables.AddRange(new List<Table>
+            project.ExtractionTemplates[0].Tables.AddRange(new List<Table>
             {
                 new Table
                 {
@@ -237,7 +237,7 @@ namespace DataCloner.Core.Debug
         {
             //Arrange
             var project = Utils.MakeDefaultProject(conn);
-            project.Templates[0].Tables.AddRange(new List<Table>
+            project.ExtractionTemplates[0].Tables.AddRange(new List<Table>
             {
                 new Table
                 {
@@ -257,7 +257,7 @@ namespace DataCloner.Core.Debug
                         {
                             new DerivativeTable
                             {
-                                DestinationVar = "chinookFrom",
+                                DestinationSchema = "chinook",
                                 Name = "Album",
                                 Access = DerivativeTableAccess.Forced
                             }
@@ -325,7 +325,7 @@ namespace DataCloner.Core.Debug
         {
             //Arrange
             var project = Utils.MakeDefaultProject(conn);
-            project.Templates[0].Tables.AddRange(new List<Table>
+            project.ExtractionTemplates[0].Tables.AddRange(new List<Table>
             {
                 new Table
                 {
@@ -337,7 +337,7 @@ namespace DataCloner.Core.Debug
                         {
                             new DerivativeTable
                             {
-                                DestinationVar = "chinookFrom",
+                                DestinationSchema = "chinook",
                                 Name = "Album",
                                 Access = DerivativeTableAccess.Denied
                             }
@@ -389,7 +389,7 @@ namespace DataCloner.Core.Debug
         {
             //Arrange
             var project = Utils.MakeDefaultProject(conn);
-            project.Templates[0].Tables.AddRange(new List<Table>
+            project.ExtractionTemplates[0].Tables.AddRange(new List<Table>
             {
                 new Table
                 {
@@ -541,7 +541,7 @@ namespace DataCloner.Core.Debug
         {
             //Arrange
             var project = Utils.MakeDefaultProject(conn);
-            project.Templates[0].Tables.AddRange(new List<Table>
+            project.ExtractionTemplates[0].Tables.AddRange(new List<Table>
             {
                 new Table
                 {
@@ -552,14 +552,14 @@ namespace DataCloner.Core.Debug
                         {
                             new ForeignKeyAdd
                             {
-                                DestinationVar = "chinookFrom",
-                                TableTo = "Playlist",
+                                DestinationSchema = "chinook",
+                                DestinationTable = "Playlist",
                                 Columns = new List<ForeignKeyColumn>
                                 {
                                     new ForeignKeyColumn
                                     {
-                                        NameFrom ="ArtistId",
-                                        NameTo = "PlaylistId"
+                                        Source ="ArtistId",
+                                        Destination = "PlaylistId"
                                     }
                                 }
                             }
@@ -619,7 +619,7 @@ namespace DataCloner.Core.Debug
         {
             //Arrange
             var project = Utils.MakeDefaultProject(conn);
-            project.Templates[0].Tables.AddRange(new List<Table>
+            project.ExtractionTemplates[0].Tables.AddRange(new List<Table>
             {
                 new Table
                 {
@@ -683,7 +683,7 @@ namespace DataCloner.Core.Debug
         {
             //Arrange
             var project = Utils.MakeDefaultProject(conn);
-            project.Templates[0].Tables.AddRange(new List<Table>
+            project.ExtractionTemplates[0].Tables.AddRange(new List<Table>
             {
                 new Table
                 {

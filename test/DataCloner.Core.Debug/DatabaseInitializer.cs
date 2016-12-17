@@ -25,7 +25,7 @@ namespace DataCloner.Core.IntegrationTests
         {
             var conn = new Connection()
             {
-                Id = 1,
+                Id = "UNI_Chinook",
                 ProviderName = "System.Data.SqlClient",
                 ConnectionString = @"Data Source=(localdb)\MSSQLLocalDB;Integrated Security=True;"
             };
@@ -58,7 +58,7 @@ namespace DataCloner.Core.IntegrationTests
         {
             var conn = new Connection()
             {
-                Id = 2,
+                Id = "UNI_ChinookAI",
                 ProviderName = "System.Data.SqlClient",
                 ConnectionString = @"Data Source=(localdb)\MSSQLLocalDB;Integrated Security=True;Initial Catalog=ChinookAI;"
             };
@@ -70,7 +70,7 @@ namespace DataCloner.Core.IntegrationTests
         {
             var conn = new Connection()
             {
-                Id = 1,
+                Id = "UNI_Chinook",
                 ProviderName = "MySql.Data.MySqlClient",
                 ConnectionString = @"Server=localhost;Uid=root;Pwd=toor;default command timeout=120;Allow User Variables=True"
             };
@@ -100,7 +100,7 @@ namespace DataCloner.Core.IntegrationTests
         {
             var conn = new Connection()
             {
-                Id = 2,
+                Id = "UNI_ChinookAI",
                 ProviderName = "MySql.Data.MySqlClient",
                 ConnectionString = @"Server=localhost;Uid=root;Pwd=toor;Allow User Variables=True"
             };
@@ -112,7 +112,7 @@ namespace DataCloner.Core.IntegrationTests
         {
             var conn = new Connection()
             {
-                Id = 1,
+                Id = "UNI_Chinook",
                 ProviderName = "Npgsql",
                 ConnectionString = @"Host=localhost;Username=postgres;Password=toor;Database=Chinook"
             };

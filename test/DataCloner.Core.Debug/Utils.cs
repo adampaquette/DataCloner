@@ -10,9 +10,9 @@ namespace DataCloner.Core.Debug
     {
         public static string TestDatabase(Connection conn)
         {
-            if (conn.Id == 1)
+            if (conn.Id == "UNI_Chinook")
                 return "Chinook";
-            else if (conn.Id == 2)
+            else if (conn.Id == "UNI_ChinookAI")
                 return "ChinookAI";
             else
                 throw new NotSupportedException();
@@ -33,15 +33,15 @@ namespace DataCloner.Core.Debug
             return new CloningContext
             {
                 UseInMemoryCacheOnly = true,
-                BehaviourId = 1,
-                From = "UNI",
-                To = "UNI"
+                Behaviour = "Default",
+                SourceEnvironment = "UNI",
+                DestinationEnvironment = "UNI"
             };
         }
 
-        public static ConfigurationProject MakeDefaultProject(Connection conn)
+        public static Project MakeDefaultProject(Connection conn)
         {
-            return new ConfigurationProject
+            return new Project
             {
                 Name = "Chinook",
                 ConnectionStrings = new List<Connection>
@@ -49,51 +49,47 @@ namespace DataCloner.Core.Debug
                     new Connection
                     {
                         Id = conn.Id,
-                        Name = conn.Name,
                         ConnectionString = conn.ConnectionString,
                         ProviderName = conn.ProviderName
                     }
                 },
-                Variables = new List<Variable>
+                EnvironmentComposition = new List<SchemaVar>
                 {
-                    new Variable {Name = "chinookFrom", Server = conn.Id, Database = TestDatabase(conn), Schema = TestSchema(conn)}
+                    new SchemaVar {Id = "chinook", Server = conn.Id, Database = TestDatabase(conn), Schema = TestSchema(conn)}
                 },
-                Templates = new List<DbSettings>
+                ExtractionTemplates = new List<DbSettings>
                 {
                     new DbSettings
                     {
-                        Var = "chinookFrom",
-                        Id = 1,
+                        ForSchemaId = "chinook",
+                        Id = "Default",
                         Tables = new List<Table>()
                     }
                 },
-                Behaviors = new List<Behavior>
+                ExtractionBehaviors = new List<Behavior>
                 {
                     new Behavior
                     {
-                        Name = "Default",
-                        Id = 1,
+                        Id = "Default",
                         DbSettings = new List<DbSettings>
                         {
-                            new DbSettings{BasedOn = 1}
+                            new DbSettings{Id = "1", BasedOn = "Default"}
                         }
                     }
                 },
-                Maps = new List<MapFrom>
+                Environments = new List<Configuration.Environment>
                 {
-                    new MapFrom
+                    new Configuration.Environment
                     {
                         Name = "UNI",
-                        UsableBehaviours = "1",
-                        MapTos = new List<MapTo>
+                        Schemas = new List<SchemaVar>
                         {
-                            new MapTo
+                            new SchemaVar
                             {
-                                Name = "UNI",
-                                Variables = new List<Variable>
-                                {
-                                    new Variable {Name = "chinookTo", Server = conn.Id, Database = TestDatabase(conn), Schema = TestSchema(conn)}
-                                }
+                                Id = "chinook",
+                                Server = conn.Id,
+                                Database = TestDatabase(conn),
+                                Schema = TestSchema(conn)
                             }
                         }
                     }

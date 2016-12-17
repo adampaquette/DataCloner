@@ -29,7 +29,7 @@ namespace DataCloner.Core.Plan
         /// <summary>
         /// Verify if the last build of the container's metadata still match with the current cloning context.
         /// </summary>
-        public void Initialize(ConfigurationProject project, CloningContext context = null)
+        public void Initialize(Project project, CloningContext context = null)
         {
             LoadCache(project, context);
         }
@@ -39,7 +39,7 @@ namespace DataCloner.Core.Plan
         /// <summary>
         /// Verify if the last build of the container's metadata still match with the current cloning context.
         /// </summary>
-        private void LoadCache(ConfigurationProject project, CloningContext context = null)
+        private void LoadCache(Project project, CloningContext context = null)
         {
             if (project == null) throw new ArgumentNullException(nameof(project));
             if (project.ConnectionStrings == null || !project.ConnectionStrings.Any())
@@ -47,46 +47,39 @@ namespace DataCloner.Core.Plan
 
             Behavior behavior = null;
             var containerFileName = project.Name + "_";
-            MapFrom mapFrom = null;
-            MapTo mapTo = null;
+            Configuration.Environment source = null;
+            Configuration.Environment destination = null;
 
             //Hash the selected map, connnectionStrings and the cloner 
             //configuration to see if it match the lasted builded container
             var configData = new MemoryStream();
             SerializationHelper.Serialize(configData, project.ConnectionStrings);
 
-            HashSet<Variable> variables = null;
-
             //Append context data
             if (context != null)
             {
-                variables = project.GetVariablesForMap(context.From, context.To);
-
-                if (context.From != null)
+                if (context.SourceEnvironment != null)
                 {
                     //Map
-                    mapFrom = project.Maps.FirstOrDefault(m => m.Name == context.From);
-                    if (mapFrom == null)
-                        throw new Exception($"MapFrom name '{context.From}' not found in configuration file for application '{project.Name}'!");
-                    mapTo = mapFrom.MapTos.FirstOrDefault(m => m.Name == context.To);
-                    if (mapTo == null)
-                        throw new Exception($"MapTo name '{context.To}' not found in configuration file for application '{project.Name}'!");
+                    source = project.Environments.FirstOrDefault(e => e.Name == context.SourceEnvironment);
+                    if (source == null)
+                        throw new Exception($"Source environment name '{context.SourceEnvironment}' not found in configuration file for application '{project.Name}'!");
+                    destination = project.Environments.FirstOrDefault(e => e.Name == context.DestinationEnvironment);
+                    if (destination == null)
+                        throw new Exception($"Destination environment name '{context.DestinationEnvironment}' not found in configuration file for application '{project.Name}'!");
 
-                    containerFileName += context.From + "_" + context.To;
-                    SerializationHelper.Serialize(configData, mapFrom);
+                    containerFileName += context.SourceEnvironment + "_" + context.DestinationEnvironment;
+                    SerializationHelper.Serialize(configData, source);
 
                     //Behavior
-                    if (context.BehaviourId.HasValue)
+                    if (!string.IsNullOrWhiteSpace(context.Behaviour))
                     {
-                        if (mapFrom.UsableBehaviours != null && mapFrom.UsableBehaviours.Split(',').ToList().Contains(context.BehaviourId.ToString()))
-                        {
-                            behavior = project.BuildBehavior(context.BehaviourId.GetValueOrDefault());
+                        behavior = project.BuildBehavior(context.Behaviour);
 
-                            SerializationHelper.Serialize(configData, behavior);
-                            SerializationHelper.Serialize(configData, project.Templates);
+                        SerializationHelper.Serialize(configData, behavior);
+                        SerializationHelper.Serialize(configData, project.ExtractionTemplates);
 
-                            containerFileName += "_" + context.BehaviourId;
-                        }
+                        containerFileName += "_" + context.Behaviour;
                     }
                 }
                 else
@@ -111,23 +104,24 @@ namespace DataCloner.Core.Plan
                 //If container on disk is good, we use it
                 if (TryLoadContainerFromFile(containerFileName, currentHash, ref metadatas))
                 {
-                    InitExecutionContext(project, mapFrom?.Roads, variables, currentHash, metadatas);
+                    InitExecutionContext(project, source, destination, currentHash, metadatas);
                     return;
                 }
             }
 
             //Else we rebuild the container
-            metadatas = MetadataBuilder.BuildMetadata(project.ConnectionStrings, behavior, variables);
-            InitExecutionContext(project, mapFrom?.Roads, variables, currentHash, metadatas);
+            var schemas = new HashSet<SchemaVar>(source.Schemas);
+            metadatas = MetadataBuilder.BuildMetadata(project.ConnectionStrings, behavior, schemas);
+            InitExecutionContext(project, source, destination, currentHash, metadatas);
 
             if ((context == null || !context.UseInMemoryCacheOnly))
                 Save(containerFileName);
 
         }
 
-        private void InitExecutionContext(ConfigurationProject project, List<Road> roads, 
-                                          HashSet<Variable> variables, string configFileHash, 
-                                          Metadatas metadatas = null)
+        private void InitExecutionContext(Project project, Configuration.Environment sourceEnvir, 
+                                          Configuration.Environment destinationEnvir, 
+                                          string configFileHash, Metadatas metadatas = null)
         {
             ExecutionContextCacheHash = configFileHash;
 
@@ -135,23 +129,24 @@ namespace DataCloner.Core.Plan
             ConnectionsContext.Initialize(project.ConnectionStrings, metadatas);
 
             //Init maps
-            foreach (var road in roads)
+            foreach (var sourceSchema in sourceEnvir.Schemas)
             {
-                var sourceVar = variables.First(v => v.Name == road.SourceVar);
-                var destinationVar = variables.First(v => v.Name == road.DestinationVar);
+                var destinationSchema = destinationEnvir.Schemas.FirstOrDefault(s => s.Id == sourceSchema.Id);
+                if (destinationSchema == null)
+                    throw new Exception($"The destination schema {sourceSchema.Id} is not found in the environment {destinationEnvir.Name}. Please declare it.");
 
                 var source = new SehemaIdentifier
                 {
-                    ServerId = sourceVar.Server,
-                    Database = sourceVar.Database,
-                    Schema = sourceVar.Schema
+                    ServerId = sourceSchema.Server,
+                    Database = sourceSchema.Database,
+                    Schema = sourceSchema.Schema
                 };
 
                 var destination = new SehemaIdentifier
                 {
-                    ServerId = destinationVar.Server,
-                    Database = destinationVar.Database,
-                    Schema = destinationVar.Schema
+                    ServerId = destinationSchema.Server,
+                    Database = destinationSchema.Database,
+                    Schema = destinationSchema.Schema
                 };
 
                 if (!Map.ContainsKey(source))
@@ -193,7 +188,7 @@ namespace DataCloner.Core.Plan
             return Deserialize(new BinaryReader(input, Encoding.UTF8, true));
         }
 
-        private static void DeserializeBody(BinaryReader input, 
+        private static void DeserializeBody(BinaryReader input,
                                             ref Metadatas metadatas,
                                             FastAccessList<object> referenceTracking = null)
         {

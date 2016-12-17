@@ -8,12 +8,12 @@ namespace DataCloner.Core.Plan
     {
         public List<RowIdentifier> Results { get; }
 
-        internal ResultSet(Dictionary<short, ExecutionPlan> exucutionPlanByServer)
+        internal ResultSet(Dictionary<string, ExecutionPlan> exucutionPlanByServer)
         {
             Results = ParseClonedRows(exucutionPlanByServer);
         }   
 
-        private static List<RowIdentifier> ParseClonedRows(Dictionary<short, ExecutionPlan> exucutionPlanByServer)
+        private static List<RowIdentifier> ParseClonedRows(Dictionary<string, ExecutionPlan> exucutionPlanByServer)
         {
             var clonedRows = new List<RowIdentifier>();
 

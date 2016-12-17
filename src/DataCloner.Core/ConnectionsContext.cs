@@ -14,7 +14,7 @@ namespace DataCloner.Core
 
         public ConnectionContext this[SehemaIdentifier schema] => this[schema.ServerId];
 
-        public ConnectionContext this[short server]
+        public ConnectionContext this[string server]
         {
             get
             {

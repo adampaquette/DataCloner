@@ -41,7 +41,7 @@ namespace DataCloner.Core
         {
             return new TableIdentifier
             {
-                ServerId = input.ReadInt16(),
+                ServerId = input.ReadString(),
                 Database = input.ReadString(),
                 Schema = input.ReadString(),
                 Table = input.ReadString()

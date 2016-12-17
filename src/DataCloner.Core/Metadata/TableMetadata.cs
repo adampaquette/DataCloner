@@ -257,7 +257,7 @@ namespace DataCloner.Core.Metadata
             {
                 dtList.Add(new DerivativeTable
                 {
-                    ServerId = input.ReadInt16(),
+                    ServerId = input.ReadString(),
                     Database = input.ReadString(),
                     Schema = input.ReadString(),
                     Table = input.ReadString(),
@@ -273,7 +273,7 @@ namespace DataCloner.Core.Metadata
 
                 var fk = new ForeignKey
                 {
-                    ServerIdTo = input.ReadInt16(),
+                    ServerIdTo = input.ReadString(),
                     DatabaseTo = input.ReadString(),
                     SchemaTo = input.ReadString(),
                     TableTo = input.ReadString()

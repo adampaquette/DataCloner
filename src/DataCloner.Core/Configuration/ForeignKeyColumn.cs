@@ -9,10 +9,10 @@ namespace DataCloner.Core.Configuration
     public class ForeignKeyColumn : IEquatable<ForeignKeyColumn>
     {
         [XmlAttribute]
-        public string NameFrom { get; set; }
+        public string Source { get; set; }
 
         [XmlAttribute]
-        public string NameTo { get; set; }
+        public string Destination { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -23,13 +23,13 @@ namespace DataCloner.Core.Configuration
         public bool Equals(ForeignKeyColumn other)
         {
             return other != null &&
-                other.NameFrom == NameFrom &&
-                other.NameTo == NameTo;
+                other.Source == Source &&
+                other.Destination == Destination;
         }
 
         public override int GetHashCode()
         {
-            return (NameFrom+NameTo).GetHashCode();
+            return (Source+Destination).GetHashCode();
         }
     }
 }

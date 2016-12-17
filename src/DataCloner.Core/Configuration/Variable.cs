@@ -4,15 +4,15 @@ using System.Xml.Serialization;
 
 namespace DataCloner.Core.Configuration
 {
-    [DebuggerDisplay("{Name}")]
+    [DebuggerDisplay("{Id}")]
     [Serializable]
-    public class Variable : IEquatable<Variable>
+    public class SchemaVar : IEquatable<SchemaVar>
     {
         [XmlAttribute]
-        public string Name { get; set; }
+        public string Id { get; set; }
 
         [XmlAttribute]
-        public short Server { get; set; }
+        public string Server { get; set; }
 
         [XmlAttribute]
         public string Database { get; set; }
@@ -22,18 +22,18 @@ namespace DataCloner.Core.Configuration
 
         public override bool Equals(object obj)
         {
-            var o = obj as Variable;
+            var o = obj as SchemaVar;
             return Equals(o);
         }
 
-        public bool Equals(Variable other)
+        public bool Equals(SchemaVar other)
         {
-            return other != null && other.Name == Name;
+            return other != null && other.Id == Id;
         }
 
         public override int GetHashCode()
         {
-            return Name.GetHashCode();
+            return Id.GetHashCode();
         }
     }
 }

@@ -15,7 +15,7 @@ namespace DataCloner.Core.Metadata.Context
         /// <param name="metadata">Metadatas container</param>
         /// <param name="serverId">ServerId loaded from</param>
         /// <param name="database">Database loaded from</param>
-        internal static void LoadForeignKeys(IDataReader reader, Metadatas metadata, short serverId, string database)
+        internal static void LoadForeignKeys(IDataReader reader, Metadatas metadata, string serverId, string database)
         {
             var lstForeignKeys = new List<ForeignKey>();
             var lstForeignKeyColumns = new List<ForeignKeyColumn>();
@@ -100,7 +100,7 @@ namespace DataCloner.Core.Metadata.Context
         /// <param name="metadata">Metadatas container</param>
         /// <param name="serverId">ServerId loaded from</param>
         /// <param name="database">Database loaded from</param>
-        internal static void LoadUniqueKeys(IDataReader reader, Metadatas metadata, short serverId, string database)
+        internal static void LoadUniqueKeys(IDataReader reader, Metadatas metadata, string serverId, string database)
         {
             var lstUniqueKeys = new List<UniqueKey>();
             var lstUniqueKeyColumns = new List<string>();
@@ -170,7 +170,7 @@ namespace DataCloner.Core.Metadata.Context
         /// <param name="serverId">ServerId loaded from</param>
         /// <param name="database">Database loaded from</param>
         /// <param name="typeConverter">Classe performing type conversion between database and .NET.</param>
-		internal static void LoadColumns(IDataReader reader, Metadatas metadata, short serverId, string database, ISqlTypeConverter typeConverter)
+		internal static void LoadColumns(IDataReader reader, Metadatas metadata, string serverId, string database, ISqlTypeConverter typeConverter)
         {
             var schemaMetadata = new SchemaMetadata();
             var lstSchemaColumn = new List<ColumnDefinition>();

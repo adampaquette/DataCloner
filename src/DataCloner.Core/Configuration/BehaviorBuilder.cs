@@ -14,20 +14,19 @@ namespace DataCloner.Core.Configuration
         /// Build / flatten a multi-hyrarchical DbSetting into a single layer.
         /// </summary>
         /// <remarks>Still returns abstract data with variables.</remarks>
-        public static Behavior BuildBehavior(this ConfigurationProject project, short behaviorId)
+        public static Behavior BuildBehavior(this Project project, string behaviorId)
         {
             if (project == null)
                 throw new ArgumentNullException(nameof(project));
 
             //Find the behavior
-            var behavior = project.Behaviors.FirstOrDefault(b => b.Id == behaviorId);
+            var behavior = project.ExtractionBehaviors.FirstOrDefault(b => b.Id == behaviorId);
             if (behavior == null)
-                throw new KeyNotFoundException($"The behavior Id {behaviorId} was not found in the configuration file.");
+                throw new KeyNotFoundException($"The extraction behavior id {behaviorId} was not found in the configuration file.");
 
             var compiledBehavior = new Behavior
             {
                 Id = behavior.Id,
-                Name = behavior.Name,
                 Description = behavior.Description
             };
 
@@ -38,15 +37,14 @@ namespace DataCloner.Core.Configuration
                 stack.Push(setting);
 
                 //Stack
-                while (stack.Peek().BasedOn > 0)
+                while (!String.IsNullOrWhiteSpace(stack.Peek().BasedOn))
                 {
                     var current = stack.Peek();
 
-                    var parent = project.Templates.FirstOrDefault(t => t.Id == current.BasedOn);
+                    var parent = project.ExtractionTemplates.FirstOrDefault(t => t.Id == current.BasedOn);
                     if (parent == null)
                         throw new KeyNotFoundException($"The DbSetting with Id {current.BasedOn} was not found in the configuration file." +
                                                        $"Remove the attribute BasedOn=\"{current.BasedOn}\".");
-
                     stack.Push(parent);
                 }
 
@@ -54,14 +52,14 @@ namespace DataCloner.Core.Configuration
                 var dbSettingsOnTop = stack.Peek();
                 var compiledDbSettings = new DbSettings
                 {
-                    Var = dbSettingsOnTop.Var,
+                    ForSchemaId = dbSettingsOnTop.ForSchemaId,
                     Description = dbSettingsOnTop.Description
                 };
                 while (stack.Count > 0)
                     MergeDbSettings(stack.Pop(), compiledDbSettings);
 
                 //Si le résultat du merge est sur la même variable qu'un autre setting compilée alors on merge par dessus.
-                var dup = compiledBehavior.DbSettings.FirstOrDefault(b => b.Var == compiledDbSettings.Var);
+                var dup = compiledBehavior.DbSettings.FirstOrDefault(b => b.ForSchemaId == compiledDbSettings.ForSchemaId);
                 if (dup != null)
                     MergeDbSettings(compiledDbSettings, dup);
                 else
@@ -121,7 +119,7 @@ namespace DataCloner.Core.Configuration
             foreach (var sourceTable in source.DerativeTableGlobal.DerivativeTables)
             {
                 var targetTable = target.DerativeTableGlobal.DerivativeTables.FirstOrDefault(d => d.Name == sourceTable.Name &&
-                                                                                           d.DestinationVar == sourceTable.DestinationVar);
+                                                                                           d.DestinationSchema == sourceTable.DestinationSchema);
                 if (targetTable == null)
                     target.DerativeTableGlobal.DerivativeTables.Add(sourceTable);
                 else
@@ -135,7 +133,7 @@ namespace DataCloner.Core.Configuration
                 for (var i = target.ForeignKeys.ForeignKeyAdd.Count - 1; i > 0; i--)
                 {
                     var targetFkAdd = target.ForeignKeys.ForeignKeyAdd[i];
-                    if (targetFkAdd.Columns.Any(c => c.NameFrom == sourceColumn.Name))
+                    if (targetFkAdd.Columns.Any(c => c.Source == sourceColumn.Name))
                         target.ForeignKeys.ForeignKeyAdd.RemoveAt(i);
                 }
 
@@ -152,7 +150,7 @@ namespace DataCloner.Core.Configuration
                 for (var i = target.ForeignKeys.ForeignKeyRemove.Columns.Count - 1; i > 0; i--)
                 {
                     var targetFkRemove = target.ForeignKeys.ForeignKeyRemove.Columns[i].Name;
-                    if (sourceForeignKey.Columns.Select(c => c.NameFrom).Contains(targetFkRemove))
+                    if (sourceForeignKey.Columns.Select(c => c.Source).Contains(targetFkRemove))
                         target.ForeignKeys.ForeignKeyRemove.Columns.RemoveAt(i);
                 }
 
@@ -185,32 +183,6 @@ namespace DataCloner.Core.Configuration
                 target.Access = source.Access;
             if (source.Cascade != NullableBool.NotSet)
                 target.Cascade = source.Cascade;
-        }
-
-        public static void SubstituteVariables(this Behavior behavior, MapFrom mapFrom, string mapTo)
-        {
-            var selectedMapTo = mapFrom.MapTos.FirstOrDefault(m => m.Name == mapTo);
-            if(selectedMapTo==null)
-                throw new Exception($"The destination map '{mapTo}' was not found inside the source map '{mapFrom.Name}'.");
-
-            //Get the last overriden value of each variable
-            var variables = mapFrom.Variables.ToDictionary(variable => variable.Name);
-            foreach (var variable in selectedMapTo.Variables)
-            {
-                if (variables.ContainsKey(variable.Name))
-                    variables[variable.Name] = variable;
-                else
-                    variables.Add(variable.Name, variable);                   
-            }
-
-            foreach (var dbSettings in behavior.DbSettings)
-            {
-                if(!variables.ContainsKey(dbSettings.Var))
-                    throw new Exception($"The DbSettings.Var '{dbSettings.Var}' was not declared inside the settings of the map '{mapFrom.Name}'.");
-
-               // dbSettings.Var = variables[dbSettings.Var].Database;
-            }
-
-        }
+        }        
     }
 }

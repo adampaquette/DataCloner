@@ -8,11 +8,11 @@ namespace DataCloner.Core.Data
     {
         string[] GetDatabasesName(IDbConnection connection);
 
-        void LoadColumns(IDbConnection connection, Metadatas metadata, short serverId, string database);
+        void LoadColumns(IDbConnection connection, Metadatas metadata, string serverId, string database);
 
-        void LoadForeignKeys(IDbConnection connection, Metadatas metadata, short serverId, string database);
+        void LoadForeignKeys(IDbConnection connection, Metadatas metadata, string serverId, string database);
 
-        void LoadUniqueKeys(IDbConnection connection, Metadatas metadata, short serverId, string database);
+        void LoadUniqueKeys(IDbConnection connection, Metadatas metadata, string serverId, string database);
 
         ISqlTypeConverter TypeConverter { get; }
 

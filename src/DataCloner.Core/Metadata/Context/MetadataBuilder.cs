@@ -16,7 +16,7 @@ namespace DataCloner.Core.Metadata.Context
         /// <param name="behavior">A behavior for cloning data</param>
         /// <param name="variables">The compiled cascade variables</param>
         /// <returns>The databases metadatas.</returns>
-        public static Metadatas BuildMetadata(List<Connection> connections, Behavior behavior, HashSet<Variable> variables)
+        public static Metadatas BuildMetadata(List<Connection> connections, Behavior behavior, HashSet<SchemaVar> variables)
         {
             var metadatas = FetchMetadata(connections);
             metadatas.GenerateCommands();
@@ -129,14 +129,14 @@ namespace DataCloner.Core.Metadata.Context
         /// <param name="metadatas">Metadatas to generate queries for.</param>
         /// <param name="behavior">A behavior for cloning data</param>
         /// <param name="variables">The compiled cascade variables</param>
-        private static void MergeForeignKey(this Metadatas metadatas, Behavior behavior, HashSet<Variable> variables)
+        private static void MergeForeignKey(this Metadatas metadatas, Behavior behavior, HashSet<SchemaVar> variables)
         {
             if (behavior == null)
                 return;
 
             foreach (var dbSettings in behavior.DbSettings)
             {
-                var dbSettingsVar = variables.First(v => v.Name == dbSettings.Var);
+                var dbSettingsVar = variables.First(v => v.Id == dbSettings.ForSchemaId);
 
                 if (!metadatas.ContainsKey(dbSettingsVar.Server)) continue;
                 var server = metadatas[dbSettingsVar.Server];
@@ -154,7 +154,7 @@ namespace DataCloner.Core.Metadata.Context
         /// <param name="schemaMetadata">Metadatas to generate queries for.</param>
         /// <param name="dbSettings">User configuration.</param>
         /// <param name="variables">The compiled cascade variables</param>
-        private static void MergeFkModifierSchema(SchemaMetadata schemaMetadata, DbSettings dbSettings, HashSet<Variable> variables)
+        private static void MergeFkModifierSchema(SchemaMetadata schemaMetadata, DbSettings dbSettings, HashSet<SchemaVar> variables)
         {
             foreach (var dbSettingsTable in dbSettings.Tables)
             {
@@ -187,15 +187,15 @@ namespace DataCloner.Core.Metadata.Context
                 //On ajoute les clefs
                 foreach (var fkModifier in dbSettingsTable.ForeignKeys.ForeignKeyAdd)
                 {
-                    var destinationVar = variables.First(v => v.Name == fkModifier.DestinationVar);
+                    var destinationVar = variables.First(v => v.Id == fkModifier.DestinationSchema);
 
                     var newFk = new ForeignKey
                     {
                         ServerIdTo = destinationVar.Server,
                         DatabaseTo = destinationVar.Database,
                         SchemaTo = destinationVar.Schema,
-                        TableTo = fkModifier.TableTo,
-                        Columns = (from fk in fkModifier.Columns select new ForeignKeyColumn { NameFrom = fk.NameFrom, NameTo = fk.NameTo }).ToList()
+                        TableTo = fkModifier.DestinationTable,
+                        Columns = (from fk in fkModifier.Columns select new ForeignKeyColumn { NameFrom = fk.Source, NameTo = fk.Destination }).ToList()
                     };
 
                     table.ForeignKeys.Add(newFk);
@@ -258,14 +258,14 @@ namespace DataCloner.Core.Metadata.Context
         /// <param name="metadatas">Metadatas to generate queries for.</param>
         /// <param name="behavior">A behavior for cloning data</param>
         /// <param name="variables">The compiled cascade variables</param>
-        private static void MergeBehaviour(this Metadatas metadatas, Behavior behavior, HashSet<Variable> variables)
+        private static void MergeBehaviour(this Metadatas metadatas, Behavior behavior, HashSet<SchemaVar> variables)
         {
             if (behavior == null)
                 return;
 
             foreach (var dbSettings in behavior.DbSettings)
             {
-                var dbSettingsVar = variables.First(v => v.Name == dbSettings.Var);
+                var dbSettingsVar = variables.First(v => v.Id == dbSettings.ForSchemaId);
 
                 if (!metadatas.ContainsKey(dbSettingsVar.Server)) continue;
                 var server = metadatas[dbSettingsVar.Server];
@@ -296,7 +296,7 @@ namespace DataCloner.Core.Metadata.Context
                     //Override if modified
                     foreach (var dbSettingsDerivativeTable in dbSettingsTable.DerativeTableGlobal.DerivativeTables)
                     {
-                        var destinationVar = variables.First(v => v.Name == dbSettingsDerivativeTable.DestinationVar);
+                        var destinationVar = variables.First(v => v.Id == dbSettingsDerivativeTable.DestinationSchema);
                         var derivativeTable = table.DerivativeTables.FirstOrDefault(t => t.ServerId == destinationVar.Server &&
                                                                                     t.Database.Equals(destinationVar.Database,
                                                                                        StringComparison.OrdinalIgnoreCase) &&

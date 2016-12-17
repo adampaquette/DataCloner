@@ -4,7 +4,7 @@ namespace DataCloner.Core.Metadata
 {
     public sealed class ForeignKey
     {
-        public short ServerIdTo { get; set; }
+        public string ServerIdTo { get; set; }
 
         public string DatabaseTo { get; set; }
 

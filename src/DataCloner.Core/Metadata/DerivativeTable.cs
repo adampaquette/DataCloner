@@ -2,7 +2,7 @@
 {
     public sealed class DerivativeTable
     {
-        public short ServerId { get; set; }
+        public string ServerId { get; set; }
 
         public string Database { get; set; }
 

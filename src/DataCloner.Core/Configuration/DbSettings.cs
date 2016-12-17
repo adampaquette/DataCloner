@@ -10,16 +10,16 @@ namespace DataCloner.Core.Configuration
     public class DbSettings : IEquatable<DbSettings>
     {
         [XmlAttribute]
-        public short Id { get; set; }
+        public string Id { get; set; }
 
         [XmlAttribute]
-        public string Var { get; set; }
+        public string ForSchemaId { get; set; }
 
         [XmlAttribute]
         public string Description { get; set; }
 
         [XmlAttribute]
-        public short BasedOn { get; set; }
+        public string BasedOn { get; set; }
 
         [XmlElement("Table")]
         public List<Table> Tables { get; set; }

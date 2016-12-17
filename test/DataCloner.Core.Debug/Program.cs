@@ -43,36 +43,33 @@ namespace DataCloner.Core.Debug
             Console.ReadKey();
         }
 
-        public static ConfigurationProject CreateConfiguration()
+        public static Project CreateConfiguration()
         {
-            var project = new ConfigurationProject { Name = "MainApp" };
+            var project = new Project { Name = "MainApp" };
 
             //ConnectionStrings
             project.ConnectionStrings.AddRange(new List<Connection>
             {
-                new Connection(1, "UNI", "MySql.Data.MySqlClient", "server=UNI;user Id=root; password=toor; database=master; pooling=true"),
-                new Connection(2, "FON", "System.Data.Sqlite", "server=FON;user Id=root; password=toor; database=master; pooling=true"),
-                new Connection(3, "PROD_PGIS", "System.Data.Oracle", "server=PROD_PGIS;user Id=root; password=toor; database=master; pooling=true"),
-                new Connection(4, "PROD_ARIEL", "System.Data.PosgreSql", "server=PROD_ARIEL;user Id=root; password=toor; database=master; pooling=true"),
-                new Connection(5, "PROD_SIEBEL", "System.Data.MsSql", "server=PROD_SIEBEL;user Id=root; password=toor; database=master; pooling=true")
+                new Connection("UNI", "MySql.Data.MySqlClient", "server=UNI;user Id=root; password=toor; database=master; pooling=true"),
+                new Connection("FON", "System.Data.Sqlite", "server=FON;user Id=root; password=toor; database=master; pooling=true"),
+                new Connection("PROD_PGIS", "System.Data.Oracle", "server=PROD_PGIS;user Id=root; password=toor; database=master; pooling=true"),
+                new Connection("PROD_ARIEL", "System.Data.PosgreSql", "server=PROD_ARIEL;user Id=root; password=toor; database=master; pooling=true"),
+                new Connection("PROD_SIEBEL", "System.Data.MsSql", "server=PROD_SIEBEL;user Id=root; password=toor; database=master; pooling=true")
             });
 
-            //Variables
-            project.Variables = new List<Variable>
+            //EnvironmentComposition
+            project.EnvironmentComposition = new List<SchemaVar>
             {
-                new Variable { Name = "PGIS_FROM", Server = 1, Database = "pgis", Schema = "dbo" },
-                new Variable { Name = "ARIEL_FROM", Server = 1, Database = "ariel", Schema = "dbo" },
-                new Variable { Name = "SIEBEL_FROM", Server = 1, Database = "siebel", Schema = "dbo" },
-                new Variable { Name = "PGIS_TO", Server = 1, Database = "pgis", Schema = "dbo" },
-                new Variable { Name = "ARIEL_TO", Server = 1, Database = "ariel", Schema = "dbo" },
-                new Variable { Name = "SIEBEL_TO", Server = 1, Database = "siebel", Schema = "dbo" },
+                new SchemaVar { Id = "PGIS", Server = "UNI", Database = "pgis", Schema = "dbo" },
+                new SchemaVar { Id = "ARIEL", Server = "UNI", Database = "ariel", Schema = "dbo" },
+                new SchemaVar { Id = "SIEBEL", Server = "UNI", Database = "siebel", Schema = "dbo" },
             };
 
-            //Templates
+            //Extraction templates
             var pgisDbo = new DbSettings
             {
-                Id = 1,
-                Var = "PGIS_FROM",
+                Id = "DefaultPGIS",
+                ForSchemaId = "PGIS",
                 Description = "Configuration par défaut du serveur PGIS, schéma DBO.",
                 Tables = new List<Table>
                 {
@@ -86,7 +83,7 @@ namespace DataCloner.Core.Debug
                             GlobalCascade = NullableBool.True,
                             DerivativeTables = new List<DerivativeTable>
                             {
-                                 new DerivativeTable { DestinationVar = "PGIS_TO", Name = "demande" }
+                                 new DerivativeTable { DestinationSchema = "PGIS", Name = "demande" }
                             }
                         },
                         ForeignKeys = new ForeignKeys
@@ -95,9 +92,9 @@ namespace DataCloner.Core.Debug
                              {
                                  new ForeignKeyAdd
                                  {
-                                     DestinationVar = "SIEBEL_TO",
-                                     TableTo = "s_srv_req",
-                                     Columns = new List<ForeignKeyColumn> { new ForeignKeyColumn { NameFrom = "noreferencetransmission", NameTo = "sr_num" } }
+                                     DestinationSchema = "SIEBEL",
+                                     DestinationTable = "s_srv_req",
+                                     Columns = new List<ForeignKeyColumn> { new ForeignKeyColumn { Source = "noreferencetransmission", Destination = "sr_num" } }
                                  }
                              }
                         },
@@ -115,11 +112,11 @@ namespace DataCloner.Core.Debug
                             {
                                 new ForeignKeyAdd
                                 {
-                                    DestinationVar = "ARIEL_TO",
-                                    TableTo = "s_srv_req",
+                                    DestinationSchema = "ARIEL",
+                                    DestinationTable = "s_srv_req",
                                     Columns = new List<ForeignKeyColumn>
                                     {
-                                        new ForeignKeyColumn { NameFrom = "noreferencetransmission", NameTo = "sr_num" }
+                                        new ForeignKeyColumn { Source = "noreferencetransmission", Destination = "sr_num" }
                                     }
                                 }
                             }
@@ -131,85 +128,66 @@ namespace DataCloner.Core.Debug
                     }
                 }
             };
-            var arielFrom = new DbSettings { Id = 2, Var = "ARIEL_FROM" };
-            var siebelFrom = new DbSettings { Id = 3, Var = "SIEBEL_FROM" };
+            var arielFrom = new DbSettings { Id = "DefaultARIEL", ForSchemaId = "ARIEL" };
+            var siebelFrom = new DbSettings { Id = "DefaultSIEBEL", ForSchemaId = "SIEBEL" };
 
-            project.Templates.AddRange(new List<DbSettings> { pgisDbo, arielFrom, siebelFrom });
+            project.ExtractionTemplates.AddRange(new List<DbSettings> { pgisDbo, arielFrom, siebelFrom });
 
-            //Behaviors
-            project.Behaviors.AddRange(new List<Behavior>
+            //Extraction behaviors
+            project.ExtractionBehaviors.AddRange(new List<Behavior>
             {
                 new Behavior
                 {
-                    Id = 1,
-                    Name = "Default",
+                    Id = "Default",
                     Description = "Configuration par défaut",
                     DbSettings = new List<DbSettings>
                     {
-                        new DbSettings { Id = 1, BasedOn = 1 },
-                        new DbSettings { Id = 2, BasedOn = 2 },
-                        new DbSettings { Id = 3, BasedOn = 3 }
+                        new DbSettings { Id = "1", BasedOn = "DefaultPGIS" },
+                        new DbSettings { Id = "2", BasedOn = "DefaultARIEL" },
+                        new DbSettings { Id = "3", BasedOn = "DefaultSIEBEL" }
                     }
                 },
                 new Behavior
                 {
-                    Id = 2,
-                    Name = "Client",
+                    Id = "Client",
                     Description = "Duplication d'un client"
                 }
             });
 
-            //Maps
-            project.Maps.AddRange(new List<MapFrom>
+            //Environments
+            project.Environments.AddRange(new List<Configuration.Environment>
             {
-                new MapFrom
+                new Configuration.Environment
                 {
+
                     Name = "UNI",
-                    UsableBehaviours = "1",
-                    Variables = new List<Variable>
+                    Schemas = new List<SchemaVar>
                     {
-                        new Variable { Name = "PGIS_FROM", Server = 1, Database = "pgis", Schema = "dbo" },
-                        new Variable { Name = "ARIEL_FROM", Server = 1, Database = "ariel", Schema = "dbo" },
-                        new Variable { Name = "SIEBEL_FROM", Server = 1, Database = "siebel", Schema = "dbo" }
-                    },
-                    MapTos = new List<MapTo>
+                        new SchemaVar { Id = "PGIS", Server = "UNI", Database = "pgis", Schema = "dbo" },
+                        new SchemaVar { Id = "ARIEL", Server = "UNI", Database = "ariel", Schema = "dbo" },
+                        new SchemaVar { Id = "SIEBEL", Server = "UNI", Database = "siebel", Schema = "dbo" }
+                    }
+                },
+                new Configuration.Environment
+                {
+
+                    Name = "FON",
+                    Schemas = new List<SchemaVar>
                     {
-                        new MapTo
-                        {
-                            Name = "UNI",
-                            Variables = new List<Variable>
-                            {
-                                new Variable { Name = "PGIS_TO", Server = 1, Database = "pgis", Schema = "dbo" },
-                                new Variable { Name = "ARIEL_TO", Server = 1, Database = "ariel", Schema = "dbo" },
-                                new Variable { Name = "SIEBEL_TO", Server = 1, Database = "siebel", Schema = "dbo" },
-                            }
-                        },
-                        new MapTo
-                        {
-                            Name = "FON",
-                            Variables = new List<Variable>
-                            {
-                                new Variable { Name = "PGIS_TO", Server = 2, Database = "pgis", Schema = "dbo" },
-                                new Variable { Name = "ARIEL_TO", Server = 2, Database = "ariel", Schema = "dbo" },
-                                new Variable { Name = "SIEBEL_TO", Server = 2, Database = "siebel", Schema = "dbo" },
-                            }
-                        },
-                        new MapTo
-                        {
-                            Name = "PROD",
-                            Variables = new List<Variable>
-                            {
-                                new Variable { Name = "PGIS_TO", Server = 3, Database = "pgis", Schema = "dbo" },
-                                new Variable { Name = "ARIEL_TO", Server = 4, Database = "ariel", Schema = "dbo" },
-                                new Variable { Name = "SIEBEL_TO", Server = 5, Database = "siebel", Schema = "dbo" },
-                            }
-                        }
-                    },
-                    Roads = new List<Road>
+                        new SchemaVar { Id = "PGIS", Server = "FON", Database = "pgis", Schema = "dbo" },
+                        new SchemaVar { Id = "ARIEL", Server = "FON", Database = "ariel", Schema = "dbo" },
+                        new SchemaVar { Id = "SIEBEL", Server = "FON", Database = "siebel", Schema = "dbo" }
+                    }
+                },
+                new Configuration.Environment
+                {
+
+                    Name = "PROD",
+                    Schemas = new List<SchemaVar>
                     {
-                        new Road { SourceVar = "PGIS_FROM", DestinationVar = "PGIS_TO" },
-                        new Road { SourceVar = "ARIEL_FROM", DestinationVar = "PGIS_TO" },
-                        new Road { SourceVar = "SIEBEL_FROM", DestinationVar = "PGIS_TO" }
+                        new SchemaVar { Id = "PGIS", Server = "PROD_PGIS", Database = "pgis", Schema = "dbo" },
+                        new SchemaVar { Id = "ARIEL", Server = "PROD_ARIEL", Database = "ariel", Schema = "dbo" },
+                        new SchemaVar { Id = "SIEBEL", Server = "PROD_SIEBEL", Database = "siebel", Schema = "dbo" }
                     }
                 }
             });
@@ -226,7 +204,7 @@ namespace DataCloner.Core.Debug
         public static void TestBehaviorBuilder()
         {
             var project = CreateConfiguration();
-            var behavior = project.BuildBehavior(1);
+            var behavior = project.BuildBehavior("Default");
         }
     }
 }

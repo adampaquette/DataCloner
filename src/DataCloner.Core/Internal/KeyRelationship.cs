@@ -9,10 +9,10 @@ namespace DataCloner.Core.Internal
     /// Server / database / schema / table / primarykey source value = primarykey destination value
     /// </summary>
     internal sealed class KeyRelationship 
-		: Dictionary<short, Dictionary<string, Dictionary<string, Dictionary<string, Dictionary<object[], object[]>>>>>
+		: Dictionary<string, Dictionary<string, Dictionary<string, Dictionary<string, Dictionary<object[], object[]>>>>>
 	{
        
-        public object[] GetKey(short server, string database, string schema, string table, object[] keyValuesSource)
+        public object[] GetKey(string server, string database, string schema, string table, object[] keyValuesSource)
         {
             if (ContainsKey(server) &&
                 this[server].ContainsKey(database) &&
@@ -32,7 +32,7 @@ namespace DataCloner.Core.Internal
             return GetKey(sourceKey.ServerId, sourceKey.Database, sourceKey.Schema, sourceKey.Table, rawKey);
         }
 
-        public void SetKey(short server, string database, string schema, string table, object[] keyValuesSource, object[] keyValuesDestination)
+        public void SetKey(string server, string database, string schema, string table, object[] keyValuesSource, object[] keyValuesDestination)
         {
             if (!ContainsKey(server))
                 Add(server, new Dictionary<string, Dictionary<string, Dictionary<string, Dictionary<object[], object[]>>>>(StringComparer.OrdinalIgnoreCase));

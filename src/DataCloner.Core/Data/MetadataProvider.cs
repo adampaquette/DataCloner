@@ -51,7 +51,7 @@ namespace DataCloner.Core.Data
             return databases.ToArray();
         }
 
-        public void LoadColumns(IDbConnection connection, Metadatas metadata, short serverId, string database)
+        public void LoadColumns(IDbConnection connection, Metadatas metadata, string serverId, string database)
         {
             using (var cmd = connection.CreateCommand())
             {
@@ -69,7 +69,7 @@ namespace DataCloner.Core.Data
             }
         }
 
-        public void LoadForeignKeys(IDbConnection connection, Metadatas metadata, short serverId, string database)
+        public void LoadForeignKeys(IDbConnection connection, Metadatas metadata, string serverId, string database)
         {
             using (var cmd = connection.CreateCommand())
             {
@@ -87,7 +87,7 @@ namespace DataCloner.Core.Data
             }
         }
 
-        public void LoadUniqueKeys(IDbConnection connection, Metadatas metadata, short serverId, string database)
+        public void LoadUniqueKeys(IDbConnection connection, Metadatas metadata, string serverId, string database)
         {
             using (var cmd = connection.CreateCommand())
             {

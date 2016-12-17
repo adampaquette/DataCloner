@@ -6,24 +6,21 @@ using System.Xml.Serialization;
 
 namespace DataCloner.Core.Configuration
 {
-    [DebuggerDisplay("{Id.ToString() + \"_\" + Name}")]
+    [DebuggerDisplay("{Id.ToString()}")]
     [Serializable]
     public class Connection : IEquatable<Connection>
     {
         [XmlAttribute]
-        public short Id { get; set; }
-        [XmlAttribute]
-        public string Name { get; set; }
+        public string Id { get; set; }
         [XmlAttribute]
         public string ProviderName { get; set; }
         [XmlAttribute]
         public string ConnectionString { get; set; }
 
         public Connection() { }
-        public Connection(short id, string name, string providerName, string connectionString)
+        public Connection(string id, string providerName, string connectionString)
         {
             Id = id;
-            Name = name;
             ProviderName = providerName;
             ConnectionString = connectionString;
         }
@@ -68,7 +65,7 @@ namespace DataCloner.Core.Configuration
 
         public static Connection Deserialize(BinaryReader stream)
         {
-            return new Connection(stream.ReadInt16(), null, stream.ReadString(),stream.ReadString());
+            return new Connection(stream.ReadString(), stream.ReadString(),stream.ReadString());
         }
     }
 }

@@ -10,10 +10,10 @@ namespace DataCloner.Core.Configuration
     public class ForeignKeyAdd : IEquatable<ForeignKeyAdd>
     {
         [XmlAttribute]
-        public string DestinationVar { get; set; }
+        public string DestinationSchema { get; set; }
 
         [XmlAttribute]
-        public string TableTo { get; set; }
+        public string DestinationTable { get; set; }
 
         [XmlElement("Column")]
         public List<ForeignKeyColumn> Columns { get; set; }
@@ -34,8 +34,8 @@ namespace DataCloner.Core.Configuration
             if (other == null)
                 return false;
 
-            if (other.DestinationVar == DestinationVar &&
-                other.TableTo == TableTo)
+            if (other.DestinationSchema == DestinationSchema &&
+                other.DestinationTable == DestinationTable)
             {
                 foreach (var col in Columns)
                 {
@@ -49,7 +49,7 @@ namespace DataCloner.Core.Configuration
 
         public override int GetHashCode()
         {
-            return (DestinationVar+TableTo).GetHashCode();
+            return (DestinationSchema+DestinationTable).GetHashCode();
         }
     }
 }

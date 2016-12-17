@@ -4,7 +4,7 @@ using System.IO;
 
 namespace DataCloner.Core.Internal
 {
-    public class ExecutionPlanByServer : Dictionary<short, ExecutionPlan>
+    public class ExecutionPlanByServer : Dictionary<string, ExecutionPlan>
     {
         public void Serialize(Stream output, FastAccessList<object> referenceTracking)
         {
@@ -30,7 +30,7 @@ namespace DataCloner.Core.Internal
             var nbSrv = input.ReadInt32();
             for (var i = 0; i < nbSrv; i++)
             {
-                var key = input.ReadInt16();
+                var key = input.ReadString();
                 var value = ExecutionPlan.Deserialize(input, referenceTracking);
                 epBySrv.Add(key, value);
             }
