@@ -6,9 +6,17 @@
                     xmlns:local="using:DataCloner.Universal"
                     xmlns:xc="using:WinRTXamlToolkit.Controls">
 
+    <!--Custom styles-->
+    <x:Double x:Key="TopMenuHeight">40</x:Double>
+    <Color x:Key="PrimaryColor">#0095CE</Color>
+    <SolidColorBrush x:Key="PrimaryColorBrush" Color="{StaticResource PrimaryColor}" />
+    
+    <!--Système styles-->   
     <Color x:Key="SystemAccentColor">#0095CE</Color>
-    <Color x:Key="SystemBaseHighColor">#ffffff</Color>
+    <Color x:Key="SystemBaseHighColor">#FFFFFF</Color>
 
+    <SolidColorBrush x:Key="SystemControlForegroundBaseHighBrush" Color="{StaticResource SystemBaseHighColor}" />
+    <SolidColorBrush x:Key="SystemControlHighlightAltBaseHighBrush" Color="{StaticResource SystemBaseHighColor}" />
 
     <Style x:Key="SplitViewTogglePaneButtonStyle" TargetType="ToggleButton">
         <Setter Property="FontSize" Value="20" />
