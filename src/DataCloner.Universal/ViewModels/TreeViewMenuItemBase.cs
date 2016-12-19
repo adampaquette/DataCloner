@@ -1,6 +1,7 @@
 ﻿using DataCloner.Universal.Commands;
 using DataCloner.Universal.Facedes;
 using DataCloner.Universal.Menu;
+using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 
 namespace DataCloner.Universal.ViewModels
@@ -20,5 +21,6 @@ namespace DataCloner.Universal.ViewModels
         public virtual MenuItemLocation Location => MenuItemLocation.Left;
 
         public virtual MenuItemPosition Position => MenuItemPosition.Start;
+        public MenuFlyout ContextMenu { get; }
     }
 }

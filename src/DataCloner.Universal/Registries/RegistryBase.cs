@@ -8,6 +8,11 @@ namespace DataCloner.Universal.Registries
     public class RegistryBase
     {
         /// <summary>
+        /// The Unity container.
+        /// </summary>
+        protected IUnityContainer Container { get; set; }
+        
+        /// <summary>
         /// Creates a new instance.
         /// </summary>
         /// <param name="container">The Unity container.</param>
@@ -15,10 +20,5 @@ namespace DataCloner.Universal.Registries
         {
             Container = container;
         }
-
-        /// <summary>
-        /// The Unity container.
-        /// </summary>
-        protected IUnityContainer Container { get; set; }
     }
 }

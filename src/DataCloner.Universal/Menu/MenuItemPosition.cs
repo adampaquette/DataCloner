@@ -6,6 +6,7 @@
     public enum MenuItemPosition
     {
         Start,
+        Middle,
         End
     }
 }

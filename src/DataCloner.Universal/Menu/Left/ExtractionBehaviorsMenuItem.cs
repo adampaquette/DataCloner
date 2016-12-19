@@ -6,17 +6,17 @@ using Windows.UI.Xaml.Media.Imaging;
 
 namespace DataCloner.Universal.Menu.Left
 {
-    public class DashboardMenuItem : TreeViewMenuItemBase
+    public class ExtractionBehaviorsMenuItem : TreeViewMenuItemBase
     {
         private INavigationFacade _navigation;
 
-        public DashboardMenuItem(INavigationFacade navigation): base(navigation)
+        public ExtractionBehaviorsMenuItem(INavigationFacade navigation): base(navigation)
         {
             _navigation = navigation;
             Command = new RelayCommand(() => _navigation.NavigateToMainPage());
-            Image = new BitmapImage(new Uri("ms-appx:///Assets/MenuIcons/circle.png"));
+            Image = new BitmapImage(new Uri("ms-appx:///Assets/MenuIcons/symbols.png"));
         }
 
-        public override string Label => "Tableau de board";
+        public override string Label => "Comportements d'extraction";
     }
 }

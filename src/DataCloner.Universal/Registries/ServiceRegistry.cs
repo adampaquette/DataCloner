@@ -1,4 +1,5 @@
 ﻿using DataCloner.Universal.Facedes;
+using DataCloner.Universal.Models;
 using Microsoft.Practices.Unity;
 
 namespace DataCloner.Universal.Registries
@@ -21,6 +22,7 @@ namespace DataCloner.Universal.Registries
         /// </summary>
         public void Configure()
         {
+            Container.RegisterInstance(typeof(IAppContext), new AppModelContext());
             Container.RegisterType<INavigationFacade, NavigationFacade>();
         }
     }

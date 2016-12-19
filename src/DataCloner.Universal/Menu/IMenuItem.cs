@@ -1,4 +1,5 @@
 ﻿using DataCloner.Universal.Commands;
+using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 
 namespace DataCloner.Universal.Menu
@@ -32,5 +33,7 @@ namespace DataCloner.Universal.Menu
         /// Gets the location of the current item in the navigation bar.
         /// </summary>
         MenuItemLocation Location { get; }
+
+        MenuFlyout ContextMenu { get; }
     }
 }

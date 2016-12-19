@@ -94,6 +94,7 @@
     <PRIResource Include="Strings\fr\Resources.resw" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Actions\OpenMenuFlyoutAction.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
@@ -103,12 +104,19 @@
     <Compile Include="Facedes\INavigationFacade.cs" />
     <Compile Include="Facedes\NavigationFacade.cs" />
     <Compile Include="LifeCycle\AppLaunchCounter.cs" />
-    <Compile Include="Menu\Left\ClonerMenuItem.cs" />
-    <Compile Include="Menu\Left\ModelMenuItem.cs" />
-    <Compile Include="Menu\Left\DashboardMenuItem.cs" />
+    <Compile Include="Menu\Left\ExtractionModelsMenuItem.cs" />
+    <Compile Include="Menu\Left\EnvironmentsMenuItem.cs" />
+    <Compile Include="Menu\Left\ExtractionBehaviorsMenuItem.cs" />
+    <Compile Include="Menu\Left\EnvironmentDefinitionMenuItem.cs" />
+    <Compile Include="Menu\Left\SqlServersMenuItem.cs" />
     <Compile Include="Menu\MenuItemLocation.cs" />
+    <Compile Include="Menu\Top\SettingsMenuItem.cs" />
+    <Compile Include="Menu\Top\HelpMenuItem.cs" />
+    <Compile Include="Menu\Top\ClonerMenuItem.cs" />
     <Compile Include="Menu\Top\ToolsMenuItem.cs" />
     <Compile Include="Menu\Top\FileMenuItem.cs" />
+    <Compile Include="Models\AppModelContext.cs" />
+    <Compile Include="Models\IAppContext.cs" />
     <Compile Include="Registries\MenuRegistry.cs" />
     <Compile Include="Registries\RegistryBase.cs" />
     <Compile Include="Registries\ServiceRegistry.cs" />
@@ -167,6 +175,7 @@
     <Content Include="Assets\MenuIcons\symbol.png" />
     <Content Include="Assets\MenuIcons\symbols.png" />
     <Content Include="Assets\MenuIcons\table-1.png" />
+    <Content Include="Assets\MenuIcons\technology.png" />
     <Content Include="Assets\MenuIcons\tool.png" />
     <Content Include="Assets\MenuIcons\web-1.png" />
     <Content Include="Assets\MenuIcons\web.png" />
@@ -210,7 +219,6 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Models\" />
     <Folder Include="Services\" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">

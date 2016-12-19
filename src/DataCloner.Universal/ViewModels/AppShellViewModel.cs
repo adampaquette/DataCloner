@@ -9,9 +9,19 @@ namespace DataCloner.Universal.ViewModels
     {
         public AppShellViewModel()
         {
-            NavigationBarMenuItemsTop = ServiceLocator.Current
+            NavigationBarMenuItemsTopLeft = ServiceLocator.Current
                 .GetAllInstances<IMenuItem>()
-                .Where(i => i.Location == MenuItemLocation.Top)
+                .Where(i => i.Location == MenuItemLocation.Top && i.Position == MenuItemPosition.Start)
+                .ToList();
+
+            NavigationBarMenuItemsTopMiddle = ServiceLocator.Current
+                .GetAllInstances<IMenuItem>()
+                .Where(i => i.Location == MenuItemLocation.Top && i.Position == MenuItemPosition.Middle)
+                .ToList();
+
+            NavigationBarMenuItemsTopRight = ServiceLocator.Current
+                .GetAllInstances<IMenuItem>()
+                .Where(i => i.Location == MenuItemLocation.Top && i.Position == MenuItemPosition.End)
                 .ToList();
 
             NavigationBarMenuItemsLeft = ServiceLocator.Current
@@ -26,7 +36,17 @@ namespace DataCloner.Universal.ViewModels
         /// <summary>
         /// The navigation bar items at the top.
         /// </summary>
-        public List<IMenuItem> NavigationBarMenuItemsTop { get; private set; }
+        public List<IMenuItem> NavigationBarMenuItemsTopLeft { get; private set; }
+
+        /// <summary>
+        /// The navigation bar items at the top.
+        /// </summary>
+        public List<IMenuItem> NavigationBarMenuItemsTopMiddle { get; private set; }
+
+        /// <summary>
+        /// The navigation bar items at the top.
+        /// </summary>
+        public List<IMenuItem> NavigationBarMenuItemsTopRight { get; private set; }
 
         /// <summary>
         /// The navigation bar items at the left.

@@ -12,21 +12,30 @@ namespace DataCloner.Universal.ViewModels.Design
     {
         public AppShellDesignViewModel()
         {
-            NavigationBarMenuItemsTop = new List<IMenuItem>()
+            NavigationBarMenuItemsTopLeft = new List<IMenuItem>()
             {
                 new FileMenuItem(null),
-                new ToolsMenuItem(null)
+                new ToolsMenuItem(null),
+                new HelpMenuItem(null)
+            };
+
+            NavigationBarMenuItemsTopMiddle = new List<IMenuItem>()
+            {
+                new ClonerMenuItem(null)
             };
 
             NavigationBarMenuItemsLeft = new List<IMenuItem>()
             {
-                new DashboardMenuItem(null),
+                new SqlServersMenuItem(null),
                 new ClonerMenuItem(null),
-                new ModelMenuItem(null)
+                new ExtractionModelsMenuItem(null)
             };
         }
 
-        public List<IMenuItem> NavigationBarMenuItemsTop { get; private set; }
+
+        public List<IMenuItem> NavigationBarMenuItemsTopLeft { get; private set; }
+        public List<IMenuItem> NavigationBarMenuItemsTopMiddle { get; private set; }
+        public List<IMenuItem> NavigationBarMenuItemsTopRight { get; private set; }
         public List<IMenuItem> NavigationBarMenuItemsLeft { get; private set; }
     }
 }

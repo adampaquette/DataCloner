@@ -28,11 +28,16 @@ namespace DataCloner.Universal.Registries
             // Top menu
             Container.RegisterTypeWithName<IMenuItem, FileMenuItem>();
             Container.RegisterTypeWithName<IMenuItem, ToolsMenuItem>();
+            Container.RegisterTypeWithName<IMenuItem, HelpMenuItem>();
+            Container.RegisterTypeWithName<IMenuItem, ClonerMenuItem>();
+            Container.RegisterTypeWithName<IMenuItem, SettingsMenuItem>();
 
             // Left menu
-            Container.RegisterTypeWithName<ITreeViewMenuItem, DashboardMenuItem>();
-            Container.RegisterTypeWithName<ITreeViewMenuItem, ClonerMenuItem>();
-            Container.RegisterTypeWithName<ITreeViewMenuItem, ModelMenuItem>();
+            Container.RegisterTypeWithName<ITreeViewMenuItem, SqlServersMenuItem>();
+            Container.RegisterTypeWithName<ITreeViewMenuItem, EnvironmentDefinitionMenuItem>();
+            Container.RegisterTypeWithName<ITreeViewMenuItem, EnvironmentsMenuItem>();
+            Container.RegisterTypeWithName<ITreeViewMenuItem, ExtractionModelsMenuItem>();
+            Container.RegisterTypeWithName<ITreeViewMenuItem, ExtractionBehaviorsMenuItem>();
         }
     }
 }

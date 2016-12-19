@@ -29,7 +29,7 @@ namespace DataCloner.Universal
 
             // Register for events
             Suspending += OnSuspending;
-            UnhandledException += OnUnhandledException;
+            UnhandledException += OnUnhandledExceptionAsync;
         }
 
         /// <summary>
@@ -119,7 +119,7 @@ namespace DataCloner.Universal
         /// </summary>
         /// <param name="sender">The source of the unhandled exception.</param>
         /// <param name="e">Details about the unhandled exception event.</param>
-        private async void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
+        private async void OnUnhandledExceptionAsync(object sender, UnhandledExceptionEventArgs e)
         {
             e.Handled = true;
 

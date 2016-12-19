@@ -5,11 +5,11 @@ using Windows.UI.Xaml.Media.Imaging;
 
 namespace DataCloner.Universal.Menu.Left
 {
-    public class ModelMenuItem : TreeViewMenuItemBase
+    public class ExtractionModelsMenuItem : TreeViewMenuItemBase
     {
         private INavigationFacade _navigation;
 
-        public ModelMenuItem(INavigationFacade navigation): base(navigation)
+        public ExtractionModelsMenuItem(INavigationFacade navigation): base(navigation)
         {
             _navigation = navigation;
             Image = new BitmapImage(new Uri("ms-appx:///Assets/MenuIcons/web.png"));

@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Name="Chinook">
+    <ConnectionStrings>
+        <Add Id="UNI_Chinook" ProviderName="System.Data.SqlClient" ConnectionString="Data Source=(localdb)\MSSQLLocalDB;Integrated Security=True;Initial Catalog=Chinook;" />
+    </ConnectionStrings>
+    <EnvironmentComposition>
+        <Schema Id="chinook" Server="UNI_Chinook" Database="Chinook" Schema="dbo" />
+    </EnvironmentComposition>
+    <Environments>
+        <Environment Name="UNI">
+            <Schema Id="chinook" Server="UNI_Chinook" Database="Chinook" Schema="dbo" />
+        </Environment>
+    </Environments>
+    <ExtractionTemplates>
+        <DbSettings Id="Default" ForSchemaId="chinook" />
+    </ExtractionTemplates>
+    <ExtractionBehaviors>
+        <Behavior Id="Default">
+            <DbSetting Id="1" BasedOn="Default" />
+        </Behavior>
+    </ExtractionBehaviors>
+</Project>
