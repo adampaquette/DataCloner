@@ -14,6 +14,9 @@ namespace DataCloner.Core.Debug
             {
                 var epb = new ExecutionPlanBuilderTest();
 
+
+                
+
                 foreach (var connection in DatabaseInitializer.Connections)
                 {
                     var conn = connection[0] as Connection;
@@ -28,6 +31,10 @@ namespace DataCloner.Core.Debug
                     epb.Cloning_With_ForeignKeyAdd(conn);
                     epb.Cloning_With_ForeignKeyRemove(conn);
                     epb.Cloning_With_DataBuilder(conn);
+
+
+                    var proj = Utils.MakeDefaultProject(conn);
+                    proj.Save("test.dcp");
                 }
 
                 CreateConfiguration();

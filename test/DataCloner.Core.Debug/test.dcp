@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Name="Chinook">
+    <ConnectionStrings>
+        <Add Id="UNI_ChinookAI" ProviderName="MySql.Data.MySqlClient" ConnectionString="Server=localhost;Uid=root;Pwd=toor;Allow User Variables=True" />
+    </ConnectionStrings>
+    <EnvironmentComposition>
+        <Schema Id="chinook" Server="UNI_ChinookAI" Database="ChinookAI" Schema="" />
+    </EnvironmentComposition>
+    <Environments>
+        <Environment Name="UNI">
+            <Schema Id="chinook" Server="UNI_ChinookAI" Database="ChinookAI" Schema="" />
+        </Environment>
+    </Environments>
+    <ExtractionTemplates>
+        <DbSettings Id="Default" ForSchemaId="chinook" />
+    </ExtractionTemplates>
+    <ExtractionBehaviors>
+        <Behavior Id="Default">
+            <DbSetting Id="1" BasedOn="Default" />
+        </Behavior>
+    </ExtractionBehaviors>
+</Project>
