@@ -63,6 +63,7 @@ namespace DataCloner.Core.Data
                 cmd.Parameters.Add(p);
 
                 connection.Open();
+                connection.ChangeDatabase(database);
                 using (var r = cmd.ExecuteReader())
                     MetadataLoader.LoadColumns(r, metadata, serverId, database, TypeConverter);
                 connection.Close();
@@ -81,6 +82,7 @@ namespace DataCloner.Core.Data
                 cmd.Parameters.Add(p);
 
                 connection.Open();
+                connection.ChangeDatabase(database);
                 using (var r = cmd.ExecuteReader())
                     MetadataLoader.LoadForeignKeys(r, metadata, serverId, database);
                 connection.Close();
@@ -99,6 +101,7 @@ namespace DataCloner.Core.Data
                 cmd.Parameters.Add(p);
 
                 connection.Open();
+                connection.ChangeDatabase(database);
                 using (var r = cmd.ExecuteReader())
                     MetadataLoader.LoadUniqueKeys(r, metadata, serverId, database);
                 connection.Close();

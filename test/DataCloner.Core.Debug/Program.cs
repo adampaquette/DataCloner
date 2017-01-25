@@ -12,10 +12,7 @@ namespace DataCloner.Core.Debug
         {
             try
             {
-                var epb = new ExecutionPlanBuilderTest();
-
-
-                
+                var epb = new ExecutionPlanBuilderTest();              
 
                 foreach (var connection in DatabaseInitializer.Connections)
                 {
@@ -35,6 +32,9 @@ namespace DataCloner.Core.Debug
 
                     var proj = Utils.MakeDefaultProject(conn);
                     proj.Save("test.dcp");
+
+                    var json = Newtonsoft.Json.JsonConvert.SerializeObject(proj);
+                    var jsonProj = Newtonsoft.Json.JsonConvert.DeserializeObject<Project>(json);
                 }
 
                 CreateConfiguration();

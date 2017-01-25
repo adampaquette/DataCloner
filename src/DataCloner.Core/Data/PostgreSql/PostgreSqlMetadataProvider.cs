@@ -65,6 +65,7 @@ namespace DataCloner.Core.Data.PostgreSql
         "    COL.TABLE_SCHEMA NOT LIKE 'pg_%' AND " +
         "    COL.TABLE_SCHEMA NOT IN('information_schema') " +
         "ORDER BY " +
+        "    COL.TABLE_SCHEMA, " +
         "    COL.TABLE_NAME, " +
         "    COL.ORDINAL_POSITION;";
 
@@ -95,6 +96,7 @@ namespace DataCloner.Core.Data.PostgreSql
         "WHERE TC.TABLE_CATALOG = @DATABASE " +
         "  AND TC.CONSTRAINT_TYPE = 'FOREIGN KEY' " +
         "ORDER BY " +
+        "    TC.TABLE_SCHEMA, " +
         "    TC.TABLE_NAME, " +
         "    TC.CONSTRAINT_NAME;";
 
@@ -111,6 +113,7 @@ namespace DataCloner.Core.Data.PostgreSql
             "WHERE TC.TABLE_SCHEMA = @DATABASE " +
             "AND TC.CONSTRAINT_TYPE = 'UNIQUE' " +
             "ORDER BY " +
+            "    TC.CONSTRAINT_SCHEMA, " +
             "    TC.TABLE_NAME, " +
             "    TC.CONSTRAINT_NAME;";
 

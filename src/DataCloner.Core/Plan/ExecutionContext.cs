@@ -46,9 +46,11 @@ namespace DataCloner.Core.Plan
                 throw new NullReferenceException(nameof(project.ConnectionStrings));
 
             Behavior behavior = null;
-            var containerFileName = project.Name + "_";
             Configuration.Environment source = null;
             Configuration.Environment destination = null;
+            if (project.Name == null)
+                project.Name = Guid.NewGuid().ToString();
+            var containerFileName = project.Name;
 
             //Hash the selected map, connnectionStrings and the cloner 
             //configuration to see if it match the lasted builded container
@@ -68,7 +70,7 @@ namespace DataCloner.Core.Plan
                     if (destination == null)
                         throw new Exception($"Destination environment name '{context.DestinationEnvironment}' not found in configuration file for application '{project.Name}'!");
 
-                    containerFileName += context.SourceEnvironment + "_" + context.DestinationEnvironment;
+                    containerFileName += "_" + context.SourceEnvironment + "_" + context.DestinationEnvironment;
                     SerializationHelper.Serialize(configData, source);
 
                     //Behavior
@@ -110,17 +112,19 @@ namespace DataCloner.Core.Plan
             }
 
             //Else we rebuild the container
-            var schemas = new HashSet<SchemaVar>(source.Schemas);
+            HashSet<SchemaVar> schemas = null;
+            if (source != null && source.Schemas != null)
+                schemas = new HashSet<SchemaVar>(source.Schemas);
+
             metadatas = MetadataBuilder.BuildMetadata(project.ConnectionStrings, behavior, schemas);
             InitExecutionContext(project, source, destination, currentHash, metadatas);
 
             if ((context == null || !context.UseInMemoryCacheOnly))
                 Save(containerFileName);
-
         }
 
-        private void InitExecutionContext(Project project, Configuration.Environment sourceEnvir, 
-                                          Configuration.Environment destinationEnvir, 
+        private void InitExecutionContext(Project project, Configuration.Environment sourceEnvir,
+                                          Configuration.Environment destinationEnvir,
                                           string configFileHash, Metadatas metadatas = null)
         {
             ExecutionContextCacheHash = configFileHash;
@@ -129,6 +133,9 @@ namespace DataCloner.Core.Plan
             ConnectionsContext.Initialize(project.ConnectionStrings, metadatas);
 
             //Init maps
+            if (sourceEnvir == null || sourceEnvir.Schemas == null)
+                return;
+
             foreach (var sourceSchema in sourceEnvir.Schemas)
             {
                 var destinationSchema = destinationEnvir.Schemas.FirstOrDefault(s => s.Id == sourceSchema.Id);

@@ -17,7 +17,7 @@ namespace DataCloner.Core.Data.MsSql
             "    COL.TABLE_NAME, " +
             "    COL.COLUMN_NAME, " +
             "    COL.DATA_TYPE, " +
-            "    COLUMNPROPERTY(object_id(COL.TABLE_NAME), COL.COLUMN_NAME, 'Precision') AS 'Precision',  " +
+            "    ISNULL(COLUMNPROPERTY(object_id(COL.TABLE_NAME), COL.COLUMN_NAME, 'Precision'), 0) AS 'Precision',  " +
             "    ISNULL(COLUMNPROPERTY(object_id(COL.TABLE_NAME), COL.COLUMN_NAME, 'Scale'), 0) AS 'Scale',  " +
             "    CAST(0 AS BIT) AS IsUnsigned, " +
             "    CAST(ISNULL(( " +
@@ -33,7 +33,7 @@ namespace DataCloner.Core.Data.MsSql
             "            KCU.COLUMN_NAME = COL.COLUMN_NAME AND " +
             "            TC.CONSTRAINT_TYPE = 'PRIMARY KEY' " +
             "    ), 0) AS BIT) AS 'IsPrimaryKey', " +
-            "    CAST(COLUMNPROPERTY(object_id(COL.TABLE_NAME), COL.COLUMN_NAME, 'IsIdentity') AS BIT) AS 'IsAutoIncrement' " +
+            "    ISNULL(CAST(COLUMNPROPERTY(object_id(COL.TABLE_NAME), COL.COLUMN_NAME, 'IsIdentity') AS BIT), 0) AS 'IsAutoIncrement' " +
             "FROM INFORMATION_SCHEMA.COLUMNS COL " +
             "INNER JOIN INFORMATION_SCHEMA.TABLES TBL ON TBL.TABLE_CATALOG = COL.TABLE_CATALOG AND " +
             "                                            TBL.TABLE_SCHEMA = COL.TABLE_SCHEMA AND " +
@@ -41,6 +41,7 @@ namespace DataCloner.Core.Data.MsSql
             "                                            TBL.TABLE_TYPE = 'BASE TABLE' " +
             "WHERE COL.TABLE_CATALOG = @DATABASE " +
             "ORDER BY " +
+            "    COL.TABLE_SCHEMA, " +
             "    COL.TABLE_NAME, " +
             "    COL.ORDINAL_POSITION;";
 
@@ -71,6 +72,7 @@ namespace DataCloner.Core.Data.MsSql
             "WHERE TC.TABLE_CATALOG = @DATABASE " +
             "  AND TC.CONSTRAINT_TYPE = 'FOREIGN KEY' " +
             "ORDER BY " +
+            "    TC.TABLE_SCHEMA, " +
             "    TC.TABLE_NAME, " +
             "    TC.CONSTRAINT_NAME;";
 
@@ -87,6 +89,7 @@ namespace DataCloner.Core.Data.MsSql
             "WHERE TC.TABLE_SCHEMA = @DATABASE " +
             "AND TC.CONSTRAINT_TYPE = 'UNIQUE' " +
             "ORDER BY " +
+            "    TC.CONSTRAINT_SCHEMA, " +
             "    TC.TABLE_NAME, " +
             "    TC.CONSTRAINT_NAME;";
 

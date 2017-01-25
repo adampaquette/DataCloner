@@ -202,8 +202,9 @@ namespace DataCloner.Core.Metadata.Context
                 //Si on change de schema
                 if (currentSchema != previousSchema)
                 {
-                    metadata[serverId, database, currentSchema] = schemaMetadata;
+                    metadata[serverId, database, previousSchema] = schemaMetadata;
                     schemaMetadata = new SchemaMetadata();
+                    previousSchema = currentSchema;
                 }
 
                 //Ajoute la colonne

@@ -1,0 +1,222 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{134CE83E-4A78-4193-AFC6-51E932C77886}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>DataCloner.Core</RootNamespace>
+    <AssemblyName>DataCloner.Core</AssemblyName>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
+    <TargetPlatformVersion>10.0.14393.0</TargetPlatformVersion>
+    <TargetPlatformMinVersion>10.0.10586.0</TargetPlatformMinVersion>
+    <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <PlatformTarget>x86</PlatformTarget>
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
+    <PlatformTarget>ARM</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\ARM\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>ARM</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|ARM'">
+    <PlatformTarget>ARM</PlatformTarget>
+    <OutputPath>bin\ARM\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>ARM</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <PlatformTarget>x64</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <PlatformTarget>x64</PlatformTarget>
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
+    <None Include="project.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Clone\Query.cs" />
+    <Compile Include="ColumnsWithValue.cs" />
+    <Compile Include="Configuration\Behavior.cs" />
+    <Compile Include="Configuration\BehaviorBuilder.cs" />
+    <Compile Include="Configuration\Cascade.cs" />
+    <Compile Include="Configuration\ConfigurationException.cs" />
+    <Compile Include="Configuration\Connection.cs" />
+    <Compile Include="Configuration\DataBuilder.cs" />
+    <Compile Include="Configuration\DbSettings.cs" />
+    <Compile Include="Configuration\DerivativeTable.cs" />
+    <Compile Include="Configuration\DerivativeTableGlobal.cs" />
+    <Compile Include="Configuration\Environment.cs" />
+    <Compile Include="Configuration\ForeignKeyAdd.cs" />
+    <Compile Include="Configuration\ForeignKeyColumn.cs" />
+    <Compile Include="Configuration\ForeignKeyRemove.cs" />
+    <Compile Include="Configuration\ForeignKeyRemoveColumn.cs" />
+    <Compile Include="Configuration\ForeignKeys.cs" />
+    <Compile Include="Configuration\Project.cs" />
+    <Compile Include="Configuration\Table.cs" />
+    <Compile Include="Configuration\Variable.cs" />
+    <Compile Include="ConnectionContext.cs" />
+    <Compile Include="ConnectionsContext.cs" />
+    <Compile Include="ConnectionsContextExtensions.cs" />
+    <Compile Include="Data\DbProviderFactories.cs" />
+    <Compile Include="Data\Generator\IInsertWriter.cs" />
+    <Compile Include="Data\Generator\InsertWriter.cs" />
+    <Compile Include="Data\Generator\ISelectWriter.cs" />
+    <Compile Include="Data\Generator\ISqlWriter.cs" />
+    <Compile Include="Data\Generator\IUpdateWriter.cs" />
+    <Compile Include="Data\Generator\MsSql\MsSqlWriter.cs" />
+    <Compile Include="Data\Generator\MySql\MySqlWriter.cs" />
+    <Compile Include="Data\Generator\PostgreSql\PostgreSqlSelectWriter.cs" />
+    <Compile Include="Data\Generator\PostgreSql\PostgreSqlWriter.cs" />
+    <Compile Include="Data\Generator\SelectWriter.cs" />
+    <Compile Include="Data\Generator\UpdateWriter.cs" />
+    <Compile Include="Data\IMetadataProvider.cs" />
+    <Compile Include="Data\IQueryProvider.cs" />
+    <Compile Include="Data\IQueryProxy.cs" />
+    <Compile Include="Data\ISqlTypeConverter.cs" />
+    <Compile Include="Data\MetadataProvider.cs" />
+    <Compile Include="Data\MetadataProviderFactory.cs" />
+    <Compile Include="Data\MsSql\MsSqlMetadataProvider.cs" />
+    <Compile Include="Data\MsSql\MsSqlQueryProvider.cs" />
+    <Compile Include="Data\MsSql\MsSqlSqlTypeConverter.cs" />
+    <Compile Include="Data\MySql\MySqlMetadataProvider.cs" />
+    <Compile Include="Data\MySql\MySqlQueryProvider.cs" />
+    <Compile Include="Data\MySql\MySqlTypeConverter.cs" />
+    <Compile Include="Data\PostgreSql\PostgreSqlMetadataProvider.cs" />
+    <Compile Include="Data\PostgreSql\PostgreSqlQueryProvider.cs" />
+    <Compile Include="Data\PostgreSql\PostgreSqlTypeConverter.cs" />
+    <Compile Include="Data\QueryProvider.cs" />
+    <Compile Include="Data\QueryProviderFactory.cs" />
+    <Compile Include="Data\SqlType.cs" />
+    <Compile Include="Data\SqlTypeConverter.cs" />
+    <Compile Include="DbEngine.cs" />
+    <Compile Include="DerivativeTableAccess.cs" />
+    <Compile Include="Framework\ArrayExtensions.cs" />
+    <Compile Include="Framework\FastAccessList.cs" />
+    <Compile Include="Framework\KeyGenerator.cs" />
+    <Compile Include="Framework\SerializationHelper.cs" />
+    <Compile Include="Framework\SqlExtensions.cs" />
+    <Compile Include="Framework\StructuralEqualityComparer.cs" />
+    <Compile Include="Internal\CircularKeyJob.cs" />
+    <Compile Include="Internal\ExecutionPlan.cs" />
+    <Compile Include="Internal\ExecutionPlanByServer.cs" />
+    <Compile Include="Internal\ExecutionStep.cs" />
+    <Compile Include="Internal\InsertStep.cs" />
+    <Compile Include="Internal\KeyRelationship.cs" />
+    <Compile Include="Internal\SqlVariable.cs" />
+    <Compile Include="Internal\UpdateStep.cs" />
+    <Compile Include="Metadata\ColumnDefenition.cs" />
+    <Compile Include="Metadata\Context\MetadataBuilder.cs" />
+    <Compile Include="Metadata\Context\MetadataExtensions.cs" />
+    <Compile Include="Metadata\Context\MetadataLoader.cs" />
+    <Compile Include="Metadata\Context\Metadatas.cs" />
+    <Compile Include="Metadata\DatabaseMetadata.cs" />
+    <Compile Include="Metadata\DerivativeTable.cs" />
+    <Compile Include="Metadata\ForeignKey.cs" />
+    <Compile Include="Metadata\ForeignKeyColumn.cs" />
+    <Compile Include="Metadata\SchemaMetadata.cs" />
+    <Compile Include="Metadata\ServerMetadata.cs" />
+    <Compile Include="Metadata\TableMetadata.cs" />
+    <Compile Include="Metadata\UniqueKey.cs" />
+    <Compile Include="Plan\CloningContext.cs" />
+    <Compile Include="Plan\ExecutionContext.cs" />
+    <Compile Include="Plan\ExecutionPlanBuilder.cs" />
+    <Compile Include="Plan\IExecutionContext.cs" />
+    <Compile Include="Plan\QueryCommitingEvent.cs" />
+    <Compile Include="Plan\ResultSet.cs" />
+    <Compile Include="PlugIn\AutoIncrementDataBuilder.cs" />
+    <Compile Include="PlugIn\DataBuilder.cs" />
+    <Compile Include="PlugIn\IDataBuilder.cs" />
+    <Compile Include="PlugIn\StringDataBuilder.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RowIdentifier.cs" />
+    <Compile Include="SchemaIdentifier.cs" />
+    <Compile Include="StatusChangedEvent.cs" />
+    <Compile Include="TableIdentifier.cs" />
+    <EmbeddedResource Include="Properties\DataCloner.Core.rd.xml" />
+  </ItemGroup>
+  <ItemGroup />
+  <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
+    <VisualStudioVersion>14.0</VisualStudioVersion>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
