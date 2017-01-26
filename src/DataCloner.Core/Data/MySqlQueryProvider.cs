@@ -16,7 +16,6 @@ namespace DataCloner.Core.Data.MySql
             "SET UNIQUE_CHECKS=@ACTIVE; SET FOREIGN_KEY_CHECKS=@ACTIVE;"; 
 
         public override DbEngine Engine => DbEngine.MySql;
-        public override ISqlTypeConverter TypeConverter { get; }
         public override ISqlWriter SqlWriter { get; }
 
         public static MySqlQueryProvider Instance
@@ -31,7 +30,6 @@ namespace DataCloner.Core.Data.MySql
 
         public MySqlQueryProvider()
         {
-            TypeConverter = new MySqlTypeConverter();
             SqlWriter = new MySqlWriter();
         }      
     }

@@ -10,8 +10,6 @@ namespace DataCloner.Core.Data
     {
         event QueryCommitingEventHandler QueryCommmiting;
 
-        ISqlTypeConverter TypeConverter { get; }
-
         ISqlWriter SqlWriter { get; }
 
         DbEngine Engine { get; }

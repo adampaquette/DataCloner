@@ -20,7 +20,6 @@ namespace DataCloner.Core.Data.MsSql
             "END;";
 
         public override DbEngine Engine => DbEngine.SqlServer; 
-        public override ISqlTypeConverter TypeConverter { get; }
         public override ISqlWriter SqlWriter { get; }
 
         public static MsSqlQueryProvider Instance
@@ -35,7 +34,6 @@ namespace DataCloner.Core.Data.MsSql
 
         public MsSqlQueryProvider()
         {
-            TypeConverter = new MsSqlTypeConverter();
             SqlWriter = new MsSqlWriter();
         }
     }

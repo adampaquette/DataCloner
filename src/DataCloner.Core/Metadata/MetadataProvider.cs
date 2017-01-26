@@ -51,6 +51,7 @@ namespace DataCloner.Core.Data
             return databases.ToArray();
         }
 
+        //TODO : Remplacer l'objet Metadatas par ServerMetadata car l'objet Metadatas est réservé au contexte courant de clonage avec plusieurs serveurs SQL différents
         public void LoadColumns(IDbConnection connection, Metadatas metadata, string serverId, string database)
         {
             using (var cmd = connection.CreateCommand())
@@ -70,6 +71,7 @@ namespace DataCloner.Core.Data
             }
         }
 
+        //TODO : Remplacer l'objet Metadatas par ServerMetadata car l'objet Metadatas est réservé au contexte courant de clonage avec plusieurs serveurs SQL différents
         public void LoadForeignKeys(IDbConnection connection, Metadatas metadata, string serverId, string database)
         {
             using (var cmd = connection.CreateCommand())
@@ -89,6 +91,7 @@ namespace DataCloner.Core.Data
             }
         }
 
+        //TODO : Remplacer l'objet Metadatas par ServerMetadata car l'objet Metadatas est réservé au contexte courant de clonage avec plusieurs serveurs SQL différents
         public void LoadUniqueKeys(IDbConnection connection, Metadatas metadata, string serverId, string database)
         {
             using (var cmd = connection.CreateCommand())

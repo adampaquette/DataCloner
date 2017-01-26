@@ -25,7 +25,6 @@ namespace DataCloner.Core.Data
 
         public event QueryCommitingEventHandler QueryCommmiting;
         public abstract DbEngine Engine { get; }
-        public abstract ISqlTypeConverter TypeConverter { get; }
         public abstract ISqlWriter SqlWriter { get; }
 
         public object GetLastInsertedPk(IDbConnection connection)

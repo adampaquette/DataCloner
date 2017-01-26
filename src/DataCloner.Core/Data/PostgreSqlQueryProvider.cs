@@ -18,7 +18,6 @@ namespace DataCloner.Core.Data.PostgreSql
         }        
 
         public override DbEngine Engine => DbEngine.PostgreSql;
-        public override ISqlTypeConverter TypeConverter { get; }
         public override ISqlWriter SqlWriter { get; }
 
         public static PostgreSqlQueryProvider Instance
@@ -33,7 +32,6 @@ namespace DataCloner.Core.Data.PostgreSql
 
         public PostgreSqlQueryProvider()
         {
-            TypeConverter = new PostgreSqlTypeConverter();
             SqlWriter = new PostgreSqlWriter();
         }
     }
