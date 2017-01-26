@@ -8,6 +8,8 @@ using System.Text;
 
 class Program
 {
+    static double NbRowsFetch;
+
     /// <summary>
     /// DataCloner Hello World program
     /// </summary>
@@ -27,6 +29,9 @@ class Program
         builder.StatusChanged += Builder_StatusChanged;
 
         Console.WriteLine("Retreiving rows to the execution plan");
+
+        NbRowsFetch = 0;
+        var startTime = DateTime.Now.Ticks;
         builder.Append(new RowIdentifier
         {
             ServerId = "UNI",
@@ -35,11 +40,18 @@ class Program
             Table = "Customer",
             Columns = new ColumnsWithValue { { "CustomerId", 1 } }
         });
+        var endTime = DateTime.Now.Ticks;
 
         //Creating a mew clone of the data inside the database
         var query = builder.Compile();
         query.Commiting += Query_Commiting;
         query.Execute();
+
+        //Results
+        var msElapsed = new TimeSpan(endTime - startTime).TotalMilliseconds;
+        Console.WriteLine($"Rows fetched : {NbRowsFetch}");
+        Console.WriteLine($"Completed in : {msElapsed} ms");
+        Console.WriteLine($"Row per second : {NbRowsFetch / (msElapsed / 1000)}");
 
         Console.ReadKey();
     }
@@ -70,6 +82,7 @@ class Program
             sb.Append(")");
 
             Console.WriteLine(sb.ToString());
+            NbRowsFetch++;
         }
         //Traveling down the tree
         //Rows using a table PK as a FK inside their table
@@ -77,7 +90,7 @@ class Program
         {
             Console.BackgroundColor = ConsoleColor.Black;
             Console.ForegroundColor = ConsoleColor.Blue;
-            Console.WriteLine(new string(' ', 4 * (e.Level-1)) + "FetchingDerivatives");
+            Console.WriteLine(new string(' ', 4 * (e.Level - 1)) + "Retreiving derivatives");
         }
 
         Console.ResetColor();
