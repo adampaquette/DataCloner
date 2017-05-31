@@ -52,7 +52,6 @@ builder.Append(new RowIdentifier
 
 //Creating a mew clone of the data inside the database.
 var query = builder.Compile();
-query.Commiting += Query_Commiting;
 query.Execute();
 ```
 
