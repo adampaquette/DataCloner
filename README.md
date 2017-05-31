@@ -1,9 +1,9 @@
 # DataCloner
-Tool (API/GUI) for cloning SQL data precisely. Starting rows with their dependencies and their derivatives.
+Tool built with .NET Core (API/GUI) for cloning SQL data precisely. Starting rows with their dependencies and their derivatives.
 
 ## Overview
 
-It is a software whose core is composed of a recursive algorithm which is based on a starting line of a database to go to recover all the dependencies and derived from it. In the end, it is an integral record that can be saved in a file for future loading or can be executed directly into a database with the same table structure.
+This software's core is composed of a recursive algorithm based on a starting row of a database and then will recover all of the dependencies and the derived from the row. In the end, it is an integral record that can be saved in a file for future loading or can be executed directly into a database with the same table structure.
 
 ## Who is the application for?
 
@@ -26,7 +26,13 @@ It is a software whose core is composed of a recursive algorithm which is based 
 * Jamming of sensitive data.
 * Support of similar source / destination tables (plus or minus columns).
 
+## .NET Core - API
+
+Source : src\NetCore\DataCloner.Core
+
 ## .NET Core - API use example
+
+HelloWorld project : src\NetCore\DataCloner.HelloWorldConsole
 
 ```cs
 //Minimal configuration
@@ -57,4 +63,7 @@ query.Execute();
 
 ## Windows 10 - UWP GUI
 
+Source : src\Universal\DataCloner.Universal
+
 ![DataCloner GUI](ui/photoshop/render/DataClonerDesktop_Cloner4.jpg)
+
