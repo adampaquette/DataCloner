@@ -151,20 +151,20 @@ Cas le plus extrême :
     <ConnectionStrings>
         <Add Id="1" Name="UNI" ProviderName="MySql.Data.MySqlClient" ConnectionString="server=UNI;user Id=root; password=toor; database=master; pooling=true" />
         <Add Id="2" Name="FON" ProviderName="System.Data.Sqlite" ConnectionString="server=FON;user Id=root; password=toor; database=master; pooling=true" />
-        <Add Id="3" Name="PROD_PGIS" ProviderName="System.Data.Oracle" ConnectionString="server=PROD_PGIS;user Id=root; password=toor; database=master; pooling=true" />
-        <Add Id="4" Name="PROD_ARIEL" ProviderName="System.Data.PosgreSql" ConnectionString="server=PROD_ARIEL;user Id=root; password=toor; database=master; pooling=true" />
-        <Add Id="5" Name="PROD_SIEBEL" ProviderName="System.Data.MsSql" ConnectionString="server=PROD_SIEBEL;user Id=root; password=toor; database=master; pooling=true" />
+        <Add Id="3" Name="PROD_APP1" ProviderName="System.Data.Oracle" ConnectionString="server=PROD_APP1;user Id=root; password=toor; database=master; pooling=true" />
+        <Add Id="4" Name="PROD_APP2" ProviderName="System.Data.PosgreSql" ConnectionString="server=PROD_APP2;user Id=root; password=toor; database=master; pooling=true" />
+        <Add Id="5" Name="PROD_APP3" ProviderName="System.Data.MsSql" ConnectionString="server=PROD_APP3;user Id=root; password=toor; database=master; pooling=true" />
     </ConnectionStrings>
     <Variables>
-        <Var Name="PGIS_FROM" Server="1" Database="pgis" Schema="dbo" />
-        <Var Name="ARIEL_FROM" Server="1" Database="ariel" Schema="dbo" />
-        <Var Name="SIEBEL_FROM" Server="1" Database="siebel" Schema="dbo" />
-        <Var Name="PGIS_TO" Server="1" Database="pgis" Schema="dbo" />
-        <Var Name="ARIEL_TO" Server="1" Database="ariel" Schema="dbo" />
-        <Var Name="SIEBEL_TO" Server="1" Database="siebel" Schema="dbo" />
+        <Var Name="APP1_FROM" Server="1" Database="APP1" Schema="dbo" />
+        <Var Name="APP2_FROM" Server="1" Database="APP2" Schema="dbo" />
+        <Var Name="APP3_FROM" Server="1" Database="APP3" Schema="dbo" />
+        <Var Name="APP1_TO" Server="1" Database="APP1" Schema="dbo" />
+        <Var Name="APP2_TO" Server="1" Database="APP2" Schema="dbo" />
+        <Var Name="APP3_TO" Server="1" Database="APP3" Schema="dbo" />
     </Variables>
     <Templates>
-        <DbSettings Id="1" Var="PGIS_FROM" Description="Configuration par défaut du serveur PGIS, schéma DBO." BasedOn="0">
+        <DbSettings Id="1" Var="APP1_FROM" Description="Configuration par défaut du serveur APP1, schéma DBO." BasedOn="0">
             <Table Name="domaineValeur" IsStatic="True">
                 <DerativeTables GlobalAccess="NotSet" GlobalCascade="NotSet" />
                 <DataBuilders />
@@ -174,7 +174,7 @@ Cas le plus extrême :
             </Table>
             <Table Name="transmission" IsStatic="NotSet">
                 <DerativeTables GlobalAccess="Forced" GlobalCascade="True">
-                    <Table DestinationVar="PGIS_TO" Name="demande" Access="NotSet" Cascade="NotSet">
+                    <Table DestinationVar="APP1_TO" Name="demande" Access="NotSet" Cascade="NotSet">
                         <Restriction>S.CreatedDate > NOW()</Restriction>
                     </Table>
                 </DerativeTables>
@@ -182,7 +182,7 @@ Cas le plus extrême :
                     <Column Name="noreferencetransmission" BuilderName="Client.Builder.CreatePK" />
                 </DataBuilders>
                 <ForeignKeys>
-                    <Add DestinationVar="SIEBEL_TO" Table="s_srv_req">
+                    <Add DestinationVar="APP3_TO" Table="s_srv_req">
                         <Column NameFrom="noreferencetransmission" NameTo="sr_num" />
                     </Add>
                     <Remove />
@@ -194,15 +194,15 @@ Cas le plus extrême :
                     <Column Name="col1" BuilderName="Client.Builder.Random" />
                 </DataBuilders>
                 <ForeignKeys>
-                    <Add DestinationVar="ARIEL_TO" Table="s_srv_req">
+                    <Add DestinationVar="APP2_TO" Table="s_srv_req">
                         <Column NameFrom="noreferencetransmission" NameTo="sr_num" />
                     </Add>
                     <Remove />
                 </ForeignKeys>
             </Table>
         </DbSettings>
-        <DbSettings Id="2" Var="ARIEL_FROM" BasedOn="0" />
-        <DbSettings Id="3" Var="SIEBEL_FROM" BasedOn="0" />
+        <DbSettings Id="2" Var="APP2_FROM" BasedOn="0" />
+        <DbSettings Id="3" Var="APP3_FROM" BasedOn="0" />
     </Templates>
     <Behaviors>
         <Behavior Id="1" Name="Default" Description="Configuration par défaut">
@@ -214,50 +214,50 @@ Cas le plus extrême :
     </Behaviors>
     <Maps>
         <MapFrom Name="UNI" UsableBehaviours="1">
-            <Var Name="PGIS_FROM" Server="1" Database="pgis" Schema="dbo" />
-            <Var Name="ARIEL_FROM" Server="1" Database="ariel" Schema="dbo" />
-            <Var Name="SIEBEL_FROM" Server="1" Database="siebel" Schema="dbo" />
+            <Var Name="APP1_FROM" Server="1" Database="APP1" Schema="dbo" />
+            <Var Name="APP2_FROM" Server="1" Database="APP2" Schema="dbo" />
+            <Var Name="APP3_FROM" Server="1" Database="APP3" Schema="dbo" />
             <To Name="UNI">
-                <Var Name="PGIS_TO" Server="1" Database="pgis" Schema="dbo" />
-                <Var Name="ARIEL_TO" Server="1" Database="ariel" Schema="dbo" />
-                <Var Name="SIEBEL_TO" Server="1" Database="siebel" Schema="dbo" />
+                <Var Name="APP1_TO" Server="1" Database="APP1" Schema="dbo" />
+                <Var Name="APP2_TO" Server="1" Database="APP2" Schema="dbo" />
+                <Var Name="APP3_TO" Server="1" Database="APP3" Schema="dbo" />
             </To>
             <To Name="FON">
-                <Var Name="PGIS_TO" Server="2" Database="pgis" Schema="dbo" />
-                <Var Name="ARIEL_TO" Server="2" Database="ariel" Schema="dbo" />
-                <Var Name="SIEBEL_TO" Server="2" Database="siebel" Schema="dbo" />
+                <Var Name="APP1_TO" Server="2" Database="APP1" Schema="dbo" />
+                <Var Name="APP2_TO" Server="2" Database="APP2" Schema="dbo" />
+                <Var Name="APP3_TO" Server="2" Database="APP3" Schema="dbo" />
             </To>
             <To Name="PROD">
-                <Var Name="PGIS_TO" Server="3" Database="pgis" Schema="dbo" />
-                <Var Name="ARIEL_TO" Server="4" Database="ariel" Schema="dbo" />
-                <Var Name="SIEBEL_TO" Server="5" Database="siebel" Schema="dbo" />
+                <Var Name="APP1_TO" Server="3" Database="APP1" Schema="dbo" />
+                <Var Name="APP2_TO" Server="4" Database="APP2" Schema="dbo" />
+                <Var Name="APP3_TO" Server="5" Database="APP3" Schema="dbo" />
             </To>
-            <Road Source="PGIS_FROM" Destination="PGIS_TO" />
-            <Road Source="ARIEL_FROM" Destination="PGIS_TO" />
-            <Road Source="SIEBEL_FROM" Destination="PGIS_TO" />
+            <Road Source="APP1_FROM" Destination="APP1_TO" />
+            <Road Source="APP2_FROM" Destination="APP1_TO" />
+            <Road Source="APP3_FROM" Destination="APP1_TO" />
         </MapFrom>
         <MapFrom Name="PROD" UsableBehaviours="1">
-            <Var Name="PGIS_FROM" Server="3" Database="pgis" Schema="dbo" />
-            <Var Name="ARIEL_FROM" Server="4" Database="ariel" Schema="dbo" />
-            <Var Name="SIEBEL_FROM" Server="5" Database="siebel" Schema="dbo" />
+            <Var Name="APP1_FROM" Server="3" Database="APP1" Schema="dbo" />
+            <Var Name="APP2_FROM" Server="4" Database="APP2" Schema="dbo" />
+            <Var Name="APP3_FROM" Server="5" Database="APP3" Schema="dbo" />
             <To Name="UNI">
-                <Var Name="PGIS_TO" Server="1" Database="pgis" Schema="dbo" />
-                <Var Name="ARIEL_TO" Server="1" Database="ariel" Schema="dbo" />
-                <Var Name="SIEBEL_TO" Server="1" Database="siebel" Schema="dbo" />
+                <Var Name="APP1_TO" Server="1" Database="APP1" Schema="dbo" />
+                <Var Name="APP2_TO" Server="1" Database="APP2" Schema="dbo" />
+                <Var Name="APP3_TO" Server="1" Database="APP3" Schema="dbo" />
             </To>
             <To Name="FON">
-                <Var Name="PGIS_TO" Server="2" Database="pgis" Schema="dbo" />
-                <Var Name="ARIEL_TO" Server="2" Database="ariel" Schema="dbo" />
-                <Var Name="SIEBEL_TO" Server="2" Database="siebel" Schema="dbo" />
+                <Var Name="APP1_TO" Server="2" Database="APP1" Schema="dbo" />
+                <Var Name="APP2_TO" Server="2" Database="APP2" Schema="dbo" />
+                <Var Name="APP3_TO" Server="2" Database="APP3" Schema="dbo" />
             </To>
             <To Name="PROD">
-                <Var Name="PGIS_TO" Server="3" Database="pgis" Schema="dbo" />
-                <Var Name="ARIEL_TO" Server="4" Database="ariel" Schema="dbo" />
-                <Var Name="SIEBEL_TO" Server="5" Database="siebel" Schema="dbo" />
+                <Var Name="APP1_TO" Server="3" Database="APP1" Schema="dbo" />
+                <Var Name="APP2_TO" Server="4" Database="APP2" Schema="dbo" />
+                <Var Name="APP3_TO" Server="5" Database="APP3" Schema="dbo" />
             </To>
-            <Road Source="PGIS_FROM" Destination="PGIS_TO" />
-            <Road Source="ARIEL_FROM" Destination="PGIS_TO" />
-            <Road Source="SIEBEL_FROM" Destination="PGIS_TO" />
+            <Road Source="APP1_FROM" Destination="APP1_TO" />
+            <Road Source="APP2_FROM" Destination="APP1_TO" />
+            <Road Source="APP3_FROM" Destination="APP1_TO" />
         </MapFrom>
     </Maps>
 </Project>
@@ -275,38 +275,38 @@ Cas le plus extrême :
     <ConnectionStrings>
         <Add Id="UNI" Description="Unitaire" ProviderName="MySql.Data.MySqlClient" ConnectionString="server=UNI;user Id=root; password=toor; database=master; pooling=true" />
         <Add Id="FON" Description="Fonctionnel" ProviderName="System.Data.Sqlite" ConnectionString="server=FON;user Id=root; password=toor; database=master; pooling=true" />
-        <Add Id="PROD_PGIS" Description="Production Pgis" ProviderName="System.Data.Oracle" ConnectionString="server=PROD_PGIS;user Id=root; password=toor; database=master; pooling=true" />
-        <Add Id="PROD_ARIEL" Description="Production Ariel" ProviderName="System.Data.PosgreSql" ConnectionString="server=PROD_ARIEL;user Id=root; password=toor; database=master; pooling=true" />
-        <Add Id="PROD_SIEBEL" Description="Production Siebel" ProviderName="System.Data.MsSql" ConnectionString="server=PROD_SIEBEL;user Id=root; password=toor; database=master; pooling=true" />
+        <Add Id="PROD_APP1" Description="Production APP1" ProviderName="System.Data.Oracle" ConnectionString="server=PROD_APP1;user Id=root; password=toor; database=master; pooling=true" />
+        <Add Id="PROD_APP2" Description="Production APP2" ProviderName="System.Data.PosgreSql" ConnectionString="server=PROD_APP2;user Id=root; password=toor; database=master; pooling=true" />
+        <Add Id="PROD_APP3" Description="Production APP3" ProviderName="System.Data.MsSql" ConnectionString="server=PROD_APP3;user Id=root; password=toor; database=master; pooling=true" />
     </ConnectionStrings>
     <EnvironmentComposition>
-        <Schema Id="PGIS" Server="UNI" Database="pgis" Schema="dbo" />
-        <Schema Id="ARIEL" Server="UNI" Database="ariel" Schema="dbo" />
-        <Schema Id="SIEBEL" Server="UNI" Database="siebel" Schema="dbo" />
+        <Schema Id="APP1" Server="UNI" Database="APP1" Schema="dbo" />
+        <Schema Id="APP2" Server="UNI" Database="APP2" Schema="dbo" />
+        <Schema Id="APP3" Server="UNI" Database="APP3" Schema="dbo" />
     </EnvironmentComposition>
     <Environments>
         <Environment Name="UNI">
-            <Schema Id="PGIS" Server="UNI" Database="pgis" Schema="dbo" />
-            <Schema Id="ARIEL" Server="UNI" Database="ariel" Schema="dbo" />
-            <Schema Id="SIEBEL" Server="UNI" Database="siebel" Schema="dbo" />
+            <Schema Id="APP1" Server="UNI" Database="APP1" Schema="dbo" />
+            <Schema Id="APP2" Server="UNI" Database="APP2" Schema="dbo" />
+            <Schema Id="APP3" Server="UNI" Database="APP3" Schema="dbo" />
         </Environment>
         <Environment Name="FON">
-            <Schema Id="PGIS" Server="FON" Database="pgis" Schema="dbo" />
-            <Schema Id="ARIEL" Server="FON" Database="ariel" Schema="dbo" />
-            <Schema Id="SIEBEL" Server="FON" Database="siebel" Schema="dbo" />
+            <Schema Id="APP1" Server="FON" Database="APP1" Schema="dbo" />
+            <Schema Id="APP2" Server="FON" Database="APP2" Schema="dbo" />
+            <Schema Id="APP3" Server="FON" Database="APP3" Schema="dbo" />
         </Environment>
         <Environment Name="PROD">
-            <Schema Id="PGIS" Server="PROD_PGIS" Database="pgis" Schema="dbo" />
-            <Schema Id="ARIEL" Server="PROD_ARIEL" Database="ariel" Schema="dbo" />
-            <Schema Id="SIEBEL" Server="PROD_SIEBEL" Database="siebel" Schema="dbo" />
+            <Schema Id="APP1" Server="PROD_APP1" Database="APP1" Schema="dbo" />
+            <Schema Id="APP2" Server="PROD_APP2" Database="APP2" Schema="dbo" />
+            <Schema Id="APP3" Server="PROD_APP3" Database="APP3" Schema="dbo" />
         </Environment>
     </Environments>
     <ExtractionTemplates>
-        <DbSettings Id="DefaultPGIS" ForSchemaId="PGIS" Description="Configuration par défaut du serveur PGIS, schéma DBO." BasedOn="">
+        <DbSettings Id="DefaultAPP1" ForSchemaId="APP1" Description="Configuration par défaut du serveur APP1, schéma DBO." BasedOn="">
             <Table Name="domaineValeur" IsStatic="True"/>
             <Table Name="transmission" IsStatic="NotSet">
                 <DerativeTables GlobalAccess="Forced" GlobalCascade="True">
-                    <Table DestinationSchema="PGIS" Name="demande" Access="NotSet" Cascade="NotSet">
+                    <Table DestinationSchema="APP1" Name="demande" Access="NotSet" Cascade="NotSet">
                         <Restriction>S.CreatedDate > NOW()</Restriction>
                     </Table>
                 </DerativeTables>
@@ -314,7 +314,7 @@ Cas le plus extrême :
                     <Column Name="noreferencetransmission" BuilderName="Client.Builder.CreatePK" />
                 </DataBuilders>
                 <ForeignKeys>
-                    <Add DestinationSchema="SIEBEL" DestinationTable="s_srv_req">
+                    <Add DestinationSchema="APP3" DestinationTable="s_srv_req">
                         <Column Source="noreferencetransmission" Destination="sr_num" />
                     </Add>
                     <Remove />
@@ -326,21 +326,21 @@ Cas le plus extrême :
                     <Column Name="col1" BuilderName="Client.Builder.Random" />
                 </DataBuilders>
                 <ForeignKeys>
-                    <Add DestinationSchema="ARIEL" DestinationTable="s_srv_req">
+                    <Add DestinationSchema="APP2" DestinationTable="s_srv_req">
                         <Column Source="noreferencetransmission" Destination="sr_num" />
                     </Add>
                     <Remove />
                 </ForeignKeys>
             </Table>
         </DbSettings>
-        <DbSettings Id="DefaultARIEL" ForSchemaId="ARIEL" BasedOn="" />
-        <DbSettings Id="DefaultSIEBEL" ForSchemaId="SIEBEL" BasedOn="" />
+        <DbSettings Id="DefaultAPP2" ForSchemaId="APP2" BasedOn="" />
+        <DbSettings Id="DefaultAPP3" ForSchemaId="APP3" BasedOn="" />
     </ExtractionTemplates>
     <ExtractionBehaviors>
         <Behavior Id="Default" Description="Configuration par défaut">
-            <DbSetting BasedOn="DefaultPGIS" />
-            <DbSetting BasedOn="DefaultARIEL" />
-            <DbSetting BasedOn="DefaultSIEBEL" />
+            <DbSetting BasedOn="DefaultAPP1" />
+            <DbSetting BasedOn="DefaultAPP2" />
+            <DbSetting BasedOn="DefaultAPP3" />
         </Behavior>
     </ExtractionBehaviors>    
 </Project>
